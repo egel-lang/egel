@@ -1,0 +1,30 @@
+/*
+   Some bla bla
+*/
+namespace Test (
+    using System
+
+    namespace Test1 (
+    def concat =
+        [ nil, YY -> YY 
+        | cons X XX, YY -> cons X (concat XX YY) ]
+    )
+
+    def k = j
+    def j = i
+    def i = [ X, Y:nil -> X |  X:int, Y -> Y ]
+
+    def filter =
+        [ nil -> nil
+        | cons (X:int) XX -> cons X (filter XX)
+        | cons X XX -> filter XX ] 
+)
+/*
+*/
+
+using System
+
+// def main = concat (concat {1, 2, 3} {4, 5, 6}) {}
+
+def main = 1 + 2
+

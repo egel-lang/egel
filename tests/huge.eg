@@ -1,0 +1,35 @@
+/*
+ * A small test on whether the language handles large data-structures. It
+ * does but printing is implemented as a recursive C routine which 
+ * subsequently runs out of stack space.
+ *
+ * This concatenates about a million (2^20) singleton lists.
+ */
+
+namespace Test (
+
+    using System
+
+    data nil, cons
+
+    def concat =
+        [ nil, YY       -> YY
+        | cons X XX, YY -> cons X (concat XX YY) ]
+
+    def double = [ X -> concat X X ]
+
+    def q = [ X -> double (double (double (double X))) ]
+
+    def huge = q (q (q (q (q (cons 1 nil)))))
+
+    def len =
+        [ nil -> 0
+        | cons X XX -> 1 + (len XX) ]
+)
+
+using Test
+
+// def main = huge // XXX: bug
+
+def main = len huge
+

@@ -1,0 +1,22 @@
+namespace Test (
+
+    data true, false
+
+    def not = 
+        [ true -> false | _ -> true ]
+
+    def and = 
+        [ true, true -> true | _, _ -> false ]
+
+    def or = 
+        [ false, false -> false | _, _ -> true ]
+
+    def nand = 
+        [ B0, B1 -> not (and B0 B1) ]
+
+)
+
+using Test
+
+def main = nand true false
+

@@ -1,0 +1,12 @@
+
+namespace Test (
+
+    def f = [ X, Y -> X ]
+
+    def g = [ f X -> f X X ]
+
+)
+
+using Test
+
+def main = g (f 1)

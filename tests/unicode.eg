@@ -1,0 +1,11 @@
+namespace Unicode (
+
+    def ↗ = [X -> X]
+
+    def ∀ = [X -> X]
+
+)
+
+using Unicode
+
+def main = ∀ 0
