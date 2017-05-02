@@ -19,7 +19,7 @@ public:
     void visit_decl_definition(const Position& p, const AstPtr& n, const AstPtr& e) override {
     }
 
-    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) override {
+    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
     }
 
 private:

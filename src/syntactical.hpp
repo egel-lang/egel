@@ -629,23 +629,9 @@ public:
             return AstDeclDefinition(p, c, e).clone();
         } else if (is_operator()) {
             AstPtr c = parse_operator();
-            AstPtr a0;
-            if (is_wildcard()) {
-                a0 = parse_wildcard();
-            } else {
-                a0 = parse_combinator();
-            }
-            AstPtr a1;
-            if (is_wildcard()) {
-                a1 = parse_wildcard();
-            } else if (is_combinator()) {
-                a1 = parse_combinator();
-            } else {
-                a1 = AstEmpty().clone();
-            }
             force_token(TOKEN_EQ);
             AstPtr e = parse_expression();
-            return AstDeclOperator(p, c, a0, a1, e).clone();
+            return AstDeclOperator(p, c, e).clone();
         } else {
             throw ErrorSyntactical(p, "combinator or operator expected");
         }

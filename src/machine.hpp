@@ -125,80 +125,6 @@ private:
     std::map<VMObjectPtr, data_t, LessVMObjectPtr>   _from;
 };
 
-// quick and dirty, for now
-typedef std::tuple<symbol_t, symbol_t, symbol_t, symbol_t> Quad;
-typedef std::vector<Quad> Quads;
-
-#define SYM_WILDCARD    -1
-#define SYM_IGNORE      -2
-
-class OperatorTable {
-public:
-    void enter_binding(const symbol_t o, const symbol_t l, const symbol_t r, const symbol_t e) {
-        auto t = std::make_tuple (o, l, r, e);
-        _quads.push_back(t);
-	}
-
-    void enter_binding(const symbol_t o, const symbol_t a, const symbol_t e) {
-        auto t = std::make_tuple (o, a, SYM_IGNORE, e);
-        _quads.push_back(t);
-	}
-
-    symbol_t get_binding(const symbol_t o, const symbol_t l, const symbol_t r) const {
-        for (auto& q:_quads) {
-            symbol_t o0;
-            symbol_t l0;
-            symbol_t r0;
-            symbol_t e0;
-
-            std::tie (o0, l0, r0, e0) = q;
-
-            if (o0 == o) {
-                if ( (l0 == l) || (l0 == (symbol_t) SYM_WILDCARD) ) {
-                    if ( (r0 == r) || (r == (symbol_t) SYM_WILDCARD) ) {
-                        return e0;
-                    }
-                }
-            }
-        }
-        return -1;
-	}
-
-    symbol_t get_binding(const symbol_t o, const symbol_t a) const {
-        for (auto& q:_quads) {
-            symbol_t o0;
-            symbol_t a0;
-            symbol_t i0;
-            symbol_t e0;
-
-            std::tie (o0, a0, i0, e0) = q;
-            if ( (o0 == o) && (i0 == (symbol_t) SYM_IGNORE) ) {
-                if ( (a0 == a) || (a0 == (symbol_t) SYM_WILDCARD) ) {
-                    return e0;
-                }
-            }
-        }
-        return -1;
-	}
-
-    void render(std::ostream& os) {
-        for (auto& q:_quads) {
-            symbol_t o;
-            symbol_t a;
-            symbol_t i;
-            symbol_t e;
-
-            std::tie (o, a, i, e) = q;
-            os << std::setw(8) << o << " ";
-            os << std::setw(8) << a << " ";
-            os << std::setw(8) << i << " ";
-            os << std::setw(8) << e << std::endl;
-        }
-    }
-private:
-    Quads   _quads;
-};
-
 
 class Machine: public VM {
 public:
@@ -244,23 +170,6 @@ public:
 
     VMObjectPtr get_data(const data_t d) override {
         return _data.get(d);
-	}
-
-    // operator table manipulation
-    void enter_binding(const symbol_t o, const symbol_t l, const symbol_t r, const symbol_t e) override {
-        _operators.enter_binding(o, l, r, e);
-	}
-
-    void enter_binding(const symbol_t o, const symbol_t a, const symbol_t e) override {
-        _operators.enter_binding(o, a, e);
-	}
-
-    symbol_t get_binding(const symbol_t o, const symbol_t l, const symbol_t r) override {
-        return _operators.get_binding(o, l, r);
-	}
-
-    symbol_t get_binding(const symbol_t o, const symbol_t a) override {
-        return _operators.get_binding(o, a);
 	}
 
     // reduce an expression
@@ -321,8 +230,6 @@ public:
 	void render(std::ostream& os) override {
         os << "SYMBOLS: " << std::endl;
         _symbols.render(os);
-        os << "OPERATORS: " << std::endl;
-        _operators.render(os);
         os << "DATA: " << std::endl;
         _data.render(os);
 	}
@@ -332,7 +239,6 @@ private:
     DataTable       _data;
     VMObjectPtr     _result;
     VMObjectPtr     _exception;
-    OperatorTable   _operators;
 };
 
 #endif

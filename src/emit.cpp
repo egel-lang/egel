@@ -30,7 +30,7 @@ public:
     void visit_decl_definition(const Position& p, const AstPtr& n, const AstPtr& e) override {
     }
 
-    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) override {
+    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
     }
 
 private:
@@ -732,36 +732,45 @@ public:
         get_machine()->define_data(b);
     }
 
-    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) override {
-        if (a1->tag() == AST_EMPTY) {
-            AST_EXPR_COMBINATOR_SPLIT(c,  p0, nn0, n0);
-            AST_EXPR_COMBINATOR_SPLIT(a0, p1, nn1, n1);
-            AST_EXPR_COMBINATOR_SPLIT(e,  p2, nn2, n2);
+    void visit_decl_operator(const Position& p, const AstPtr& o, const AstPtr& e) override {
+        auto frame = get_coder()->generate_register();
 
-            auto s0 = get_machine()->enter_symbol(nn0,n0);
-            auto s1 = get_machine()->enter_symbol(nn1,n1);
-            auto s2 = get_machine()->enter_symbol(nn2,n2);
+        auto l = get_coder()->generate_label();
+        set_fail_label(l);
 
-            get_machine()->enter_binding(s0, s1, s2);
+        auto rt  = get_coder()->generate_register();
+        auto rti = get_coder()->generate_register();
+        auto k   = get_coder()->generate_register();
+        auto exc = get_coder()->generate_register();
+        auto c   = get_coder()->generate_register();
 
-            auto o = VMObjectPrefix(get_machine(), s0).clone();
-            get_machine()->define_data(o);
-        } else {
-            AST_EXPR_COMBINATOR_SPLIT(c,  p0, nn0, n0);
-            AST_EXPR_COMBINATOR_SPLIT(a0, p1, nn1, n1);
-            AST_EXPR_COMBINATOR_SPLIT(a1, p2, nn2, n2);
-            AST_EXPR_COMBINATOR_SPLIT(e,  p3, nn3, n3);
+        set_register_frame(frame);
+        set_register_rt(rt);
+        set_register_rti(rti);
+        set_register_k(k);
+        set_register_exc(exc);
+        set_arity(0);
 
-            auto s0 = get_machine()->enter_symbol(nn0,n0);
-            auto s1 = get_machine()->enter_symbol(nn1,n1);
-            auto s2 = get_machine()->enter_symbol(nn2,n2);
-            auto s3 = get_machine()->enter_symbol(nn3,n3);
+        get_coder()->emit_op_takex(rt, c, frame, 0);
+        get_coder()->emit_op_fail(l);
+        set_state(EMIT_EXPR_ROOT);
+        visit(e);
+        get_coder()->emit_label(l);
 
-            get_machine()->enter_binding(s0, s1, s2, s3);
+        auto em   = get_coder()->generate_register();
+        auto r    = get_coder()->generate_register();
 
-            auto o = VMObjectInfix(get_machine(), s0).clone();
-            get_machine()->define_data(o);
-        }
+        get_coder()->emit_op_array(em, rti, rt); // gen an empty array
+        get_coder()->emit_op_concatx(r, em, frame, 4);
+        get_coder()->emit_op_set(rt, rti, r);
+        get_coder()->emit_op_return(k);
+
+        auto code = get_coder()->code();
+        AST_EXPR_OPERATOR_SPLIT(o, p0, ss, s);
+        auto b = VMObjectBytecode(get_machine(), code, ss, s).clone();
+
+        get_coder()->reset();
+        get_machine()->define_data(b);
     }
 
 private:

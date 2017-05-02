@@ -239,11 +239,9 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         break;
     }
     case AST_DECL_OPERATOR: {
-        AST_DECL_OPERATOR_SPLIT(a0, p0, c0, a00, a01, e0);
-        AST_DECL_OPERATOR_SPLIT(a1, p1, c1, a10, a11, e1);
-        c = compare_ast2(c0, c1, a00, a10);
-        if (c != 0) return c;
-        return compare_ast2(a01, a11, e0, e1);
+        AST_DECL_OPERATOR_SPLIT(a0, p0, c0, e0);
+        AST_DECL_OPERATOR_SPLIT(a1, p1, c1, e1);
+        return compare_ast2(c0, c1, e0, e1);
         break;
     }
     case AST_DECL_NAMESPACE: {

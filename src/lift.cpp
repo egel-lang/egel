@@ -173,7 +173,7 @@ public:
         }
     }
 
-    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) override {
+    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
         set_scope(c);
         AstPtr e0;
         if (e->tag() == AST_EXPR_COMBINATOR) { // keep direct combinator definitions
@@ -185,7 +185,7 @@ public:
             add_lifted(decl);
             e0 = cnew;
         }
-        auto e1 = AstDeclOperator(p, c, a0, a1, e0).clone();
+        auto e1 = AstDeclOperator(p, c, e0).clone();
         if (get_lifted().size() == 0) {
             return e1;
         } else {

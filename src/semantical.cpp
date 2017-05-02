@@ -98,7 +98,7 @@ public:
         visit(n);
     }
 
-    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) override {
+    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
         set_declare_state(STATE_DECLARE_IMPLICIT);
         visit(c);
     }
@@ -345,14 +345,12 @@ public:
         return a;
     }
 
-    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) override {
+    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
         set_identify_state(STATE_IDENTIFY_DECLARE);
         auto c0 = rewrite(c);
         set_identify_state(STATE_IDENTIFY_USAGE);
-        auto b0 = rewrite(a0);
-        auto b1 = rewrite(a1);
         auto e0 = rewrite(e);
-        auto a = AstDeclOperator(p, c0, b0, b1, e0).clone();
+        auto a = AstDeclOperator(p, c0, e0).clone();
         push_declaration(a);
         return a;
     }

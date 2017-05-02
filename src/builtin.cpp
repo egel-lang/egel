@@ -124,7 +124,7 @@ public:
 // well, this is roughly how it should work
 class MonMin: public Monadic {
 public:
-    MONADIC_PREAMBLE(MonMin, "System", "monmin");
+    MONADIC_PREAMBLE(MonMin, "System", "!-");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -141,7 +141,7 @@ public:
 
 class Add: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Add, "System", "add");
+    DYADIC_PREAMBLE(Add, "System", "+");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -162,7 +162,7 @@ public:
 
 class Min: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Min, "System", "min");
+    DYADIC_PREAMBLE(Min, "System", "-");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -183,7 +183,7 @@ public:
 
 class Mul: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Mul, "System", "mul");
+    DYADIC_PREAMBLE(Mul, "System", "*");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -204,7 +204,7 @@ public:
 
 class Div: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Div, "System", "div");
+    DYADIC_PREAMBLE(Div, "System", "/");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -224,9 +224,6 @@ public:
 };
 
 void vm_register(VM* vm) {
-    symbol_t symint   = SYMBOL_INT;
-    symbol_t symfloat = SYMBOL_FLOAT;
-
     vm->define_data(VMObjectData(vm, "System", "int").clone());
     vm->define_data(VMObjectData(vm, "System", "float").clone());
     vm->define_data(VMObjectData(vm, "System", "char").clone());
@@ -238,40 +235,12 @@ void vm_register(VM* vm) {
     vm->define_data(VMObjectData(vm, "System", "false").clone());
     vm->define_data(VMObjectData(vm, "System", "tuple").clone());
 
-    auto monmin   = MonMin(vm).clone();
-    auto opmonmin = VMObjectPrefix(vm, "System", "!-").clone();
-    vm->define_data(monmin);
-    vm->define_data(opmonmin);
-    vm->enter_binding(opmonmin->symbol(), symint, monmin->symbol());
-    vm->enter_binding(opmonmin->symbol(), symfloat, monmin->symbol());
+    vm->define_data(MonMin(vm).clone());
+    vm->define_data(Add(vm).clone());
+    vm->define_data(Min(vm).clone());
+    vm->define_data(Mul(vm).clone());
+    vm->define_data(Div(vm).clone());
 
-    auto add   = Add(vm).clone();
-    auto opadd = VMObjectInfix(vm, "System", "+").clone();
-    vm->define_data(add);
-    vm->define_data(opadd);
-    vm->enter_binding(opadd->symbol(), symint, symint, add->symbol());
-    vm->enter_binding(opadd->symbol(), symfloat, symfloat, add->symbol());
-
-    auto min    = Min(vm).clone();
-    auto opmin  = VMObjectInfix(vm, "System", "-").clone();
-    vm->define_data(min);
-    vm->define_data(opmin);
-    vm->enter_binding(opmin->symbol(), symint, symint, min->symbol());
-    vm->enter_binding(opmin->symbol(), symfloat, symfloat, min->symbol());
-
-    auto mul    = Mul(vm).clone();
-    auto opmul  = VMObjectInfix(vm, "System", "*").clone();
-    vm->define_data(mul);
-    vm->define_data(opmul);
-    vm->enter_binding(opmul->symbol(), symint, symint, mul->symbol());
-    vm->enter_binding(opmul->symbol(), symfloat, symfloat, mul->symbol());
-
-    auto div    = Div(vm).clone();
-    auto opdiv  = VMObjectInfix(vm, "System", "/").clone();
-    vm->define_data(div);
-    vm->define_data(opdiv);
-    vm->enter_binding(opdiv->symbol(), symint, symint, div->symbol());
-    vm->enter_binding(opdiv->symbol(), symfloat, symfloat, div->symbol());
 }
 
 // XXX: this is a bit unfortunate, but I don't want the VM to know about

@@ -1465,12 +1465,12 @@ typedef std::shared_ptr<AstDeclDefinition> AstDeclDefinitionPtr;
 
 class AstDeclOperator : public Ast {
 public:
-    AstDeclOperator(const Position &p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e)
-        : Ast(AST_DECL_OPERATOR, p), _combinator(c), _argument0(a0), _argument1(a1),  _expression(e) {
+    AstDeclOperator(const Position &p, const AstPtr& c, const AstPtr& e)
+        : Ast(AST_DECL_OPERATOR, p), _combinator(c), _expression(e) {
     }
 
     AstDeclOperator(const AstDeclOperator& a) 
-        : AstDeclOperator(a.position(), a.combinator(), a.argument0(), a.argument1(), a.expression()) {
+        : AstDeclOperator(a.position(), a.combinator(), a.expression()) {
     }
 
     AstPtr clone() const {
@@ -1479,14 +1479,6 @@ public:
     
     AstPtr combinator() const {
         return _combinator;
-    }
-
-    AstPtr argument0() const {
-        return _argument0;
-    }
-
-    AstPtr argument1() const {
-        return _argument1;
     }
 
     AstPtr expression() const {
@@ -1499,9 +1491,6 @@ public:
         l = combinator()->approximate_length(l);
         if (l >= line_length) return l;
         l += 3;
-        l = argument0()->approximate_length(l);
-        if (l >= line_length) return l;
-        l += 3;
         l = expression()->approximate_length(l);
         return l;
     }
@@ -1511,10 +1500,6 @@ public:
             skip(os, indent);
             os << STRING_DEF << " ";
             os << combinator();
-            os << " ";
-            os << argument0();
-            os << " ";
-            os << argument1();
             os << " = ";
             os << expression();
             os << std::endl;
@@ -1522,10 +1507,6 @@ public:
             skip(os, indent);
             os << STRING_DEF << " ";
             os << combinator();
-            os << " ";
-            os << argument0();
-            os << " ";
-            os << argument1();
             os << " = ";
             skip_line(os, indent+4);
             expression()->render(os, indent+4);
@@ -1535,19 +1516,15 @@ public:
 
 private:
     AstPtr  _combinator;
-    AstPtr  _argument0;
-    AstPtr  _argument1;
     AstPtr  _expression;
 };
 
 typedef std::shared_ptr<AstDeclOperator> AstDeclOperatorPtr;
 #define AST_DECL_OPERATOR_CAST(a)    std::static_pointer_cast<AstDeclOperator>(a)
-#define AST_DECL_OPERATOR_SPLIT(a, p, c, a0, a1, e) \
+#define AST_DECL_OPERATOR_SPLIT(a, p, c, e) \
     auto _##a  = AST_DECL_OPERATOR_CAST(a); \
     auto p   = _##a->position(); \
     auto c   = _##a->combinator(); \
-    auto a0  = _##a->argument0(); \
-    auto a1  = _##a->argument1(); \
     auto e   = _##a->expression();
 
 

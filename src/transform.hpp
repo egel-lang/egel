@@ -144,12 +144,10 @@ public:
         return AstDeclDefinition(p, n0, e0).clone();
     }
 
-    virtual AstPtr transform_decl_operator(const AstPtr& a, const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) {
+    virtual AstPtr transform_decl_operator(const AstPtr& a, const Position& p, const AstPtr& c, const AstPtr& e) {
         auto c0 = transform(c);
-        auto b0 = transform(a0);
-        auto b1 = transform(a1);
         auto e0 = transform(e);
-        return AstDeclOperator(p, c0, b0, b1, e0).clone();
+        return AstDeclOperator(p, c0, e0).clone();
     }
 
     virtual AstPtr transform_decl_namespace(const AstPtr& a, const Position& p, const UnicodeStrings& nn, const AstPtrs& dd) {
@@ -297,8 +295,8 @@ public:
             break;
         }
         case AST_DECL_OPERATOR: {
-            AST_DECL_OPERATOR_SPLIT(a, p, c, a0, a1, e);
-            return transform_decl_operator(a, p, c, a0, a1, e);
+            AST_DECL_OPERATOR_SPLIT(a, p, c, e);
+            return transform_decl_operator(a, p, c, e);
             break;
         }
         case AST_DECL_NAMESPACE: {
@@ -455,12 +453,10 @@ public:
         return AstDeclDefinition(p, n0, e0).clone();
     }
 
-    virtual AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) {
+    virtual AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) {
         auto c0 = rewrite(c);
-        auto b0 = rewrite(a0);
-        auto b1 = rewrite(a1);
         auto e0 = rewrite(e);
-        return AstDeclOperator(p, c0, b0, b1, e0).clone();
+        return AstDeclOperator(p, c0, e0).clone();
     }
 
     virtual AstPtr rewrite_decl_namespace(const Position& p, const UnicodeStrings& nn, const AstPtrs& dd) {
@@ -608,8 +604,8 @@ public:
             break;
         }
         case AST_DECL_OPERATOR: {
-            AST_DECL_OPERATOR_SPLIT(a, p, c, a0, a1, e);
-            return rewrite_decl_operator(p, c, a0, a1, e);
+            AST_DECL_OPERATOR_SPLIT(a, p, c, e);
+            return rewrite_decl_operator(p, c, e);
             break;
         }
         case AST_DECL_NAMESPACE: {
@@ -735,10 +731,8 @@ public:
         visit(e);
     }
 
-    virtual void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& a0, const AstPtr& a1, const AstPtr& e) {
+    virtual void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) {
         visit(c);
-        visit(a0);
-        visit(a1);
         visit(e);
     }
 
@@ -885,8 +879,8 @@ public:
             break;
         }
         case AST_DECL_OPERATOR: {
-            AST_DECL_OPERATOR_SPLIT(a, p, c, a0, a1, e);
-            return visit_decl_operator(p, c, a0, a1, e);
+            AST_DECL_OPERATOR_SPLIT(a, p, c, e);
+            return visit_decl_operator(p, c, e);
             break;
         }
         case AST_DECL_NAMESPACE: {
