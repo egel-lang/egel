@@ -1,14 +1,9 @@
 namespace System (
-//    data nil, cons
-
     def concat =
         [ nil, YY   -> YY
         | cons X XX, YY -> cons X (concat XX YY) ]
 
-    def ++ nil nil   = concat
-    def ++ nil cons  = concat
-    def ++ cons nil  = concat
-    def ++ cons cons = concat
+    def ++ = concat
 )
 
 using System
