@@ -471,6 +471,30 @@ public:
         flush();
     }
 
+    void prelude() {
+        // XXX: move this to a module
+        static bool has_prelude = false;
+        if (has_prelude) return;
+        has_prelude = true;
+
+        auto oo = vm_export(_machine);
+        for (auto& o:oo) {
+            _machine->enter_data(o);
+        }
+
+        for (auto& o:oo) {
+            if (o->tag() == VM_OBJECT_COMBINATOR) {
+                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+                auto s   = _machine->get_symbol(sym);
+
+                UnicodeStrings nn;
+                nn.push_back(first(s));
+                auto n = second(s);
+                ::declare(_environment, nn, n, s);
+            }
+        }
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const ModuleManager& mm) {
         for (auto m:mm._modules) {
             os << m << std::endl;
@@ -498,30 +522,6 @@ protected:
         auto d = s;
         auto i = d.indexOf('.');
         return d.remove(0, i+1);
-    }
-
-    void prelude() {
-        // XXX: move this to a module
-        static bool has_prelude = false;
-        if (has_prelude) return;
-        has_prelude = true;
-
-        auto oo = vm_export(_machine);
-        for (auto& o:oo) {
-            _machine->enter_data(o);
-        }
-
-        for (auto& o:oo) {
-            if (o->tag() == VM_OBJECT_COMBINATOR) {
-                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-                auto s   = _machine->get_symbol(sym);
-
-                UnicodeStrings nn;
-                nn.push_back(first(s));
-                auto n = second(s);
-                ::declare(_environment, nn, n, s);
-            }
-        }
     }
 
     bool already_loaded(const UnicodeString& fn) {

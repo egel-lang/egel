@@ -227,6 +227,8 @@ int main(int argc, char *argv[]) {
             std::cerr << e << std::endl;
             return (EXIT_FAILURE);
         }
+    } else {
+        mm.prelude();
     }
 
     if ((fn == "") || oo->interactive()) {
