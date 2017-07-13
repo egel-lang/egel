@@ -540,7 +540,7 @@ protected:
         } else {
             auto find = search(get_options()->get_include_path(), fn);
             if (find.compare("") == 0) {
-                throw ErrorIO(p, "file not found");
+                throw ErrorIO(p, "file \"" + fn + "\" not found");
             }
             if (!already_loaded(find)) {
                 auto m = ModuleSource(find, fn).clone();

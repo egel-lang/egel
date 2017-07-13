@@ -97,7 +97,7 @@ void eval_main(const ModuleManager& mm) {
  *
  * All using statements are stored and prefixed before other 
  * statements. Not the nicest manner but easy and convenient since
- * the module managers only stores the complete environment and 
+ * the module manager only stores the complete environment and 
  * doesn't handle ranges.
  *
  * A definition is parsed and compiled.
@@ -111,16 +111,21 @@ AstPtr parse_line(ModuleManager& mm, const UnicodeString& line) {
 }
 
 void handle_import(ModuleManager& mm, const AstPtr& a) {
-    std::cout << "XXX: not implemented yet." << std::endl;
+    // std::cout << "XXX: not implemented yet." << std::endl;
+    if (a->tag() == AST_DIRECT_IMPORT) {
+        AST_DIRECT_IMPORT_SPLIT(a, p, s);
+        try {
+            mm.load(p, unicode_strip_quotes(s)); // XXX: needs an unescape?
+        } catch (ErrorIO e) {
+            std::cerr << e << std::endl;
+        } catch (Error e) {
+            std::cerr << e << std::endl;
+        }
+    }
 }
 
 void handle_using(ModuleManager& mm, const AstPtr& a) {
     // nop. maybe push it through semantic analysis later for extra checks.
-    /*
-    if (a->tag() == AST_DIRECT_USING) {
-        AST_DIRECT_USING_SPLIT(a, p, uu);
-    }
-    */
 }
 
 void handle_definition(ModuleManager& mm, const AstPtrs& uu, const AstPtr& d) {
@@ -135,7 +140,7 @@ void handle_definition(ModuleManager& mm, const AstPtrs& uu, const AstPtr& d) {
     auto w = AstWrapper(p, dd).clone();
 
     try {
-        if (d->tag() == AST_DECL_DEFINITION) { // start of by (re-)declaring the def
+        if (d->tag() == AST_DECL_DEFINITION) { // start off by (re-)declaring the def
             AST_DECL_DEFINITION_SPLIT(d, p0, c0, e0);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
