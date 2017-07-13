@@ -505,13 +505,22 @@ protected:
         static bool has_prelude = false;
         if (has_prelude) return;
         has_prelude = true;
-        vm_register(_machine);
-        auto ss = vm_exports();
-        for (auto& s:ss) {
-            UnicodeStrings nn;
-            nn.push_back(first(s));
-            auto n = second(s);
-            ::declare(_environment, nn, n, s);
+
+        auto oo = vm_export(_machine);
+        for (auto& o:oo) {
+            _machine->enter_data(o);
+        }
+
+        for (auto& o:oo) {
+            if (o->tag() == VM_OBJECT_COMBINATOR) {
+                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+                auto s   = _machine->get_symbol(sym);
+
+                UnicodeStrings nn;
+                nn.push_back(first(s));
+                auto n = second(s);
+                ::declare(_environment, nn, n, s);
+            }
         }
     }
 

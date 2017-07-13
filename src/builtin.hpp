@@ -3,8 +3,6 @@
 
 #include "runtime.hpp"
 
-void vm_register(VM* vm);
-
-std::vector<UnicodeString> vm_exports();
+std::vector<VMObjectPtr> vm_export(VM* vm);
 
 #endif

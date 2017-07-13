@@ -223,46 +223,24 @@ public:
     }
 };
 
-void vm_register(VM* vm) {
-    vm->define_data(VMObjectData(vm, "System", "int").clone());
-    vm->define_data(VMObjectData(vm, "System", "float").clone());
-    vm->define_data(VMObjectData(vm, "System", "char").clone());
-    vm->define_data(VMObjectData(vm, "System", "text").clone());
-    vm->define_data(VMObjectData(vm, "System", "nil").clone());
-    vm->define_data(VMObjectData(vm, "System", "cons").clone());
-    vm->define_data(VMObjectData(vm, "System", "nop").clone());
-    vm->define_data(VMObjectData(vm, "System", "true").clone());
-    vm->define_data(VMObjectData(vm, "System", "false").clone());
-    vm->define_data(VMObjectData(vm, "System", "tuple").clone());
+std::vector<VMObjectPtr> vm_export(VM* vm) {
+    std::vector<VMObjectPtr> oo;
+    oo.push_back(VMObjectData(vm, "System", "int").clone());
+    oo.push_back(VMObjectData(vm, "System", "float").clone());
+    oo.push_back(VMObjectData(vm, "System", "char").clone());
+    oo.push_back(VMObjectData(vm, "System", "text").clone());
+    oo.push_back(VMObjectData(vm, "System", "nil").clone());
+    oo.push_back(VMObjectData(vm, "System", "cons").clone());
+    oo.push_back(VMObjectData(vm, "System", "nop").clone());
+    oo.push_back(VMObjectData(vm, "System", "true").clone());
+    oo.push_back(VMObjectData(vm, "System", "false").clone());
+    oo.push_back(VMObjectData(vm, "System", "tuple").clone());
 
-    vm->define_data(MonMin(vm).clone());
-    vm->define_data(Add(vm).clone());
-    vm->define_data(Min(vm).clone());
-    vm->define_data(Mul(vm).clone());
-    vm->define_data(Div(vm).clone());
+    oo.push_back(MonMin(vm).clone());
+    oo.push_back(Add(vm).clone());
+    oo.push_back(Min(vm).clone());
+    oo.push_back(Mul(vm).clone());
+    oo.push_back(Div(vm).clone());
 
-}
-
-// XXX: this is a bit unfortunate, but I don't want the VM to know about
-// the AST, and I don't want the AST to know about the VM.
-//
-// So, I ended up with this. Double the work.
-std::vector<UnicodeString> vm_exports() {
-    std::vector<UnicodeString> ss;
-    ss.push_back("System.int");
-    ss.push_back("System.char");
-    ss.push_back("System.float");
-    ss.push_back("System.text");
-    ss.push_back("System.nil");
-    ss.push_back("System.cons");
-    ss.push_back("System.nop");
-    ss.push_back("System.true");
-    ss.push_back("System.false");
-    ss.push_back("System.tuple");
-    ss.push_back("System.!-");
-    ss.push_back("System.+");
-    ss.push_back("System.-");
-    ss.push_back("System.*");
-    ss.push_back("System./");
-    return ss;
+    return oo;
 }
