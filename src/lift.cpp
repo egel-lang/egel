@@ -154,6 +154,32 @@ public:
         return c;
     }
 
+    AstPtr rewrite_expr_try(const Position& p, const AstPtr& t, const AstPtr& c) override {
+        AstPtr t0;
+        if (t->tag() == AST_EXPR_COMBINATOR) { // keep combinator definitions
+            t0 = t;
+        } else {
+            auto t1 = rewrite(t);
+            auto tnew = fresh_combinator();
+            auto td   = AstDeclDefinition(p, tnew, t1).clone();
+            add_lifted(td);
+            t0 = tnew;
+        }
+
+        AstPtr c0;
+        if (c->tag() == AST_EXPR_COMBINATOR) { // keep combinator definitions
+            c0 = c;
+        } else {
+            auto c1 = rewrite(c);
+            auto cnew = fresh_combinator();
+            auto cd   = AstDeclDefinition(p, cnew, c1).clone();
+            add_lifted(cd);
+            c0 = cnew;
+        }
+
+        return AstExprTry(p, t0, c0).clone();
+    }
+
     AstPtr rewrite_decl_definition(const Position& p, const AstPtr& c, const AstPtr& e) override {
         set_scope(c);
         AstPtr e0;
