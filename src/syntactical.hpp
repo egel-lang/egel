@@ -763,28 +763,23 @@ public:
     LineParser(TokenReaderPtr& r): Parser (r) {
     }
 
-    bool is_assign() {
-        uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DOT)) {
-            i += 2;
+    bool is_decl_definition() {
+        switch (tag()) {
+        case TOKEN_DEF:
+            return true;
+            break;
+        default:
+            return false;
+            break;
         }
-        return ((look(i).tag() == TOKEN_LOWERCASE) && (look(i+1).tag() == TOKEN_ASSIGN));
-    }
-
-    AstPtr parse_assign() {
-        Position p = position();
-        auto c = parse_combinator();
-        force_token(TOKEN_ASSIGN);
-        auto e = parse_expression();
-        return AstDeclDefinition(p, c, e).clone();
     }
 
     AstPtr parse_line() {
         AstPtr r;
         if (is_directive()) {
             r = parse_directive();
-        } else if (is_assign()) {
-            r = parse_assign();
+        } else if (is_decl_definition()) {
+            r = parse_decl_definition();
         } else {
             r = parse_expression();
         }

@@ -123,9 +123,39 @@ void handle_using(ModuleManager& mm, const AstPtr& a) {
     */
 }
 
-void handle_assignment(ModuleManager& mm, const AstPtrs& uu, const AstPtr& a) {
-    std::cout << "XXX: not implemented yet." << std::endl;
-    // ::declare(mm.get_environment(), a);
+void handle_definition(ModuleManager& mm, const AstPtrs& uu, const AstPtr& d) {
+    auto vm = mm.get_machine();
+    auto p = d->position();
+
+    auto dd = AstPtrs();
+    for (auto& u:uu) {
+        dd.push_back(u);
+    }
+    dd.push_back(d);
+    auto w = AstWrapper(p, dd).clone();
+
+    try {
+        if (d->tag() == AST_DECL_DEFINITION) { // start of by (re-)declaring the def
+            AST_DECL_DEFINITION_SPLIT(d, p0, c0, e0);
+            if (c0->tag() == AST_EXPR_COMBINATOR) {
+                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
+                UnicodeString s;
+                for (auto& s0:nn0) {
+                    s += s0;
+                    s += '.';
+                }
+                s += n0;
+                ::declare_implicit(mm.get_environment(), nn0, n0, s);
+            }
+        }
+        w = ::identify(mm.get_environment(), w);
+        w = ::desugar(w);
+        w = ::lift(w);
+        ::emit_data(vm, w);
+        ::emit_code(vm, w);
+    } catch (Error e) {
+        std::cerr << e << std::endl;
+    }
 }
 
 void handle_expression(ModuleManager& mm, const AstPtrs& uu, const AstPtr& a) {
@@ -140,9 +170,6 @@ void handle_expression(ModuleManager& mm, const AstPtrs& uu, const AstPtr& a) {
     }
     dd.push_back(d);
     auto w = AstWrapper(p, dd).clone();
-
-       std::cout << mm.get_environment() << std::endl; // XXX
-       std::cout << w << std::endl; // XXX
 
     try {
         // process
@@ -196,7 +223,7 @@ void eval_interactive(ModuleManager& mm) {
                 uu.push_back(a);
                 handle_using(mm, a);
             } else if (a->tag() == AST_DECL_DEFINITION) {
-                handle_assignment(mm, uu, a);
+                handle_definition(mm, uu, a);
             } else {
                 handle_expression(mm, uu, a);
             }
