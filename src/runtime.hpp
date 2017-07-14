@@ -36,6 +36,9 @@ inline UnicodeString uescape(const UnicodeString& s) {
     int i=0;
     while (s0[i] != 0) {
         switch (s0[i]) {
+        case '\\':
+            s1 += "\\\\";
+            break;
         case '\a':
             s1 += "\\a";
             break;

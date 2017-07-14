@@ -105,8 +105,10 @@ bool is_exponent(UChar32 c) {
 }
 
 bool is_escaped(UChar32 c) {
-    return ((c == (UChar32) '0') ||
+    return ((c == (UChar32) '\\') ||
             (c == (UChar32) 't') ||
+            (c == (UChar32) '\'') ||
+            (c == (UChar32) '"') ||
             (c == (UChar32) 'n'));
 }
 
