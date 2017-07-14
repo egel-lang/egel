@@ -234,31 +234,11 @@ public:
         if (_false == 0) _false = machine()->get_data_string("System", "false");
         if (_true == 0)  _true = machine()->get_data_string("System", "true");
 
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
-            if (i0 < i1) {
-                return _true;
-            } else {
-                return _false;
-            }
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            if (f0 < f1) {
-                return _true;
-            } else {
-                return _false;
-            }
+        CompareVMObjectPtr compare;
+        if (compare(arg0, arg1) < 0) {
+            return _true;
         } else {
-            CompareVMObjectPtr compare;
-            if (compare(arg0, arg1) < 0) {
-                return _true;
-            } else {
-                return _false;
-            }
+            return _false;
         }
     }
 };
@@ -274,31 +254,11 @@ public:
         if (_false == 0) _false = machine()->get_data_string("System", "false");
         if (_true == 0)  _true = machine()->get_data_string("System", "true");
 
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
-            if (i0 <= i1) {
-                return _true;
-            } else {
-                return _false;
-            }
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            if (f0 <= f1) {
-                return _true;
-            } else {
-                return _false;
-            }
+        CompareVMObjectPtr compare;
+        if (compare(arg0, arg1) <= 0) {
+            return _true;
         } else {
-            CompareVMObjectPtr compare;
-            if (compare(arg0, arg1) <= 0) {
-                return _true;
-            } else {
-                return _false;
-            }
+            return _false;
         }
     }
 };
@@ -314,31 +274,11 @@ public:
         if (_false == 0) _false = machine()->get_data_string("System", "false");
         if (_true == 0)  _true = machine()->get_data_string("System", "true");
 
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
-            if (i0 == i1) {
-                return _true;
-            } else {
-                return _false;
-            }
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            if (f0 == f1) {
-                return _true;
-            } else {
-                return _false;
-            }
+        CompareVMObjectPtr compare;
+        if (compare(arg0, arg1) == 0) {
+            return _true;
         } else {
-            CompareVMObjectPtr compare;
-            if (compare(arg0, arg1) == 0) {
-                return _true;
-            } else {
-                return _false;
-            }
+            return _false;
         }
     }
 };
@@ -354,31 +294,11 @@ public:
         if (_false == 0) _false = machine()->get_data_string("System", "false");
         if (_true == 0)  _true = machine()->get_data_string("System", "true");
 
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
-            if (i0 != i1) {
-                return _true;
-            } else {
-                return _false;
-            }
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            if (f0 != f1) {
-                return _true;
-            } else {
-                return _false;
-            }
+        CompareVMObjectPtr compare;
+        if (compare(arg0, arg1) != 0) {
+            return _true;
         } else {
-            CompareVMObjectPtr compare;
-            if (compare(arg0, arg1) != 0) {
-                return _true;
-            } else {
-                return _false;
-            }
+            return _false;
         }
     }
 };
