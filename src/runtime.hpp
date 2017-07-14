@@ -702,8 +702,21 @@ struct CompareVMObjectPtr : public std::binary_function<VMObjectPtr, VMObjectPtr
                 }
                 break;
             case VM_OBJECT_ARRAY: {
-                    PANIC("equality on array"); // XXX
-                    return 0;
+                    auto v0 = VM_OBJECT_ARRAY_VALUE(a0);
+                    auto v1 = VM_OBJECT_ARRAY_VALUE(a1);
+                    auto s0 = v0.size();
+                    auto s1 = v1.size();
+
+                    if (s0 < s1) return -1;
+                    else if (s1 < s0) return 1;
+                    else {
+                        for (unsigned int i = 0; i < s0; i++) {
+                            auto c = operator()(v0[i], v1[i]);
+                            if (c < 0) return -1;
+                            if (c > 0) return 1;
+                        }
+                        return 0;
+                    }
                 }
                 break;
             }
