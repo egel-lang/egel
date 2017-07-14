@@ -112,6 +112,16 @@ UnicodeString unicode_escape(const UnicodeString& s);
  **/
 UnicodeString unicode_unescape(const UnicodeString& s);
 
+/**
+ ** Determine if a string ends with a certain suffix.
+ **
+ ** @param s  the unicode string to be searched
+ ** @param sf the unicode string suffix
+ **
+ ** @return the unescaped string
+ **/
+bool unicode_endswith(const UnicodeString& s, const UnicodeString& sf);
+
 // convenience routines text to, and from, literals
 
 /**
@@ -142,7 +152,7 @@ double convert_to_float(const UnicodeString& s);
 UChar32 convert_to_char(const UnicodeString& s);
 
 /**
- ** Parse and convert a float. like "hello!".
+ ** Parse and convert a text string. like "hello!".
  **
  ** @param s  the unicode string
  **

@@ -46,6 +46,10 @@ gprof: $(SOURCES) $(EXECUTABLE)
 debug: CC=g++ -std=c++0x -g
 debug: $(SOURCES) $(EXECUTABLE)
 
+strip: CC=g++ -std=c++0x -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-s
+strip: $(SOURCES) $(EXECUTABLE)
+
+
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 

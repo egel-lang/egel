@@ -241,7 +241,6 @@ private:
 #ifdef LINUX
 
 #include <dlfcn.h>
-// #include "runtime.h"
 
 class ModuleDynamic: public Module {
 public:
@@ -270,14 +269,32 @@ public:
         }
         
         dlerror();
-        /*
-        _declarations = (double (*)(double)) dlsym(handle, "cos");
+    
+        double (*_declarations)(double);
+
+        std::vector<UnicodeString> (*egel_imports)();
+
+        egel_imports = (std::vector<UnicodeString> (*)()) 
+                            dlsym(handle, "egel_imports");
         error = dlerror();
         if (error != NULL) {
-            fprintf(stderr, "%s\n", error);
+            UnicodeString err = "dynamic load error: ";
+            err += dlerror();
+            throw ErrorIO(err);
         }
-        //   printf("%f\n", (*_declarations)(2.0));
-        */
+
+        std::vector<VMObjectPtr>   (*egel_exports)(VM*);
+        egel_exports = (std::vector<VMObjectPtr> (*)(VM*)) 
+                            dlsym(handle, "egel_exports");
+        error = dlerror();
+        if (error != NULL) {
+            UnicodeString err = "dynamic load error: ";
+            err += dlerror();
+            throw ErrorIO(err);
+        }
+
+        _imports = (*egel_imports)();
+        _exports = (*egel_exports)(get_machine());
     }
 
     void unload() override {
@@ -306,8 +323,9 @@ public:
     }
 
 private:
-    void*   _handle;
-    double (*_declarations)(double);
+    void*           _handle;
+    UnicodeStrings  _imports;
+    VMObjectPtrs    _exports;
 };
 #endif
 

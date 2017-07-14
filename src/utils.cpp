@@ -12,13 +12,6 @@ void panic_fail(const char *message, const char *file, uint_t line) {
     abort();
 }
 
-/**
- ** Reads a UTF-8 file and returns an UChar array containing the string read.
- **
- ** @param filename the path to the file to be read
- **
- ** @return UTF-8 string (heap allocated)
- **/
 UChar* read_utf8_file(const char* filename) {
     // FIXME: discard BOM when encountered?
     long fsize;
@@ -43,13 +36,6 @@ UChar* read_utf8_file(const char* filename) {
     return str;
 }
 
-/**
- ** Writes a UTF-8 file.
- **
- ** @param filename the path to the file to be (over-)written
- ** @param UTF-8 string to be written
- **
- **/
 void write_utf8_file(const char* filename, UChar* str) {
     int32_t size;
     UFILE* f = u_fopen(filename, "w", NULL, "UTF-8");
@@ -59,13 +45,6 @@ void write_utf8_file(const char* filename, UChar* str) {
     u_fclose(f);
 }
 
-/** 
- ** Checks for existence of a file.
- **
- ** @param filename the path to the file to be read
- **
- ** @return true iff the file exists
- **/
 bool exists_file(const char* filename) {
     // note race conditions when files are created/deleted. whatever...
     return ( access( filename, F_OK ) != -1 );
@@ -85,10 +64,10 @@ char* unicode_to_char(const UnicodeString &str) {
 UChar* unicode_to_uchar(const UnicodeString &str) {
     UErrorCode error = U_ZERO_ERROR;
     UChar* buffer = new UChar[str.length()+1];
-#ifdef DEBUG
     int32_t size = str.extract(buffer, sizeof(buffer), error);
+    buffer[size] = 0;
+#ifdef DEBUG
     ASSERT(size == str.length() + 1);
-    size = 0;
 #endif
     ASSERT(U_SUCCESS(error));
     return buffer;
@@ -120,13 +99,13 @@ double convert_to_float(const UnicodeString& s) {
 
 UChar32 convert_to_char(const UnicodeString& s) {
     auto s0 = unicode_strip_quotes(s);
-    auto s1 = unicode_unescape(s);
+    auto s1 = unicode_unescape(s0);
     return s1.char32At(0);
 }
 
 UnicodeString convert_to_text(const UnicodeString& s) {
     auto s0 = unicode_strip_quotes(s);
-    auto s1 = unicode_unescape(s);
+    auto s1 = unicode_unescape(s0);
     return s1;
 }
 
@@ -163,13 +142,53 @@ UnicodeString unicode_strip_quotes(const UnicodeString& s) {
 }
 
 UnicodeString unicode_escape(const UnicodeString& s) {
-    // XXX implement this
-    std::cerr << "warning, escape not implemented yet" << std::endl;
-    return s;
+    UChar* s0  = unicode_to_uchar(s);
+    UnicodeString s1;
+    int i=0;
+    while (s0[i] != 0) {
+        switch (s0[i]) {
+        case '\a':
+            s1 += "\\a";
+            break;
+        case '\b':
+            s1 += "\\b";
+            break;
+        case '\t':
+            s1 += "\\t";
+            break;
+        case '\n':
+            s1 += "\\n";
+            break;
+        case '\v':
+            s1 += "\\v";
+            break;
+        case '\f':
+            s1 += "\\f";
+            break;
+        case '\r':
+            s1 += "\\r";
+            break;
+        case '\"':
+            s1 += "\\\"";
+            break;
+        case '\'':
+            s1 += "\\'";
+            break;
+        default:
+            s1 += (s0[i]);
+            break;
+        }
+        i++;
+    }
+    return s1;
 }
 
 UnicodeString unicode_unescape(const UnicodeString& s) {
     return s.unescape();
+}
+
+bool unicode_endswith(const UnicodeString& s, const UnicodeString& suffix) {
+    return s.endsWith(suffix);
 }
 
 // basic I/O routines

@@ -24,6 +24,54 @@
 #define PANIC(s)    { std::cerr << s << std::endl; exit(1); }
 #endif
 
+// libicu doesn't provide escaping..
+
+inline UnicodeString uescape(const UnicodeString& s) {
+    UErrorCode error = U_ZERO_ERROR;
+    UChar* s0 = new UChar[s.length()+1];
+    int32_t size = s.extract(s0, sizeof(s0), error);
+    s0[size] = 0;
+
+    UnicodeString s1;
+    int i=0;
+    while (s0[i] != 0) {
+        switch (s0[i]) {
+        case '\a':
+            s1 += "\\a";
+            break;
+        case '\b':
+            s1 += "\\b";
+            break;
+        case '\t':
+            s1 += "\\t";
+            break;
+        case '\n':
+            s1 += "\\n";
+            break;
+        case '\v':
+            s1 += "\\v";
+            break;
+        case '\f':
+            s1 += "\\f";
+            break;
+        case '\r':
+            s1 += "\\r";
+            break;
+        case '\"':
+            s1 += "\\\"";
+            break;
+        case '\'':
+            s1 += "\\'";
+            break;
+        default:
+            s1 += (s0[i]);
+            break;
+        }
+        i++;
+    }
+    return s1;
+}
+
 /**
  * VM objects are
  * + the literals, integer, float, char, and text,
@@ -262,7 +310,9 @@ public:
     }
 
     void render(std::ostream& os) const override {
-        os << "'" << value() << "'"; // XXX: needs to be escaped
+        UnicodeString s;
+        s = uescape(s+value());
+        os << "'" << s << "'";
     }
 
     vm_char_t value() const {
@@ -301,7 +351,9 @@ public:
     }
 
     void render(std::ostream& os) const override {
-        os << '"' << value() << '"';
+        UnicodeString s;
+        s = uescape(value());
+        os << '"' << s << '"';
     }
 
     UnicodeString value() const {

@@ -1,4 +1,4 @@
-namespace System (
+namespace List (
     def concat =
         [ nil, YY   -> YY
         | cons X XX, YY -> cons X (concat XX YY) ]
@@ -6,6 +6,6 @@ namespace System (
     def ++ = concat
 )
 
-using System
+using List
 
 def main = {1,2} ++ {3,4,5}
