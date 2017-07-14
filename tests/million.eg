@@ -1,0 +1,16 @@
+namespace List (
+    using System
+
+    def len =
+        [ nil -> 0
+        | cons X XX -> 1 + (len XX) ]
+
+    def block =
+        [ 0 -> nil
+        | N -> cons (N-1) (block (N-1)) ]
+)
+
+using System
+using List
+
+def main = len (block 1000000)

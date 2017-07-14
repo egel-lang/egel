@@ -1,0 +1,18 @@
+namespace List (
+    using System
+
+    def concat =
+        [ nil, YY   -> YY
+        | cons X XX, YY -> cons X (concat XX YY) ]
+
+    def ++ = concat
+
+    def map =
+        [ F, nil -> nil
+        | F, cons X XX -> cons (F X) (map F XX) ]
+)
+
+using System
+using List
+
+def main = map [X -> X*2] ({1,2} ++ {3,4,5})
