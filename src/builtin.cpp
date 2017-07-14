@@ -223,6 +223,146 @@ public:
     }
 };
 
+class Less: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Less, "System", "<");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static VMObjectPtr _false = 0;
+        static VMObjectPtr _true = 0;
+        
+        if (_false == 0) _false = machine()->get_data_string("System", "false");
+        if (_true == 0)  _true = machine()->get_data_string("System", "true");
+
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            if (i0 < i1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
+             (arg1->tag() == VM_OBJECT_FLOAT) ) {
+            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+            if (f0 < f1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class LessEq: public Dyadic {
+public:
+    DYADIC_PREAMBLE(LessEq, "System", "<=");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static VMObjectPtr _false = 0;
+        static VMObjectPtr _true = 0;
+        
+        if (_false == 0) _false = machine()->get_data_string("System", "false");
+        if (_true == 0)  _true = machine()->get_data_string("System", "true");
+
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            if (i0 <= i1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
+             (arg1->tag() == VM_OBJECT_FLOAT) ) {
+            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+            if (f0 <= f1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class Eq: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Eq, "System", "==");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static VMObjectPtr _false = 0;
+        static VMObjectPtr _true = 0;
+        
+        if (_false == 0) _false = machine()->get_data_string("System", "false");
+        if (_true == 0)  _true = machine()->get_data_string("System", "true");
+
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            if (i0 == i1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
+             (arg1->tag() == VM_OBJECT_FLOAT) ) {
+            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+            if (f0 == f1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class NegEq: public Dyadic {
+public:
+    DYADIC_PREAMBLE(NegEq, "System", "!=");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static VMObjectPtr _false = 0;
+        static VMObjectPtr _true = 0;
+        
+        if (_false == 0) _false = machine()->get_data_string("System", "false");
+        if (_true == 0)  _true = machine()->get_data_string("System", "true");
+
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            if (i0 != i1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
+             (arg1->tag() == VM_OBJECT_FLOAT) ) {
+            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+            if (f0 != f1) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 std::vector<VMObjectPtr> vm_export(VM* vm) {
     std::vector<VMObjectPtr> oo;
     oo.push_back(VMObjectData(vm, "System", "int").clone());
@@ -241,6 +381,11 @@ std::vector<VMObjectPtr> vm_export(VM* vm) {
     oo.push_back(Min(vm).clone());
     oo.push_back(Mul(vm).clone());
     oo.push_back(Div(vm).clone());
+
+    oo.push_back(Less(vm).clone());
+    oo.push_back(LessEq(vm).clone());
+    oo.push_back(Eq(vm).clone());
+    oo.push_back(NegEq(vm).clone());
 
     return oo;
 }
