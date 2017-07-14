@@ -253,7 +253,12 @@ public:
                 return _false;
             }
         } else {
-            return nullptr;
+            CompareVMObjectPtr compare;
+            if (compare(arg0, arg1) < 0) {
+                return _true;
+            } else {
+                return _false;
+            }
         }
     }
 };
@@ -288,7 +293,12 @@ public:
                 return _false;
             }
         } else {
-            return nullptr;
+            CompareVMObjectPtr compare;
+            if (compare(arg0, arg1) <= 0) {
+                return _true;
+            } else {
+                return _false;
+            }
         }
     }
 };
@@ -323,7 +333,12 @@ public:
                 return _false;
             }
         } else {
-            return nullptr;
+            CompareVMObjectPtr compare;
+            if (compare(arg0, arg1) == 0) {
+                return _true;
+            } else {
+                return _false;
+            }
         }
     }
 };
@@ -358,7 +373,12 @@ public:
                 return _false;
             }
         } else {
-            return nullptr;
+            CompareVMObjectPtr compare;
+            if (compare(arg0, arg1) != 0) {
+                return _true;
+            } else {
+                return _false;
+            }
         }
     }
 };
