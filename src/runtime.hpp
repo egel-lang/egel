@@ -785,5 +785,122 @@ inline VMObjectPtr VM::get_data_string(const std::vector<UnicodeString>& nn, con
     return get_data_symbol(i);
 }
 
+// convenience classes for defining built-in combinators
+
+class Monadic: public VMObjectCombinator {
+public:
+    Monadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    }
+
+    Monadic(VM* m, const symbol_t s): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    }
+
+    virtual VMObjectPtr apply(const VMObjectPtr& arg0) const = 0;
+        
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+
+        VMObjectPtr r;
+        if (tt.size() > 5) {
+            auto arg0 = tt[5];
+
+            r = apply(arg0);
+            if (r == nullptr) {
+                VMObjectPtrs rr;
+                for (uint i = 4; i<tt.size(); i++) {
+                    rr.push_back(tt[i]);
+                }
+                r = VMObjectArray(rr).clone();
+            }
+        } else {
+            VMObjectPtrs rr;
+            for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, r);
+
+        return k;
+    }
+};
+
+#define MONADIC_PREAMBLE(c, n0, n1) \
+    c(VM* m): Monadic(m, n0, n1) { \
+    } \
+    c(VM* m, const symbol_t s): Monadic(m, s) { \
+    } \
+    c(const c& o) : c(o.machine(), o.symbol()) { \
+    } \
+    VMObjectPtr clone() const { \
+        return VMObjectPtr(new c(*this)); \
+    }
+
+class Dyadic: public VMObjectCombinator {
+public:
+    Dyadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    }
+
+    Dyadic(VM* m, const symbol_t s): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    }
+
+    virtual VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const = 0;
+        
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+
+        VMObjectPtr r;
+        if (tt.size() > 6) {
+            auto arg0 = tt[5];
+            auto arg1 = tt[6];
+
+            r = apply(arg0, arg1);
+            if (r == nullptr) {
+                VMObjectPtrs rr;
+                for (uint i = 4; i<tt.size(); i++) {
+                    rr.push_back(tt[i]);
+                }
+                r = VMObjectArray(rr).clone();
+            }
+        } else {
+            VMObjectPtrs rr;
+            for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, r);
+
+        return k;
+    }
+};
+
+#define DYADIC_PREAMBLE(c, n0, n1) \
+    c(VM* m): Dyadic(m, n0, n1) { \
+    } \
+    c(VM* m, const symbol_t s): Dyadic(m, s) { \
+    } \
+    c(const c& o) : c(o.machine(), o.symbol()) { \
+    } \
+    VMObjectPtr clone() const { \
+        return VMObjectPtr(new c(*this)); \
+    }
+
 
 #endif
