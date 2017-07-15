@@ -153,6 +153,19 @@ void handle_definition(ModuleManager& mm, const AstPtrs& uu, const AstPtr& d) {
                 ::declare_implicit(mm.get_environment(), nn0, n0, s);
             }
         }
+        if (d->tag() == AST_DECL_OPERATOR) { // or the operator.. (time to get rid of this alternative?)
+            AST_DECL_OPERATOR_SPLIT(d, p0, c0, e0);
+            if (c0->tag() == AST_EXPR_COMBINATOR) {
+                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
+                UnicodeString s;
+                for (auto& s0:nn0) {
+                    s += s0;
+                    s += '.';
+                }
+                s += n0;
+                ::declare_implicit(mm.get_environment(), nn0, n0, s);
+            }
+        }
         w = ::identify(mm.get_environment(), w);
         w = ::desugar(w);
         w = ::lift(w);
@@ -228,6 +241,8 @@ void eval_interactive(ModuleManager& mm) {
                 uu.push_back(a);
                 handle_using(mm, a);
             } else if (a->tag() == AST_DECL_DEFINITION) {
+                handle_definition(mm, uu, a);
+            } else if (a->tag() == AST_DECL_OPERATOR) {
                 handle_definition(mm, uu, a);
             } else {
                 handle_expression(mm, uu, a);
