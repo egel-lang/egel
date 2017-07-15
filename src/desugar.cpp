@@ -111,7 +111,7 @@ public:
         for (int i = ee.size() - 1; i >= 0; i--) {
             l = AstExprApplication(p, cons, ee[i], l).clone();
         }
-        return l;
+        return rewrite(l);
     }
 };
 
