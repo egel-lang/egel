@@ -252,12 +252,8 @@ public:
         case TOKEN_TEXT:
             return parse_text();
             break;
-        case TOKEN_LPAREN: {
-                force_token(TOKEN_LPAREN);
-                AstPtr p = parse_pattern();
-                force_token(TOKEN_RPAREN);
-                return p;
-            }
+        case TOKEN_LPAREN:
+            return parse_pattern_enclosed();
             break;
         default:
             throw ErrorSyntactical(position(), "pattern primary expected");
@@ -318,6 +314,27 @@ public:
             return AstExprApplication(p, c, aa).clone();
         } else {
             throw ErrorSyntactical(position(), "pattern expected");
+        }
+    }
+
+    AstPtr parse_pattern_enclosed() {
+        if (is_enclosed_operator()) return parse_enclosed_operator();
+        Position p = position();
+        force_token(TOKEN_LPAREN);
+        AstPtr q = parse_pattern();
+        if (tag() == TOKEN_COMMA) {
+            AstPtrs qq = AstPtrs();
+            qq.push_back(q);
+            while (tag() == TOKEN_COMMA) {
+                skip();
+                AstPtr q = parse_pattern();
+                qq.push_back(q);
+            }
+            force_token(TOKEN_RPAREN);
+            return AstExprTuple(p, qq).clone();
+        } else {
+            force_token(TOKEN_RPAREN);
+            return q;
         }
     }
 

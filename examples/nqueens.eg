@@ -120,7 +120,7 @@ namespace NQueens (
     using List
 
     def nqueens =
-        [ 0, NCOLS     -> cons nil nil
+        [ 0, NCOLS     -> {{}}
         | NROWS, NCOLS ->
             foldr
               [ SOLUTION, A ->
