@@ -2,6 +2,7 @@
 CC=g++ --std=c++0x
 CFLAGS=-c -Wall -pedantic
 LIBS= \
+	-ldl \
 	-licudata \
 	-licui18n \
 	-licuio \

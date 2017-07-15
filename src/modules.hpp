@@ -14,6 +14,19 @@
 #include "emit.hpp"
 #include "builtin.hpp"
 
+// convenience
+inline UnicodeString first(const UnicodeString& s) {
+    auto d = s;
+    auto i = d.indexOf('.');
+    return d.remove(i, d.length());
+}
+
+inline UnicodeString second(const UnicodeString& s) {
+    auto d = s;
+    auto i = d.indexOf('.');
+    return d.remove(0, i+1);
+}
+
 class Options;
 typedef std::shared_ptr<Options> OptionsPtr;
 
@@ -202,24 +215,24 @@ public:
         return _tag;
     }
 
-    virtual void load() = 0;
+    virtual void load(VM* vm) = 0;
 
     virtual void unload() = 0;
 
     virtual AstPtrs imports() = 0;
 
     // this is why OO is sometimes bad. but I am lazy at the moment. 
-    virtual void syntactical() = 0;
+    virtual void syntactical() {};
 
     virtual void declarations(NamespacePtr& env) = 0;
 
-    virtual void semantical(NamespacePtr& env) = 0;
+    virtual void semantical(NamespacePtr& env) {};
 
-    virtual void desugar() = 0;
+    virtual void desugar() {};
 
-    virtual void lift() = 0;
+    virtual void lift() {};
 
-    virtual void datagen(VM* vm) = 0;
+    virtual void datagen(VM* vm) {};
 
     virtual void codegen(VM* vm) = 0;
 
@@ -237,7 +250,7 @@ private:
     UnicodeString   _filename;
 };
 
-// #define LINUX
+#define LINUX
 #ifdef LINUX
 
 #include <dlfcn.h>
@@ -245,12 +258,13 @@ private:
 class ModuleDynamic: public Module {
 public:
     ModuleDynamic(const UnicodeString& p, const UnicodeString& fn): 
-        Module(MODULE_DYNAMIC, p, fn), _handle(0), _declarations(0) {
+        Module(MODULE_DYNAMIC, p, fn),
+            _handle(0), _imports(0), _exports(0), _machine(0) {
     }
 
     ModuleDynamic(const ModuleDynamic& m):
         Module(MODULE_DYNAMIC, m.get_path(), m.get_filename()), 
-        _handle(m._handle), _declarations(m._declarations) {
+        _handle(m._handle), _imports(m._imports), _exports(m._exports), _machine(m._machine) {
         set_options(m.get_options());
     }
 
@@ -258,7 +272,10 @@ public:
         return ModulePtr(new ModuleDynamic(*this));
     }
 
-    void load() override {
+    void load(VM* vm) override {
+        _machine = vm;
+        char* error;
+
         dlerror();
 
         _handle = dlopen(unicode_to_char(get_path()), RTLD_LAZY);
@@ -268,14 +285,9 @@ public:
             throw ErrorIO(err);
         }
         
-        dlerror();
-    
-        double (*_declarations)(double);
-
         std::vector<UnicodeString> (*egel_imports)();
-
         egel_imports = (std::vector<UnicodeString> (*)()) 
-                            dlsym(handle, "egel_imports");
+                            dlsym(_handle, "egel_imports");
         error = dlerror();
         if (error != NULL) {
             UnicodeString err = "dynamic load error: ";
@@ -285,7 +297,7 @@ public:
 
         std::vector<VMObjectPtr>   (*egel_exports)(VM*);
         egel_exports = (std::vector<VMObjectPtr> (*)(VM*)) 
-                            dlsym(handle, "egel_exports");
+                            dlsym(_handle, "egel_exports");
         error = dlerror();
         if (error != NULL) {
             UnicodeString err = "dynamic load error: ";
@@ -294,7 +306,7 @@ public:
         }
 
         _imports = (*egel_imports)();
-        _exports = (*egel_exports)(get_machine());
+        _exports = (*egel_exports)(vm);
     }
 
     void unload() override {
@@ -302,30 +314,47 @@ public:
     }
 
     AstPtrs imports() override {
-        AstPtrs empty;
-        return empty;
-    }
-
-    void syntactical() override {
+        AstPtrs ii;
+        Position p(get_path(), 1, 1);
+        for (auto& s:_imports) {
+            ii.push_back(AstDirectImport(p, s).clone());
+        }
+        return ii;
     }
 
     void declarations(NamespacePtr& env) override {
-    }
+        for (auto& o:_exports) {
+            if (o->tag() == VM_OBJECT_COMBINATOR) {
+                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+                auto s   = _machine->get_symbol(sym);
 
-    void semantical(NamespacePtr& env) override {
+                UnicodeStrings nn;
+                nn.push_back(first(s));
+                auto n = second(s);
+                ::declare(env, nn, n, s);
+            }
+        }
     }
 
     void codegen(VM* vm) override {
+        for (auto& o:_exports) {
+            vm->enter_data(o);
+        }
     }
 
     void render(std::ostream& os) const override {
         os << "dynamic module: " << get_filename();
     }
 
+    static bool filetype(const UnicodeString& fn) {
+        return unicode_endswith(fn, ".so");
+    }
+
 private:
     void*           _handle;
     UnicodeStrings  _imports;
     VMObjectPtrs    _exports;
+    VM*             _machine;
 };
 #endif
 
@@ -346,7 +375,7 @@ public:
         return ModulePtr(new ModuleSource(*this));
     }
 
-    void load() override {
+    void load(VM* vm) override {
         if (file_exists(get_path())) {
             _source = file_read(get_path());
         } else {
@@ -435,6 +464,10 @@ public:
         os << "source module " << get_filename();
     }
 
+    static bool filetype(const UnicodeString& fn) {
+        return unicode_endswith(fn, ".eg");
+    }
+
 private:
     UnicodeString   _source;
     AstPtr          _ast;
@@ -496,9 +529,6 @@ public:
         has_prelude = true;
 
         auto oo = vm_export(_machine);
-        for (auto& o:oo) {
-            _machine->enter_data(o);
-        }
 
         for (auto& o:oo) {
             if (o->tag() == VM_OBJECT_COMBINATOR) {
@@ -510,6 +540,10 @@ public:
                 auto n = second(s);
                 ::declare(_environment, nn, n, s);
             }
+        }
+
+        for (auto& o:oo) {
+            _machine->enter_data(o);
         }
     }
 
@@ -530,17 +564,6 @@ protected:
         return "";
     }
 
-    UnicodeString first(const UnicodeString& s) {
-        auto d = s;
-        auto i = d.indexOf('.');
-        return d.remove(i, d.length());
-    }
-
-    UnicodeString second(const UnicodeString& s) {
-        auto d = s;
-        auto i = d.indexOf('.');
-        return d.remove(0, i+1);
-    }
 
     bool already_loaded(const UnicodeString& fn) {
         for (auto& m:_modules) {
@@ -557,14 +580,22 @@ protected:
             // not implemented yet
         } else {
             auto find = search(get_options()->get_include_path(), fn);
+
             if (find.compare("") == 0) {
                 throw ErrorIO(p, "file \"" + fn + "\" not found");
             }
             if (!already_loaded(find)) {
-                auto m = ModuleSource(find, fn).clone();
+                ModulePtr m = nullptr;
+                if (ModuleSource::filetype(fn)) {
+                    m = ModuleSource(find, fn).clone();
+                } else if (ModuleDynamic::filetype(fn)) {
+                    m = ModuleDynamic(find, fn).clone();
+                } else {
+                    throw ErrorIO(p, "file \"" + fn + "\" has wrong extension");
+                }
                 m->set_options(_defaults);
                 try {
-                    m->load();
+                    m->load(_machine);
                 } catch (ErrorIO e) {
                     throw ErrorIO(p, e.message());
                 }
