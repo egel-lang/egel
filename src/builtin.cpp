@@ -92,11 +92,18 @@ public:
              (arg1->tag() == VM_OBJECT_INTEGER) ) {
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            if (i1 == 0) {
+                throw machine()->get_data_string("System", "divzero");
+            }
             return VMObjectInteger(i0/i1).clone();
         } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
              (arg1->tag() == VM_OBJECT_FLOAT) ) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+            if (f1 == 0.0) {
+                throw 
+                    machine()->get_data_string("System", "divzero");
+            }
             return VMObjectFloat(f0/f1).clone();
         } else {
             return nullptr;
@@ -196,6 +203,8 @@ std::vector<VMObjectPtr> vm_export(VM* vm) {
     oo.push_back(VMObjectData(vm, "System", "true").clone());
     oo.push_back(VMObjectData(vm, "System", "false").clone());
     oo.push_back(VMObjectData(vm, "System", "tuple").clone());
+
+    oo.push_back(VMObjectData(vm, "System", "divzero").clone());
 
     oo.push_back(MonMin(vm).clone());
     oo.push_back(Add(vm).clone());

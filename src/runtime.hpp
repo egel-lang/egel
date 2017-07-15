@@ -809,13 +809,28 @@ public:
         if (tt.size() > 5) {
             auto arg0 = tt[5];
 
-            r = apply(arg0);
-            if (r == nullptr) {
-                VMObjectPtrs rr;
-                for (uint i = 4; i<tt.size(); i++) {
-                    rr.push_back(tt[i]);
+            try {
+                r = apply(arg0);
+                if (r == nullptr) {
+                    VMObjectPtrs rr;
+                    for (uint i = 4; i<tt.size(); i++) {
+                        rr.push_back(tt[i]);
+                    }
+                    r = VMObjectArray(rr).clone();
                 }
-                r = VMObjectArray(rr).clone();
+            } catch (VMObjectPtr e) {
+                auto exc   = tt[3];
+                auto ee    = VM_OBJECT_ARRAY_VALUE(exc);
+
+                VMObjectPtrs rr;
+                rr.push_back(ee[0]);
+                rr.push_back(ee[1]);
+                rr.push_back(ee[2]);
+                rr.push_back(ee[3]);
+                rr.push_back(ee[4]);
+                rr.push_back(e);
+
+                return VMObjectArray(rr).clone();
             }
         } else {
             VMObjectPtrs rr;
@@ -867,13 +882,28 @@ public:
             auto arg0 = tt[5];
             auto arg1 = tt[6];
 
-            r = apply(arg0, arg1);
-            if (r == nullptr) {
-                VMObjectPtrs rr;
-                for (uint i = 4; i<tt.size(); i++) {
-                    rr.push_back(tt[i]);
+            try {
+                r = apply(arg0, arg1);
+                if (r == nullptr) {
+                    VMObjectPtrs rr;
+                    for (uint i = 4; i<tt.size(); i++) {
+                        rr.push_back(tt[i]);
+                    }
+                    r = VMObjectArray(rr).clone();
                 }
-                r = VMObjectArray(rr).clone();
+            } catch (VMObjectPtr e) {
+                auto exc   = tt[3];
+                auto ee    = VM_OBJECT_ARRAY_VALUE(exc);
+
+                VMObjectPtrs rr;
+                rr.push_back(ee[0]);
+                rr.push_back(ee[1]);
+                rr.push_back(ee[2]);
+                rr.push_back(ee[3]);
+                rr.push_back(ee[4]);
+                rr.push_back(e);
+
+                return VMObjectArray(rr).clone();
             }
         } else {
             VMObjectPtrs rr;

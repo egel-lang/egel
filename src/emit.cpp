@@ -655,7 +655,7 @@ public:
 
         get_coder()->emit_op_split(rt0, c0, exc);
 
-        auto nil0= get_coder()->generate_register();
+        auto nil0 = get_coder()->generate_register();
         auto exc1 = get_coder()->generate_register();
 
         get_coder()->emit_op_nil(nil0);

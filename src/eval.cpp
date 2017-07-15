@@ -111,11 +111,10 @@ AstPtr parse_line(ModuleManager& mm, const UnicodeString& line) {
 }
 
 void handle_import(ModuleManager& mm, const AstPtr& a) {
-    // std::cout << "XXX: not implemented yet." << std::endl;
     if (a->tag() == AST_DIRECT_IMPORT) {
         AST_DIRECT_IMPORT_SPLIT(a, p, s);
         try {
-            mm.load(p, unicode_strip_quotes(s)); // XXX: needs an unescape?
+            mm.load(p, unicode_strip_quotes(s));
         } catch (ErrorIO e) {
             std::cerr << e << std::endl;
         } catch (Error e) {
