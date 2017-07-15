@@ -1,0 +1,154 @@
+/**
+ * The N-Queens problem as translated from Haskell to Egel.
+ **/ 
+
+namespace System (
+
+    def flip = [ F, X, Y -> F Y X ]
+
+    def or =
+        [ false, false -> false
+        | X, Y         -> true ]
+
+    def and =
+        [ true, true    -> true
+        | X, Y          -> false ]
+
+    def @ =
+        [ F, G, X -> F (G X) ]
+
+)
+
+namespace List (
+
+    using System
+
+    def length =
+        [ nil -> 0
+        | cons X XX -> 1 + (length XX) ]
+
+    def foldl =
+        [ F, Z, nil -> Z
+        | F, Z, cons X XX -> foldl F (F Z X) XX ]
+
+    def foldr =
+        [ F, Z, nil -> Z
+        | F, Z, cons X XX -> F X (foldr F Z XX) ]
+
+    def ++ =
+        [ nil, YY -> YY
+        | cons X XX, YY -> cons X (XX ++ YY) ]
+
+    def map =
+        [ F, nil -> nil
+        | F, cons X XX -> cons (F X) (map F XX) ]
+
+    def reverse = 
+       foldl (flip cons) nil
+
+    def block =
+        [ 0 -> nil
+        | N -> cons (N-1) (block (N-1)) ]
+
+    def fromto =
+        [ X, Y -> 
+            if X < Y then
+                reverse (map [ N -> N + X ] (block (Y-X)))
+            else nil ]
+
+    def zipwith =
+        [ Z, cons X XX, cons Y YY -> cons (Z X Y) (zipwith Z XX YY)
+        | Z, XX, YY               -> nil ]
+
+    def any =
+        [ P, nil        -> false
+        | P, cons B BB  -> if P B then true else any P BB ]
+
+    def all =
+        [ P, nil        -> true
+        | P, cons B BB  -> if P B then all P BB else false ]
+
+    def elem =
+        [ X -> any ((==) X) ]
+
+    def notelem =
+        [ X -> all ((!=) X) ]
+
+    def insertEverywhere =
+        [ X, nil -> {{X}}
+        | X, cons Y YY -> cons (cons X (cons Y YY)) (map (cons Y) (insertEverywhere X YY)) ]
+
+    def concatMap =
+        [ F -> foldr ((++) @ F) nil ]
+
+    def permutations =
+        foldr (concatMap @ insertEverywhere) {{}}
+)
+
+/*
+    Taken from Haskell code.
+
+    queenPuzzle :: Int -> Int -> [[Int]]
+    queenPuzzle nRows nCols
+      | nRows <= 0 = [[]]
+      | otherwise =
+        foldr
+          (\solution a ->
+              a ++
+              foldr
+                (\iCol b ->
+                    if safe (nRows - 1) iCol solution
+                      then b ++ [solution ++ [iCol]]
+                      else b)
+                []
+                [1 .. nCols])
+          []
+          (queenPuzzle (nRows - 1) nCols)
+      where
+        safe iRow iCol solution =
+          True `notElem`
+          zipWith
+            (\sc sr ->
+                (iCol == sc) || (sc + sr == iCol + iRow) || (sc - sr == iCol - iRow))
+            solution
+            [0 .. iRow - 1]
+*/
+ 
+namespace NQueens (
+
+    using System
+    using List
+
+    def nqueens =
+        [ 0, NCOLS     -> cons nil nil
+        | NROWS, NCOLS ->
+            foldr
+              [ SOLUTION, A ->
+                  A ++
+                  (foldr
+                    [ICOL, B ->
+                        if safe (NROWS - 1) ICOL SOLUTION
+                          then B ++ ({SOLUTION ++ {ICOL}})
+                          else B]
+                    nil
+                    (fromto 1 (NCOLS+1))) ]
+            nil
+            (nqueens (NROWS - 1) NCOLS) ]
+
+    def safe =
+        [ IROW, ICOL, SOLUTION ->
+            notelem true
+             (zipwith
+                [SC, SR ->
+                   or (ICOL == SC) 
+                  (or (SC + SR == ICOL + IROW) 
+                      (SC - SR == ICOL - IROW))]
+                SOLUTION
+                (fromto 0 IROW)) ]
+)
+
+using List
+using NQueens
+
+def main = length (nqueens 8 8)
+
