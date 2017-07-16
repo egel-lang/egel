@@ -111,6 +111,25 @@ public:
     }
 };
 
+class Mod: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Mod, "System", "%");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            if (i1 == 0) {
+                throw machine()->get_data_string("System", "divzero");
+            }
+            return VMObjectInteger(i0%i1).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 class Less: public Dyadic {
 public:
     DYADIC_PREAMBLE(Less, "System", "<");
@@ -211,6 +230,7 @@ std::vector<VMObjectPtr> vm_export(VM* vm) {
     oo.push_back(Min(vm).clone());
     oo.push_back(Mul(vm).clone());
     oo.push_back(Div(vm).clone());
+    oo.push_back(Mod(vm).clone());
 
     oo.push_back(Less(vm).clone());
     oo.push_back(LessEq(vm).clone());
