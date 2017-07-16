@@ -78,7 +78,7 @@ inline UnicodeString uescape(const UnicodeString& s) {
 /**
  * VM objects are
  * + the literals, integer, float, char, and text,
- * + a raw object which holds a pointer,
+ * + opaque objects -which may hold file handles, pointers, etc.-,
  * + combinators, and arrays.
  **/
 typedef enum {
@@ -86,7 +86,7 @@ typedef enum {
     VM_OBJECT_FLOAT,
     VM_OBJECT_CHAR,
     VM_OBJECT_TEXT,
-    VM_OBJECT_RAW,
+    VM_OBJECT_OPAQUE,
     VM_OBJECT_COMBINATOR,
     VM_OBJECT_ARRAY,
 } vm_object_tag_t;
@@ -376,56 +376,25 @@ typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
 #define VM_OBJECT_TEXT_VALUE(a) \
     (VM_OBJECT_TEXT_CAST(a)->value())
 
-// XXX: do I actually need this? raw pointers can go into combinators?
-class VMObjectRaw : public VMObject {
+class VMObjectOpaque : public VMObject {
 public:
-    VMObjectRaw(const void* v)
-        : VMObject(VM_OBJECT_RAW, VM_OBJECT_FLAG_INTERNAL), _value(v) {
+    VMObjectOpaque()
+        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL) {
     };
 
-    VMObjectRaw(const VMObjectRaw& l)
-        : VMObjectRaw(l.value()) {
+    VMObjectOpaque(const VMObjectOpaque& l)
+        : VMObjectOpaque() {
     }
 
-    VMObjectPtr clone() const {
-        return VMObjectPtr(new VMObjectRaw(*this));
-    }
+    virtual int compare(const VMObjectPtr& o) = 0;
 
-    symbol_t symbol() const override {
-        PANIC("symbol of raw object");
-        return -1;
-    }
-
-    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
-        PANIC("reduce raw object");
-        return nullptr;
-    }
-
-    void debug(std::ostream& os) const override {
-        render(os);
-    }
-
-    void render(std::ostream& os) const override {
-        // XXX: render or panic?
-        os << '"' << value() << '"';
-    }
-
-    const void* value() const {
-        return _value;
-    }
-
-private:
-    const void*    _value;
 };
 
-typedef std::shared_ptr<VMObjectRaw> VMObjectRawPtr;
-#define VM_OBJECT_RAW_CAST(a) \
-    std::static_pointer_cast<VMObjectRaw>(a)
-#define VM_OBJECT_RAW_SPLIT(a, v) \
-    auto _##a = VM_OBJECT_RAW_CAST(a); \
-    auto v    = _##a->value();
-#define VM_OBJECT_RAW_VALUE(a) \
-    (VM_OBJECT_RAW_CAST(a)->value())
+typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
+#define VM_OBJECT_OPAQUE_CAST(a) \
+    std::static_pointer_cast<VMObjectOpaque>(a)
+#define VM_OBJECT_OPAQUE_COMPARE(o0, o1) \
+    (VM_OBJECT_OPAQUE_CAST(o0))->compare(o1);
 
 class VMObjectArray : public VMObject {
 public:
@@ -571,9 +540,9 @@ public:
     }
 
     void render(std::ostream& os) const override {
-        os << text() << ' ';
+        os << text();
 #ifdef DEBUG
-        os << "(" << flag() << ") " ;
+        os << " (" << flag() << ") " ;
 #endif
     }
 
@@ -685,12 +654,8 @@ struct CompareVMObjectPtr : public std::binary_function<VMObjectPtr, VMObjectPtr
                     else return 0;
                 }
                 break;
-            case VM_OBJECT_RAW: {
-                    auto v0 = VM_OBJECT_RAW_VALUE(a0);
-                    auto v1 = VM_OBJECT_RAW_VALUE(a1);
-                    if (v0 < v1) return -1;
-                    else if (v1 < v0) return 1;
-                    else return 0;
+            case VM_OBJECT_OPAQUE: {
+                    return VM_OBJECT_OPAQUE_COMPARE(a0, a1);
                 }
                 break;
             case VM_OBJECT_COMBINATOR: {
