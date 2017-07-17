@@ -378,16 +378,47 @@ typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
 
 class VMObjectOpaque : public VMObject {
 public:
-    VMObjectOpaque()
-        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL) {
+    VMObjectOpaque(VM* m, const symbol_t s)
+        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(s) {
     };
 
-    VMObjectOpaque(const VMObjectOpaque& l)
-        : VMObjectOpaque() {
+    VMObjectOpaque(VM* m, const UnicodeString& n)
+        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n)) {
+    };
+
+    VMObjectOpaque(VM* m, const UnicodeString& n0, const UnicodeString& n1)
+        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
+    };
+
+    VMObjectOpaque(VM* m, const std::vector<UnicodeString>& nn, const UnicodeString& n)
+        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(nn, n)) {
+    };
+
+    VM* machine() const {
+        return _machine;
+    }
+
+    symbol_t symbol() const {
+        return _symbol;
+    }
+
+    UnicodeString text() const {
+        return _machine->get_symbol(_symbol);
+    }
+
+    void debug(std::ostream& os) const override {
+        render(os);
+    }
+
+    void render(std::ostream& os) const override {
+        os << '<' << text() << '>';
     }
 
     virtual int compare(const VMObjectPtr& o) = 0;
 
+private:
+    VM*         _machine;
+    symbol_t    _symbol;
 };
 
 typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
@@ -752,6 +783,76 @@ inline VMObjectPtr VM::get_data_string(const std::vector<UnicodeString>& nn, con
 
 // convenience classes for defining built-in combinators
 
+class Medadic: public VMObjectCombinator {
+public:
+    Medadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    }
+
+    Medadic(VM* m, const symbol_t s): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    }
+
+    virtual VMObjectPtr apply() const = 0;
+        
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+
+        VMObjectPtr r;
+        if (tt.size() > 4) {
+            try {
+                r = apply();
+                if (r == nullptr) {
+                    VMObjectPtrs rr;
+                    for (uint i = 4; i<tt.size(); i++) {
+                        rr.push_back(tt[i]);
+                    }
+                    r = VMObjectArray(rr).clone();
+                }
+            } catch (VMObjectPtr e) {
+                auto exc   = tt[3];
+                auto ee    = VM_OBJECT_ARRAY_VALUE(exc);
+
+                VMObjectPtrs rr;
+                rr.push_back(ee[0]);
+                rr.push_back(ee[1]);
+                rr.push_back(ee[2]);
+                rr.push_back(ee[3]);
+                rr.push_back(ee[4]);
+                rr.push_back(e);
+
+                return VMObjectArray(rr).clone();
+            }
+        } else {
+            VMObjectPtrs rr;
+            for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, r);
+
+        return k;
+    }
+};
+
+#define MEDADIC_PREAMBLE(c, n0, n1) \
+    c(VM* m): Medadic(m, n0, n1) { \
+    } \
+    c(VM* m, const symbol_t s): Medadic(m, s) { \
+    } \
+    c(const c& o) : c(o.machine(), o.symbol()) { \
+    } \
+    VMObjectPtr clone() const { \
+        return VMObjectPtr(new c(*this)); \
+    }
+
 class Monadic: public VMObjectCombinator {
 public:
     Monadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
@@ -897,5 +998,78 @@ public:
         return VMObjectPtr(new c(*this)); \
     }
 
+class Triadic: public VMObjectCombinator {
+public:
+    Triadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    }
+
+    Triadic(VM* m, const symbol_t s): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    }
+
+    virtual VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const = 0;
+        
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+
+        VMObjectPtr r;
+        if (tt.size() > 7) {
+            auto arg0 = tt[5];
+            auto arg1 = tt[6];
+            auto arg2 = tt[7];
+
+            try {
+                r = apply(arg0, arg1, arg2);
+                if (r == nullptr) {
+                    VMObjectPtrs rr;
+                    for (uint i = 4; i<tt.size(); i++) {
+                        rr.push_back(tt[i]);
+                    }
+                    r = VMObjectArray(rr).clone();
+                }
+            } catch (VMObjectPtr e) {
+                auto exc   = tt[3];
+                auto ee    = VM_OBJECT_ARRAY_VALUE(exc);
+
+                VMObjectPtrs rr;
+                rr.push_back(ee[0]);
+                rr.push_back(ee[1]);
+                rr.push_back(ee[2]);
+                rr.push_back(ee[3]);
+                rr.push_back(ee[4]);
+                rr.push_back(e);
+
+                return VMObjectArray(rr).clone();
+            }
+        } else {
+            VMObjectPtrs rr;
+            for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, r);
+
+        return k;
+    }
+};
+
+#define TRIADIC_PREAMBLE(c, n0, n1) \
+    c(VM* m): Triadic(m, n0, n1) { \
+    } \
+    c(VM* m, const symbol_t s): Triadic(m, s) { \
+    } \
+    c(const c& o) : c(o.machine(), o.symbol()) { \
+    } \
+    VMObjectPtr clone() const { \
+        return VMObjectPtr(new c(*this)); \
+    }
 
 #endif
