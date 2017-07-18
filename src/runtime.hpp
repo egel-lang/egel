@@ -376,56 +376,6 @@ typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
 #define VM_OBJECT_TEXT_VALUE(a) \
     (VM_OBJECT_TEXT_CAST(a)->value())
 
-class VMObjectOpaque : public VMObject {
-public:
-    VMObjectOpaque(VM* m, const symbol_t s)
-        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(s) {
-    };
-
-    VMObjectOpaque(VM* m, const UnicodeString& n)
-        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n)) {
-    };
-
-    VMObjectOpaque(VM* m, const UnicodeString& n0, const UnicodeString& n1)
-        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
-    };
-
-    VMObjectOpaque(VM* m, const std::vector<UnicodeString>& nn, const UnicodeString& n)
-        : VMObject(VM_OBJECT_COMBINATOR, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(nn, n)) {
-    };
-
-    VM* machine() const {
-        return _machine;
-    }
-
-    symbol_t symbol() const {
-        return _symbol;
-    }
-
-    UnicodeString text() const {
-        return _machine->get_symbol(_symbol);
-    }
-
-    void debug(std::ostream& os) const override {
-        render(os);
-    }
-
-    void render(std::ostream& os) const override {
-        os << '<' << text() << '>';
-    }
-
-    virtual int compare(const VMObjectPtr& o) = 0;
-
-private:
-    VM*         _machine;
-    symbol_t    _symbol;
-};
-
-typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
-#define VM_OBJECT_OPAQUE_CAST(a) \
-    std::static_pointer_cast<VMObjectOpaque>(a)
-#define VM_OBJECT_OPAQUE_COMPARE(o0, o1) \
-    (VM_OBJECT_OPAQUE_CAST(o0))->compare(o1);
 
 class VMObjectArray : public VMObject {
 public:
@@ -536,6 +486,86 @@ inline VMObjectPtr VMObjectArray::reduce(const VMObjectPtr& thunk) const {
     return t;
 }
 
+class VMObjectOpaque : public VMObject {
+public:
+    VMObjectOpaque(VM* m, const symbol_t s)
+        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(s) {
+    };
+
+    VMObjectOpaque(VM* m, const UnicodeString& n)
+        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n)) {
+    };
+
+    VMObjectOpaque(VM* m, const UnicodeString& n0, const UnicodeString& n1)
+        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
+    };
+
+    VMObjectOpaque(VM* m, const std::vector<UnicodeString>& nn, const UnicodeString& n)
+        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(nn, n)) {
+    };
+
+    VM* machine() const {
+        return _machine;
+    }
+
+    symbol_t symbol() const {
+        return _symbol;
+    }
+
+    UnicodeString text() const {
+        return _machine->get_symbol(_symbol);
+    }
+
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+        // auto exc   = tt[3];
+        // auto c   = tt[4];
+
+        VMObjectPtr ret;
+        if (tt.size() > 5) {
+            VMObjectPtrs rr;
+            for (uint i = 4; i < tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            ret = VMObjectArray(rr).clone();
+        } else {
+            ret = tt[4];
+        }
+
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, ret);
+
+        
+        return k;
+    }
+
+    void debug(std::ostream& os) const override {
+        render(os);
+    }
+
+    void render(std::ostream& os) const override {
+        os << '<' << text() << '>';
+    }
+
+    // compare should implement a total order, even if the state changes..
+    virtual int compare(const VMObjectPtr& o) = 0;
+
+private:
+    VM*         _machine;
+    symbol_t    _symbol;
+};
+
+typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
+#define VM_OBJECT_OPAQUE_CAST(a) \
+    std::static_pointer_cast<VMObjectOpaque>(a)
+#define VM_OBJECT_OPAQUE_COMPARE(o0, o1) \
+    (VM_OBJECT_OPAQUE_CAST(o0))->compare(o1);
+#define VM_OBJECT_OPAQUE_SYMBOL(a) \
+    (VM_OBJECT_OPAQUE_CAST(a)->symbol())
 class VMObjectCombinator : public VMObject {
 public:
     VMObjectCombinator(const vm_object_flag_t f, VM* m, const symbol_t s)
@@ -686,7 +716,11 @@ struct CompareVMObjectPtr : public std::binary_function<VMObjectPtr, VMObjectPtr
                 }
                 break;
             case VM_OBJECT_OPAQUE: {
-                    return VM_OBJECT_OPAQUE_COMPARE(a0, a1);
+                    auto s0 = VM_OBJECT_OPAQUE_SYMBOL(a0);
+                    auto s1 = VM_OBJECT_OPAQUE_SYMBOL(a1);
+                    if (s0 < s1) return -1;
+                    else if (s1 < s0) return 1;
+                    else return VM_OBJECT_OPAQUE_COMPARE(a0, a1);
                 }
                 break;
             case VM_OBJECT_COMBINATOR: {
@@ -782,6 +816,28 @@ inline VMObjectPtr VM::get_data_string(const std::vector<UnicodeString>& nn, con
 }
 
 // convenience classes for defining built-in combinators
+
+class Opaque: public VMObjectOpaque {
+public:
+    Opaque(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectOpaque(m, n0, n1) {
+    }
+
+    Opaque(VM* m, const symbol_t s): 
+         VMObjectOpaque(m, s) {
+    }
+};
+
+#define OPAQUE_PREAMBLE(c, n0, n1) \
+    c(VM* m): Opaque(m, n0, n1) { \
+    } \
+    c(VM* m, const symbol_t s): Opaque(m, s) { \
+    } \
+    c(const c& o) : c(o.machine(), o.symbol()) { \
+    } \
+    VMObjectPtr clone() const { \
+        return VMObjectPtr(new c(*this)); \
+    }
 
 class Medadic: public VMObjectCombinator {
 public:
