@@ -32,5 +32,7 @@
 
 # Don't follow the main executable
 src/egel
+# Don't follow dynamic libraries
+*.ego
 # Don't follow generated test cases
 tests/large.eg

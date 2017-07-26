@@ -347,7 +347,7 @@ public:
     }
 
     static bool filetype(const UnicodeString& fn) {
-        return unicode_endswith(fn, ".so");
+        return unicode_endswith(fn, ".ego");
     }
 
 private:
