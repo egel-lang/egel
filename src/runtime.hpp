@@ -182,9 +182,9 @@ public:
     virtual VMObjectPtr get_data(const data_t d) = 0;
 
     // reduce an expression
+    virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc) = 0;
     virtual void result_handler(const VMObjectPtr& e) = 0;
     virtual void exception_handler(const VMObjectPtr& e) = 0;
-    virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc) = 0;
     virtual void reduce(const VMObjectPtr& e) = 0;
 
     // for threadsafe reductions we lock the vm and rely on C++ threadsafe behavior on containers
