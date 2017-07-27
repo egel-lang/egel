@@ -60,8 +60,38 @@ public:
         throw Unsupported();
     }
 
+    virtual void write(vm_float_t n) {
+        throw Unsupported();
+    }
+
+    virtual void write(vm_char_t n) {
+        throw Unsupported();
+    }
+
+    virtual void write(const UnicodeString& n) {
+        throw Unsupported();
+    }
+
     virtual vm_int_t read_int() {
         throw Unsupported();
+    }
+
+    virtual vm_float_t read_float() {
+        throw Unsupported();
+    }
+
+    virtual vm_char_t read_char() {
+        throw Unsupported();
+    }
+
+    virtual UnicodeString read_line() {
+        throw Unsupported();
+    }
+
+    virtual void close() {
+    }
+
+    virtual void flush() {
     }
 
 protected:
@@ -82,6 +112,26 @@ public:
         _channel >> n;
         return n;
     }
+
+    virtual vm_float_t read_float() {
+        vm_float_t f;
+        _channel >> f;
+        return f;
+    }
+
+    virtual vm_char_t read_char() {
+        vm_char_t c;
+        _channel >> c;
+        return c;
+    }
+
+    virtual UnicodeString read_line() {
+        std::string line;
+        std::getline(_channel, line);
+        UnicodeString str(line.c_str());
+        return str;
+    }
+
 protected:
     std::istream&   _channel;
 };
@@ -98,6 +148,22 @@ public:
 
     virtual void write(vm_int_t n) override {
         _channel << n;
+    }
+
+    virtual void write(vm_float_t f) override {
+        _channel << f;
+    }
+
+    virtual void write(vm_char_t c) override {
+        _channel << (UnicodeString() + c);
+    }
+
+    virtual void write(const UnicodeString& s) override {
+        _channel << s;
+    }
+
+    virtual void flush() override {
+        _channel.flush();
     }
 
 protected:
@@ -120,6 +186,49 @@ public:
         vm_int_t n;
         _channel >> n;
         return n;
+    }
+
+    virtual vm_float_t read_float() {
+        vm_float_t f;
+        _channel >> f;
+        return f;
+    }
+
+    virtual vm_char_t read_char() {
+        vm_char_t c;
+        _channel >> c;
+        return c;
+    }
+
+    virtual UnicodeString read_line() {
+        std::string line;
+        std::getline(_channel, line);
+        UnicodeString str(line.c_str());
+        return str;
+    }
+
+    virtual void write(vm_int_t n) override {
+        _channel << n;
+    }
+
+    virtual void write(vm_float_t f) override {
+        _channel << f;
+    }
+
+    virtual void write(vm_char_t c) override {
+        _channel << (UnicodeString() + c);
+    }
+
+    virtual void write(const UnicodeString& s) override {
+        _channel << s;
+    }
+
+    virtual void close() override {
+        _channel.close();
+    }
+
+    virtual void flush() override {
+        _channel.flush();
     }
 
 private:

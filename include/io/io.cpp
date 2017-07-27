@@ -29,6 +29,14 @@ class ChannelValue: public Opaque {
 public:
     OPAQUE_PREAMBLE(ChannelValue, "IO", "channel");
 
+    ChannelValue(const ChannelValue& chan): Opaque(chan.machine(), chan.symbol()) {
+        _value = chan.value();
+    }
+
+    VMObjectPtr clone() const override {
+        return VMObjectPtr(new ChannelValue(*this));
+    }
+
     int compare(const VMObjectPtr& o) {
         auto v = (std::static_pointer_cast<ChannelValue>(o))->value();
         if (_value < v) return -1;
@@ -40,12 +48,19 @@ public:
         _value = cp;
     }
 
-    ChannelPtr value() {
+    ChannelPtr value() const {
         return _value;
     }
+
 protected:
     ChannelPtr _value;
 };
+
+#define CHANNEL_TEST(o, sym) \
+    ((o->tag() == VM_OBJECT_OPAQUE) && \
+     (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
+#define CHANNEL_VALUE(o) \
+    ((std::static_pointer_cast<ChannelValue>(o))->value())
 
 // IO.cin
 // Standard input.
@@ -226,32 +241,99 @@ public:
     }
 };
 
-// IO.open_out_bin s
-// Same as open_out, but the file is opened in binary mode, so that no
-// translation takes place during writes. On operating systems that do
-// not distinguish between text mode and binary mode, this function
-// behaves like open_out.
+// IO.close channel
+// Close the given channel. Anything can happen if any of the
+// functions above is called on a closed channel.
 
+class Close: public Monadic {
+public:
+    MONADIC_PREAMBLE(Close, "IO", "close");
 
-// IO.open_out_gen flags i s
-// open_out_gen mode rights filename opens the file named filename for
-// writing, as above. The extra argument mode specify the opening mode
-// (see sys__open). The extra argument rights specifies the file
-// permissions, in case the file must be created (see sys__open).
-// open_out and open_out_bin are special cases of this function.
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
 
-// IO.open_descriptor_out fd
-// open_descriptor_out fd returns a buffered output channel writing to
-// the file descriptor fd. The file descriptor fd must have been
-// previously opened for writing, else the behavior is undefined.
+        static VMObjectPtr nop = nullptr;
+        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            chan->close();
+            return nop;
+        } else {
+            return nullptr;
+        }
+    }
+};
 
 // IO.flush channel
 // Flush the buffer associated with the given output channel, 
 // performing all pending writes on that channel. Interactive programs
 // must be careful about flushing std_out and std_err at the right time.
 
-// IO.output_char c
-// Write the character on the given output channel.
+class Flush: public Monadic {
+public:
+    MONADIC_PREAMBLE(Flush, "IO", "flush");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        static VMObjectPtr nop = nullptr;
+        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            chan->flush();
+            return nop;
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// IO.write chan o
+// Write the primitive object on the given output channel.
+
+class Write: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Write, "IO", "write");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        static VMObjectPtr nop = nullptr;
+        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            if (arg1->tag() == VM_OBJECT_INTEGER) {
+                auto i = VM_OBJECT_INTEGER_VALUE(arg1);
+                chan->write(i);
+                return nop;
+            } else if (arg1->tag() == VM_OBJECT_FLOAT) {
+                auto f = VM_OBJECT_FLOAT_VALUE(arg1);
+                chan->write(f);
+                return nop;
+            } else if (arg1->tag() == VM_OBJECT_CHAR) {
+                auto c = VM_OBJECT_CHAR_VALUE(arg1);
+                chan->write(c);
+                return nop;
+            } else if (arg1->tag() == VM_OBJECT_TEXT) {
+                auto s = VM_OBJECT_TEXT_VALUE(arg1);
+                chan->write(s);
+                return nop;
+            } else {
+                return nullptr;
+            }
+            chan->flush();
+            return nop;
+        } else {
+            return nullptr;
+        }
+    }
+};
 
 // IO.output_string s
 // Write the string on the given output channel.
@@ -354,10 +436,6 @@ public:
 // channel. This works only for regular files. On files of other
 // kinds, the result is meaningless.
 
-// IO.close_in channel
-// Close the given channel. Anything can happen if any of the
-// functions above is called on a closed channel.
-
 extern "C" std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
 }
@@ -365,7 +443,7 @@ extern "C" std::vector<UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectData(vm, "IO", "channel").clone());
+    oo.push_back(VMObjectData(vm, "IO", "channel").clone()); // XXX: there's a problem here
 
     oo.push_back(ChannelValue(vm).clone());
     oo.push_back(Stdin(vm).clone());
@@ -377,6 +455,9 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Readint(vm).clone());
     oo.push_back(Readfloat(vm).clone());
     oo.push_back(Open(vm).clone());
+    oo.push_back(Close(vm).clone());
+    oo.push_back(Flush(vm).clone());
+    oo.push_back(Write(vm).clone());
 
     return oo;
 

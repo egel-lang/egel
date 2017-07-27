@@ -184,6 +184,7 @@ public:
     // reduce an expression
     virtual void result_handler(const VMObjectPtr& e) = 0;
     virtual void exception_handler(const VMObjectPtr& e) = 0;
+    virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc) = 0;
     virtual void reduce(const VMObjectPtr& e) = 0;
 
     // for threadsafe reductions we lock the vm and rely on C++ threadsafe behavior on containers
@@ -832,11 +833,6 @@ public:
     c(VM* m): Opaque(m, n0, n1) { \
     } \
     c(VM* m, const symbol_t s): Opaque(m, s) { \
-    } \
-    c(const c& o) : c(o.machine(), o.symbol()) { \
-    } \
-    VMObjectPtr clone() const { \
-        return VMObjectPtr(new c(*this)); \
     }
 
 class Medadic: public VMObjectCombinator {

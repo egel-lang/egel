@@ -22,7 +22,12 @@ public:
         auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
         auto arg0   = tt[5];
 
-        std::cout << arg0 << std::endl;
+        static symbol_t nop = 0;
+        if (nop == 0) nop = machine()->enter_symbol("System", "nop");
+
+        if (arg0->symbol() != nop) {
+            std::cout << arg0 << std::endl;
+        }
 
         return nullptr;
     }

@@ -181,13 +181,13 @@ public:
         _exception = e;
 	}
 
-    void reduce(const VMObjectPtr& f) override {
+    void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc) override {
         VMObjectPtrs rr;
         rr.push_back(nullptr); // rt
         rr.push_back(nullptr); // rti
         rr.push_back(nullptr); // k
         rr.push_back(nullptr); // exc
-        rr.push_back(_result); // c
+        rr.push_back(ret); // c
         rr.push_back(nullptr); // arg0
         auto r = VMObjectArray(rr).clone();
 
@@ -196,7 +196,7 @@ public:
         ee.push_back(nullptr); // rti
         ee.push_back(nullptr); // k
         ee.push_back(nullptr); // exc
-        ee.push_back(_exception); // c
+        ee.push_back(exc); // c
         auto e = VMObjectArray(ee).clone();
 
         auto i = VMObjectInteger(5).clone();
@@ -218,6 +218,10 @@ public:
 #endif
             trampoline = f->reduce(trampoline);
         }
+    }
+
+    void reduce(const VMObjectPtr& f) override {
+        reduce(f, _result, _exception);
 	}
 
 	void add_lock() override {
