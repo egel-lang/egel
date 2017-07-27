@@ -674,7 +674,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Pow(vm).clone());
     oo.push_back(Random(vm).clone());
     oo.push_back(Round(vm).clone());
-    oo.push_back(Round(vm).clone());
+    oo.push_back(Sign(vm).clone());
     oo.push_back(Sin(vm).clone());
     oo.push_back(Sinh(vm).clone());
     oo.push_back(Sqrt(vm).clone());

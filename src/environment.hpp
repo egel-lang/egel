@@ -14,7 +14,7 @@ class Scope {
 public:
     void declare(const UnicodeString& k, const UnicodeString& v) {
         if (_symbols.count(k) > 0) {
-            throw ErrorSemantical("redeclaration");
+            throw ErrorSemantical("redeclaration of " + k);
         } else {
             _symbols[k] = v;
         }
