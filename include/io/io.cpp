@@ -6,6 +6,7 @@
 #include <ostream>
 #include <fstream>
 #include <memory>
+#include <exception>
 
 /**
  * Egel's primitive input/output combinators.
@@ -19,12 +20,8 @@
  * See https://ocaml.org/.
  **/
 
-// IO.eof
-// End of file exception value
-
-
 // IO.channel
-// Values which are input streams
+// Values which are input/output streams
 class ChannelValue: public Opaque {
 public:
     OPAQUE_PREAMBLE(ChannelValue, "IO", "channel");
@@ -150,7 +147,7 @@ public:
             return nop;
         } else if (arg0->tag() == VM_OBJECT_CHAR) {
             auto c = VM_OBJECT_CHAR_VALUE(arg0);
-            std::cout << c;
+            std::cout << (UnicodeString() + c);
             return nop;
         } else if (arg0->tag() == VM_OBJECT_TEXT) {
             auto c = VM_OBJECT_TEXT_VALUE(arg0);
@@ -164,14 +161,14 @@ public:
 
 /* Input functions on standard input */
 
-// IO.read_line
-// Flush standard output, then read characters from standard input
+// IO.getline
+// Read characters from standard input
 // until a newline character is encountered. Return the string of all
 // characters read, without the newline character at the end.
 
-class Readline: public Medadic {
+class Getline: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Readline, "IO", "readline");
+    MEDADIC_PREAMBLE(Getline, "IO", "getline");
 
     VMObjectPtr apply() const override {
         std::string line;
@@ -182,14 +179,13 @@ public:
 };
 
 
-// IO.readint
-// Flush standard output, then read one line from standard input and
-// convert it to an integer. Raise Failure "int_of_string" if the line
-// read is not a valid representation of an integer.
+/*
+// IO.getint
+// Read one line from standard input and convert it to an integer. 
 
-class Readint: public Medadic {
+class Getint: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Readint, "IO", "readint");
+    MEDADIC_PREAMBLE(Getint, "IO", "getint");
 
     VMObjectPtr apply() const override {
         vm_int_t n;
@@ -198,15 +194,14 @@ public:
     }
 };
 
-// IO.readfloat
-// Flush standard output, then read one line from standard input and
-// convert it to a floating-point number. The result is unspecified if
-// the line read is not a valid representation of a floating-point
-// number.
+// IO.getfloat
+// Read one line from standard input and convert it to a 
+// floating-point number. The result is unspecified if the line read 
+// is not a valid representation of a floating-point number.
 
-class Readfloat: public Medadic {
+class Getfloat: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Readfloat, "IO", "readfloat");
+    MEDADIC_PREAMBLE(Getfloat, "IO", "getfloat");
 
     VMObjectPtr apply() const override {
         vm_float_t f;
@@ -214,15 +209,15 @@ public:
         return VMObjectFloat(f).clone();
     }
 };
+*/
 
-/* General output functions */
+/* File channel creation and destruction */
 
 // IO.open s
-// Open the named file for writing, and return a new output channel on
+// Open the named file, and return a new channel on
 // that file, positionned at the beginning of the file. The file is
 // truncated to zero length if it already exists. It is created if it
-// does not already exists. Raise sys__Sys_error if the file could not
-// be opened.
+// does not already exists. 
 
 class Open: public Monadic {
 public:
@@ -292,8 +287,40 @@ public:
     }
 };
 
+// IO.eof channel
+// True if there is no more input, false otherwise.
+
+class Eof: public Monadic {
+public:
+    MONADIC_PREAMBLE(Eof, "IO", "eof");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static VMObjectPtr _true = nullptr;
+        if (_true == nullptr) _true = machine()->get_data_string("System", "true");
+
+        static VMObjectPtr _false = nullptr;
+        if (_false == nullptr) _false = machine()->get_data_string("System", "false");
+
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            if (chan->eof()) {
+                return _true;
+            } else {
+                return _false;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 // IO.write chan o
-// Write the primitive object on the given output channel.
+// Write the primitive object on the given output channel. Do not escape
+// characters or strings. May recursively write an object leading to 
+// stack explosion.
 
 class Write: public Dyadic {
 public:
@@ -335,19 +362,79 @@ public:
     }
 };
 
-// IO.output_string s
-// Write the string on the given output channel.
+/*
+class Readint: public Monadic {
+public:
+    MONADIC_PREAMBLE(Readint, "IO", "readint");
 
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            try {
+                auto n = chan->readint();
+                return VMObjectInteger(n).clone();
+            } catch (exception e) {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class Readfloat: public Monadic {
+public:
+    MONADIC_PREAMBLE(Readfloat, "IO", "readfloat");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            try {
+                auto f = chan->readfloat();
+                return VMObjectFloat(f).clone();
+            } catch (exception e) {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+*/
+
+class Readline: public Monadic {
+public:
+    MONADIC_PREAMBLE(Readline, "IO", "readline");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            try {
+                std::string line;
+                std::getline(std::cin, line);
+                UnicodeString str(line.c_str());
+                return VMObjectText(str).clone();
+            } catch (std::exception e) {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
 
 // IO.output_byte channel i
 // Write one 8-bit integer (as the single character with that code) on
 // the given output channel. The given integer is taken modulo 256.
-
-// IO.output_binary_int channel i
-// Write one integer in binary format on the given output channel.
-// The only reliable way to read it back is through the 
-// input_binary_int function. The format is compatible across all
-// machines for a given version of Caml Light.
 
 // IO.seek_out channel i
 // seek_out chan pos sets the current writing position to pos for
@@ -363,11 +450,6 @@ public:
 // Return the total length (number of characters) of the given
 // channel. This works only for regular files. On files of other
 // kinds, the result is meaningless.
-
-// IO.close_out channel
-// Close the given channel, flushing all buffered write operations.
-// The behavior is unspecified if any of the functions above is called
-// on a closed channel.
 
 /* General input functions */
 
@@ -393,35 +475,9 @@ public:
 // the file descriptor fd. The file descriptor fd must have been
 // previously opened for reading, else the behavior is undefined.
 
-// IO.input_char channel
-// Read one character from the given input channel. Raise End_of_file
-// if there are no more characters to read.
-
-// IO.input_line channel
-// Read characters from the given input channel, until a newline
-// character is encountered. Return the string of all characters read,
-// without the newline character at the end. Raise End_of_file if the
-// end of the file is reached at the beginning of line.
-
 // IO.input_byte channel
 // Same as input_char, but return the 8-bit integer representing the
 // character. Raise End_of_file if an end of file was reached.
-
-// IO.input_binary_int channel
-// Read an integer encoded in binary format from the given input
-// channel. See output_binary_int. Raise End_of_file if an end of file
-// was reached while reading the integer.
-
-// IO.input_value channel
-// Read the representation of a structured value, as produced by
-// output_value or output_compact_value, and return the corresponding
-// value. This is not type-safe. The type of the returned object is
-// not 'a properly speaking: the returned object has one unique type,
-// which cannot be determined at compile-time. The programmer should
-// explicitly give the expected type of the returned value, using the
-// following syntax: (input_value chan : type). The behavior is
-// unspecified if the object in the file does not belong to the given
-// type.
 
 // IO.seek_in channel n
 // seek_in chan pos sets the current reading position to pos for
@@ -443,7 +499,7 @@ extern "C" std::vector<UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectData(vm, "IO", "channel").clone()); // XXX: there's a problem here
+    oo.push_back(VMObjectData(vm, "IO", "channel").clone());
 
     oo.push_back(ChannelValue(vm).clone());
     oo.push_back(Stdin(vm).clone());
@@ -451,14 +507,13 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Stderr(vm).clone());
     oo.push_back(Exit(vm).clone());
     oo.push_back(Print(vm).clone());
-    oo.push_back(Readline(vm).clone());
-    oo.push_back(Readint(vm).clone());
-    oo.push_back(Readfloat(vm).clone());
+    oo.push_back(Getline(vm).clone());
     oo.push_back(Open(vm).clone());
     oo.push_back(Close(vm).clone());
     oo.push_back(Flush(vm).clone());
+    oo.push_back(Eof(vm).clone());
     oo.push_back(Write(vm).clone());
+    oo.push_back(Readline(vm).clone());
 
     return oo;
-
 }

@@ -94,6 +94,10 @@ public:
     virtual void flush() {
     }
 
+    virtual bool eof() {
+        return false;
+    }
+
 protected:
     channel_tag_t   _tag;
 };
@@ -128,10 +132,13 @@ public:
     virtual UnicodeString read_line() {
         std::string line;
         std::getline(_channel, line);
-        UnicodeString str(line.c_str());
+        UnicodeString str(line.c_str(), -1, US_INV);
         return str;
     }
 
+    virtual bool eof() override {
+        return _channel.eof();
+    }
 protected:
     std::istream&   _channel;
 };
@@ -203,7 +210,7 @@ public:
     virtual UnicodeString read_line() {
         std::string line;
         std::getline(_channel, line);
-        UnicodeString str(line.c_str());
+        UnicodeString str(line.c_str(), -1, US_INV);
         return str;
     }
 
@@ -231,6 +238,9 @@ public:
         _channel.flush();
     }
 
+    virtual bool eof() override {
+        return _channel.eof();
+    }
 private:
     static char* unicode_to_char(const UnicodeString& str) {
         unsigned int buffer_size = 1024; // XXX: this is always a bad idea.

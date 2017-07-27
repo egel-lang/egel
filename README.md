@@ -1,11 +1,11 @@
 The Egel Language
 =================
 
-The Egel language is a simple untyped algebraic language based on 
+The Egel language is a simple untyped algebraic toy language based on 
 eager combinator rewriting.
 
 The interpreter defined here is aimed at automating small 'mathematical'
-tasks, and -at a later stage- mobile code.
+tasks.
 
 Disclaimer
 ----------
