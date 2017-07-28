@@ -1,5 +1,8 @@
 #include "../../src/runtime.hpp"
-#include "utils.hpp"
+
+// XXX: I hard included the entire cpp file to make sure all symbols get resolved
+// i don't know of a better way to do this
+#include "utils.cpp"
 
 #include <stdlib.h>
 #include <math.h>

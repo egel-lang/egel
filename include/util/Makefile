@@ -14,8 +14,9 @@ LDFLAGS=$(LIBS)
 
 # source files and objects
 SOURCES= \
-    utils.cpp \
 	util.cpp
+
+#    utils.cpp 
 
 OBJECTS=$(SOURCES:.cpp=.o)
 

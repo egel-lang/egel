@@ -158,7 +158,7 @@ UChar32 convert_to_char(const UnicodeString& s);
  **
  ** @return the integer recognized
  **/
-UnicodeString convert_from_int(const int64_t& s);
+UnicodeString convert_from_int(const int64_t s);
 
 /**
  ** Parse and convert a float. like 3.14.
@@ -167,7 +167,7 @@ UnicodeString convert_from_int(const int64_t& s);
  **
  ** @return the integer recognized
  **/
-UnicodeString convert_from_float(const double& s);
+UnicodeString convert_from_float(const double s);
 
 /**
  ** Parse and convert a char string. like 'a'.
@@ -176,7 +176,7 @@ UnicodeString convert_from_float(const double& s);
  **
  ** @return the char recognized
  **/
-UnicodeString convert_from_char(const UChar32& s);
+UnicodeString convert_from_char(const UChar32 s);
 
 /**
  ** Parse and convert a text string. like "hello!".
