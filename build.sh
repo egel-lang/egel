@@ -2,8 +2,9 @@
 
 ######################################################################
 # Recursive make is considered harmful! So I decided to use bash.
-# This script either performes a make O3 on all targets or can be used
-# to wipe the directories clean.
+#
+# This script either performes a 'make O3' on all targets or can be
+# used to wipe the directories clean.
 #
 # Egel doesn't provide an installation script since that it is 
 # platform dependent and different users might feel different on how
@@ -12,6 +13,9 @@
 # After a build, all you need is the executable provided in the
 # 'src' directory and all scripts or dynamic libraries in the 
 # 'include' directory.
+#
+# + use './build.sh' for a build.
+# + use './build.sh clean' for wiping all generated files
 ######################################################################
 
 function build {
