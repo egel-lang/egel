@@ -1,0 +1,96 @@
+import "util.ego"
+import "io.ego"
+import "math.ego"
+
+namespace System (
+
+    def flip = [ F, X, Y -> F Y X ]
+
+    def or =
+        [ false, false -> false
+        | X, Y         -> true ]
+
+    def and =
+        [ true, true    -> true
+        | X, Y          -> false ]
+
+    def not =
+        [ true  -> false
+        | X     -> true ]
+
+    def @ =
+        [ F, G, X -> F (G X) ]
+
+)
+
+namespace List (
+
+    using System
+
+    def length =
+        [ nil -> 0
+        | cons X XX -> 1 + (length XX) ]
+
+    def foldl =
+        [ F, Z, nil -> Z
+        | F, Z, cons X XX -> foldl F (F Z X) XX ]
+
+    def foldr =
+        [ F, Z, nil -> Z
+        | F, Z, cons X XX -> F X (foldr F Z XX) ]
+
+    def ++ =
+        [ nil, YY -> YY
+        | cons X XX, YY -> cons X (XX ++ YY) ]
+
+    def map =
+        [ F, nil -> nil
+        | F, cons X XX -> cons (F X) (map F XX) ]
+
+    def reverse = 
+       foldl (flip cons) nil
+
+    def block =
+        [ 0 -> nil
+        | N -> cons (N-1) (block (N-1)) ]
+
+    def fromto =
+        [ X, Y -> 
+            if X < Y then
+                reverse (map [ N -> N + X ] (block (Y-X)))
+            else nil ]
+
+    def filter =
+        [ P, nil -> nil
+        | P, cons X XX -> if P X then cons X (filter P XX) 
+                                 else filter P XX ]
+
+    def zipwith =
+        [ Z, cons X XX, cons Y YY -> cons (Z X Y) (zipwith Z XX YY)
+        | Z, XX, YY               -> nil ]
+
+    def any =
+        [ P, nil        -> false
+        | P, cons B BB  -> if P B then true else any P BB ]
+
+    def all =
+        [ P, nil        -> true
+        | P, cons B BB  -> if P B then all P BB else false ]
+
+    def elem =
+        [ X -> any ((==) X) ]
+
+    def notelem =
+        [ X -> all ((!=) X) ]
+
+    def insertEverywhere =
+        [ X, nil -> {{X}}
+        | X, cons Y YY -> cons (cons X (cons Y YY)) (map (cons Y) (insertEverywhere X YY)) ]
+
+    def concatMap =
+        [ F -> foldr ((++) @ F) nil ]
+
+    def permutations =
+        foldr (concatMap @ insertEverywhere) {{}}
+)
+
