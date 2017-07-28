@@ -96,7 +96,7 @@ int64_t convert_to_int(const UnicodeString& s) {
 
 double convert_to_float(const UnicodeString& s) {
     char* buf = unicode_to_char(s);
-    auto f = atol(buf);
+    auto f = atof(buf);
     delete buf;
     return f;
 }
