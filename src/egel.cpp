@@ -47,7 +47,6 @@ static option_t options[] = {
     "-v", "--version", OPTION_NONE, "display version",
     "-",  "--in",      OPTION_NONE, "interactive mode (default)",
     "-I", "--include", OPTION_DIR,  "add include directory",
-    "-L", "--library", OPTION_DIR,  "add library directory",
     "-o", "--output",  OPTION_FILE, "output to file",
     "-T", "--tokens",  OPTION_NONE, "output all tokens (debug)",
     "-U", "--unparse", OPTION_NONE, "output the parse tree (debug)",
@@ -170,10 +169,13 @@ int main(int argc, char *argv[]) {
         if (p.first == ("-I")) {
             oo->add_include_path(p.second);
         };
-        if (p.first == ("-L")) {
-            oo->add_library_path(p.second);
-        };
     };
+
+    // add include path from environment
+    auto istr = getenv("EGEL_INCLUDE");
+    if (istr != nullptr) {
+        oo->add_include_path(UnicodeString(istr, -1, US_INV));
+    }
 
     // check for flags
     for (auto& p : pp) {
