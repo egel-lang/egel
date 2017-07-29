@@ -512,7 +512,7 @@ public:
         preload(p, fn);
         _loading[0]->set_options(_options);
         transitive_closure();
-        reverse();
+        // reverse();
         process();
         flush();
     }
