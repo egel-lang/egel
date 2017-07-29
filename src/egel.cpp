@@ -233,6 +233,7 @@ int main(int argc, char *argv[]) {
         mm.prelude();
     }
 
+    // start either interactive or batch mode
     if ((fn == "") || oo->interactive()) {
         eval_interactive(mm);
     } else {

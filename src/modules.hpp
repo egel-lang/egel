@@ -499,15 +499,10 @@ public:
 
     void set_options(const OptionsPtr& oo) {
         _options = oo;
-        _defaults = OptionsPtr();
     }
 
     OptionsPtr get_options() const {
         return _options;
-    }
-
-    OptionsPtr get_defaults() const {
-        return _defaults;
     }
 
     // implements incremental loading for interactive mode
@@ -593,7 +588,7 @@ protected:
                 } else {
                     throw ErrorIO(p, "file \"" + fn + "\" has wrong extension");
                 }
-                m->set_options(_defaults);
+                m->set_options(get_options());
                 try {
                     m->load(_machine);
                 } catch (ErrorIO e) {
@@ -659,7 +654,6 @@ private:
     ModulePtrs          _modules;
     ModulePtrs          _loading;
     OptionsPtr          _options;
-    OptionsPtr          _defaults;
     NamespacePtr        _environment;
     VM*                 _machine;
 };

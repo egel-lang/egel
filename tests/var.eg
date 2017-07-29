@@ -1,0 +1,5 @@
+import "prelude.eg"
+
+using System
+
+def main = get (var 7)
