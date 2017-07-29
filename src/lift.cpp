@@ -202,16 +202,14 @@ public:
     AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
         set_scope(c);
         AstPtr e0;
-        if (e->tag() == AST_EXPR_COMBINATOR) { // keep direct combinator definitions
-            e0 = e;
+        if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
+            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto mm0 = rewrites(mm);
+            e0 = AstExprBlock(p0, mm0).clone();
         } else {
             e0 = rewrite(e);
-            auto cnew = fresh_combinator();
-            auto decl = AstDeclDefinition(p, cnew, e0).clone();
-            add_lifted(decl);
-            e0 = cnew;
         }
-        auto e1 = AstDeclOperator(p, c, e0).clone();
+        auto e1 = AstDeclDefinition(p, c, e0).clone();
         if (get_lifted().size() == 0) {
             return e1;
         } else {
