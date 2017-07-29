@@ -100,15 +100,10 @@ public:
         static symbol_t var = 0;
         if (var == 0) var = machine()->enter_symbol("System", "var");
 
-        std::cout << "here!!\n";
         if (arg0->tag() == VM_OBJECT_ARRAY) {
-        std::cout << "is array!!\n";
             auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
-        std::cout << "size = " << ff.size() << "\n";
             if (ff.size() != 2) return nullptr;
-        std::cout << "f[0].tag = " << ff[0]->tag() << "\n";
-        std::cout << "varsym = " << var << "\n";
-            if (ff[0]->tag() != var) return nullptr;
+            if (ff[0]->symbol() != var) return nullptr;
             return ff[1];
         } else {
             return nullptr;
@@ -129,8 +124,9 @@ public:
         if (arg0->tag() == VM_OBJECT_ARRAY) {
             auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
             if (ff.size() != 2) return nullptr;
-            if (ff[0]->tag() != var) return nullptr;
-            ff[1] = arg1;
+            if (ff[0]->symbol() != var) return nullptr;
+            auto arr = VM_OBJECT_ARRAY_CAST(arg0); // XXX: clean up this cast once. need destructive update
+            arr->set(1, arg1);
             return arg0;
         } else {
             return nullptr;
@@ -145,11 +141,12 @@ extern "C" std::vector<UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
+    oo.push_back(VMObjectData(vm, "System", "var").clone());
+
     oo.push_back(Toint(vm).clone());
     oo.push_back(Tofloat(vm).clone());
     oo.push_back(Totext(vm).clone());
 
-    oo.push_back(VMObjectData(vm, "System", "var").clone());
     oo.push_back(Get(vm).clone());
     oo.push_back(Set(vm).clone());
 
