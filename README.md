@@ -11,7 +11,7 @@ Installation
 ------------
 
 This interpreter is being developed on Linux and uses libicu for 
-Unicode support. You need to have the development scripts for that
+Unicode support. You need to have the development files for that
 installed. Most Linux package managers will provide that for you.
 
 To compile the system run the `build.sh` script.
