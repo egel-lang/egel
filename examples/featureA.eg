@@ -7,6 +7,11 @@
  * defined on '2'. You can subsequently catch that a computation
  * didn't reduce to an integer, and throw that expression as an
  * exception.
+ *
+ * This could be useful for, for instance, division by zero for
+ * which no mathematical system seems to have a 'nice' solution.
+ * I.e., '1/0' simply shouldn't rewrite, though it throws an 
+ * exception at the moment.
  */
 
 using System

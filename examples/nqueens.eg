@@ -2,7 +2,7 @@
  * The N-Queens problem as translated from Haskell to Egel.
  *
  * I only have a rough idea how the following program computes its
- * result. This example shows that it is possible to mostly copy
+ * result. This example shows that it often should be possible to copy
  * a simple Haskell program verbatim and have it run in egel.
  *
  * This program takes a mediocre time to run, mostly because it 
