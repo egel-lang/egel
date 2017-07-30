@@ -13,6 +13,7 @@
 #include <sstream>
 #include <vector>
 #include <set>
+#include <limits>
 
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
@@ -23,6 +24,8 @@
 #ifndef PANIC
 #define PANIC(s)    { std::cerr << s << std::endl; exit(1); }
 #endif
+
+#define EGEL_FLOAT_PRECISION 17 // XXX: dbl::maxdigit doesn't seem to be defined on my system?
 
 // libicu doesn't provide escaping..
 
@@ -271,6 +274,7 @@ public:
     }
 
     void render(std::ostream& os) const override {
+        os.precision(EGEL_FLOAT_PRECISION);
         os << value();
     }
 

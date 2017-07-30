@@ -143,6 +143,7 @@ public:
             return nop;
         } else if (arg0->tag() == VM_OBJECT_FLOAT) {
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+            std::cout.precision(EGEL_FLOAT_PRECISION);
             std::cout << f;
             return nop;
         } else if (arg0->tag() == VM_OBJECT_CHAR) {
