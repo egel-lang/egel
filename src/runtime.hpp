@@ -60,6 +60,9 @@ inline UnicodeString uescape(const UnicodeString& s) {
         case '\'':
             s1 += "\\'";
             break;
+        case '\\':
+            s1 += "\\\\";
+            break;
         default:
             s1 += c;
             break;
