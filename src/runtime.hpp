@@ -27,18 +27,12 @@
 // libicu doesn't provide escaping..
 
 inline UnicodeString uescape(const UnicodeString& s) {
-    UErrorCode error = U_ZERO_ERROR;
-    UChar* s0 = new UChar[s.length()+1];
-    int32_t size = s.extract(s0, sizeof(s0), error);
-    s0[size] = 0;
-
     UnicodeString s1;
     int i=0;
-    while (s0[i] != 0) {
-        switch (s0[i]) {
-        case '\\':
-            s1 += "\\\\";
-            break;
+    int len = s.length();
+    for (i = 0; i < len; i++) {
+        UChar32 c = s.char32At(i);
+        switch (c) {
         case '\a':
             s1 += "\\a";
             break;
@@ -67,10 +61,9 @@ inline UnicodeString uescape(const UnicodeString& s) {
             s1 += "\\'";
             break;
         default:
-            s1 += (s0[i]);
+            s1 += c;
             break;
         }
-        i++;
     }
     return s1;
 }

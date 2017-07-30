@@ -209,7 +209,7 @@ public:
         } else {
             e0 = rewrite(e);
         }
-        auto e1 = AstDeclDefinition(p, c, e0).clone();
+        auto e1 = AstDeclOperator(p, c, e0).clone();
         if (get_lifted().size() == 0) {
             return e1;
         } else {

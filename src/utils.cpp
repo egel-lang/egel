@@ -146,11 +146,12 @@ UnicodeString unicode_strip_quotes(const UnicodeString& s) {
 }
 
 UnicodeString unicode_escape(const UnicodeString& s) {
-    UChar* s0  = unicode_to_uchar(s);
     UnicodeString s1;
     int i=0;
-    while (s0[i] != 0) {
-        switch (s0[i]) {
+    int len = s.length();
+    for (i = 0; i < len; i++) {
+        UChar32 c = s.char32At(i);
+        switch (c) {
         case '\a':
             s1 += "\\a";
             break;
@@ -179,10 +180,9 @@ UnicodeString unicode_escape(const UnicodeString& s) {
             s1 += "\\'";
             break;
         default:
-            s1 += (s0[i]);
+            s1 += c;
             break;
         }
-        i++;
     }
     return s1;
 }
