@@ -1,0 +1,19 @@
+/*
+ * FeatureC, exploit symbolic rewriting to define variadic functions.
+ *
+ * Egel functions match patterns in a naive manner from first to last.
+ * You can exploit that feature to implement variadic functions which
+ * could be nice for, for example, default values.
+ */
+
+namespace Test (
+    using System
+
+    def add = 
+        [ X, Y  -> X + Y 
+        | X     -> X + 1 ]
+)
+
+using Test
+
+def main = (add 7 8, add 5)

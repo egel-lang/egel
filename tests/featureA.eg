@@ -1,6 +1,0 @@
-
-using System
-
-def f = [ 0 -> 1 ]
-
-def main = [ X: int -> X | X -> throw X ] (f 2)

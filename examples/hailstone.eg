@@ -1,18 +1,20 @@
-namespace List (
-    using System
+/*
+ * Hailstone numbers are a mathematical mystery. The following
+ * function f(1) = 1, f(x) = x/2 iff x is even, f(x) = x*3 + 1
+ * otherwise, has been proven to evaluate to 1 for an absurd amount of
+ * numbers, but no proof of that property is known.
+ *
+ * The following program is taken from a programming contest.
+ * 0. show in how many step hailstone(27) reduces to 1.
+ * 1. show the first 4, and last 4, numbers of that sequence.
+ * 2. determine the number with the longest path below 100.000.
+ *
+ * This program takes a long while to terminate.
+ *
+ * see: https://en.wikipedia.org/wiki/Collatz_conjecture
+ */
 
-    def length =
-        [ nil -> 0 | cons X XX -> 1 + (length XX) ]
-
-    def take =
-        [ 0, XX -> nil
-        | N, cons X XX -> cons X (take (N-1) XX) ]
-
-    def drop =
-        [ 0, XX -> XX
-        | N, cons X XX -> drop (N-1) XX ]
-
-)
+import "prelude.eg"
 
 namespace Hailstone (
 
@@ -51,7 +53,7 @@ def task1 =
     L   = length H27;
         (take 4 H27, drop (L-4) H27)
 
-def task3 = largest 100000
+def task2 = largest 100000
 
-def main = (task0, task1, task3)
+def main = (task0, task1, task2)
 

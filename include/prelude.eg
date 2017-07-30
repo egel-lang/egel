@@ -4,8 +4,6 @@ import "math.ego"
 
 namespace System (
 
-    def flip = [ F, X, Y -> F Y X ]
-
     def or =
         [ false, false -> false
         | X, Y         -> true ]
@@ -20,6 +18,8 @@ namespace System (
 
     def @ =
         [ F, G, X -> F (G X) ]
+
+    def flip = [ F, X, Y -> F Y X ]
 
 )
 
@@ -53,6 +53,14 @@ namespace List (
     def block =
         [ 0 -> nil
         | N -> cons (N-1) (block (N-1)) ]
+
+    def take =
+        [ 0, XX -> nil
+        | N, cons X XX -> cons X (take (N-1) XX) ]
+
+    def drop =
+        [ 0, XX -> XX
+        | N, cons X XX -> drop (N-1) XX ]
 
     def fromto =
         [ X, Y -> 
@@ -93,4 +101,3 @@ namespace List (
     def permutations =
         foldr (concatMap @ insertEverywhere) {{}}
 )
-

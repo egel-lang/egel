@@ -1,0 +1,27 @@
+/**
+ * Euler project[1] task 1. Sum the elements of a list 1..1000 which are
+ * dividable by either three or five.
+ *
+ * [1]: https://projecteuler.net/
+ **/ 
+
+import "prelude.eg"
+
+namespace ThreeOrFive (
+
+    using System
+    using List
+
+    def sum = foldr (+) 0
+
+    def three_or_five = [X -> or ((X%3) == 0) ((X%5) == 0) ]
+
+    def euler1 =
+        [ N -> (sum @ (filter three_or_five)) (fromto 1 N) ]
+
+)
+
+using ThreeOrFive
+
+def main = euler1 1000
+

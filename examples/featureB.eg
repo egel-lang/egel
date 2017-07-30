@@ -1,0 +1,28 @@
+/*
+ * FeatureB, exploit symbolic rewriting to rewrite a half evaluated
+ * expression.
+ *
+ * The following main procedure rewrites in the following manner.
+ *
+ * main 
+ * -> g (f 1)
+ * -> g (f 1)  // f is evaluated but fails to rewrite
+ * -> f 1 1    // g is evaluated
+ * -> 1        // f is evaluated
+ *
+ * This makes the system non-confluent. I have no idea how this
+ * feature might be exploited in a useful manner, but someone
+ * is likely to come up with an idea.
+ */
+
+namespace Test (
+
+    def f = [ X, Y -> X ]
+
+    def g = [ f X -> f X X ]
+
+)
+
+using Test
+
+def main = g (f 1)
