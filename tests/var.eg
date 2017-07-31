@@ -1,5 +1,0 @@
-import "prelude.eg"
-
-using System
-
-def main = [X -> Y = var X; Z = set Y ((get Y) * (get Y)); get Y ] 7
