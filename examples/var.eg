@@ -1,0 +1,23 @@
+/*
+ * Egel supports variables though I didn't implement a nice syntax for
+ * that yet.
+ *
+ * Basically, you can overwrite arguments of a combinator with a 
+ * 'special' set construct.
+ *
+ * - var X,         is trivially a tree
+ * - get (var X),   is also trivially a tree 
+ * - set (var X) Y, overwrites and is the only special construct you
+ *                  need. If Y is a tree then var Y is also trivially
+ *                  a tree.
+ *
+ * The name variable is a bit of a misnomer. They are implemented 
+ * as mutable records which can simply be passed around; i.e., are
+ * not bound to any stack frame or lexical scope.
+ */
+
+import "prelude.eg"
+
+using System
+
+def main = [X -> Y = var X; Z = set Y ((get Y) * (get Y)); get Y ] 7

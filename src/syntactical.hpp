@@ -227,6 +227,7 @@ public:
         case TOKEN_CHAR:
         case TOKEN_TEXT:
         case TOKEN_LPAREN:
+        case TOKEN_LCURLY:
             return true;
             break;
         default:
@@ -254,6 +255,9 @@ public:
             break;
         case TOKEN_LPAREN:
             return parse_pattern_enclosed();
+            break;
+        case TOKEN_LCURLY:
+            return parse_pattern_list();
             break;
         default:
             throw ErrorSyntactical(position(), "pattern primary expected");
@@ -335,6 +339,26 @@ public:
         } else {
             force_token(TOKEN_RPAREN);
             return q;
+        }
+    }
+
+    AstPtr parse_pattern_list() {
+        Position p = position();
+        force_token(TOKEN_LCURLY);
+        AstPtrs qq = AstPtrs();
+        if (tag() == TOKEN_RCURLY) {
+            skip();
+            return AstExprList(p, qq).clone();
+        } else {
+            AstPtr q = parse_pattern();
+            qq.push_back(q);
+            while (tag() == TOKEN_COMMA) {
+                skip();
+                AstPtr q = parse_pattern();
+                qq.push_back(q);
+            }
+            force_token(TOKEN_RCURLY);
+            return AstExprList(p, qq).clone();
         }
     }
 

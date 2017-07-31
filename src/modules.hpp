@@ -588,7 +588,7 @@ protected:
                 } else {
                     throw ErrorIO(p, "file \"" + fn + "\" has wrong extension");
                 }
-                m->set_options(get_options());
+                m->set_options(Options().clone());//XXX check this
                 try {
                     m->load(_machine);
                 } catch (ErrorIO e) {
