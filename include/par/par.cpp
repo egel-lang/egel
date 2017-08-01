@@ -113,7 +113,7 @@ public:
         std::thread first (runthread, vm, left, 
                             VMObjectThreadResult(vm, sym, result, 1).clone(),
                             VMObjectThreadException(vm, sym, result, 1).clone() );
-        std::thread second (runthread, vm, sym, right, 
+        std::thread second (runthread, vm, right, 
                             VMObjectThreadResult(vm, sym, result, 2).clone(),
                             VMObjectThreadException(vm, sym, result, 2).clone() );
 
@@ -131,7 +131,8 @@ extern "C" std::vector<UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectData(vm, "System", "par").clone());
+    oo.push_back(VMObjectData(vm, "System", "thread").clone());
+    oo.push_back(Par(vm).clone());
 
     return oo;
 

@@ -34,6 +34,10 @@ function build {
     cd include/util
     make O3
     cd ../..
+
+    cd include/par
+    make O3
+    cd ../..
 }
 
 function clean {
@@ -50,6 +54,10 @@ function clean {
     cd ../..
 
     cd include/util
+    make clean
+    cd ../..
+
+    cd include/par
     make clean
     cd ../..
 }
