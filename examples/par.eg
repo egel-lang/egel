@@ -12,7 +12,7 @@
  *
  * It doesn't handle exceptions right yet in that if one thread
  * throws an exception the other thread is allowed to keep
- * running and the resulting exception is just placed as in
+ * running and the resulting exception is just placed in
  * the resulting tuple.
  */
 
