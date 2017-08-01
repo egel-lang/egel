@@ -1,0 +1,34 @@
+/*
+ * Egel's par construct.
+ *
+ * 'par f g' evaluates 'f nop' and 'g nop' concurrently. The
+ * par construct is implemented simplistically with c++ native
+ * threads and is mostly there to show case that concurrent 
+ * rewriting is possible on the acyclic graph representation.
+ *
+ * 'par' is somewhat convenient for trivial programs but I
+ * imagine you would want other stuff for high-performance 
+ * code.
+ *
+ * It doesn't handle exceptions right yet in that if one thread
+ * throws an exception the other thread is allowed to keep
+ * running and the resulting exception is just placed as in
+ * the resulting tuple.
+ */
+
+import "prelude.eg"
+
+namespace Fibonnaci (
+  using System
+
+  def fib =
+    [ 0 -> 1
+    | 1 -> 1
+    | N -> fib (N-2) + fib (N-1) ]
+
+)
+
+using Fibonnaci
+using System
+
+def main = par [ X -> fib 3 ] [ X -> fib 5]
