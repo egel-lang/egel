@@ -396,6 +396,10 @@ public:
         return _value[0]->symbol();
     }
 
+    int size() const {
+        return _value.size();
+    }
+
     VMObjectPtr get(uint i) const {
         return _value[i];
     }

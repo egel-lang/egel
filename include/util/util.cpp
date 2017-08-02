@@ -134,6 +134,74 @@ public:
     }
 };
 
+// System.unpack s
+// create a list of UChar32 from a Unicode string
+class Unpack: public Monadic {
+public:
+    MONADIC_PREAMBLE(Unpack, "System", "unpack");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static VMObjectPtr _nil = nullptr;
+        if (_nil == nullptr) _nil = machine()->get_data_string("System", "nil");
+
+        static VMObjectPtr _cons = nullptr;
+        if (_cons == nullptr) _cons = machine()->get_data_string("System", "cons");
+
+        if (arg0->tag() == VM_OBJECT_TEXT) {
+            auto str = VM_OBJECT_TEXT_VALUE(arg0);
+
+            VMObjectPtr ss = _nil;
+            int len = str.length();
+            for (int n = len-1; n >= 0; n--) {
+                auto c = str.char32At(n);
+                auto tt = VMObjectPtrs();
+                tt.push_back(_cons);
+                tt.push_back(VMObjectChar(c).clone());
+                tt.push_back(ss);
+                ss = VMObjectArray(tt).clone();
+            }
+            return ss;
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+
+// System.pack s
+// create a Unicode string from a list of UChar32
+class Pack: public Monadic {
+public:
+    MONADIC_PREAMBLE(Pack, "System", "pack");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t _nil = 0;
+        if (_nil == 0) _nil = machine()->enter_symbol("System", "nil");
+
+        static symbol_t _cons = 0;
+        if (_cons == 0) _cons = machine()->enter_symbol("System", "cons");
+
+        UnicodeString ss;
+        auto a = arg0;
+
+        while ( (a->tag() == VM_OBJECT_ARRAY) ) {
+            auto aa = VM_OBJECT_ARRAY_VALUE(a);
+            if (aa.size() != 3) return nullptr;
+            if (aa[0]->symbol() != _cons) return nullptr;
+            if (aa[1]->tag() != VM_OBJECT_CHAR) return nullptr;
+
+            auto c = VM_OBJECT_CHAR_VALUE(aa[1]);
+
+            ss += c;
+
+            a = aa[2];
+        }
+
+        return VMObjectText(ss).clone();
+    }
+};
+
+
 extern "C" std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
 }
@@ -149,6 +217,9 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
 
     oo.push_back(Get(vm).clone());
     oo.push_back(Set(vm).clone());
+
+    oo.push_back(Unpack(vm).clone());
+    oo.push_back(Pack(vm).clone());
 
     return oo;
 
