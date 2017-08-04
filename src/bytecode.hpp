@@ -495,7 +495,12 @@ private:
 #define FETCH_lbl(c,pc)   FETCH_i32(c, pc)
 
 // XXX: to be replaced by something faster
+#define FAST_REGISTERS
+#ifdef FAST_REGISTERS
+typedef VMObjectPtr Registers[128];
+#else
 typedef std::map<reg_t, VMObjectPtr>    Registers;
+#endif
 
 class VMObjectBytecode: public VMObjectCombinator {
 public:
@@ -663,7 +668,7 @@ public:
                 for (reg_t n = y; n <= z; n++) {
                     xx.push_back(reg[n]);
                 }
-                reg[x] = VMObjectArray(xx).clone();
+                reg[x] = VMObjectArray::create(xx);
 
                 }
                 break;
@@ -683,7 +688,7 @@ public:
                     VMObjectPtrs xx;
                     for (auto& y1:yy) xx.push_back(y1);
                     for (int n = (int) i; n < (int) zz.size(); n++) xx.push_back(zz[n]);
-                    reg[x] = VMObjectArray(xx).clone();
+                    reg[x] = VMObjectArray::create(xx);
                 } else {
                     PANIC("two arrays expected");
                     return nullptr;

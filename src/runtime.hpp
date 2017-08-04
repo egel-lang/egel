@@ -392,6 +392,10 @@ public:
         return VMObjectPtr(new VMObjectArray(*this));
     }
 
+    static VMObjectPtr create(const VMObjectPtrs& pp) {
+        return VMObjectPtr(new VMObjectArray(pp));
+    }
+
     symbol_t symbol() const override {
         return _value[0]->symbol();
     }
