@@ -35,6 +35,11 @@ public:
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return VMObjectFloat(f0+f1).clone();
+        } else if ( (arg0->tag() == VM_OBJECT_TEXT) &&
+             (arg1->tag() == VM_OBJECT_TEXT) ) {
+            auto f0 = VM_OBJECT_TEXT_VALUE(arg0);
+            auto f1 = VM_OBJECT_TEXT_VALUE(arg1);
+            return VMObjectText(f0+f1).clone();
         } else {
             return nullptr;
         }
