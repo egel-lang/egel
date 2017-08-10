@@ -507,7 +507,6 @@ public:
         case TOKEN_THROW:
         case TOKEN_LSQUARE:
         case TOKEN_LCURLY:
-        case TOKEN_OBJECT:
             return true;
             break;
         default:
@@ -554,9 +553,6 @@ public:
             break;
         case TOKEN_THROW:
             return parse_throw();
-            break;
-        case TOKEN_OBJECT:
-            return parse_object();
             break;
         default:
             if (is_combinator()) {
@@ -668,6 +664,7 @@ public:
         AstPtrs ee = AstPtrs();
         auto n = parse_combinator();
         ee.push_back(n);
+        force_token(TOKEN_COMMA);
         auto e = parse_expression();
         ee.push_back(e);
         return AstDeclData(p, ee).clone();
@@ -705,15 +702,6 @@ public:
         return ff;
     }
 
-    AstPtr parse_object() {
-        Position p = position();
-        force_token(TOKEN_OBJECT);
-        force_token(TOKEN_LPAREN);
-        auto ff = parse_fields();
-        force_token(TOKEN_RPAREN);
-        return AstExprObject(p, ff).clone();
-    }
-
     // declarations
     AstPtr parse_decl_data() {
         Position p = position();
@@ -747,6 +735,21 @@ public:
         }
     }
 
+    AstPtr parse_decl_object() {
+        Position p = position();
+        force_token(TOKEN_OBJECT);
+        AstPtr c = parse_combinator();
+        AstPtrs vv;
+        while (is_variable()) {
+            auto v = parse_variable();
+            vv.push_back(v);
+        }
+        force_token(TOKEN_LPAREN);
+        auto ff = parse_fields();
+        force_token(TOKEN_RPAREN);
+        return AstDeclObject(p, c, vv, ff).clone();
+    }
+
     AstPtr parse_decl_namespace() {
         Position p = position();
         force_token(TOKEN_NAMESPACE);
@@ -766,6 +769,7 @@ public:
         case TOKEN_DATA:
         case TOKEN_DEF:
         case TOKEN_NAMESPACE:
+        case TOKEN_OBJECT:
             return true;
             break;
         default:
@@ -781,6 +785,9 @@ public:
             break;
         case TOKEN_DEF:
             return parse_decl_definition();
+            break;
+        case TOKEN_OBJECT:
+            return parse_decl_object();
             break;
         case TOKEN_NAMESPACE:
             return parse_decl_namespace();

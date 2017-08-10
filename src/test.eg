@@ -19,17 +19,14 @@ namespace Test (
         | cons (X:int) XX -> cons X (filter XX)
         | cons X XX -> filter XX ] 
 
-    def box =
-        [ W, H ->
-            object (
-                data width W
-                data height H
+    object box W H (
+        data width, W
+        data height, H
 
-                def set_width =
-                    [ SELF -> SELF ]
+        def set_width =
+            [ SELF -> SELF ]
+    )
 
-             )
-        ]
 )
 /*
 */

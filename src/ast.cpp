@@ -157,12 +157,6 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         return compare_asts(tt0, tt1);
         break;
     }
-    case AST_EXPR_OBJECT: {
-        AST_EXPR_OBJECT_SPLIT(a0, p0, tt0);
-        AST_EXPR_OBJECT_SPLIT(a1, p1, tt1);
-        return compare_asts(tt0, tt1);
-        break;
-    }
     // compound statements
     case AST_EXPR_APPLICATION: {
         AST_EXPR_APPLICATION_SPLIT(a0, p0, aa0);
@@ -248,6 +242,16 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         AST_DECL_OPERATOR_SPLIT(a0, p0, c0, e0);
         AST_DECL_OPERATOR_SPLIT(a1, p1, c1, e1);
         return compare_ast2(c0, c1, e0, e1);
+        break;
+    }
+    case AST_DECL_OBJECT: {
+        AST_DECL_OBJECT_SPLIT(a0, p0, c0, vv0, ff0);
+        AST_DECL_OBJECT_SPLIT(a1, p1, c1, vv1, ff1);
+        c = compare_ast(c0, c1);
+        if (c != 0) return c;
+        c = compare_asts(vv0, vv1);
+        if (c != 0) return c;
+        return compare_asts(ff0, ff1);
         break;
     }
     case AST_DECL_NAMESPACE: {

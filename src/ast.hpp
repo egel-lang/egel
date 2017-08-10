@@ -31,7 +31,6 @@ typedef enum {
     // list, tuple and object
     AST_EXPR_LIST,          // desugared
     AST_EXPR_TUPLE,         // desugared
-    AST_EXPR_OBJECT,        // desugared
     // compound statements
     AST_EXPR_APPLICATION,
     AST_EXPR_BLOCK,
@@ -49,6 +48,7 @@ typedef enum {
     AST_DECL_DATA,
     AST_DECL_DEFINITION,
     AST_DECL_OPERATOR,
+    AST_DECL_OBJECT,        // desugared
     // wrapper
     AST_WRAPPER,
 } ast_tag_t;
@@ -683,56 +683,6 @@ typedef std::shared_ptr<AstExprTuple> AstExprTuplePtr;
 #define AST_EXPR_TUPLE_CAST(a)    std::static_pointer_cast<AstExprTuple>(a)
 #define AST_EXPR_TUPLE_SPLIT(a, p, dd) \
     auto _##a  = AST_EXPR_TUPLE_CAST(a); \
-    auto p   = _##a->position(); \
-    auto dd  = _##a->content();
-
-class AstExprObject : public Ast {
-public:
-    AstExprObject(const Position &p, const AstPtrs& c)
-        : Ast(AST_EXPR_OBJECT, p), _content(c) {
-    }
-
-    AstExprObject(const AstExprObject& c) 
-        : AstExprObject(c.position(), c.content()) {
-    }
-
-    AstPtr clone() const {
-        return AstPtr(new AstExprObject(*this));
-    }
-
-    AstPtrs content() const {
-        return _content;
-    }
-
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
-        l += 8;
-        for (auto e : _content) {
-            l = e->approximate_length(l);
-            l += 2;
-            if (l >= line_length) return l;
-        }
-        l += 1;
-        return l;
-    }
-
-    void render(std::ostream& os, uint_t indent) const {
-        os << "object (" << std::endl;
-        for (auto& c:content()) {
-            c->render(os, indent+4);
-        }
-        skip(os, indent);
-        os << ")";
-    }
-
-private:
-    AstPtrs _content;
-};
-
-typedef std::shared_ptr<AstExprObject> AstExprObjectPtr;
-#define AST_EXPR_OBJECT_CAST(a)    std::static_pointer_cast<AstExprObject>(a)
-#define AST_EXPR_OBJECT_SPLIT(a, p, dd) \
-    auto _##a  = AST_EXPR_OBJECT_CAST(a); \
     auto p   = _##a->position(); \
     auto dd  = _##a->content();
 
@@ -1577,6 +1527,68 @@ typedef std::shared_ptr<AstDeclOperator> AstDeclOperatorPtr;
     auto p   = _##a->position(); \
     auto c   = _##a->combinator(); \
     auto e   = _##a->expression();
+
+class AstDeclObject : public Ast {
+public:
+    AstDeclObject(const Position &p, const AstPtr& n, const AstPtrs& vv, const AstPtrs& ff)
+        : Ast(AST_DECL_OBJECT, p), _name(n), _variables(vv), _fields(ff) {
+    }
+
+    AstDeclObject(const AstDeclObject& a) 
+        : AstDeclObject(a.position(), a.name(), a.variables(), a.fields()) {
+    }
+
+    AstPtr clone() const {
+        return AstPtr(new AstDeclObject(*this));
+    }
+    
+    AstPtr name() const {
+        return _name;
+    }
+
+    AstPtrs variables() const {
+        return _variables;
+    }
+
+    AstPtrs fields() const {
+        return _fields;
+    }
+
+    uint_t approximate_length(uint_t indent) const {
+        return indent;
+    }
+
+    void render(std::ostream& os, uint_t indent) const {
+        skip(os, indent);
+        os << STRING_OBJECT << " " << name() << " ";
+        for (auto v:variables()) {
+            v->render(os, indent);
+            os << " ";
+        }
+        os << "(" << std::endl;
+        //skip_line(os, indent+4);
+        for (auto f:fields()) {
+            f->render(os, indent+4);
+        }
+        skip(os, indent);
+        os << ")";
+        os << std::endl;
+    }
+
+private:
+    AstPtr  _name;
+    AstPtrs _variables;
+    AstPtrs _fields;
+};
+
+typedef std::shared_ptr<AstDeclObject> AstDeclObjectPtr;
+#define AST_DECL_OBJECT_CAST(a)    std::static_pointer_cast<AstDeclObject>(a)
+#define AST_DECL_OBJECT_SPLIT(a, p, n, vv, ff) \
+    auto _##a  = AST_DECL_OBJECT_CAST(a); \
+    auto p   = _##a->position(); \
+    auto n   = _##a->name(); \
+    auto vv  = _##a->variables(); \
+    auto ff  = _##a->fields();
 
 
 class AstDirectImport : public Ast {

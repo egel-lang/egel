@@ -67,11 +67,6 @@ public:
         return AstExprTuple(p, tt0).clone();
     }
 
-    virtual AstPtr transform_expr_object(const AstPtr& a, const Position& p, const AstPtrs& tt) {
-        auto tt0 = transforms(tt);
-        return AstExprObject(p, tt0).clone();
-    }
-
     virtual AstPtr transform_expr_list(const AstPtr& a, const Position& p, const AstPtrs& tt) {
         auto tt0 = transforms(tt);
         return AstExprList(p, tt0).clone();
@@ -155,6 +150,13 @@ public:
         return AstDeclOperator(p, c0, e0).clone();
     }
 
+    virtual AstPtr transform_decl_object(const AstPtr& a, const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) {
+        auto c0 = transform(c);
+        auto vv0 = transforms(vv);
+        auto ff0 = transforms(ff);
+        return AstDeclObject(p, c0, vv0, ff0).clone();
+    }
+
     virtual AstPtr transform_decl_namespace(const AstPtr& a, const Position& p, const UnicodeStrings& nn, const AstPtrs& dd) {
         auto dd0 = transforms(dd);
         return AstDeclNamespace(p, nn, dd0).clone();
@@ -224,11 +226,6 @@ public:
         case AST_EXPR_TUPLE: {
             AST_EXPR_TUPLE_SPLIT(a, p, tt);
             return transform_expr_tuple(a, p, tt);
-            break;
-        }
-        case AST_EXPR_OBJECT: {
-            AST_EXPR_OBJECT_SPLIT(a, p, tt);
-            return transform_expr_object(a, p, tt);
             break;
         }
         case AST_EXPR_LIST: {
@@ -307,6 +304,11 @@ public:
         case AST_DECL_OPERATOR: {
             AST_DECL_OPERATOR_SPLIT(a, p, c, e);
             return transform_decl_operator(a, p, c, e);
+            break;
+        }
+        case AST_DECL_OBJECT: {
+            AST_DECL_OBJECT_SPLIT(a, p, c, vv, ff);
+            return transform_decl_object(a, p, c, vv, ff);
             break;
         }
         case AST_DECL_NAMESPACE: {
@@ -390,11 +392,6 @@ public:
         return AstExprList(p, tt0).clone();
     }
 
-    virtual AstPtr rewrite_expr_object(const Position& p, const AstPtrs& tt) {
-        auto tt0 = rewrites(tt);
-        return AstExprObject(p, tt0).clone();
-    }
-
     // compound statements
     virtual AstPtr rewrite_expr_application(const Position& p, const AstPtrs& aa) {
         auto aa0 = rewrites(aa);
@@ -474,6 +471,13 @@ public:
         return AstDeclOperator(p, c0, e0).clone();
     }
 
+    virtual AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) {
+        auto c0 = rewrite(c);
+        auto vv0 = rewrites(vv);
+        auto ff0 = rewrites(ff);
+        return AstDeclObject(p, c0, vv0, ff0).clone();
+    }
+
     virtual AstPtr rewrite_decl_namespace(const Position& p, const UnicodeStrings& nn, const AstPtrs& dd) {
         auto dd0 = rewrites(dd);
         return AstDeclNamespace(p, nn, dd0).clone();
@@ -543,11 +547,6 @@ public:
         case AST_EXPR_TUPLE: {
             AST_EXPR_TUPLE_SPLIT(a, p, tt);
             return rewrite_expr_tuple(p, tt);
-            break;
-        }
-        case AST_EXPR_OBJECT: {
-            AST_EXPR_OBJECT_SPLIT(a, p, tt);
-            return rewrite_expr_object(p, tt);
             break;
         }
         case AST_EXPR_LIST: {
@@ -628,6 +627,11 @@ public:
             return rewrite_decl_operator(p, c, e);
             break;
         }
+        case AST_DECL_OBJECT: {
+            AST_DECL_OBJECT_SPLIT(a, p, c, vv, ff);
+            return rewrite_decl_object(p, c, vv, ff);
+            break;
+        }
         case AST_DECL_NAMESPACE: {
             AST_DECL_NAMESPACE_SPLIT(a, p, nn, dd);
             return rewrite_decl_namespace(p, nn, dd);
@@ -685,10 +689,6 @@ public:
     }
 
     virtual void visit_expr_tuple(const Position& p, const AstPtrs& tt) {
-        visits(tt);
-    }
-
-    virtual void visit_expr_object(const Position& p, const AstPtrs& tt) {
         visits(tt);
     }
 
@@ -760,6 +760,12 @@ public:
         visit(e);
     }
 
+    virtual void visit_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) {
+        visit(c);
+        visits(vv);
+        visits(ff);
+    }
+
     virtual void visit_decl_namespace(const Position& p, const UnicodeStrings& nn, const AstPtrs& dd) {
         visits(dd);
     }
@@ -827,11 +833,6 @@ public:
         case AST_EXPR_TUPLE: {
             AST_EXPR_TUPLE_SPLIT(a, p, tt);
             return visit_expr_tuple(p, tt);
-            break;
-        }
-        case AST_EXPR_OBJECT: {
-            AST_EXPR_OBJECT_SPLIT(a, p, tt);
-            return visit_expr_object(p, tt);
             break;
         }
         case AST_EXPR_LIST: {
@@ -910,6 +911,11 @@ public:
         case AST_DECL_OPERATOR: {
             AST_DECL_OPERATOR_SPLIT(a, p, c, e);
             return visit_decl_operator(p, c, e);
+            break;
+        }
+        case AST_DECL_OBJECT: {
+            AST_DECL_OBJECT_SPLIT(a, p, c, vv, ff);
+            return visit_decl_object(p, c, vv, ff);
             break;
         }
         case AST_DECL_NAMESPACE: {
