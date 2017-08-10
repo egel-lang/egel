@@ -227,6 +227,7 @@ std::vector<VMObjectPtr> vm_export(VM* vm) {
     oo.push_back(VMObjectData(vm, "System", "true").clone());
     oo.push_back(VMObjectData(vm, "System", "false").clone());
     oo.push_back(VMObjectData(vm, "System", "tuple").clone());
+    oo.push_back(VMObjectData(vm, "System", "object").clone());
 
     oo.push_back(VMObjectData(vm, "System", "divzero").clone());
 
