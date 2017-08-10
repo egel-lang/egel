@@ -217,9 +217,9 @@ public:
 
 // System.get O F
 // Retrieve an object field
-class GetField: public Dyadic {
+class GetField: public Binary {
 public:
-    DYADIC_PREAMBLE(GetField, "System", "get_field");
+    BINARY_PREAMBLE(GetField, "System", "get_field");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t object = 0;

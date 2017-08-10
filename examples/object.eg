@@ -2,62 +2,47 @@
  * There are several manners in which you can try to emulate object
  * orientation (OO) in Egel. This is one manner.
  *
- * An object has a mutable state and a collection of named methods. 
+ * An object is a record of mutable fields.
+ *
+ * This is implemented pretty wastefully at the moment, an object
+ * is syntactic sugar for a data record which holds named fields.
+ * Lookup is O(c*n) with n the number of fields and c a large 
+ * constant.
+ *
+ * That should become better once the runtime is overhauled.
  */
 import "prelude.eg"
 
-// a namespace OO which introduces the 'object' datatype and 
-// accessors.
-namespace OO (
-    using System
-
-    data object
-
-    def object_get_state =
-        [ object STATE MM -> get STATE ]
-
-    def object_set_state =
-        [ object STATE MM, S -> object (set STATE S) MM ]
-
-    def object_get_method0 =
-        [ cons NAME0 (cons METHOD MM), NAME1 ->
-            if NAME0 == NAME1 then METHOD else object_get_method0 MM NAME1
-        | {}, NAME1 -> NAME1 ]
-
-    def object_get_method =
-        [ object STATE MM, NAME -> object_get_method0 MM NAME ]
-
-    def @@ = 
-        [ SELF, NAME -> (object_get_method SELF NAME) SELF ]
-
-)
-
-using OO
 using System
 
 // examples of a box and a circle class.
-def box =
-    [ W, H -> 
-        object (var (W, H)) 
-        { "resize", 
-          [ SELF, WW, HH -> object_set_state SELF (WW, HH) ],
-          "area",
-          [ SELF -> [(W, H) -> W*H] (object_get_state SELF) ] }
-    ]
+object box W H (
+    data width, W
+    data height, H
 
-def circle =
-    [ R -> 
-        object (var R) 
-        { "resize", 
-          [ SELF, R -> object_set_state SELF R ],
-          "area",
-          [ SELF -> [R -> (tofloat (R*R))*3 ] (object_get_state SELF) ] }
-    ]
+    def resize =
+        [ SELF, W, H ->
+             Z = set_field SELF width W; 
+                set_field SELF height H ]
 
+    def area =
+        [ SELF ->
+            ((get_field SELF width) * (get_field SELF height)) ]
+)
+
+object circle R (
+    data radius, R
+
+    def area =
+        [ SELF -> 
+            RR = tofloat(get_field SELF radius);
+                R*R*Math.pi ]
+)
+    
 def main =
-    B = box 1 5;
-    AREA0 = B @@ "area";
-    N = (B @@ "resize") 2 3;
-    AREA1 = B @@ "area";
+    B = box 4 5;
+    AREA0 = B @@ area;
+    N = (B @@ resize) 2 3;
+    AREA1 = B @@ area;
         (AREA0, AREA1)
 
