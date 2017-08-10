@@ -1,21 +1,16 @@
 /*
- * There are several manners in which you can try to emulate object
- * orientation (OO) in Egel. This is one manner.
+ * Inheritance is for the moment implemented with the extend
+ * combinator.
  *
- * An object is a record of mutable fields.
+ * 'extend OBJECT0 OBJECT1' creates an object which is the union of
+ * fields of OBJECT0 overwritten by OBJECT1.
  *
- * This is implemented pretty wastefully at the moment, an object
- * is syntactic sugar for a data record which holds named fields.
- * Lookup is O(c*n) with n the number of fields and c a large 
- * constant.
- *
- * That should become better once the runtime is overhauled.
+ * Probably extend will also be included as syntactic sugar.
  */
 import "prelude.eg"
 
 using System
 
-// examples of a box and a circle class.
 object place X Y (
     data row, X
     data column, Y
@@ -32,7 +27,7 @@ object box W H (
 
     def resize =
         [ SELF, W, H ->
-             Z = set SELF width W; 
+             Z = set SELF width W;
                 set SELF height H ]
 
     def area =
@@ -40,17 +35,8 @@ object box W H (
             ((get SELF width) * (get SELF height)) ]
 )
 
-object circle R (
-    data radius, R
-
-    def area =
-        [ SELF -> 
-            RR = tofloat(get SELF radius);
-                R*R*Math.pi ]
-)
-    
+// make a placeable box.
 def main =
     B = extend (place 0 1) (box 4 5);
     U = (B @@ move) 2 3;
     B
-

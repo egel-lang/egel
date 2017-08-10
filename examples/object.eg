@@ -10,6 +10,8 @@
  * constant.
  *
  * That should become better once the runtime is overhauled.
+ *
+ * Objects are not thread safe.
  */
 import "prelude.eg"
 

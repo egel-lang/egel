@@ -9,15 +9,17 @@
  * system, we need to check some trivial invariants that the result
  * of storing/retrieving a value still results in a tree/dag.
  *
- * - var X,         is trivially a tree if X is a tree
- * - getv (var X),   is also trivially a tree if X was a tree
- * - setv (var X) Y, overwrites and is the only special construct you
- *                  need. If Y is a tree then var Y is also trivially
- *                  a tree.
+ * - var X -> var X,          is trivially a tree if X is a tree
+ * - getv (var X) -> X,       is also trivially a tree if X was a tree
+ * - setv (var X) Y -> var Y, overwrites and is the only special construct
+ *                            you need. If Y is a tree then var Y is also
+ *                            trivially a tree.
  *
  * The name variable is a bit of a misnomer. Variables are implemented 
  * as mutable records which can be passed around; i.e., are not bound 
  * to any stack frame or lexical scope.
+ *
+ * Variables are not thread safe.
  */
 
 import "prelude.eg"
