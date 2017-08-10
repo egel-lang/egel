@@ -888,6 +888,13 @@ public:
         : Ast(AST_EXPR_BLOCK, p), _matches(mm) {
     }
 
+    AstExprBlock(const Position &p, const AstPtr& m)
+        : Ast(AST_EXPR_BLOCK, p) {
+            AstPtrs mm;
+            mm.push_back(m);
+            _matches = mm;
+    }
+
     AstExprBlock(const AstExprBlock& c) 
         : AstExprBlock(c.position(), c.matches()) {
     }

@@ -337,6 +337,57 @@ AstPtr pass_guard(const AstPtr& a) {
     return guard.guard(a);
 }
 
+class RewriteObject: public Rewrite {
+public:
+    AstPtr object(const AstPtr& a) {
+        return rewrite(a);
+    }
+
+    AstPtr rewrite_decl_definition(const Position& p, const AstPtr& c, const AstPtr& e) override {
+        return AstDeclDefinition(p, c, e).clone(); // cut
+    }
+
+    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
+        return AstDeclOperator(p, c, e).clone(); // cut
+    }
+
+    AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) override {
+        AstPtrs oo;
+        AstPtrs dd;
+        oo.push_back(AstExprCombinator(p, STRING_SYSTEM, STRING_OBJECT).clone());
+        for (auto f:ff) {
+            if (f->tag() == AST_DECL_DATA) {
+                AST_DECL_DATA_SPLIT(f, p, dd0);
+                oo.push_back(dd0[0]);
+                oo.push_back(dd0[1]);
+                dd.push_back(dd0[0]);
+            } else if (f->tag() == AST_DECL_DEFINITION) {
+                AST_DECL_DEFINITION_SPLIT(f, p, c, e);
+                oo.push_back(c);
+                oo.push_back(e);
+                dd.push_back(c);
+            } else {
+                PANIC("failed to rewrite field");
+            }
+        }
+        AstPtr body = AstExprApplication(p, oo).clone();
+        if (vv.size() > 0) {
+            auto m = AstExprMatch(p, vv, AstEmpty().clone(), body).clone();
+            auto l = AstExprBlock(p, m).clone();
+            body = l;
+        }
+        AstPtrs decls;
+        decls.push_back(AstDeclData(p, dd).clone());
+        decls.push_back(AstDeclDefinition(p, c, body).clone());
+        return AstWrapper(p, decls).clone();
+    }
+};
+
+AstPtr pass_object(const AstPtr& a) {
+    RewriteObject object;
+    return object.object(a);
+}
+
 AstPtr desugar(const AstPtr& a) {
     auto a0 = pass_condition(a);
     a0 = pass_wildcard(a0);
@@ -345,5 +396,6 @@ AstPtr desugar(const AstPtr& a) {
     a0 = pass_let(a0);
     a0 = pass_lambda(a0);
     a0 = pass_guard(a0);
+    a0 = pass_object(a0);
     return a0;
 }

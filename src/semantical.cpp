@@ -238,6 +238,7 @@ public:
         default:
             PANIC("unknown state");
             return nullptr;
+            break;
         }
     }
 
@@ -254,7 +255,9 @@ public:
         default:
             PANIC("unknown state");
             return nullptr;
+            break;
         }
+        return nullptr; // play nice with -Wall
     }
 
     AstPtr rewrite_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& t) override {
@@ -270,7 +273,9 @@ public:
         default:
             PANIC("unknown state");
             return nullptr;
+            break;
         }
+        return nullptr; // play nice with -Wall
     }
 
     AstPtr rewrite_expr_match(const Position& p, const AstPtrs& mm, const AstPtr& g, const AstPtr& e) override {
@@ -316,6 +321,7 @@ public:
             set_identify_state(STATE_IDENTIFY_USE);
             auto ee0 = rewrites(ee);
             auto a = AstDeclData(p, ee0).clone();
+            set_identify_state(STATE_IDENTIFY_FIELD);
             return a;
         } else {
             set_identify_state(STATE_IDENTIFY_USE);
