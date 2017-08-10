@@ -28,9 +28,10 @@ typedef enum {
     AST_EXPR_OPERATOR,      // compiled out
     // special pattern
     AST_EXPR_TAG,
-    // list and tuple
+    // list, tuple and object
     AST_EXPR_LIST,          // desugared
     AST_EXPR_TUPLE,         // desugared
+    AST_EXPR_OBJECT,        // desugared
     // compound statements
     AST_EXPR_APPLICATION,
     AST_EXPR_BLOCK,
@@ -682,6 +683,56 @@ typedef std::shared_ptr<AstExprTuple> AstExprTuplePtr;
 #define AST_EXPR_TUPLE_CAST(a)    std::static_pointer_cast<AstExprTuple>(a)
 #define AST_EXPR_TUPLE_SPLIT(a, p, dd) \
     auto _##a  = AST_EXPR_TUPLE_CAST(a); \
+    auto p   = _##a->position(); \
+    auto dd  = _##a->content();
+
+class AstExprObject : public Ast {
+public:
+    AstExprObject(const Position &p, const AstPtrs& c)
+        : Ast(AST_EXPR_OBJECT, p), _content(c) {
+    }
+
+    AstExprObject(const AstExprObject& c) 
+        : AstExprObject(c.position(), c.content()) {
+    }
+
+    AstPtr clone() const {
+        return AstPtr(new AstExprObject(*this));
+    }
+
+    AstPtrs content() const {
+        return _content;
+    }
+
+    uint_t approximate_length(uint_t indent) const {
+        uint_t l = indent;
+        l += 8;
+        for (auto e : _content) {
+            l = e->approximate_length(l);
+            l += 2;
+            if (l >= line_length) return l;
+        }
+        l += 1;
+        return l;
+    }
+
+    void render(std::ostream& os, uint_t indent) const {
+        os << "object (" << std::endl;
+        for (auto& c:content()) {
+            c->render(os, indent+4);
+        }
+        skip(os, indent);
+        os << ")";
+    }
+
+private:
+    AstPtrs _content;
+};
+
+typedef std::shared_ptr<AstExprObject> AstExprObjectPtr;
+#define AST_EXPR_OBJECT_CAST(a)    std::static_pointer_cast<AstExprObject>(a)
+#define AST_EXPR_OBJECT_SPLIT(a, p, dd) \
+    auto _##a  = AST_EXPR_OBJECT_CAST(a); \
     auto p   = _##a->position(); \
     auto dd  = _##a->content();
 

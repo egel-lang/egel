@@ -67,6 +67,11 @@ public:
         return AstExprTuple(p, tt0).clone();
     }
 
+    virtual AstPtr transform_expr_object(const AstPtr& a, const Position& p, const AstPtrs& tt) {
+        auto tt0 = transforms(tt);
+        return AstExprObject(p, tt0).clone();
+    }
+
     virtual AstPtr transform_expr_list(const AstPtr& a, const Position& p, const AstPtrs& tt) {
         auto tt0 = transforms(tt);
         return AstExprList(p, tt0).clone();
@@ -219,6 +224,11 @@ public:
         case AST_EXPR_TUPLE: {
             AST_EXPR_TUPLE_SPLIT(a, p, tt);
             return transform_expr_tuple(a, p, tt);
+            break;
+        }
+        case AST_EXPR_OBJECT: {
+            AST_EXPR_OBJECT_SPLIT(a, p, tt);
+            return transform_expr_object(a, p, tt);
             break;
         }
         case AST_EXPR_LIST: {
@@ -380,6 +390,11 @@ public:
         return AstExprList(p, tt0).clone();
     }
 
+    virtual AstPtr rewrite_expr_object(const Position& p, const AstPtrs& tt) {
+        auto tt0 = rewrites(tt);
+        return AstExprObject(p, tt0).clone();
+    }
+
     // compound statements
     virtual AstPtr rewrite_expr_application(const Position& p, const AstPtrs& aa) {
         auto aa0 = rewrites(aa);
@@ -530,6 +545,11 @@ public:
             return rewrite_expr_tuple(p, tt);
             break;
         }
+        case AST_EXPR_OBJECT: {
+            AST_EXPR_OBJECT_SPLIT(a, p, tt);
+            return rewrite_expr_object(p, tt);
+            break;
+        }
         case AST_EXPR_LIST: {
             AST_EXPR_LIST_SPLIT(a, p, tt);
             return rewrite_expr_list(p, tt);
@@ -668,6 +688,10 @@ public:
         visits(tt);
     }
 
+    virtual void visit_expr_object(const Position& p, const AstPtrs& tt) {
+        visits(tt);
+    }
+
     virtual void visit_expr_list(const Position& p, const AstPtrs& tt) {
         visits(tt);
     }
@@ -803,6 +827,11 @@ public:
         case AST_EXPR_TUPLE: {
             AST_EXPR_TUPLE_SPLIT(a, p, tt);
             return visit_expr_tuple(p, tt);
+            break;
+        }
+        case AST_EXPR_OBJECT: {
+            AST_EXPR_OBJECT_SPLIT(a, p, tt);
+            return visit_expr_object(p, tt);
             break;
         }
         case AST_EXPR_LIST: {

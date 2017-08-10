@@ -120,6 +120,7 @@
 #define STRING_CONS             "cons"
 
 #define STRING_TUPLE            "tuple"
+#define STRING_OBJECT           "object"
 
 #define STRING_FAIL             "fail"
 
@@ -147,6 +148,7 @@
 #define STRING_SYSTEM_TEXT      "System.text"
 
 #define STRING_SYSTEM_TUPLE     "System.tuple"
+#define STRING_SYSTEM_OBJECT    "System.object"
 
 #define STRING_SYSTEM_FAIL      "System.fail"
 

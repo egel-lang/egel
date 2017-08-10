@@ -157,6 +157,12 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         return compare_asts(tt0, tt1);
         break;
     }
+    case AST_EXPR_OBJECT: {
+        AST_EXPR_OBJECT_SPLIT(a0, p0, tt0);
+        AST_EXPR_OBJECT_SPLIT(a1, p1, tt1);
+        return compare_asts(tt0, tt1);
+        break;
+    }
     // compound statements
     case AST_EXPR_APPLICATION: {
         AST_EXPR_APPLICATION_SPLIT(a0, p0, aa0);

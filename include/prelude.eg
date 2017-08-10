@@ -24,6 +24,11 @@ namespace System (
 
 )
 
+namespace Opt (
+    data just
+    data nothing
+)
+
 namespace List (
 
     using System

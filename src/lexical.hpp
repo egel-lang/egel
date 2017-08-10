@@ -45,6 +45,9 @@ typedef enum {
     TOKEN_LAMBDA,
     TOKEN_ARROW,
 
+//  objects
+    TOKEN_OBJECT,
+
 //  compound expressions
     TOKEN_IF,
     TOKEN_THEN,

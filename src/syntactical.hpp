@@ -507,6 +507,7 @@ public:
         case TOKEN_THROW:
         case TOKEN_LSQUARE:
         case TOKEN_LCURLY:
+        case TOKEN_OBJECT:
             return true;
             break;
         default:
@@ -553,6 +554,9 @@ public:
             break;
         case TOKEN_THROW:
             return parse_throw();
+            break;
+        case TOKEN_OBJECT:
+            return parse_object();
             break;
         default:
             if (is_combinator()) {
@@ -643,6 +647,71 @@ public:
 
     AstPtr parse_expression() {
         return parse_arithmetic_expression();
+    }
+
+    // objects
+    bool is_field() {
+        switch (tag()) {
+        case TOKEN_DATA:
+        case TOKEN_DEF:
+            return true;
+            break;
+        default:
+            return false;
+            break;
+        }
+    }
+
+    AstPtr parse_field_data() {
+        Position p = position();
+        force_token(TOKEN_DATA);
+        AstPtrs ee = AstPtrs();
+        auto n = parse_combinator();
+        ee.push_back(n);
+        auto e = parse_expression();
+        ee.push_back(e);
+        return AstDeclData(p, ee).clone();
+    }
+
+    AstPtr parse_field_definition() {
+        Position p = position();
+        force_token(TOKEN_DEF);
+        auto c = parse_combinator();
+        force_token(TOKEN_EQ);
+        auto e = parse_expression();
+        return AstDeclDefinition(p, c, e).clone();
+    }
+
+    AstPtr parse_field() {
+        switch (tag()) {
+        case TOKEN_DATA:
+            return parse_field_data();
+            break;
+        case TOKEN_DEF:
+            return parse_field_definition();
+            break;
+        default:
+            return nullptr; // XXX;
+            break;
+        }
+    }
+
+    AstPtrs parse_fields() {
+        AstPtrs ff;
+        while (is_field()) {
+            auto f = parse_field();
+            ff.push_back(f);
+        }
+        return ff;
+    }
+
+    AstPtr parse_object() {
+        Position p = position();
+        force_token(TOKEN_OBJECT);
+        force_token(TOKEN_LPAREN);
+        auto ff = parse_fields();
+        force_token(TOKEN_RPAREN);
+        return AstExprObject(p, ff).clone();
     }
 
     // declarations
