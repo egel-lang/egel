@@ -90,11 +90,11 @@ public:
     }
 };
 
-// System.get x
+// System.getv x
 // Retrieve a var field
 class Get: public Monadic {
 public:
-    MONADIC_PREAMBLE(Get, "System", "get");
+    MONADIC_PREAMBLE(Get, "System", "getv");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t var = 0;
@@ -111,11 +111,11 @@ public:
     }
 };
 
-// System.set x
+// System.setv x
 // Set a var field
 class Set: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Set, "System", "set");
+    DYADIC_PREAMBLE(Set, "System", "setv");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t var = 0;

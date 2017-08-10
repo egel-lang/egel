@@ -2,6 +2,7 @@
 #include "builtin.hpp"
 #include <stdlib.h>
 #include <ostream>
+#include <map>
 
 class MonMin: public Monadic {
 public:
@@ -219,7 +220,7 @@ public:
 // Retrieve an object field
 class GetField: public Binary {
 public:
-    BINARY_PREAMBLE(GetField, "System", "get_field");
+    BINARY_PREAMBLE(GetField, "System", "get");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t object = 0;
@@ -249,11 +250,11 @@ public:
     }
 };
 
-// System.set_field O F X
+// System.set O F X
 // set an object field
 class SetField: public Triadic {
 public:
-    TRIADIC_PREAMBLE(SetField, "System", "set_field");
+    TRIADIC_PREAMBLE(SetField, "System", "set");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         static symbol_t object = 0;
@@ -279,6 +280,52 @@ public:
             } else {
                 return nullptr;
             }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// System.extend O0 O1
+// Extend object O0 with every field from O1
+class ExtendField: public Dyadic {
+public:
+    DYADIC_PREAMBLE(ExtendField, "System", "extend");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static symbol_t object = 0;
+        if (object == 0) object = machine()->enter_symbol("System", "object");
+
+        if ( (arg0->tag() == VM_OBJECT_ARRAY) && (arg1->tag() == VM_OBJECT_ARRAY) ) {
+            auto ff0 = VM_OBJECT_ARRAY_VALUE(arg0);
+            auto sz0 = ff0.size();
+            auto ff1 = VM_OBJECT_ARRAY_VALUE(arg1);
+            auto sz1 = ff1.size();
+            // check head is an object
+            if (sz0 == 0) return nullptr;
+            if (ff0[0]->symbol() != object) return nullptr;
+            if (sz1 == 0) return nullptr;
+            if (ff1[0]->symbol() != object) return nullptr;
+            // create field union
+            unsigned int n;
+            std::map<VMObjectPtr, VMObjectPtr> fields;
+            for (n = 1; n < sz0; n=n+2) {
+                if ( (n+1) < sz0)
+                fields[ff0[n]] = ff0[n+1];
+            }
+            for (n = 1; n < sz1; n=n+2) {
+                if ( (n+1) < sz1)
+                fields[ff1[n]] = ff1[n+1];
+            }
+            // return object
+            VMObjectPtrs oo;
+            oo.push_back(machine()->get_data_symbol(object));
+            for (const auto& f:fields) {
+                oo.push_back(f.first);
+                oo.push_back(f.second);
+            }
+
+            return VMObjectArray::create(oo);
         } else {
             return nullptr;
         }
@@ -316,6 +363,7 @@ std::vector<VMObjectPtr> vm_export(VM* vm) {
 
     oo.push_back(GetField(vm).clone());
     oo.push_back(SetField(vm).clone());
+    oo.push_back(ExtendField(vm).clone());
 
     return oo;
 }

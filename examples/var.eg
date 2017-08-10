@@ -3,15 +3,15 @@
  * that yet.
  *
  * Basically, you can overwrite arguments of a combinator with a 
- * 'special' set construct.
+ * 'special' setv construct.
  *
  * Since Egel implements a tree, or directed acyclic graph, rewrite 
  * system, we need to check some trivial invariants that the result
  * of storing/retrieving a value still results in a tree/dag.
  *
  * - var X,         is trivially a tree if X is a tree
- * - get (var X),   is also trivially a tree if X was a tree
- * - set (var X) Y, overwrites and is the only special construct you
+ * - getv (var X),   is also trivially a tree if X was a tree
+ * - setv (var X) Y, overwrites and is the only special construct you
  *                  need. If Y is a tree then var Y is also trivially
  *                  a tree.
  *
@@ -24,4 +24,4 @@ import "prelude.eg"
 
 using System
 
-def main = [X -> Y = var X; Z = set Y ((get Y) * (get Y)); get Y ] 7
+def main = [X -> Y = var X; Z = setv Y ((getv Y) * (getv Y)); getv Y ] 7

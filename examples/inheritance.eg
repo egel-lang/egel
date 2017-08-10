@@ -16,6 +16,16 @@ import "prelude.eg"
 using System
 
 // examples of a box and a circle class.
+object place X Y (
+    data row, X
+    data column, Y
+
+    def move =
+        [ SELF, X, Y ->
+            Z = set SELF row X;
+                set SELF column Y ]
+)
+
 object box W H (
     data width, W
     data height, H
@@ -40,9 +50,7 @@ object circle R (
 )
     
 def main =
-    B = box 4 5;
-    AREA0 = B @@ area;
-    N = (B @@ resize) 2 3;
-    AREA1 = B @@ area;
-        (AREA0, AREA1)
+    B = extend (place 0 1) (box 4 5);
+    U = (B @@ move) 2 3;
+    B
 
