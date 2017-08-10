@@ -24,7 +24,7 @@ namespace Test (
         data height, H
 
         def set_width =
-            [ SELF -> SELF ]
+            [ SELF -> width SELF ]
     )
 
 )

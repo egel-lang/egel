@@ -18,8 +18,8 @@ UnicodeStrings concat(const UnicodeStrings& qq0, const UnicodeStrings& qq1) {
 }
 
 typedef enum {
-    STATE_DECLARE,
-    STATE_DECLARE_IMPLICIT,
+    STATE_DECLARE_GLOBAL,
+    STATE_DECLARE_FIELD,
 } declare_state_t;
 
 class VisitDeclare: public Visit {
@@ -30,6 +30,7 @@ public:
 
     void declare(NamespacePtr& env, const AstPtr& a) {
         _spaces = env;
+        set_declare_state(STATE_DECLARE_GLOBAL);
         visit(a);
     }
 
@@ -67,7 +68,7 @@ public:
     // visits
     void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
         switch (get_declare_state()) {
-        case STATE_DECLARE:
+        case STATE_DECLARE_GLOBAL:
             try {
                 auto nn0 = concat(_qualifications, nn);
                 auto q = qualified(nn0, n);
@@ -76,11 +77,11 @@ public:
                 throw ErrorSemantical(p, "redeclaration of " + n);
             }
             break;
-        case STATE_DECLARE_IMPLICIT:
+        case STATE_DECLARE_FIELD:
             try {
                 auto nn0 = concat(_qualifications, nn);
                 auto q = qualified(nn0, n);
-                declare_implicit(_spaces, nn0, n, q);
+                ::declare_implicit(_spaces, nn0, n, q);
             } catch (ErrorSemantical e) {
                 throw ErrorSemantical(p, "redeclaration of " + n);
             }
@@ -89,18 +90,26 @@ public:
     }
 
     void visit_decl_data(const Position& p, const AstPtrs& nn) override {
-        set_declare_state(STATE_DECLARE);
-        visits(nn);
+        if (get_declare_state() == STATE_DECLARE_GLOBAL) {
+            visits(nn);
+        } else {
+            visit(nn[0]);
+        }
     }
 
     void visit_decl_definition(const Position& p, const AstPtr& n, const AstPtr& e) override {
-        set_declare_state(STATE_DECLARE);
         visit(n);
     }
 
     void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
-        set_declare_state(STATE_DECLARE_IMPLICIT);
         visit(c);
+    }
+
+    void visit_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) override {
+        visit(c);
+        set_declare_state(STATE_DECLARE_FIELD);
+        visits(ff);
+        set_declare_state(STATE_DECLARE_GLOBAL);
     }
 
     void visit_decl_namespace(const Position& p, const UnicodeStrings& nn, const AstPtrs& dd) override {
@@ -123,9 +132,9 @@ void declare(NamespacePtr env, const AstPtr& a) {
 }
 
 typedef enum {
-    STATE_IDENTIFY_USAGE,
-    STATE_IDENTIFY_DECLARE,
+    STATE_IDENTIFY_USE,
     STATE_IDENTIFY_PATTERN,
+    STATE_IDENTIFY_FIELD,
 } identify_state_t;
 
 /*
@@ -137,7 +146,7 @@ typedef enum {
 class RewriteIdentify: public Rewrite {
 public:
     AstPtr identify(NamespacePtr env, AstPtr a) {
-        _identify_state = STATE_IDENTIFY_USAGE;
+        _identify_state = STATE_IDENTIFY_USE;
         _range = range_nil(env);
         return rewrite(a);
     }
@@ -216,7 +225,7 @@ public:
     // rewrites
     AstPtr rewrite_expr_variable(const Position& p, const UnicodeString& v) override {
         switch (get_identify_state()) {
-        case STATE_IDENTIFY_USAGE: {
+        case STATE_IDENTIFY_USE: {
                 auto v1 = get(p, v);
                 return AstExprVariable(p, v1).clone();
             }
@@ -232,66 +241,45 @@ public:
         }
     }
 
-    // XXX needs to be thought over..
     AstPtr rewrite_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
-        case STATE_IDENTIFY_USAGE: {
+        case STATE_IDENTIFY_PATTERN:
+        case STATE_IDENTIFY_USE: {
                 auto v = get(p, nn, t);
                 auto c = AstExprCombinator(p, ee, v).clone();
                 return c;
             }
             break;
-        case STATE_IDENTIFY_DECLARE: {
-                // XXX wait, wut?
-                auto v = get(p, nn, t);
-                auto c = AstExprCombinator(p, ee, v).clone();
-                return c;
-            }
-            break;
-        case STATE_IDENTIFY_PATTERN: {
-                auto v = get(p, nn, t);
-                auto c = AstExprCombinator(p, ee, v).clone();
-                return c;
-            }
-            break;
+        default:
+            PANIC("unknown state");
+            return nullptr;
         }
-        return nullptr; // XXX: surpress warning?
     }
 
-    // XXX needs to be thought over..
     AstPtr rewrite_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
-        case STATE_IDENTIFY_USAGE: {
+        case STATE_IDENTIFY_PATTERN: 
+        case STATE_IDENTIFY_USE: {
                 auto v = get(p, nn, t);
                 auto c = AstExprOperator(p, ee, v).clone();
                 return c;
             }
             break;
-        case STATE_IDENTIFY_DECLARE: {
-                auto v = get(p, nn, t);
-                auto c = AstExprOperator(p, ee, v).clone();
-                return c;
-            }
-            break;
-        case STATE_IDENTIFY_PATTERN: {
-                auto v = get(p, nn, t);
-                auto c = AstExprOperator(p, ee, v).clone();
-                return c;
-            }
-            break;
+        default:
+            PANIC("unknown state");
+            return nullptr;
         }
-        return nullptr; // XXX: surpress warning?
     }
 
     AstPtr rewrite_expr_match(const Position& p, const AstPtrs& mm, const AstPtr& g, const AstPtr& e) override {
         enter_range();
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto mm0 = rewrites(mm);
-        set_identify_state(STATE_IDENTIFY_USAGE);
+        set_identify_state(STATE_IDENTIFY_USE);
         auto g0 = rewrite(g);
-        set_identify_state(STATE_IDENTIFY_USAGE);
+        set_identify_state(STATE_IDENTIFY_USE);
         auto e0 = rewrite(e);
         leave_range();
         return AstExprMatch(p, mm0, g0, e0).clone();
@@ -301,9 +289,9 @@ public:
         enter_range();
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto lhs0 = rewrite(lhs);
-        set_identify_state(STATE_IDENTIFY_USAGE);
+        set_identify_state(STATE_IDENTIFY_USE);
         auto rhs0 = rewrite(rhs);
-        set_identify_state(STATE_IDENTIFY_USAGE);
+        set_identify_state(STATE_IDENTIFY_USE);
         auto body0 = rewrite(body);
         leave_range();
         return AstExprLet(p, lhs0, rhs0, body0).clone();
@@ -312,7 +300,7 @@ public:
     AstPtr rewrite_expr_tag(const Position& p, const AstPtr& e, const AstPtr& t) override {
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto e0 = rewrite(e);
-        set_identify_state(STATE_IDENTIFY_USAGE);
+        set_identify_state(STATE_IDENTIFY_USE);
         auto t0 = rewrite(t);
         set_identify_state(STATE_IDENTIFY_PATTERN);
         return AstExprTag(p, e0, t0).clone();
@@ -324,34 +312,59 @@ public:
     }
 
     AstPtr rewrite_decl_data(const Position& p, const AstPtrs& ee) override {
-        set_identify_state(STATE_IDENTIFY_DECLARE);
-        AstPtrs ee0;
-        for (auto& e:ee) {
-            auto e0 = rewrite(e);
-            ee0.push_back(e0);
+        if (get_identify_state() == STATE_IDENTIFY_FIELD) {
+            set_identify_state(STATE_IDENTIFY_USE);
+            auto ee0 = rewrites(ee);
+            auto a = AstDeclData(p, ee0).clone();
+            return a;
+        } else {
+            set_identify_state(STATE_IDENTIFY_USE);
+            auto ee0 = rewrites(ee);
+            auto a = AstDeclData(p, ee0).clone();
+            push_declaration(a);
+            return a;
         }
-        auto a = AstDeclData(p, ee0).clone();
-        push_declaration(a);
-        return a;
     }
 
     AstPtr rewrite_decl_definition(const Position& p, const AstPtr& n, const AstPtr& e) override {
-        set_identify_state(STATE_IDENTIFY_DECLARE);
-        auto n0 = rewrite(n);
-        set_identify_state(STATE_IDENTIFY_USAGE);
+        if (get_identify_state() == STATE_IDENTIFY_FIELD) {
+            set_identify_state(STATE_IDENTIFY_USE);
+            auto n0 = rewrite(n);
+            auto e0 = rewrite(e);
+            auto a = AstDeclDefinition(p, n0, e0).clone();
+            set_identify_state(STATE_IDENTIFY_FIELD);
+            return a;
+        } else {
+            auto n0 = rewrite(n);
+            auto e0 = rewrite(e);
+            auto a = AstDeclDefinition(p, n0, e0).clone();
+            push_declaration(a);
+            set_identify_state(STATE_IDENTIFY_USE);
+            return a;
+        }
+    }
+
+    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
+        set_identify_state(STATE_IDENTIFY_USE);
+        auto c0 = rewrite(c);
         auto e0 = rewrite(e);
-        auto a = AstDeclDefinition(p, n0, e0).clone();
+        auto a = AstDeclOperator(p, c0, e0).clone();
         push_declaration(a);
         return a;
     }
 
-    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
-        set_identify_state(STATE_IDENTIFY_DECLARE);
+    AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) override {
+        set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
-        set_identify_state(STATE_IDENTIFY_USAGE);
-        auto e0 = rewrite(e);
-        auto a = AstDeclOperator(p, c0, e0).clone();
+        enter_range();
+        set_identify_state(STATE_IDENTIFY_PATTERN);
+        auto vv0 = rewrites(vv);
+        set_identify_state(STATE_IDENTIFY_FIELD);
+        auto ff0 = rewrites(ff);
+        leave_range();
+        auto a = AstDeclObject(p, c0, vv0, ff0).clone();
         push_declaration(a);
+        set_identify_state(STATE_IDENTIFY_USE);
         return a;
     }
 
