@@ -215,6 +215,77 @@ public:
     }
 };
 
+// System.get O F
+// Retrieve an object field
+class GetField: public Dyadic {
+public:
+    DYADIC_PREAMBLE(GetField, "System", "get_field");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static symbol_t object = 0;
+        if (object == 0) object = machine()->enter_symbol("System", "object");
+
+        if (arg0->tag() == VM_OBJECT_ARRAY) {
+            auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
+            auto sz = ff.size();
+            // check head is an object
+            if (sz == 0) return nullptr;
+            if (ff[0]->symbol() != object) return nullptr;
+            // search for field
+            CompareVMObjectPtr compare;
+            unsigned int n;
+            for (n = 1; n < sz; n=n+2) {
+                if (compare(arg1, ff[n]) == 0) break;
+            }
+            // return field
+            if ( (n+1) < sz ) {
+                return ff[n+1];
+            } else {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// System.set_field O F X
+// set an object field
+class SetField: public Triadic {
+public:
+    TRIADIC_PREAMBLE(SetField, "System", "set_field");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
+        static symbol_t object = 0;
+        if (object == 0) object = machine()->enter_symbol("System", "object");
+
+        if (arg0->tag() == VM_OBJECT_ARRAY) {
+            auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
+            auto sz = ff.size();
+            // check head is an object
+            if (sz == 0) return nullptr;
+            if (ff[0]->symbol() != object) return nullptr;
+            // search field
+            CompareVMObjectPtr compare;
+            unsigned int n;
+            for (n = 1; n < sz; n=n+2) {
+                if (compare(arg1, ff[n]) == 0) break;
+            }
+            // set field
+            if ( (n+1) < sz ) {
+                auto arr = VM_OBJECT_ARRAY_CAST(arg0); // XXX: clean up this cast once. need destructive update
+                arr->set(n+1, arg2);
+                return arg0;
+            } else {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+
 std::vector<VMObjectPtr> vm_export(VM* vm) {
     std::vector<VMObjectPtr> oo;
     oo.push_back(VMObjectData(vm, "System", "int").clone());
@@ -242,6 +313,9 @@ std::vector<VMObjectPtr> vm_export(VM* vm) {
     oo.push_back(LessEq(vm).clone());
     oo.push_back(Eq(vm).clone());
     oo.push_back(NegEq(vm).clone());
+
+    oo.push_back(GetField(vm).clone());
+    oo.push_back(SetField(vm).clone());
 
     return oo;
 }

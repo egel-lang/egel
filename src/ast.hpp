@@ -112,7 +112,7 @@ struct EqualAstPtr {
     }
 };
 
-struct LessAstPtr : public std::binary_function<AstPtr, AstPtr, bool>
+struct LessAstPtr 
 {
     bool operator()(const AstPtr& a0, const AstPtr& a1) const
     {

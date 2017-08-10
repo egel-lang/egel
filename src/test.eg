@@ -24,7 +24,14 @@ namespace Test (
         data height, H
 
         def set_width =
-            [ SELF -> width SELF ]
+            [ SELF, W -> set_field SELF width W]
+    )
+
+    object circle R (
+        data radius, R
+
+        def move =
+            [ SELF -> SELF ]
     )
 
     object simple (
@@ -40,5 +47,5 @@ using System
 
 // def main = concat (concat {1, 2, 3} {4, 5, 6}) {}
 
-def main = Test.box (1 + 2) 5
+def main = get_field (Test.box (1 + 2) 5) Test.simple
 

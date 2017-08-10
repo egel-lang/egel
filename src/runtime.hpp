@@ -681,7 +681,7 @@ typedef std::shared_ptr<VMObjectCombinator> VMObjectCombinatorPtr;
 #define VM_OBJECT_COMBINATOR_SYMBOL(a) \
     (VM_OBJECT_COMBINATOR_CAST(a)->symbol())
 
-struct CompareVMObjectPtr : public std::binary_function<VMObjectPtr, VMObjectPtr, int>
+struct CompareVMObjectPtr 
 {
     int operator() (const VMObjectPtr& a0, const VMObjectPtr& a1) const{
         auto t0 = a0->tag();
@@ -764,14 +764,14 @@ struct CompareVMObjectPtr : public std::binary_function<VMObjectPtr, VMObjectPtr
         return 0;
     }
 };
-struct EqualVMObjectPtr : public std::binary_function<VMObjectPtr, VMObjectPtr, bool>
+struct EqualVMObjectPtr 
 {
     bool operator() (const VMObjectPtr& a0, const VMObjectPtr& a1) const{
         CompareVMObjectPtr compare;
         return (compare(a0, a1) == 0);
     }
 };
-struct LessVMObjectPtr : public std::binary_function<VMObjectPtr, VMObjectPtr, bool>
+struct LessVMObjectPtr 
 {
     bool operator()(const VMObjectPtr& a0, const VMObjectPtr& a1) const
     {
