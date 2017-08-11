@@ -1,6 +1,8 @@
 #include <sstream>
+#include <string.h>
 #include "utils.hpp"
 
+#define STRING_MAX_SIZE 65536
 // C routines
 void assert_fail(const char *assertion, const char *file, uint_t line) {
     std::cerr << file << ':' << line << ": assertion failed " << assertion << '\n';
@@ -53,11 +55,9 @@ bool exists_file(const char* filename) {
 // Unicode routines
 
 char* unicode_to_char(const UnicodeString &str) {
-    uint_t buffer_size = 256; // XXX: this is always a bad idea
-    char* buffer = new char[buffer_size];
-    uint_t size = str.extract(0, str.length(), buffer, buffer_size, "UTF-8");//FIXME: null, UTF-8, or platform specific?
-    ASSERT(size < buffer_size);
-    buffer[size] = 0;
+    auto len = str.extract(0, STRING_MAX_SIZE, nullptr, (uint32_t) 0);
+    auto buffer = new char[len+1];
+    str.extract(0, STRING_MAX_SIZE, buffer, len+1);
     return buffer;
 }
 
