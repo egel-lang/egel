@@ -1,0 +1,16 @@
+/*
+ * Egel supports variables though I didn't implement a nice syntax for
+ * that yet.
+ *
+ * Variables can create cycles. For the moment, we don't do anything
+ * about that though we may copy the argument once.
+ */
+
+import "prelude.eg"
+
+using System
+
+def main = 
+    Y = var 0; 
+    Y = setv Y Y;
+       Y
