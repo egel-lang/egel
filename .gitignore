@@ -32,6 +32,8 @@
 
 # Don't follow the main executable
 src/egel
+# Or a possible generated archive
+src/libegel.a
 # Don't follow dynamic libraries
 *.ego
 # Don't follow generated test cases

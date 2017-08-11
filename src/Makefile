@@ -1,5 +1,6 @@
 # compiler and compile options
 CC=g++ --std=c++0x
+AR=ar rvs
 CFLAGS=-c -Wall -pedantic
 LIBS= \
 	-ldl \
@@ -50,12 +51,18 @@ debug: $(SOURCES) $(EXECUTABLE)
 strip: CC=g++ -std=c++0x -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-s
 strip: $(SOURCES) $(EXECUTABLE)
 
+# archive
+ARCHIVE=libegel.a
+
+archive: CC=g++ --std=c++0x -O3
+archive: $(SOURCES) $(ARCHIVE)
+
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
-.cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
+$(ARCHIVE): $(OBJECTS)
+	$(AR) $(ARCHIVE) $(filter-out egel.o, $(OBJECTS))
 
 clean:
-	-rm -f $(OBJECTS) $(EXECUTABLE) gmon.out massive.out out
+	-rm -f $(OBJECTS) $(EXECUTABLE) $(ARCHIVE) gmon.out massive.out out
