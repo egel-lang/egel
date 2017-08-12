@@ -213,31 +213,32 @@ int main(int argc, char *argv[]) {
     };
 
     // start up the module system
-    ModuleManager mm;
-    mm.set_options(oo);
+    ModuleManagerPtr mm = std::make_shared<ModuleManager>();
+    mm->set_options(oo);
     Machine m;
-    mm.set_machine(&m);
+    mm->set_machine(&m);
     NamespacePtr env = namespace_nil();
-    mm.set_environment(env);
+    mm->set_environment(env);
+    mm->builtin();
+
+    // fire up the evaluator
+    Eval eval(mm);
 
     // load the file
     if (fn != "") {
-        Position p("",0,0);
         try {
-            mm.load(p, fn);
+            eval.eval_load(fn);
         } catch (Error e) {
             std::cerr << e << std::endl;
             return (EXIT_FAILURE);
         }
-    } else {
-        mm.prelude();
     }
 
     // start either interactive or batch mode
     if ((fn == "") || oo->interactive()) {
-        eval_interactive(mm);
+        eval.eval_interactive();
     } else {
-        eval_main(mm);
+        eval.eval_main();
     }
 
     return EXIT_SUCCESS;

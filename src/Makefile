@@ -27,7 +27,6 @@ SOURCES= \
 	lift.cpp \
 	emit.cpp \
 	builtin.cpp \
-	eval.cpp \
 	egel.cpp 
 
 OBJECTS=$(SOURCES:.cpp=.o)

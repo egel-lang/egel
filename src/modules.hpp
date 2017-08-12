@@ -181,6 +181,10 @@ private:
 class Module;
 typedef std::shared_ptr<Module> ModulePtr;
 
+class ModuleManager;
+typedef std::shared_ptr<ModuleManager> ModuleManagerPtr;
+
+
 typedef enum {
     MODULE_SOURCE,
     MODULE_DYNAMIC,
@@ -507,8 +511,6 @@ public:
 
     // implements incremental loading for interactive mode
     void load(const Position& p, const UnicodeString& fn) {
-        // XXX: hacked for the moment, should be moved to dynamic linking
-        prelude();
         preload(p, fn);
         _loading[0]->set_options(_options);
         transitive_closure();
@@ -517,12 +519,8 @@ public:
         flush();
     }
 
-    void prelude() {
+    void builtin() {
         // XXX: move this to a module
-        static bool has_prelude = false;
-        if (has_prelude) return;
-        has_prelude = true;
-
         auto oo = vm_export(_machine);
 
         for (auto& o:oo) {
