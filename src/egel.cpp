@@ -47,7 +47,7 @@ static option_t options[] = {
     "-v", "--version", OPTION_NONE, "display version",
     "-",  "--in",      OPTION_NONE, "interactive mode (default)",
     "-I", "--include", OPTION_DIR,  "add include directory",
-    "-o", "--output",  OPTION_FILE, "output to file",
+    "-e", "--eval",    OPTION_TEXT, "evaluate command",
     "-T", "--tokens",  OPTION_NONE, "output all tokens (debug)",
     "-U", "--unparse", OPTION_NONE, "output the parse tree (debug)",
     "-X", "--check",   OPTION_NONE, "output analyzed tree (debug)",
@@ -212,6 +212,14 @@ int main(int argc, char *argv[]) {
         }
     };
 
+    // check for command
+    UnicodeString e;
+    for (auto& p : pp) {
+        if (p.first == ("-e")) {
+            e = p.second;
+        };
+    };
+
     // start up the module system
     ModuleManagerPtr mm = std::make_shared<ModuleManager>();
     mm->set_options(oo);
@@ -235,7 +243,9 @@ int main(int argc, char *argv[]) {
     }
 
     // start either interactive or batch mode
-    if ((fn == "") || oo->interactive()) {
+    if (e != "") {
+        eval.eval_command(e);
+    } else if ((fn == "") || oo->interactive()) {
         eval.eval_interactive();
     } else {
         eval.eval_main();
