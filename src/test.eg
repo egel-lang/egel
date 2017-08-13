@@ -48,5 +48,5 @@ using Test
 
 // def main = concat (concat {1, 2, 3} {4, 5, 6}) {}
 
-def main = get (Test.box (1 + 2) 5) Test.width
+def main = get (Test.box (1 + 2) 5) Test.radius
 

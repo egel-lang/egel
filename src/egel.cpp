@@ -204,10 +204,13 @@ int main(int argc, char *argv[]) {
 
     // check for unique --/fn
     UnicodeString fn;
+    std::vector<UnicodeString> aa;
     for (auto& p : pp) {
         if (p.first == ("--")) {
             if (fn == "") {
                 fn = p.second;
+            } else {
+                aa.push_back(p.second);
             }
         }
     };
@@ -244,6 +247,7 @@ int main(int argc, char *argv[]) {
 
     // start either interactive or batch mode
     if (e != "") {
+        eval.eval_command(UnicodeString("using System"));
         eval.eval_command(e);
     } else if ((fn == "") || oo->interactive()) {
         eval.eval_interactive();

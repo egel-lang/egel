@@ -1168,6 +1168,12 @@ public:
                         rr.push_back(tt[i]);
                     }
                     r = VMObjectArray(rr).clone();
+
+                    auto index = VM_OBJECT_INTEGER_VALUE(rti);
+                    auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+                    rta->set(index, r);
+
+                    return k;
                 }
             } catch (VMObjectPtr e) {
                 auto exc   = tt[3];
@@ -1249,6 +1255,12 @@ public:
                         rr.push_back(tt[i]);
                     }
                     r = VMObjectArray(rr).clone();
+
+                    auto index = VM_OBJECT_INTEGER_VALUE(rti);
+                    auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+                    rta->set(index, r);
+
+                    return k;
                 }
             } catch (VMObjectPtr e) {
                 auto exc   = tt[3];
