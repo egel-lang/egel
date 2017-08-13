@@ -536,24 +536,25 @@ public:
         flush();
     }
 
+    void declare_object(const VMObjectPtr& o) {
+        if (o->tag() == VM_OBJECT_COMBINATOR) {
+            auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+            auto s   = _machine->get_symbol(sym);
+
+            UnicodeStrings nn;
+            nn.push_back(first(s));
+            auto n = second(s);
+            ::declare(_environment, nn, n, s);
+        }
+        _machine->enter_data(o);
+    }
+
     void builtin() {
         // XXX: move this to a module
         auto oo = vm_export(_machine);
 
         for (auto& o:oo) {
-            if (o->tag() == VM_OBJECT_COMBINATOR) {
-                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-                auto s   = _machine->get_symbol(sym);
-
-                UnicodeStrings nn;
-                nn.push_back(first(s));
-                auto n = second(s);
-                ::declare(_environment, nn, n, s);
-            }
-        }
-
-        for (auto& o:oo) {
-            _machine->enter_data(o);
+            declare_object(o);
         }
     }
 
