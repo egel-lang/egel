@@ -485,6 +485,23 @@ public:
     ModuleManager() {
     }
 
+    ModuleManager(const ModuleManager& mm):
+        _options(mm._options), _machine(mm._machine), _environment(mm._environment),
+        _modules(mm._modules), _loading(mm._loading) {
+    }
+
+    ModuleManagerPtr clone() {
+        return ModuleManagerPtr(new ModuleManager(*this));
+    }
+
+    void init(const OptionsPtr& oo, VM* vm, const NamespacePtr& env) {
+        set_options(oo);
+        set_machine(vm);
+        set_environment(env);
+        builtin();
+    }
+
+
     void set_machine(VM* vm) {
         _machine = vm;
     }
@@ -649,11 +666,11 @@ protected:
     }
 
 private:
+    OptionsPtr          _options;
+    VM*                 _machine;
+    NamespacePtr        _environment;
     ModulePtrs          _modules;
     ModulePtrs          _loading;
-    OptionsPtr          _options;
-    NamespacePtr        _environment;
-    VM*                 _machine;
 };
 
 #endif

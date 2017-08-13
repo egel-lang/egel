@@ -224,13 +224,10 @@ int main(int argc, char *argv[]) {
     };
 
     // start up the module system
-    ModuleManagerPtr mm = std::make_shared<ModuleManager>();
-    mm->set_options(oo);
+    ModuleManagerPtr mm = ModuleManager().clone();
     Machine m;
-    mm->set_machine(&m);
-    NamespacePtr env = namespace_nil();
-    mm->set_environment(env);
-    mm->builtin();
+    NamespacePtr env = Namespace().clone();
+    mm->init(oo, &m, env);
 
     // fire up the evaluator
     Eval eval(mm);

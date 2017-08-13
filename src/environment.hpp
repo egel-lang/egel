@@ -56,6 +56,14 @@ public:
     Namespace() {
     }
 
+    Namespace(const Namespace& nn):
+        _embeds(nn._embeds) {
+    }
+
+    NamespacePtr clone() {
+        return NamespacePtr(new Namespace(*this));
+    }
+
     NamespacePtr create_namespace(const UnicodeString& n) {
         if (_embeds.count(n) > 0) {
             return _embeds.at(n);
