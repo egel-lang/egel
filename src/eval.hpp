@@ -1,11 +1,12 @@
 #ifndef EVAL_HPP
 #define EVAL_HPP
 
+#include <functional>
 #include "utils.hpp"
 #include "runtime.hpp"
 #include "modules.hpp"
 
-typedef void (*callback_t)(VM* vm, const VMObjectPtr&);
+typedef std::function<void(VM* vm, const VMObjectPtr&)> callback_t;
 
 class VMObjectResult : public VMObjectCombinator {
 public:
