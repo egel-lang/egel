@@ -32,11 +32,9 @@ public:
     }
 
     UnicodeString error() const {
-        UnicodeString s;
+        UnicodeString s = "";
         if (position().resource() != "") {
-            s += position().resource() + ":";
-            s += position().row() + ":";
-            s += position().column() + ": ";
+            s += position().to_text() + ":";
         }
         switch(_tag) {
         case ERROR_IO:
@@ -55,7 +53,7 @@ public:
             s += STRING_SEMANTICAL;
             break;
         }
-        s += "error: " + message();
+        s += ":" + message();
         return s;
     }
 

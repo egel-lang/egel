@@ -2,6 +2,7 @@
 #define POSITION_H
 
 #include <iostream>
+#include <sstream>
 #include "utils.hpp"
 
 class Position {
@@ -33,8 +34,15 @@ public:
         return _column;
     }
 
+    UnicodeString to_text() {
+        std::stringstream ss;
+        ss << *this;
+        UnicodeString u(ss.str().c_str());
+        return u;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Position &p) {
-        os << p.resource() << " (" << p.row() << ", " << p.column() << ")";
+        os << p.resource() << ":" << p.row() << ":" << p.column() << "";
         return os;
     }
 
