@@ -145,41 +145,37 @@ public:
         dd.push_back(d);
         auto w = AstWrapper(p, dd).clone();
 
-        try {
-            if (d->tag() == AST_DECL_DEFINITION) { // start off by (re-)declaring the def
-                AST_DECL_DEFINITION_SPLIT(d, p0, c0, e0);
-                if (c0->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
-                    UnicodeString s;
-                    for (auto& s0:nn0) {
-                        s += s0;
-                        s += '.';
-                    }
-                    s += n0;
-                    ::declare_implicit(mm->get_environment(), nn0, n0, s);
+        if (d->tag() == AST_DECL_DEFINITION) { // start off by (re-)declaring the def
+            AST_DECL_DEFINITION_SPLIT(d, p0, c0, e0);
+            if (c0->tag() == AST_EXPR_COMBINATOR) {
+                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
+                UnicodeString s;
+                for (auto& s0:nn0) {
+                    s += s0;
+                    s += '.';
                 }
+                s += n0;
+                ::declare_implicit(mm->get_environment(), nn0, n0, s);
             }
-            if (d->tag() == AST_DECL_OPERATOR) { // or the operator.. (time to get rid of this alternative?)
-                AST_DECL_OPERATOR_SPLIT(d, p0, c0, e0);
-                if (c0->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
-                    UnicodeString s;
-                    for (auto& s0:nn0) {
-                        s += s0;
-                        s += '.';
-                    }
-                    s += n0;
-                    ::declare_implicit(mm->get_environment(), nn0, n0, s);
-                }
-            }
-            w = ::identify(mm->get_environment(), w);
-            w = ::desugar(w);
-            w = ::lift(w);
-            ::emit_data(vm, w);
-            ::emit_code(vm, w);
-        } catch (Error e) {
-            std::cerr << e << std::endl;
         }
+        if (d->tag() == AST_DECL_OPERATOR) { // or the operator.. (time to get rid of this alternative?)
+            AST_DECL_OPERATOR_SPLIT(d, p0, c0, e0);
+            if (c0->tag() == AST_EXPR_COMBINATOR) {
+                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
+                UnicodeString s;
+                for (auto& s0:nn0) {
+                    s += s0;
+                    s += '.';
+                }
+                s += n0;
+                ::declare_implicit(mm->get_environment(), nn0, n0, s);
+            }
+        }
+        w = ::identify(mm->get_environment(), w);
+        w = ::desugar(w);
+        w = ::lift(w);
+        ::emit_data(vm, w);
+        ::emit_code(vm, w);
     }
 
     void handle_expression(const AstPtr& a) {
@@ -196,22 +192,18 @@ public:
         dd.push_back(d);
         auto w = AstWrapper(p, dd).clone();
 
-        try {
-            // process
-            ::declare_implicit(mm->get_environment(), UnicodeStrings(), "Dummy", "Dummy");
-            w = ::identify(mm->get_environment(), w);
-            w = ::desugar(w);
-            w = ::lift(w);
-            ::emit_data(vm, w);
-            ::emit_code(vm, w);
+        // process
+        ::declare_implicit(mm->get_environment(), UnicodeStrings(), "Dummy", "Dummy");
+        w = ::identify(mm->get_environment(), w);
+        w = ::desugar(w);
+        w = ::lift(w);
+        ::emit_data(vm, w);
+        ::emit_code(vm, w);
 
-            // reduce
-            auto c = vm->get_data_string("Dummy");
-            if (c->flag() != VM_OBJECT_FLAG_STUB) {
-                vm->reduce(c);
-            }
-        } catch (Error e) {
-            std::cerr << e << std::endl;
+        // reduce
+        auto c = vm->get_data_string("Dummy");
+        if (c->flag() != VM_OBJECT_FLAG_STUB) {
+            vm->reduce(c);
         }
     }
 
