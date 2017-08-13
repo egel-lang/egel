@@ -31,30 +31,36 @@ public:
         return _message;
     }
 
-    friend std::ostream & operator<<(std::ostream &o, const Error &e) { 
-        if (e.position().resource() != "") {
-            o << e.position().resource() << ":";
-            o << e.position().row() << ":";
-            o << e.position().column() << ": ";
+    UnicodeString error() const {
+        UnicodeString s;
+        if (position().resource() != "") {
+            s += position().resource() + ":";
+            s += position().row() + ":";
+            s += position().column() + ": ";
         }
-        switch(e._tag) {
+        switch(_tag) {
         case ERROR_IO:
-            o << STRING_IO;
+            s += STRING_IO;
             break;
         case ERROR_LEXICAL:
-            o << STRING_LEXICAL;
+            s += STRING_LEXICAL;
             break;
         case ERROR_SYNTACTICAL:
-            o << STRING_SYNTACTICAL;
+            s += STRING_SYNTACTICAL;
             break;
         case ERROR_IDENTIFICATION:
-            o << STRING_IDENTIFICATION;
+            s += STRING_IDENTIFICATION;
             break;
         case ERROR_SEMANTICAL:
-            o << STRING_SEMANTICAL;
+            s += STRING_SEMANTICAL;
             break;
         }
-        o << " error: " << e.message();
+        s += "error: " + message();
+        return s;
+    }
+
+    friend std::ostream & operator<<(std::ostream &o, const Error &e) { 
+        o << e.error();
         return o;
     }
 

@@ -221,20 +221,15 @@ public:
 
         // parse the line
         AstPtr a;
-        try {
-            StringCharReader r = StringCharReader("internal", in);
-            TokenReaderPtr tt = tokenize_from_reader(r);
-            a = ::parse_line(tt);
-        } catch (Error e) {
-            std::cerr << e << std::endl;
-            a = nullptr;
-        }
+        StringCharReader r = StringCharReader("internal", in);
+        TokenReaderPtr tt = tokenize_from_reader(r);
+        a = ::parse_line(tt);
 
         // set up the handlers
         auto sr = vm->enter_symbol("Internal", "result");
-        auto r = VMObjectResult(vm, sr, main).clone();
-        vm->enter_data(r);
-        vm->result_handler(r);
+        auto rr = VMObjectResult(vm, sr, main).clone();
+        vm->enter_data(rr);
+        vm->result_handler(rr);
 
         auto se = vm->enter_symbol("Internal", "exception");
         auto e = VMObjectResult(vm, se, exc).clone();
@@ -268,7 +263,11 @@ public:
         std::cout << ">> ";
         while (std::getline(std::cin, s)) {
             auto in = UnicodeString::fromUTF8(StringPiece(s.c_str()));
-            eval_command(in);
+            try {
+                eval_command(in);
+            } catch (Error e) {
+                std::cout << e << std::endl;
+            }
             std::cout << ">> ";
         }
         std::cout << std::endl;
