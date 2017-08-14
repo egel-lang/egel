@@ -229,10 +229,53 @@ AstPtr pass_lift(const AstPtr& a) {
     return lift.lift(a);
 }
 
+class RewriteRelambda: public Rewrite {
+public:
+    AstPtr relambda(const AstPtr& a) {
+        return rewrite(a);
+    }
+
+    AstPtr rewrite_decl_definition(const Position& p, const AstPtr& c, const AstPtr& e) override {
+        AstPtr e0;
+        if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
+            e0 = e;
+        } else { // wrap all expressions in a nullary lambda to simplify code generation
+                 // (i.e., generate a return instruction at the end of each match)
+            AstPtrs vv;
+            auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
+            AstPtrs mm;
+            mm.push_back(m);
+            e0 = AstExprBlock(p, mm).clone();
+        }
+        return AstDeclDefinition(p, c, e0).clone();
+    }
+
+    AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
+        AstPtr e0;
+        if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
+            e0 = e;
+        } else { // wrap all expressions in a nullary lambda to simplify code generation
+                 // (i.e., generate a return instruction at the end of each match)
+            AstPtrs vv;
+            auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
+            AstPtrs mm;
+            mm.push_back(m);
+            e0 = AstExprBlock(p, mm).clone();
+        }
+        return AstDeclOperator(p, c, e0).clone();
+    }
+};
+
+AstPtr pass_relambda(const AstPtr& a) {
+    RewriteRelambda relambda;
+    return relambda.relambda(a);
+}
+
 AstPtr lift(const AstPtr& a) {
     AstPtr a0;
     a0 = pass_eta(a);
     a0 = pass_deapply(a0);
     a0 = pass_lift(a0);
+    a0 = pass_relambda(a0);
     return a0;
 }

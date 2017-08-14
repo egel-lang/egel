@@ -575,8 +575,10 @@ public:
             if (n==0) x = y;
         }
 
-        get_coder()->emit_op_takex(x, y, r, 5);
-        get_coder()->emit_op_fail(l);
+        if (arity > 0) {
+            get_coder()->emit_op_takex(x, y, r, 5);
+            get_coder()->emit_op_fail(l);
+        }
 
         set_state(EMIT_PATTERN);
         reg_t n = x;
