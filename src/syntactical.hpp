@@ -364,8 +364,10 @@ public:
 
     AstPtrs parse_patterns() {
         AstPtrs pp = AstPtrs();
-        AstPtr p = parse_pattern();
-        pp.push_back(p);
+        if (tag() != TOKEN_ARROW) {
+            AstPtr p = parse_pattern();
+            pp.push_back(p);
+        }
         while (tag() == TOKEN_COMMA) {
             skip();
             AstPtr p = parse_pattern();
