@@ -555,13 +555,16 @@ public:
             return parse_throw();
             break;
         default:
-            if (is_combinator()) {
+            if (is_variable()) {
+                auto e0 = parse_variable();
+                return parse_let_rest(e0);
+            } else if (is_wildcard()) {
+                auto e0 = parse_wildcard();
+                return parse_let_rest(e0);
+            } else if (is_combinator()) {
                 auto e0 = parse_combinator();
                 // XXX to wild? return parse_let_rest(e0);
                 return e0;
-            } else if (is_variable()) {
-                auto e0 = parse_variable();
-                return parse_let_rest(e0);
             } else {
                 Position p = position();
                 throw ErrorSyntactical(p, "primary expression expected");

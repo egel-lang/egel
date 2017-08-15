@@ -50,4 +50,6 @@ using Test
 
 // def main = get (Test.bx (1 + 2) 5) Test.radius
 
-def main = 8 9
+def main = 
+    _ = 8;
+        9
