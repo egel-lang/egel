@@ -174,11 +174,6 @@ public:
 
             get_coder()->emit_op_data(x, d);
             get_coder()->emit_op_set(rt, rti, x);
-
-            if (get_state() == EMIT_EXPR_ROOT) {
-                auto k = get_register_k();
-                get_coder()->emit_op_return(k);
-            }
             }
             break;
         }
@@ -212,11 +207,6 @@ public:
 
             get_coder()->emit_op_data(x, d);
             get_coder()->emit_op_set(rt, rti, x);
-
-            if (get_state() == EMIT_EXPR_ROOT) {
-                auto k = get_register_k();
-                get_coder()->emit_op_return(k);
-            }
             }
             break;
         }
@@ -250,11 +240,6 @@ public:
 
             get_coder()->emit_op_data(x, d);
             get_coder()->emit_op_set(rt, rti, x);
-
-            if (get_state() == EMIT_EXPR_ROOT) {
-                auto k = get_register_k();
-                get_coder()->emit_op_return(k);
-            }
             }
             break;
         }
@@ -288,10 +273,6 @@ public:
             get_coder()->emit_op_data(x, d);
             get_coder()->emit_op_set(rt, rti, x);
 
-            if (get_state() == EMIT_EXPR_ROOT) {
-                auto k = get_register_k();
-                get_coder()->emit_op_return(k);
-            }
             }
             break;
         }
@@ -328,8 +309,6 @@ public:
 
             get_coder()->emit_op_concatx(x, t, f, 5 + get_arity());
             set_register_k(x);
-            get_coder()->emit_op_return(x);
-
             }
             break;
         case EMIT_EXPR: {
@@ -385,7 +364,7 @@ public:
                 auto f   = get_register_frame();
 
                 get_coder()->emit_op_concatx(x, t, f, 5 + get_arity());
-                get_coder()->emit_op_return(x);
+                set_register_k(x);
             } else {
                 set_register_k(t);
             }
@@ -396,7 +375,7 @@ public:
     }
 
     void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
-        visit_expr_combinator(p, nn, n); // XXX: for now
+        visit_expr_combinator(p, nn, n);
     }
 
     void visit_expr_application(const Position& p, const AstPtrs& aa) override {
@@ -450,7 +429,7 @@ public:
             get_coder()->emit_op_mov(exc, get_register_exc());
 
             auto a = aa[0];
-            bool head_flag;
+            bool head_flag; // generate more efficient code for vars and combinators
             if (a->tag() == AST_EXPR_VARIABLE) {
                 AST_EXPR_VARIABLE_SPLIT(a, p, n);
                 auto r = get_variable_binding(n);
@@ -490,7 +469,7 @@ public:
 
             // generate thunks for nil fields
             if (!head_flag) {
-                auto i = VMObjectInteger(0).clone();
+                auto i = VMObjectInteger(4).clone();
                 auto d = get_machine()->enter_data(i);
                 get_coder()->emit_op_data(rti, d);
 
@@ -510,12 +489,6 @@ public:
                 set_register_rti(q);
 
                 visit(aa[n]);
-            }
-
-            // return k if root
-            if (state == EMIT_EXPR_ROOT) {
-                k = get_register_k();
-                get_coder()->emit_op_return(k);
             }
 
             break;
@@ -591,8 +564,14 @@ public:
         set_state(EMIT_EXPR_ROOT);
         visit(e);
 
+        // all matches end with a return
+        auto k = get_register_k();
+        get_coder()->emit_op_return(k);
+
+        // generate a label at the end of the match
         get_coder()->emit_label(l);
         get_coder()->restore_register(member);
+
     }
 
     void visit_expr_block(const Position& p, const AstPtrs& alts) override {

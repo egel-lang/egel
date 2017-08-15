@@ -6,4 +6,4 @@ def plus1 = [ X -> X + 1 ]
 
 def twice = [ X -> X * 2 ]
 
-def main = (plus1 @ plus1 @ twice) 3 + 1
+def main = (plus1 @ plus1 @ twice) 3 + 100
