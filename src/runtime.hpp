@@ -161,6 +161,11 @@ typedef std::vector<VMObjectPtr> VMObjectPtrs;
 
 // the virtual machine
 
+struct VMReduceResult {
+    VMObjectPtr result;
+    bool        exception;
+};
+
 class VM {
 public:
     VM() {};
@@ -182,9 +187,7 @@ public:
 
     // reduce an expression
     virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc) = 0;
-    virtual void result_handler(const VMObjectPtr& e) = 0;
-    virtual void exception_handler(const VMObjectPtr& e) = 0;
-    virtual void reduce(const VMObjectPtr& e) = 0;
+    virtual VMReduceResult reduce(const VMObjectPtr& e) = 0;
 
     // for threadsafe reductions we lock the vm and rely on C++ threadsafe behavior on containers
     virtual void add_lock() = 0;
@@ -199,7 +202,6 @@ public:
     VMObjectPtr get_data_string(const std::vector<UnicodeString>& nn, const UnicodeString& n);
 
 };
-
 
 // VM object definitions
 

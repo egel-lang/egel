@@ -8,18 +8,18 @@
 
 typedef std::function<void(VM* vm, const VMObjectPtr&)> callback_t;
 
-class VMObjectResult : public VMObjectCombinator {
+class VMEvalResult : public VMObjectCombinator {
 public:
-    VMObjectResult(VM* m, const symbol_t s, const callback_t call)
+    VMEvalResult(VM* m, const symbol_t s, const callback_t call)
         : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _callback(call) {
     };
 
-    VMObjectResult(const VMObjectResult& d)
-        : VMObjectResult(d.machine(), d.symbol(), d.callback()) {
+    VMEvalResult(const VMEvalResult& d)
+        : VMEvalResult(d.machine(), d.symbol(), d.callback()) {
     }
 
     VMObjectPtr clone() const {
-        return VMObjectPtr(new VMObjectResult(*this));
+        return VMObjectPtr(new VMEvalResult(*this));
     }
 
     callback_t callback() const {
@@ -178,7 +178,7 @@ public:
         ::emit_code(vm, w);
     }
 
-    void handle_expression(const AstPtr& a) {
+    void handle_expression(const AstPtr& a, const VMObjectPtr& r, const VMObjectPtr& exc) {
         auto vm = get_machine();
         auto mm = get_manager();
         auto p = a->position();
@@ -200,10 +200,11 @@ public:
         ::emit_data(vm, w);
         ::emit_code(vm, w);
 
+
         // reduce
         auto c = vm->get_data_string("Dummy");
         if (c->flag() != VM_OBJECT_FLAG_STUB) {
-            vm->reduce(c);
+            vm->reduce(c, r, exc);
         }
     }
 
@@ -219,14 +220,9 @@ public:
 
         // set up the handlers
         auto sr = vm->enter_symbol("Internal", "result");
-        auto rr = VMObjectResult(vm, sr, main).clone();
-        vm->enter_data(rr);
-        vm->result_handler(rr);
-
+        auto rr = VMEvalResult(vm, sr, main).clone();
         auto se = vm->enter_symbol("Internal", "exception");
-        auto e = VMObjectResult(vm, se, exc).clone();
-        vm->enter_data(e);
-        vm->exception_handler(e);
+        auto e = VMEvalResult(vm, se, exc).clone();
 
         // handle the command
         if (a != nullptr) {
@@ -239,7 +235,7 @@ public:
             } else if (a->tag() == AST_DECL_OPERATOR) {
                 handle_definition(a);
             } else {
-                handle_expression(a);
+                handle_expression(a, rr, e);
             }
         }
     }

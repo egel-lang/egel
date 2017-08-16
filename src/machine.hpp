@@ -122,9 +122,36 @@ public:
             
 private:
     std::vector<VMObjectPtr>                        _to;
-    std::map<VMObjectPtr, data_t, LessVMObjectPtr>   _from;
+    std::map<VMObjectPtr, data_t, LessVMObjectPtr>  _from;
 };
 
+class VMObjectResult : public VMObjectCombinator {
+public:
+    VMObjectResult(VM* m, const symbol_t s, VMReduceResult* r, const bool exc)
+        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _result(r), _exception(exc) {
+    };
+
+    VMObjectResult(const VMObjectResult& d)
+        : VMObjectResult(d.machine(), d.symbol(), d._result, d._exception) {
+    }
+
+    VMObjectPtr clone() const {
+        return VMObjectPtr(new VMObjectResult(*this));
+    }
+
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto arg0   = tt[5];
+
+        _result->result    = arg0;
+        _result->exception = _exception;
+        return nullptr;
+    }
+
+private:
+    VMReduceResult* _result;
+    bool            _exception;
+};
 
 class Machine: public VM {
 public:
@@ -139,7 +166,6 @@ public:
 
     void add_import(const UnicodeString& i) override {
 	}
-
 
     // symbol table manipulation
     symbol_t enter_symbol(const UnicodeString& n) override {
@@ -173,14 +199,6 @@ public:
 	}
 
     // reduce an expression
-    void result_handler(const VMObjectPtr& r) override {
-        _result = r;
-	}
-
-    void exception_handler(const VMObjectPtr& e) override {
-        _exception = e;
-	}
-
     void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc) override {
         VMObjectPtrs rr;
         rr.push_back(nullptr); // rt
@@ -220,12 +238,23 @@ public:
         }
     }
 
-    void reduce(const VMObjectPtr& f) override {
-        reduce(f, _result, _exception);
+    VMReduceResult reduce(const VMObjectPtr& f) override {
+        VMReduceResult r;
+
+        auto sm = enter_symbol("Internal", "result");
+        auto m  = VMObjectResult(this, sm, &r, false).clone();
+        enter_data(m);
+
+        auto se = enter_symbol("Internal", "exception");
+        auto e  = VMObjectResult(this, se, &r, true).clone();
+        enter_data(e);
+
+        reduce(f, m, e);
+        return r;
 	}
 
 	void add_lock() override {
-        std::cerr << "warning: threads not implemented yet" << std::endl;
+        std::cerr << "warning: thread support not implemented yet" << std::endl;
 	}
 
 	void release_lock() override {
@@ -241,8 +270,6 @@ public:
 private:
     SymbolTable     _symbols;
     DataTable       _data;
-    VMObjectPtr     _result;
-    VMObjectPtr     _exception;
 };
 
 #endif
