@@ -1,6 +1,12 @@
 /*
  * FeatureD, since we have variadic functions, nullary lambda abstractions
  * are supported for orthogonality reasons.
+ * 
+ * The example rewrites in the following manner:
+ *      f (f f)
+ *  ->  f (f 0)
+ *  ->* f 1
+ *  ->* 2
  *
  * These are probably pretty much unsafe since they always allow a 
  * combinator to rewrite but might turn out useful in cases.
@@ -9,11 +15,11 @@
 namespace Test (
     using System
 
-    def add = 
+    def f = 
         [ X  -> X + 1 
         | -> 0 ]
 )
 
 using Test
 
-def main = (add 1, add)
+def main = f (f f)
