@@ -394,6 +394,12 @@ public:
         return AstWrapper(p, aa).clone();
     }
 
+    AstPtr rewrite_var(const Position& p, const AstPtr& l, const AstPtr& r) override {
+        set_identify_state(STATE_IDENTIFY_USE);
+        auto r0 = rewrite(r);
+        return AstVar(p, l, r0).clone();
+    }
+
 private:
     identify_state_t    _identify_state;
     RangePtr            _range;
