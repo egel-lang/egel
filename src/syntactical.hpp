@@ -650,7 +650,7 @@ public:
         return parse_arithmetic_expression();
     }
 
-    // objects
+    // object fields
     bool is_field() {
         switch (tag()) {
         case TOKEN_DATA:
@@ -749,10 +749,22 @@ public:
             auto v = parse_variable();
             vv.push_back(v);
         }
+        AstPtrs ee;
+        if (tag() == TOKEN_EXTENDS) {
+            force_token(TOKEN_EXTENDS);
+            auto e = parse_expression();
+            ee.push_back(e);
+            while (tag() == TOKEN_COMMA) {
+                force_token(TOKEN_COMMA);
+                auto e = parse_expression();
+                ee.push_back(e);
+            }
+            force_token(TOKEN_WITH);
+        }
         force_token(TOKEN_LPAREN);
         auto ff = parse_fields();
         force_token(TOKEN_RPAREN);
-        return AstDeclObject(p, c, vv, ff).clone();
+        return AstDeclObject(p, c, vv, ff, ee).clone();
     }
 
     AstPtr parse_decl_namespace() {

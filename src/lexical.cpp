@@ -189,6 +189,8 @@ static token_text_t token_text_table[] {
 //  special symbols
     TOKEN_LAMBDA, STRING_LAMBDA,
     TOKEN_OBJECT, STRING_OBJECT,
+    TOKEN_EXTENDS, STRING_EXTENDS,
+    TOKEN_WITH, STRING_WITH,
 
 //  compound expressions
     TOKEN_IF, STRING_IF,
@@ -237,6 +239,8 @@ static reserved_t reserved_table[] {
     TOKEN_QUESTION, STRING_QUESTION,
     TOKEN_LAMBDA, STRING_LAMBDA,
     TOKEN_OBJECT, STRING_OBJECT,
+    TOKEN_EXTENDS, STRING_EXTENDS,
+    TOKEN_WITH, STRING_WITH,
     TOKEN_IF, STRING_IF,
     TOKEN_THEN, STRING_THEN,
     TOKEN_ELSE, STRING_ELSE,

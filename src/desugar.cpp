@@ -351,7 +351,7 @@ public:
         return AstDeclOperator(p, c, e).clone(); // cut
     }
 
-    AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) override {
+    AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff, const AstPtrs& ee) override {
         AstPtrs oo;
         AstPtrs dd;
         oo.push_back(AstExprCombinator(p, STRING_SYSTEM, STRING_OBJECT).clone());

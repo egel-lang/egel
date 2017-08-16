@@ -1537,12 +1537,12 @@ typedef std::shared_ptr<AstDeclOperator> AstDeclOperatorPtr;
 
 class AstDeclObject : public Ast {
 public:
-    AstDeclObject(const Position &p, const AstPtr& n, const AstPtrs& vv, const AstPtrs& ff)
-        : Ast(AST_DECL_OBJECT, p), _name(n), _variables(vv), _fields(ff) {
+    AstDeclObject(const Position &p, const AstPtr& n, const AstPtrs& vv, const AstPtrs& ff, const AstPtrs& ee)
+        : Ast(AST_DECL_OBJECT, p), _name(n), _variables(vv), _fields(ff), _extends(ee) {
     }
 
     AstDeclObject(const AstDeclObject& a) 
-        : AstDeclObject(a.position(), a.name(), a.variables(), a.fields()) {
+        : AstDeclObject(a.position(), a.name(), a.variables(), a.fields(), a.extends()) {
     }
 
     AstPtr clone() const {
@@ -1561,6 +1561,10 @@ public:
         return _fields;
     }
 
+    AstPtrs extends() const {
+        return _extends;
+    }
+
     uint_t approximate_length(uint_t indent) const {
         return indent;
     }
@@ -1571,6 +1575,19 @@ public:
         for (auto v:variables()) {
             v->render(os, indent);
             os << " ";
+        }
+        if (extends().size() > 0) {
+            bool first = true;
+            os << " extends ";
+            for (auto e:extends()) {
+                if (first) {
+                    first = false;
+                } else {
+                    os << ", ";
+                }
+                e->render(os, indent);
+            }
+            os << " with ";
         }
         os << "(" << std::endl;
         //skip_line(os, indent+4);
@@ -1586,17 +1603,18 @@ private:
     AstPtr  _name;
     AstPtrs _variables;
     AstPtrs _fields;
+    AstPtrs _extends;
 };
 
 typedef std::shared_ptr<AstDeclObject> AstDeclObjectPtr;
 #define AST_DECL_OBJECT_CAST(a)    std::static_pointer_cast<AstDeclObject>(a)
-#define AST_DECL_OBJECT_SPLIT(a, p, n, vv, ff) \
+#define AST_DECL_OBJECT_SPLIT(a, p, n, vv, ff, ee) \
     auto _##a  = AST_DECL_OBJECT_CAST(a); \
     auto p   = _##a->position(); \
     auto n   = _##a->name(); \
     auto vv  = _##a->variables(); \
-    auto ff  = _##a->fields();
-
+    auto ff  = _##a->fields(); \
+    auto ee  = _##a->extends();
 
 class AstDirectImport : public Ast {
 public:

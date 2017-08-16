@@ -21,13 +21,13 @@ object place X Y (
                 set SELF column Y ]
 )
 
-object box W H (
+object box W H extends place 0 0, place 2 3 with (
     data width, W
     data height, H
 
     def resize =
         [ SELF, W, H ->
-             Z = set SELF width W;
+             _ = set SELF width W;
                 set SELF height H ]
 
     def area =
@@ -37,6 +37,6 @@ object box W H (
 
 // make a placeable box.
 def main =
-    B = extend (place 0 1) (box 4 5);
+    B = box 4 5;
     U = (B @@ move) 2 3;
     B

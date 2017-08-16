@@ -105,7 +105,7 @@ public:
         visit(c);
     }
 
-    void visit_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) override {
+    void visit_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff, const AstPtrs& ee) override {
         visit(c);
         set_declare_state(STATE_DECLARE_FIELD);
         visits(ff);
@@ -359,16 +359,18 @@ public:
         return a;
     }
 
-    AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) override {
+    AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff, const AstPtrs& ee) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
         enter_range();
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto vv0 = rewrites(vv);
+        set_identify_state(STATE_IDENTIFY_USE);
+        auto ee0 = rewrites(ee);
         set_identify_state(STATE_IDENTIFY_FIELD);
         auto ff0 = rewrites(ff);
         leave_range();
-        auto a = AstDeclObject(p, c0, vv0, ff0).clone();
+        auto a = AstDeclObject(p, c0, vv0, ff0, ee0).clone();
         push_declaration(a);
         set_identify_state(STATE_IDENTIFY_USE);
         return a;

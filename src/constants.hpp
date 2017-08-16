@@ -121,6 +121,8 @@
 
 #define STRING_TUPLE            "tuple"
 #define STRING_OBJECT           "object"
+#define STRING_EXTENDS          "extends"
+#define STRING_WITH             "with"
 
 #define STRING_FAIL             "fail"
 

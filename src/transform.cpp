@@ -135,8 +135,9 @@ public:
         set_state(FREEVARS_INSERT);
     }
 
-    void visit_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff) override {
+    void visit_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff, const AstPtrs& ee) override {
         visits(ff);
+        visits(ee);
         set_state(FREEVARS_REMOVE);
         visits(vv);
         set_state(FREEVARS_INSERT);

@@ -245,13 +245,15 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         break;
     }
     case AST_DECL_OBJECT: {
-        AST_DECL_OBJECT_SPLIT(a0, p0, c0, vv0, ff0);
-        AST_DECL_OBJECT_SPLIT(a1, p1, c1, vv1, ff1);
+        AST_DECL_OBJECT_SPLIT(a0, p0, c0, vv0, ff0, ee0);
+        AST_DECL_OBJECT_SPLIT(a1, p1, c1, vv1, ff1, ee1);
         c = compare_ast(c0, c1);
         if (c != 0) return c;
         c = compare_asts(vv0, vv1);
         if (c != 0) return c;
-        return compare_asts(ff0, ff1);
+        c = compare_asts(ff0, ff1);
+        if (c != 0) return c;
+        return compare_asts(ee0, ee1);
         break;
     }
     case AST_DECL_NAMESPACE: {

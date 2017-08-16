@@ -47,6 +47,8 @@ typedef enum {
 
 //  objects
     TOKEN_OBJECT,
+    TOKEN_EXTENDS,
+    TOKEN_WITH,
 
 //  compound expressions
     TOKEN_IF,

@@ -243,11 +243,9 @@ public:
 
         auto sm = enter_symbol("Internal", "result");
         auto m  = VMObjectResult(this, sm, &r, false).clone();
-        enter_data(m);
 
         auto se = enter_symbol("Internal", "exception");
         auto e  = VMObjectResult(this, se, &r, true).clone();
-        enter_data(e);
 
         reduce(f, m, e);
         return r;
