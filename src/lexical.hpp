@@ -57,6 +57,10 @@ typedef enum {
     TOKEN_TRY,
     TOKEN_CATCH,
     TOKEN_THROW,
+    TOKEN_LET,
+    TOKEN_IN,
+
+    TOKEN_VAR,
 
 //  declarations
     TOKEN_DATA,

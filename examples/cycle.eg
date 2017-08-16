@@ -12,6 +12,6 @@ import "prelude.eg"
 using System
 
 def main = 
-    Y = var 0; 
-    Y = setv Y Y;
+    let Y = var 0 in
+    let Y = setv Y Y in
        Y

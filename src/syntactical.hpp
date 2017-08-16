@@ -483,17 +483,15 @@ public:
         return AstExprThrow(p, e0).clone();
     }
 
-    AstPtr parse_let_rest(const AstPtr& e0) {
-        Position p = e0->position();
-        if (tag() == TOKEN_EQ) {
-            skip();
-            AstPtr e1 = parse_expression();
-            force_token(TOKEN_SEMICOLON);
-            AstPtr e2 = parse_expression();
-            return AstExprLet(p, e0, e1, e2).clone();
-        } else {
-            return e0;
-        }
+    AstPtr parse_let() {
+        Position p = position();
+        force_token(TOKEN_LET);
+        AstPtr e0 = parse_pattern();
+        force_token(TOKEN_EQ);
+        AstPtr e1 = parse_expression();
+        force_token(TOKEN_IN);
+        AstPtr e2 = parse_expression();
+        return AstExprLet(p, e0, e1, e2).clone();
     }
 
     bool is_primary() {
@@ -556,17 +554,13 @@ public:
         case TOKEN_THROW:
             return parse_throw();
             break;
+        case TOKEN_LET:
+            return parse_let();
         default:
-            if (is_wildcard()) { // first wildcard/_, then combinator, then variable
-                auto e0 = parse_wildcard();
-                return parse_let_rest(e0);
-            } else if (is_combinator()) {
-                auto e0 = parse_combinator();
-                // XXX to wild? return parse_let_rest(e0);
-                return e0;
+            if (is_combinator()) {
+                return parse_combinator();
             } else if (is_variable()) {
-                auto e0 = parse_variable();
-                return parse_let_rest(e0);
+                return parse_variable();
             } else {
                 Position p = position();
                 throw ErrorSyntactical(p, "primary expression expected");
@@ -897,23 +891,23 @@ public:
     LineParser(TokenReaderPtr& r): Parser (r) {
     }
 
-    bool is_decl_definition() {
-        switch (tag()) {
-        case TOKEN_DEF:
-            return true;
-            break;
-        default:
-            return false;
-            break;
-        }
+    AstPtr parse_var() {
+        Position p = position();
+        force_token(TOKEN_VAR);
+        AstPtr e0 = parse_combinator();
+        force_token(TOKEN_EQ);
+        AstPtr e1 = parse_expression();
+        return AstVar(p, e0, e1).clone();
     }
 
     AstPtr parse_line() {
         AstPtr r;
         if (is_directive()) {
             r = parse_directive();
-        } else if (is_decl_definition()) {
+        } else if (tag() == TOKEN_DEF) {
             r = parse_decl_definition();
+        } else if (tag() == TOKEN_VAR) {
+            r = parse_var();
         } else {
             r = parse_expression();
         }

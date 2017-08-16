@@ -86,8 +86,12 @@
 #define STRING_THROW            "throw"
 #define STRING_TRY              "try"
 #define STRING_CATCH            "catch"
+#define STRING_LET              "let"
+#define STRING_IN               "in"
+#define STRING_VAR              "var"
 
     // names, combinators, ..
+
 #define STRING_PART             "part"
 #define STRING_LOWERCASE        "lowercase"
 #define STRING_UPPERCASE        "uppercase"

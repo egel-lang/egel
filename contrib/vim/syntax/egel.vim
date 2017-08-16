@@ -18,6 +18,7 @@ syn keyword egelKeyword			if then else
 syn keyword egelKeyword			try catch throw
 syn keyword egelKeyword			def data
 syn keyword egelKeyword			object extends with
+syn keyword egelKeyword			let in var
 syn keyword egelDirective		import using
 syn keyword egelNamespace		namespace
 

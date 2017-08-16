@@ -265,13 +265,21 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         break;
     }
     // wrapper
-    case AST_WRAPPER:
+    case AST_WRAPPER: {
         AST_WRAPPER_SPLIT(a0, p0, dd0);
         AST_WRAPPER_SPLIT(a1, p1, dd1);
         return compare_asts(dd0, dd1);
         break;
     }
-    PANIC("compare ast failed");
+    case AST_VAR: {
+        AST_VAR_SPLIT(a0, p0, l0, r0);
+        AST_VAR_SPLIT(a1, p1, l1, r1);
+        return compare_ast2(l0, l1, r0, r1);
+        break;
+    }
+    default:
+        PANIC("compare ast failed");
+    }
     return 0;
 }
 

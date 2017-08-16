@@ -17,7 +17,7 @@ object place X Y (
 
     def move =
         [ SELF, X, Y ->
-            Z = set SELF row X;
+            let Z = set SELF row X in
                 set SELF column Y ]
 )
 
@@ -27,7 +27,7 @@ object box W H extends place W 3 with (
 
     def resize =
         [ SELF, W, H ->
-             _ = set SELF width W;
+             let _ = set SELF width W in
                 set SELF height H ]
 
     def area =
@@ -37,6 +37,6 @@ object box W H extends place W 3 with (
 
 // make a placeable box.
 def main =
-    B = box 4 5;
-    U = (B @@ move) 2 3;
+    let B = box 4 5 in
+    let U = (B @@ move) 2 3 in
     B

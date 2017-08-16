@@ -26,4 +26,6 @@ import "prelude.eg"
 
 using System
 
-def main = [X -> Y = var X; Z = setv Y ((getv Y) * (getv Y)); getv Y ] 7
+def main = [X -> let Y = var X in 
+                 let _ = setv Y ((getv Y) * (getv Y)) in 
+                    getv Y ] 7

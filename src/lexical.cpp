@@ -197,11 +197,15 @@ static token_text_t token_text_table[] {
     TOKEN_THEN, STRING_THEN,
     TOKEN_ELSE, STRING_ELSE,
 
+    TOKEN_LET, STRING_LET,
+    TOKEN_IN, STRING_IN,
+
     TOKEN_TRY, STRING_TRY,
     TOKEN_CATCH, STRING_CATCH,
     TOKEN_THROW, STRING_THROW,
-
     TOKEN_ARROW, STRING_ARROW,
+
+    TOKEN_VAR, STRING_VAR,
 
 // directives
     TOKEN_USING, STRING_USING,
@@ -244,6 +248,8 @@ static reserved_t reserved_table[] {
     TOKEN_IF, STRING_IF,
     TOKEN_THEN, STRING_THEN,
     TOKEN_ELSE, STRING_ELSE,
+    TOKEN_LET, STRING_LET,
+    TOKEN_IN, STRING_IN,
     TOKEN_TRY, STRING_TRY,
     TOKEN_CATCH, STRING_CATCH,
     TOKEN_THROW, STRING_THROW,
@@ -253,6 +259,7 @@ static reserved_t reserved_table[] {
     TOKEN_DATA, STRING_DATA,
     TOKEN_DEF,  STRING_DEF,
     TOKEN_NAMESPACE, STRING_NAMESPACE,
+    TOKEN_VAR, STRING_VAR,
 };
 
 #define RESERVED_TABLE_SIZE sizeof(reserved_table)/sizeof(reserved_t)

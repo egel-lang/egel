@@ -1,4 +1,4 @@
 def main =
-    _ = 3;
-    _ = 4;
+    let _ = 3 in
+    let _ = 4 in
         5

@@ -11,7 +11,15 @@
  *
  * That should become better once the runtime is overhauled.
  *
- * Objects are not thread safe.
+ * There are two ways of supporting mutable objects: the referential
+ * transparant manner where on every update the object is
+ * copied and returned, and the destructive manner -which
+ * doesn't go well with Egel's term semantics- where a field
+ * is just overwritten. For the moment, I opted for the latter
+ * unsafe manner, you can create cyclic structures but you 
+ * shouldn't.
+ *
+ * Objects are also not thread safe.
  */
 import "prelude.eg"
 
@@ -24,7 +32,7 @@ object box W H (
 
     def resize =
         [ SELF, W, H ->
-             Z = set SELF width W; 
+             let Z = set SELF width in 
                 set SELF height H ]
 
     def area =
@@ -37,14 +45,14 @@ object circle R (
 
     def area =
         [ SELF -> 
-            RR = tofloat(get SELF radius);
+            let RR = tofloat(get SELF radius) in
                 R*R*Math.pi ]
 )
     
 def main =
-    B = box 4 5;
-    AREA0 = B @@ area;
-    N = (B @@ resize) 2 3;
-    AREA1 = B @@ area;
+    let B = box 4 5 in
+    let AREA0 = B @@ area in
+    let N = (B @@ resize) 2 3 in
+    let AREA1 = B @@ area in
         (AREA0, AREA1)
 

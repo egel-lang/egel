@@ -51,6 +51,8 @@ typedef enum {
     AST_DECL_OBJECT,        // desugared
     // wrapper
     AST_WRAPPER,
+    // set
+    AST_VAR,
 } ast_tag_t;
 
 class Ast;
@@ -1053,14 +1055,14 @@ public:
 
     void render(std::ostream& os, uint_t indent) const {
         if (approximate_length(indent) <= line_length) {
-            os << "(" << left_hand_side() << " = " << right_hand_side() << "; " << expression() << ")";
+            os << "(let " << left_hand_side() << " = " << right_hand_side() << " in " << expression() << ")";
         } else {
-            os << "(";
+            os << "(let ";
             left_hand_side()->render(os, indent);
             os << " =";
             skip_line(os, indent+4);
             right_hand_side()->render(os, indent+4);
-            os << ";";
+            os << " in ";
             skip_line(os, indent);
             expression()->render(os, indent);
             os << ")";
@@ -1744,5 +1746,61 @@ typedef std::shared_ptr<AstWrapper> AstWrapperPtr;
     auto p   = _##a->position(); \
     auto dd  = _##a->content();
 
+
+class AstVar : public Ast {
+public:
+    AstVar(const Position &p, const AstPtr &e0, const AstPtr &e1)
+        : Ast(AST_VAR, p), _lhs(e0), _rhs(e1) {
+    }
+
+    AstVar(const AstVar& a) 
+        : AstVar(a.position(), a.left_hand_side(), a.right_hand_side()) {
+    }
+
+    AstPtr clone() const {
+        return AstPtr(new AstVar(*this));
+    }
+
+    AstPtr left_hand_side() const {
+        return _lhs;
+    }
+
+    AstPtr right_hand_side() const {
+        return _rhs;
+    }
+
+    uint_t approximate_length(uint_t indent) const {
+        uint_t l = indent + 4;
+        if (l >= line_length) return l;
+        l = left_hand_side()->approximate_length(l);
+        l += 1;
+        if (l >= line_length) return l;
+        return right_hand_side()->approximate_length(l);
+    }
+
+    void render(std::ostream& os, uint_t indent) const {
+        if (approximate_length(indent) <= line_length) {
+            os << "set " << left_hand_side() << " " << right_hand_side();
+        } else {
+            os << "set ";
+            left_hand_side()->render(os, indent);
+            os << " ";
+            skip_line(os, indent+4);
+            right_hand_side()->render(os, indent+4);
+        }
+    }
+
+private:
+    AstPtr  _lhs;
+    AstPtr  _rhs;
+};
+
+typedef std::shared_ptr<AstVar> AstVarPtr;
+#define AST_VAR_CAST(a)    std::static_pointer_cast<AstVar>(a)
+#define AST_VAR_SPLIT(a, p, l, r) \
+    auto _##a  = AST_VAR_CAST(a); \
+    auto p   = _##a->position(); \
+    auto l   = _##a->left_hand_side(); \
+    auto r   = _##a->right_hand_side();
 
 #endif
