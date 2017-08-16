@@ -371,6 +371,14 @@ public:
             }
         }
         AstPtr body = AstExprApplication(p, oo).clone();
+        for (auto e:ee) {
+            auto ex = AstExprCombinator(p, STRING_SYSTEM, STRING_EXTEND).clone();
+            AstPtrs bb;
+            bb.push_back(ex);
+            bb.push_back(e);
+            bb.push_back(body);
+            body = AstExprApplication(p, bb).clone();
+        }
         if (vv.size() > 0) {
             auto m = AstExprMatch(p, vv, AstEmpty().clone(), body).clone();
             auto l = AstExprBlock(p, m).clone();

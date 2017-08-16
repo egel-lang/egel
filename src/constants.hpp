@@ -121,7 +121,8 @@
 
 #define STRING_TUPLE            "tuple"
 #define STRING_OBJECT           "object"
-#define STRING_EXTENDS          "extends"
+#define STRING_EXTEND           "extend"   // this is the combinator
+#define STRING_EXTENDS          "extends"  // this is the keyword
 #define STRING_WITH             "with"
 
 #define STRING_FAIL             "fail"

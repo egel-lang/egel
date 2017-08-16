@@ -21,7 +21,7 @@ object place X Y (
                 set SELF column Y ]
 )
 
-object box W H extends place 0 0, place 2 3 with (
+object box W H extends place W 3 with (
     data width, W
     data height, H
 
