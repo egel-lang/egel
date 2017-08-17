@@ -98,7 +98,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t var = 0;
-        if (var == 0) var = machine()->enter_symbol("System", "var");
+        if (var == 0) var = machine()->enter_symbol("System", "v");
 
         if (arg0->tag() == VM_OBJECT_ARRAY) {
             auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
@@ -119,7 +119,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t var = 0;
-        if (var == 0) var = machine()->enter_symbol("System", "var");
+        if (var == 0) var = machine()->enter_symbol("System", "v");
 
         if (arg0->tag() == VM_OBJECT_ARRAY) {
             auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
@@ -209,7 +209,7 @@ extern "C" std::vector<UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectData(vm, "System", "var").clone());
+    oo.push_back(VMObjectData(vm, "System", "v").clone());
 
     oo.push_back(Toint(vm).clone());
     oo.push_back(Tofloat(vm).clone());
