@@ -73,13 +73,19 @@ public:
         auto rt  = tt[0];
         auto rti = tt[1];
         auto k   = tt[2];
+        auto exc = tt[3];
+        // auto c   = tt[4];
 
-        //XXX: doesn't handle exceptions, doesn't handle application
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
-        rta->set(index, _result.result);
-
-        return k;
+        VMObjectPtrs rr;
+        rr.push_back(rt);
+        rr.push_back(rti);
+        rr.push_back(k);
+        rr.push_back(exc);
+        rr.push_back(_result.result);
+        for (uint i = 5; i < tt.size(); i++) {
+            rr.push_back(tt[i]);
+        }
+        return VMObjectArray(rr).clone();
     }
 private:
     VMReduceResult _result;
