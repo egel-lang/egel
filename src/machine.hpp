@@ -162,41 +162,41 @@ public:
     // import table manipulation
     bool has_import(const UnicodeString& i) override {
         return false;
-	}
+    }
 
     void add_import(const UnicodeString& i) override {
-	}
+    }
 
     // symbol table manipulation
     symbol_t enter_symbol(const UnicodeString& n) override {
         return _symbols.enter(n);
-	}
+    }
 
     symbol_t enter_symbol(const UnicodeString& n0, const UnicodeString& n1) override {
         return _symbols.enter(n0, n1);
-	}
+    }
 
     symbol_t enter_symbol(const UnicodeStrings& nn, const UnicodeString& n) override {
         return _symbols.enter(nn, n);
-	}
+    }
 
     UnicodeString get_symbol(symbol_t s) override {
         return _symbols.get(s);
-	}
+    }
 
 
     // data table manipulation
     data_t enter_data(const VMObjectPtr& o) override {
         return _data.enter(o);
-	}
+    }
 
     data_t define_data(const VMObjectPtr& o) override {
         return _data.define(o);
-	}
+    }
 
     VMObjectPtr get_data(const data_t d) override {
         return _data.get(d);
-	}
+    }
 
     // reduce an expression
     void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc) override {
@@ -249,21 +249,21 @@ public:
 
         reduce(f, m, e);
         return r;
-	}
+    }
 
-	void add_lock() override {
+    void add_lock() override {
         std::cerr << "warning: thread support not implemented yet" << std::endl;
-	}
+    }
 
-	void release_lock() override {
-	}
+    void release_lock() override {
+    }
                     
-	void render(std::ostream& os) override {
+    void render(std::ostream& os) override {
         os << "SYMBOLS: " << std::endl;
         _symbols.render(os);
         os << "DATA: " << std::endl;
         _data.render(os);
-	}
+    }
 
 private:
     SymbolTable     _symbols;

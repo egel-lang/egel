@@ -955,14 +955,16 @@ public:
             return visit_decl_namespace(p, nn, dd);
             break;
         }
-        // wrapper
+        // wrapper and var
         case AST_WRAPPER: {
             AST_WRAPPER_SPLIT(a, p, dd);
             return visit_wrapper(p, dd);
+            break;
         }
         case AST_VAR: {
             AST_VAR_SPLIT(a, p, r, l);
             return visit_var(p, r, l);
+            break;
         }
         default:
         PANIC("visit exhausted");

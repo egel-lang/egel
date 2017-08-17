@@ -96,7 +96,7 @@ public:
 
     virtual void render(std::ostream& os, uint_t indent) const = 0;
 
-    UnicodeString to_text() {
+    virtual UnicodeString to_text() const {
         std::stringstream ss;
         render(ss, Ast::line_length);
         UnicodeString u(ss.str().c_str());
@@ -441,7 +441,7 @@ public:
         return _combinator;
     }
 
-    UnicodeString text() const {
+    UnicodeString to_text() const override {
         UnicodeString str = "";
         for (auto& p:_path) {
             str += p;
@@ -453,17 +453,12 @@ public:
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
-        for (auto& p: _path) {
-            l += p.length();
-            l += 1;
-            if (l >= line_length) return l;
-        }
-        l += _combinator.length();
+        l += to_text().length();
         return l;
     }
 
     void render(std::ostream& os, uint_t indent) const {
-        os << text();
+        os << to_text();
     }
 
 private:

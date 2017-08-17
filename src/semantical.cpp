@@ -120,6 +120,10 @@ public:
         set_qualifications(nn0);
     }
 
+    void visit_var(const Position& p, const AstPtr& l, const AstPtr& r) override {
+        visit(l);
+    }
+
 private:
     NamespacePtr    _spaces;
     UnicodeStrings  _qualifications;
@@ -396,8 +400,11 @@ public:
 
     AstPtr rewrite_var(const Position& p, const AstPtr& l, const AstPtr& r) override {
         set_identify_state(STATE_IDENTIFY_USE);
+        auto l0 = rewrite(l);
         auto r0 = rewrite(r);
-        return AstVar(p, l, r0).clone();
+        auto a =  AstVar(p, l0, r0).clone();
+        push_declaration(a);
+        return a;
     }
 
 private:

@@ -8,18 +8,18 @@
 
 typedef std::function<void(VM* vm, const VMObjectPtr&)> callback_t;
 
-class VMEvalResult : public VMObjectCombinator {
+class EvalResult : public VMObjectCombinator {
 public:
-    VMEvalResult(VM* m, const symbol_t s, const callback_t call)
+    EvalResult(VM* m, const symbol_t s, const callback_t call)
         : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _callback(call) {
     };
 
-    VMEvalResult(const VMEvalResult& d)
-        : VMEvalResult(d.machine(), d.symbol(), d.callback()) {
+    EvalResult(const EvalResult& d)
+        : EvalResult(d.machine(), d.symbol(), d.callback()) {
     }
 
     VMObjectPtr clone() const {
-        return VMObjectPtr(new VMEvalResult(*this));
+        return VMObjectPtr(new EvalResult(*this));
     }
 
     callback_t callback() const {
@@ -39,16 +39,51 @@ private:
 };
 
 inline void default_main_callback(VM* vm, const VMObjectPtr& o) {
-        symbol_t nop = vm->enter_symbol("System", "nop");
-        if (o->symbol() != nop) {
-            std::cout << o << std::endl;
-        }
+    symbol_t nop = vm->enter_symbol("System", "nop");
+    if (o->symbol() != nop) {
+        std::cout << o << std::endl;
+    }
 }
 
 
 inline void default_exception_callback(VM* vm, const VMObjectPtr& e) {
-        std::cout << "exception(" << e << ")" << std::endl;
+    std::cout << "exception(" << e << ")" << std::endl;
 }
+
+class VarCombinator: public VMObjectCombinator {
+public:
+    VarCombinator(VM* m, const symbol_t s, const VMReduceResult& r):
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s), _result(r)  {
+    }
+
+    VarCombinator(const VarCombinator& c):
+        VarCombinator(c.machine(), c.symbol(), c.result()) {
+    }
+
+    VMObjectPtr clone() const override {
+        return VMObjectPtr(new VarCombinator(*this));
+    }
+
+    VMReduceResult result() const {
+        return _result;
+    }
+
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+
+        //XXX: doesn't handle exceptions, doesn't handle application
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, _result.result);
+
+        return k;
+    }
+private:
+    VMReduceResult _result;
+};
 
 class Eval {
 public:
@@ -145,30 +180,22 @@ public:
         dd.push_back(d);
         auto w = AstWrapper(p, dd).clone();
 
+        // bypass standard semantical analysis and declare this def in the context.
+        // that manner, definitions may be overridded in interactive mode.
         if (d->tag() == AST_DECL_DEFINITION) { // start off by (re-)declaring the def
             AST_DECL_DEFINITION_SPLIT(d, p0, c0, e0);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
-                UnicodeString s;
-                for (auto& s0:nn0) {
-                    s += s0;
-                    s += '.';
-                }
-                s += n0;
-                ::declare_implicit(mm->get_environment(), nn0, n0, s);
+                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                ::declare_implicit(mm->get_environment(), nn0, n0, c1->to_text());
             }
         }
         if (d->tag() == AST_DECL_OPERATOR) { // or the operator.. (time to get rid of this alternative?)
             AST_DECL_OPERATOR_SPLIT(d, p0, c0, e0);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
-                UnicodeString s;
-                for (auto& s0:nn0) {
-                    s += s0;
-                    s += '.';
-                }
-                s += n0;
-                ::declare_implicit(mm->get_environment(), nn0, n0, s);
+                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                ::declare_implicit(mm->get_environment(), nn0, n0, c1->to_text());
             }
         }
         w = ::identify(mm->get_environment(), w);
@@ -180,31 +207,38 @@ public:
 
     void handle_expression(const AstPtr& a, const VMObjectPtr& r, const VMObjectPtr& exc) {
         auto vm = get_machine();
-        auto mm = get_manager();
         auto p = a->position();
         auto n = AstExprCombinator(p, "Dummy").clone();
         auto d = AstDeclDefinition(p, n, a).clone();
 
-        auto dd = AstPtrs();
-        for (auto& u:get_usings()) {
-            dd.push_back(u);
-        }
-        dd.push_back(d);
-        auto w = AstWrapper(p, dd).clone();
-
-        // process
-        ::declare_implicit(mm->get_environment(), UnicodeStrings(), "Dummy", "Dummy");
-        w = ::identify(mm->get_environment(), w);
-        w = ::desugar(w);
-        w = ::lift(w);
-        ::emit_data(vm, w);
-        ::emit_code(vm, w);
-
+        // treat it as a definition Dummy
+        handle_definition(d);
 
         // reduce
         auto c = vm->get_data_string("Dummy");
         if (c->flag() != VM_OBJECT_FLAG_STUB) {
             vm->reduce(c, r, exc);
+        }
+    }
+
+    void handle_var(const AstPtr& d, const VMObjectPtr& r, const VMObjectPtr& exc) {
+        auto vm = get_machine();
+        auto mm = get_manager();
+        auto p = d->position();
+
+        if (d->tag() == AST_VAR) { // start off by treating the var as a def
+            AST_VAR_SPLIT(d, p0, c0, e0);
+            handle_definition(AstDeclDefinition(p, c0, e0).clone());
+            if (c0->tag() == AST_EXPR_COMBINATOR) {
+                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                auto c   = vm->get_data_string(c1->to_text());
+                auto sym = c->symbol();
+                if (c->flag() != VM_OBJECT_FLAG_STUB) {
+                    auto r = vm->reduce(c);
+                    auto v = VarCombinator(vm, sym, r).clone();
+                    vm->define_data(v);
+                }
+            }
         }
     }
 
@@ -220,9 +254,9 @@ public:
 
         // set up the handlers
         auto sr = vm->enter_symbol("Internal", "result");
-        auto rr = VMEvalResult(vm, sr, main).clone();
+        auto rr = EvalResult(vm, sr, main).clone();
         auto se = vm->enter_symbol("Internal", "exception");
-        auto e = VMEvalResult(vm, se, exc).clone();
+        auto e = EvalResult(vm, se, exc).clone();
 
         // handle the command
         if (a != nullptr) {
@@ -234,6 +268,8 @@ public:
                 handle_definition(a);
             } else if (a->tag() == AST_DECL_OPERATOR) {
                 handle_definition(a);
+            } else if (a->tag() == AST_VAR) {
+                handle_var(a, rr, e);
             } else {
                 handle_expression(a, rr, e);
             }

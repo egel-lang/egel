@@ -142,6 +142,12 @@ public:
             os << ")" << std::endl;
         }
     }
+
+    friend std::ostream& operator<<(std::ostream& os, const RangePtr& n) {
+        n->render(os, 0);
+        return os;
+    }
+
 private:
     Uses        _uses;
     RangePtr    _embeds;
