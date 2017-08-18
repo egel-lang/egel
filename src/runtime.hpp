@@ -918,6 +918,16 @@ public:
             r = VMObjectArray(rr).clone();
         }
 
+        // also return spurious arguments
+        if (tt.size() > 5) {
+            VMObjectPtrs rr;
+            rr.push_back(r);
+            for (uint i = 5; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
         auto rta   = VM_OBJECT_ARRAY_CAST(rt);
         rta->set(index, r);
@@ -985,6 +995,16 @@ public:
         } else {
             VMObjectPtrs rr;
             for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        // also return spurious arguments
+        if (tt.size() > 6) {
+            VMObjectPtrs rr;
+            rr.push_back(r);
+            for (uint i = 6; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
             r = VMObjectArray(rr).clone();
@@ -1063,6 +1083,16 @@ public:
             r = VMObjectArray(rr).clone();
         }
 
+        // also return spurious arguments
+        if (tt.size() > 7) {
+            VMObjectPtrs rr;
+            rr.push_back(r);
+            for (uint i = 7; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
         auto rta   = VM_OBJECT_ARRAY_CAST(rt);
         rta->set(index, r);
@@ -1132,6 +1162,16 @@ public:
         } else {
             VMObjectPtrs rr;
             for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        // also return spurious arguments
+        if (tt.size() > 8) {
+            VMObjectPtrs rr;
+            rr.push_back(r);
+            for (uint i = 8; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
             r = VMObjectArray(rr).clone();
