@@ -76,6 +76,7 @@ public:
         auto exc = tt[3];
         // auto c   = tt[4];
 
+        // XXX: doesn't handle exceptions yet
         VMObjectPtrs rr;
         rr.push_back(rt);
         rr.push_back(rti);
