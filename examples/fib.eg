@@ -8,11 +8,11 @@ namespace Fibonnaci (
   using System
 
   def fib =
-    [ 0 -> 1
+    [ 0 -> 0
     | 1 -> 1
     | N -> fib (N-2) + fib (N-1) ]
 )
 
 using Fibonnaci
 
-def main = fib 6
+def main = fib 20
