@@ -137,24 +137,21 @@ public:
         static VMObjectPtr nop = nullptr;
         if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
 
+        UnicodeString s;
         for (auto& arg:args) {
             if (arg->tag() == VM_OBJECT_INTEGER) {
-                auto i = VM_OBJECT_INTEGER_VALUE(arg);
-                std::cout << i;
+                s += arg->to_text();
             } else if (arg->tag() == VM_OBJECT_FLOAT) {
-                auto f = VM_OBJECT_FLOAT_VALUE(arg);
-                std::cout.precision(EGEL_FLOAT_PRECISION);
-                std::cout << f;
+                s += arg->to_text();
             } else if (arg->tag() == VM_OBJECT_CHAR) {
-                auto c = VM_OBJECT_CHAR_VALUE(arg);
-                std::cout << (UnicodeString() + c);
+                s += VM_OBJECT_CHAR_VALUE(arg);
             } else if (arg->tag() == VM_OBJECT_TEXT) {
-                auto c = VM_OBJECT_TEXT_VALUE(arg);
-                std::cout << c;
+                s += VM_OBJECT_TEXT_VALUE(arg);
             } else {
-                //XXX: return nullptr;
+                return nullptr;
             }
         }
+        std::cout << s;
 
         return nop;
     }
