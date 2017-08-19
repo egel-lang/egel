@@ -124,39 +124,39 @@ public:
     }
 };
 
-// IO.print o
-// Print an object on standard output; don't escape characters or 
+// IO.print o0 .. on
+// Print objects on standard output; don't escape characters or 
 // strings when they are the argument. May recursively print large
 // objects leading to stack explosion.
-class Print: public Monadic {
+class Print: public Variadic {
 public:
-    MONADIC_PREAMBLE(Print, "IO", "print");
+    VARIADIC_PREAMBLE(Print, "IO", "print");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+    VMObjectPtr apply(const VMObjectPtrs& args) const override {
 
         static VMObjectPtr nop = nullptr;
         if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
 
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
-            std::cout << i;
-            return nop;
-        } else if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            std::cout.precision(EGEL_FLOAT_PRECISION);
-            std::cout << f;
-            return nop;
-        } else if (arg0->tag() == VM_OBJECT_CHAR) {
-            auto c = VM_OBJECT_CHAR_VALUE(arg0);
-            std::cout << (UnicodeString() + c);
-            return nop;
-        } else if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto c = VM_OBJECT_TEXT_VALUE(arg0);
-            std::cout << c;
-            return nop;
-        } else {
-            return nullptr;
+        for (auto& arg:args) {
+            if (arg->tag() == VM_OBJECT_INTEGER) {
+                auto i = VM_OBJECT_INTEGER_VALUE(arg);
+                std::cout << i;
+            } else if (arg->tag() == VM_OBJECT_FLOAT) {
+                auto f = VM_OBJECT_FLOAT_VALUE(arg);
+                std::cout.precision(EGEL_FLOAT_PRECISION);
+                std::cout << f;
+            } else if (arg->tag() == VM_OBJECT_CHAR) {
+                auto c = VM_OBJECT_CHAR_VALUE(arg);
+                std::cout << (UnicodeString() + c);
+            } else if (arg->tag() == VM_OBJECT_TEXT) {
+                auto c = VM_OBJECT_TEXT_VALUE(arg);
+                std::cout << c;
+            } else {
+                //XXX: return nullptr;
+            }
         }
+
+        return nop;
     }
 };
 

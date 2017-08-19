@@ -1196,6 +1196,81 @@ public:
         return VMObjectPtr(new c(*this)); \
     }
 
+class Variadic: public VMObjectCombinator {
+public:
+    Variadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    }
+
+    Variadic(VM* m, const symbol_t s): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    }
+
+    virtual VMObjectPtr apply(const VMObjectPtrs& args) const = 0;
+        
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+
+        VMObjectPtr r;
+        if (tt.size() > 4) {
+            VMObjectPtrs args;
+            for (uint i = 5; i<tt.size(); i++) {
+                args.push_back(tt[i]);
+            }
+
+            try {
+                r = apply(args);
+                if (r == nullptr) {
+                    VMObjectPtrs rr;
+                    for (uint i = 4; i<tt.size(); i++) {
+                        rr.push_back(tt[i]);
+                    }
+                    r = VMObjectArray(rr).clone();
+                }
+            } catch (VMObjectPtr e) {
+                auto exc   = tt[3];
+                auto ee    = VM_OBJECT_ARRAY_VALUE(exc);
+
+                VMObjectPtrs rr;
+                rr.push_back(ee[0]);
+                rr.push_back(ee[1]);
+                rr.push_back(ee[2]);
+                rr.push_back(ee[3]);
+                rr.push_back(ee[4]);
+                rr.push_back(e);
+
+                return VMObjectArray(rr).clone();
+            }
+        } else {
+            VMObjectPtrs rr;
+            for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, r);
+
+        return k;
+    }
+};
+
+#define VARIADIC_PREAMBLE(c, n0, n1) \
+    c(VM* m): Variadic(m, n0, n1) { \
+    } \
+    c(VM* m, const symbol_t s): Variadic(m, s) { \
+    } \
+    c(const c& o) : c(o.machine(), o.symbol()) { \
+    } \
+    VMObjectPtr clone() const { \
+        return VMObjectPtr(new c(*this)); \
+    }
+
 // convenience classes which return continued evaluations
 
 class Binary: public VMObjectCombinator {
