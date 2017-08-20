@@ -380,6 +380,7 @@ public:
     AstPtr parse_match() {
         Position p = position();
         AstPtrs mm = parse_patterns();
+        /* 
         if (tag() == TOKEN_QUESTION) {
             skip();
             AstPtr q = parse_expression();
@@ -392,6 +393,11 @@ public:
             AstPtr e = parse_expression();
             return AstExprMatch(p, mm, q, e).clone();
         }
+        */
+        AstPtr q = AstEmpty().clone();
+        force_token(TOKEN_ARROW);
+        AstPtr e = parse_expression();
+        return AstExprMatch(p, mm, q, e).clone();
     }
 
     AstPtr parse_block() {

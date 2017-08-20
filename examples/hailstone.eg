@@ -21,7 +21,7 @@ namespace Hailstone (
     using System
     using List
 
-    def even = [ N -> (N/2) == ((N+1)/2) ]
+    def even = [ N -> (N%2) == 0 ]
 
     def hailstone =
         [ 1 -> {1}
