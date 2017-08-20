@@ -18,6 +18,9 @@ class Error : public std::exception {
 public:
     Error(error_tag_t t, const Position &p, const UnicodeString &m) :
         _tag(t), _position(p), _message(m)  {
+            // useful for debugging, uncomment to get stack trace in debug mode
+            //Error* e = (Error*) nullptr;
+            //e->position();
     }
 
     ~Error() {

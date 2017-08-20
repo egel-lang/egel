@@ -28,7 +28,8 @@ UChar* read_utf8_file(const char* filename) {
     // UChar* str = (UChar*) malloc(sizeof(UChar) * (fsize + 1));
 
     for (fsize = 0; !u_feof(f); ++fsize) {
-        str[fsize] = u_fgetc(f);
+        UChar c = u_fgetc(f);
+        str[fsize] = c;
     }
 
     str[fsize] = 0;

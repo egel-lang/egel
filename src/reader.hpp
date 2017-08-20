@@ -38,13 +38,12 @@ public:
         return _content.char32At(_index);
     }
 
-    // XXX: handle MSDOS like newlines
     void skip() {
         if (end()) return;
         UChar32 c = look();
         _index = _content.moveIndex32(_index, 1);
         switch (c) {
-            // XXX
+            // XXX: handle MSDOS like newlines
             case '\n':
                 _column = 1;
                 _row++;
@@ -55,6 +54,7 @@ public:
     }
 
     bool end() {
+        if (_content.char32At(_index) == 65535) return true; // make absolutely sure we always detect the end
         return _index >= _content.length();
     }
 
