@@ -391,11 +391,19 @@ public:
     }
 
     VMObjectPtr clone() const {
-        return VMObjectPtr(new VMObjectArray(*this));
+        if (size() == 1) {
+            return get(0);
+        } else {
+            return VMObjectPtr(new VMObjectArray(*this));
+        }
     }
 
     static VMObjectPtr create(const VMObjectPtrs& pp) {
-        return VMObjectPtr(new VMObjectArray(pp));
+        if (pp.size() == 1) {
+            return pp[0];
+        } else {
+            return VMObjectPtr(new VMObjectArray(pp));
+        }
     }
 
     symbol_t symbol() const override {
