@@ -231,7 +231,8 @@ public:
             return true;
             break;
         default:
-            return false;
+            return (is_wildcard() || is_variable() 
+                    || is_combinator());
             break;
         }
     }
@@ -260,64 +261,45 @@ public:
             return parse_pattern_list();
             break;
         default:
-            throw ErrorSyntactical(position(), "pattern primary expected");
-            break;
-        }
-    }
-
-    bool is_pattern_arg() {
-        return (is_wildcard() || is_variable() || is_pattern_primary() || is_combinator());
-    }
-
-    AstPtr parse_pattern_arg() {
-        if (is_pattern_primary()) {
-            return parse_pattern_primary();
-        } else if (is_wildcard()) {
-            return parse_wildcard();
-        } else if (is_variable()) {
-            return parse_variable();
-        } else if (is_combinator()) {
-            return parse_combinator();
-        } else {
-            throw ErrorSyntactical(position(), "pattern argument expected");
-        }
-    }
-
-    AstPtrs parse_pattern_args() {
-        AstPtrs pp = AstPtrs();
-        while (is_pattern_arg()) {
-            AstPtr p = parse_pattern_arg();
-            pp.push_back(p);
-        }
-        return pp;
-    }
-
-    bool is_pattern() {
-        return (is_wildcard() || is_pattern_primary() || is_combinator());
-    }
-
-    AstPtr parse_pattern() {
-        if (is_pattern_primary()) {
-            return parse_pattern_primary();
-        } else if (is_wildcard()) {
-            return parse_wildcard();
-        } else if (is_variable()) {
-            auto v = parse_variable();
+            AstPtr e;
+            if (is_wildcard()) {
+                e = parse_wildcard();
+            } else if (is_variable()) {
+                e = parse_variable();
+            } else if (is_combinator()) {
+                e = parse_combinator();
+            } else {
+                throw ErrorSyntactical(position(), "pattern expected");
+            }
             if (tag() == TOKEN_COLON) {
                 Position p = position();
                 skip();
                 auto c = parse_combinator();
-                return AstExprTag(p, v, c).clone();
+                return AstExprTag(p, e, c).clone();
             } else {
-                return v;
+                return e;
             }
-        } else if (is_combinator()) {
-            Position p = position();
-            AstPtr c = parse_combinator();
-            AstPtrs aa = parse_pattern_args();
-            return AstExprApplication(p, c, aa).clone();
+            break;
+        }
+        throw ErrorSyntactical(position(), "pattern expected");
+    }
+
+    AstPtr parse_pattern() {
+        Position p = position();
+        AstPtr e;
+        if (is_pattern_primary()) {
+            e = parse_pattern_primary();
+        } 
+        if (is_pattern_primary()) {
+            AstPtrs ee = AstPtrs();
+            ee.push_back(e);
+            while (is_pattern_primary()) {
+                e = parse_pattern_primary();
+                ee.push_back(e);
+            }
+            return AstExprApplication(p, ee).clone();
         } else {
-            throw ErrorSyntactical(position(), "pattern expected");
+            return e;
         }
     }
 
