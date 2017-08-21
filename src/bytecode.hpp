@@ -494,8 +494,7 @@ private:
 #define FETCH_idx(c,pc)     FETCH_i16(c, pc)
 #define FETCH_lbl(c,pc)   FETCH_i32(c, pc)
 
-// XXX: to be replaced by something faster
-#define FAST_REGISTERS
+//#define FAST_REGISTERS //XXX: turned of for now
 #ifdef FAST_REGISTERS
 typedef VMObjectPtr Registers[128];
 #else
