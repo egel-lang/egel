@@ -73,8 +73,7 @@ namespace List (
 
     def fromto =
         [ X, Y -> 
-            if X < Y then
-                reverse (map [ N -> N + X ] (block (Y-X)))
+            if X <= Y then cons X (fromto (X+1) Y)
             else nil ]
 
     def filter =
