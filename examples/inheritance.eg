@@ -5,7 +5,8 @@
  * 'extend OBJECT0 OBJECT1' creates an object which is the union of
  * fields of OBJECT0 overwritten by OBJECT1.
  *
- * Probably extend will also be included as syntactic sugar.
+ * The extends keyword is syntactic sugar for using that 
+ * combinator.
  */
 import "prelude.eg"
 

@@ -81,6 +81,11 @@ namespace List (
         | P, cons X XX -> if P X then cons X (filter P XX) 
                                  else filter P XX ]
 
+    def flatten =
+        [ nil                   -> nil
+        | cons nil YY           -> flatten YY
+        | cons (cons X XX) YY   -> cons X (flatten (cons XX YY)) ]
+
     def zipwith =
         [ Z, cons X XX, cons Y YY -> cons (Z X Y) (zipwith Z XX YY)
         | Z, XX, YY               -> nil ]
