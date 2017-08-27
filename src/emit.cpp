@@ -146,14 +146,11 @@ public:
     }
 
 
-    void visit_expr_integer(const Position& p, const UnicodeString& v) override {
+    void visit_constant(const data_t& d) {
         switch(get_state()) {
         case EMIT_PATTERN: {
             auto r = get_current_register();
             auto l = get_fail_label();
-            auto i = VMObjectInteger(convert_to_int(v)).clone();
-            auto d = get_machine()->enter_data(i);
-
             auto ri = get_coder()->generate_register();
 
             get_coder()->emit_op_data(ri, d);
@@ -161,121 +158,72 @@ public:
             get_coder()->emit_op_fail(l);
             }
             break;
-
         case EMIT_EXPR_ROOT:
         case EMIT_EXPR: {
-            auto i = VMObjectInteger(convert_to_int(v)).clone();
-            auto d = get_machine()->enter_data(i);
+            auto rt  = get_coder()->generate_register();
+            auto rti = get_coder()->generate_register();
+            auto k   = get_coder()->generate_register();
+            auto exc = get_coder()->generate_register();
+            auto c   = get_coder()->generate_register();
 
-            auto rt  = get_register_rt();
-            auto rti = get_register_rti();
+            auto t   = get_coder()->generate_register();
 
-            auto x   = get_coder()->generate_register();
+            get_coder()->emit_op_mov(rt, get_register_rt());
+            get_coder()->emit_op_mov(rti, get_register_rti());
+            get_coder()->emit_op_mov(k, get_register_k());
+            get_coder()->emit_op_mov(exc, get_register_exc());
+            get_coder()->emit_op_data(c, d);
 
-            get_coder()->emit_op_data(x, d);
-            get_coder()->emit_op_set(rt, rti, x);
+            get_coder()->emit_op_array(t, rt, c);
+
+            if (get_state() == EMIT_EXPR_ROOT) {
+                set_state(EMIT_EXPR);
+                auto x   = get_coder()->generate_register();
+                auto f   = get_register_frame();
+
+                get_coder()->emit_op_concatx(x, t, f, 5 + get_arity());
+                set_register_k(x);
+            } else {
+                set_register_k(t);
+            }
+
             }
             break;
         }
+    }
+
+    void visit_expr_integer(const Position& p, const UnicodeString& v) override {
+        auto i = VMObjectInteger(convert_to_int(v)).clone();
+        auto d = get_machine()->enter_data(i);
+        visit_constant(d);
     }
 
     void visit_expr_float(const Position& p, const UnicodeString& v) override {
-        switch(get_state()) {
-        case EMIT_PATTERN: {
-            auto r = get_current_register();
-            auto l = get_fail_label();
-            auto i = VMObjectFloat(convert_to_float(v)).clone();
-            auto d = get_machine()->enter_data(i);
-
-            auto ri = get_coder()->generate_register();
-
-            get_coder()->emit_op_data(ri, d);
-            get_coder()->emit_op_test(r, ri);
-            get_coder()->emit_op_fail(l);
-            }
-
-            break;
-        case EMIT_EXPR_ROOT:
-        case EMIT_EXPR: {
-            auto i = VMObjectFloat(convert_to_float(v)).clone();
-            auto d = get_machine()->enter_data(i);
-
-            auto rt  = get_register_rt();
-            auto rti = get_register_rti();
-
-            auto x   = get_coder()->generate_register();
-
-            get_coder()->emit_op_data(x, d);
-            get_coder()->emit_op_set(rt, rti, x);
-            }
-            break;
-        }
+        auto i = VMObjectFloat(convert_to_float(v)).clone();
+        auto d = get_machine()->enter_data(i);
+        visit_constant(d);
     }
 
     void visit_expr_character(const Position& p, const UnicodeString& v) override {
-        switch(get_state()) {
-        case EMIT_PATTERN: {
-            auto r = get_current_register();
-            auto l = get_fail_label();
-            auto i = VMObjectChar(convert_to_char(v)).clone();
-            auto d = get_machine()->enter_data(i);
-
-            auto ri = get_coder()->generate_register();
-
-            get_coder()->emit_op_data(ri, d);
-            get_coder()->emit_op_test(r, ri);
-            get_coder()->emit_op_fail(l);
-            }
-            break;
-
-        case EMIT_EXPR_ROOT:
-        case EMIT_EXPR: {
-            auto i = VMObjectChar(convert_to_char(v)).clone();
-            auto d = get_machine()->enter_data(i);
-
-            auto rt  = get_register_rt();
-            auto rti = get_register_rti();
-
-            auto x   = get_coder()->generate_register();
-
-            get_coder()->emit_op_data(x, d);
-            get_coder()->emit_op_set(rt, rti, x);
-            }
-            break;
-        }
+        auto i = VMObjectChar(convert_to_char(v)).clone();
+        auto d = get_machine()->enter_data(i);
+        visit_constant(d);
     }
 
     void visit_expr_text(const Position& p, const UnicodeString& v) override {
-        switch(get_state()) {
-        case EMIT_PATTERN: {
-            auto r = get_current_register();
-            auto l = get_fail_label();
-            auto i = VMObjectText(convert_to_text(v)).clone();
-            auto d = get_machine()->enter_data(i);
+        auto i = VMObjectText(convert_to_text(v)).clone();
+        auto d = get_machine()->enter_data(i);
+        visit_constant(d);
+    }
 
-            auto ri = get_coder()->generate_register();
+    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
+        auto c = get_machine()->get_data_string(nn, n);
+        auto d = get_machine()->enter_data(c);
+        visit_constant(d);
+    }
 
-            get_coder()->emit_op_data(ri, d);
-            get_coder()->emit_op_test(r, ri);
-            get_coder()->emit_op_fail(l);
-            }
-            break;
-        case EMIT_EXPR_ROOT:
-        case EMIT_EXPR: {
-            auto i = VMObjectText(convert_to_text(v)).clone();
-            auto d = get_machine()->enter_data(i);
-
-            auto rt  = get_register_rt();
-            auto rti = get_register_rti();
-
-            auto x   = get_coder()->generate_register();
-
-            get_coder()->emit_op_data(x, d);
-            get_coder()->emit_op_set(rt, rti, x);
-
-            }
-            break;
-        }
+    void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
+        visit_expr_combinator(p, nn, n);
     }
 
     void visit_expr_variable(const Position& p, const UnicodeString& n) override {
@@ -320,62 +268,6 @@ public:
             }
             break;
         }
-    }
-
-    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
-        switch(get_state()) {
-        case EMIT_PATTERN: {
-            auto r = get_current_register();
-            auto l = get_fail_label();
-            auto c = get_machine()->get_data_string(nn, n);
-            auto d = get_machine()->enter_data(c);
-
-            auto ri = get_coder()->generate_register();
-
-            get_coder()->emit_op_data(ri, d);
-            get_coder()->emit_op_test(r, ri);
-            get_coder()->emit_op_fail(l);
-            }
-            break;
-        case EMIT_EXPR_ROOT:
-        case EMIT_EXPR: {
-            auto z = get_machine()->get_data_string(nn, n);
-            auto d = get_machine()->enter_data(z);
-
-            auto rt  = get_coder()->generate_register();
-            auto rti = get_coder()->generate_register();
-            auto k   = get_coder()->generate_register();
-            auto exc = get_coder()->generate_register();
-            auto c   = get_coder()->generate_register();
-
-            auto t   = get_coder()->generate_register();
-
-            get_coder()->emit_op_mov(rt, get_register_rt());
-            get_coder()->emit_op_mov(rti, get_register_rti());
-            get_coder()->emit_op_mov(k, get_register_k());
-            get_coder()->emit_op_mov(exc, get_register_exc());
-            get_coder()->emit_op_data(c, d);
-
-            get_coder()->emit_op_array(t, rt, c);
-
-            if (get_state() == EMIT_EXPR_ROOT) {
-                set_state(EMIT_EXPR);
-                auto x   = get_coder()->generate_register();
-                auto f   = get_register_frame();
-
-                get_coder()->emit_op_concatx(x, t, f, 5 + get_arity());
-                set_register_k(x);
-            } else {
-                set_register_k(t);
-            }
-
-            }
-            break;
-        }
-    }
-
-    void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
-        visit_expr_combinator(p, nn, n);
     }
 
     void visit_expr_application(const Position& p, const AstPtrs& aa) override {
