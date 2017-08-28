@@ -38,6 +38,10 @@ function build {
     cd include/par
     make O3
     cd ../..
+
+    cd include/random
+    make O3
+    cd ../..
 }
 
 function clean {
@@ -58,6 +62,10 @@ function clean {
     cd ../..
 
     cd include/par
+    make clean
+    cd ../..
+
+    cd include/random
     make clean
     cd ../..
 }
