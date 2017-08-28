@@ -1,0 +1,11 @@
+/**
+ * Factorial expressed with an eager fixed point combinator.
+ */
+import "prelude.eg"
+
+using System
+
+def fix = [ F -> F [ X -> (fix F) X ] ]
+
+def main =
+    fix [FAC, 0 -> 1 | FAC, N -> N * (FAC (N-1)) ] 5
