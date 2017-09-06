@@ -25,14 +25,14 @@ public:
             return arg0;
         } else if (arg0->tag() == VM_OBJECT_FLOAT) {
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return VMObjectInteger(f).clone();
+            return create_integer(f);
         } else if (arg0->tag() == VM_OBJECT_CHAR) {
             auto c = VM_OBJECT_CHAR_VALUE(arg0);
-            return VMObjectInteger(c).clone();
+            return create_integer(c);
         } else if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             auto i = convert_to_int(s);
-            return VMObjectInteger(i).clone();
+            return create_integer(i);
         } else {
             return nullptr;
         }
@@ -48,7 +48,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
             auto i = VM_OBJECT_INTEGER_VALUE(arg0);
-            return VMObjectFloat(i).clone();
+            return create_float(i);
         } else if (arg0->tag() == VM_OBJECT_FLOAT) {
             return arg0;
         } else if (arg0->tag() == VM_OBJECT_CHAR) {
@@ -56,7 +56,7 @@ public:
         } else if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             auto i = convert_to_float(s);
-            return VMObjectFloat(i).clone();
+            return create_float(i);
         } else {
             return nullptr;
         }
@@ -73,15 +73,15 @@ public:
         if (arg0->tag() == VM_OBJECT_INTEGER) {
             auto i = VM_OBJECT_INTEGER_VALUE(arg0);
             auto s = convert_from_int(i);
-            return VMObjectText(s).clone();
+            return create_text(s);
         } else if (arg0->tag() == VM_OBJECT_FLOAT) {
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             auto s = convert_from_float(f);
-            return VMObjectText(s).clone();
+            return create_text(s);
         } else if (arg0->tag() == VM_OBJECT_CHAR) {
             auto c = VM_OBJECT_CHAR_VALUE(arg0);
             auto s = convert_from_char(c);
-            return VMObjectText(s).clone();
+            return create_text(s);
         } else if (arg0->tag() == VM_OBJECT_TEXT) {
             return arg0;
         } else {

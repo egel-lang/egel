@@ -684,15 +684,15 @@ public:
         return VMObjectText::create(v);
     }
 
-    VMObjectPtr create_nop(const vm_text_t v) const {
+    VMObjectPtr create_nop() const {
         return _machine->get_data_symbol(SYMBOL_NOP);
     }
 
-    VMObjectPtr create_true(const vm_text_t v) const {
+    VMObjectPtr create_true() const {
         return _machine->get_data_symbol(SYMBOL_TRUE);
     }
 
-    VMObjectPtr create_false(const vm_text_t v) const {
+    VMObjectPtr create_false() const {
         return _machine->get_data_symbol(SYMBOL_FALSE);
     }
 

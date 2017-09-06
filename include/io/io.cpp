@@ -117,7 +117,7 @@ public:
             // XXX: uh.. flushall, or something?
             exit(i);
             // play nice
-            return machine()->get_data_string("System", "nop");
+            return create_nop();
         } else {
             return nullptr;
         }
@@ -133,9 +133,6 @@ public:
     VARIADIC_PREAMBLE(Print, "IO", "print");
 
     VMObjectPtr apply(const VMObjectPtrs& args) const override {
-
-        static VMObjectPtr nop = nullptr;
-        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
 
         UnicodeString s;
         for (auto& arg:args) {
@@ -153,7 +150,7 @@ public:
         }
         std::cout << s;
 
-        return nop;
+        return create_nop();
     }
 };
 
@@ -172,7 +169,7 @@ public:
         std::string line;
         std::getline(std::cin, line);
         UnicodeString str(line.c_str());
-        return VMObjectText(str).clone();
+        return create_text(str);
     }
 };
 
@@ -246,13 +243,10 @@ public:
         static symbol_t sym = 0;
         if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
 
-        static VMObjectPtr nop = nullptr;
-        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
-
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             chan->close();
-            return nop;
+            return create_nop();
         } else {
             return nullptr;
         }
@@ -272,13 +266,10 @@ public:
         static symbol_t sym = 0;
         if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
 
-        static VMObjectPtr nop = nullptr;
-        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
-
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             chan->flush();
-            return nop;
+            return create_nop();
         } else {
             return nullptr;
         }
@@ -328,32 +319,29 @@ public:
         static symbol_t sym = 0;
         if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
 
-        static VMObjectPtr nop = nullptr;
-        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
-
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             if (arg1->tag() == VM_OBJECT_INTEGER) {
                 auto i = VM_OBJECT_INTEGER_VALUE(arg1);
                 chan->write(i);
-                return nop;
+                return create_nop();
             } else if (arg1->tag() == VM_OBJECT_FLOAT) {
                 auto f = VM_OBJECT_FLOAT_VALUE(arg1);
                 chan->write(f);
-                return nop;
+                return create_nop();
             } else if (arg1->tag() == VM_OBJECT_CHAR) {
                 auto c = VM_OBJECT_CHAR_VALUE(arg1);
                 chan->write(c);
-                return nop;
+                return create_nop();
             } else if (arg1->tag() == VM_OBJECT_TEXT) {
                 auto s = VM_OBJECT_TEXT_VALUE(arg1);
                 chan->write(s);
-                return nop;
+                return create_nop();
             } else {
                 return nullptr;
             }
             chan->flush();
-            return nop;
+            return create_nop();
         } else {
             return nullptr;
         }
@@ -420,7 +408,7 @@ public:
                 std::string line;
                 std::getline(std::cin, line);
                 UnicodeString str(line.c_str());
-                return VMObjectText(str).clone();
+                return create_text(str);
             } catch (std::exception e) {
                 return nullptr;
             }
