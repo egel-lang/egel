@@ -55,7 +55,7 @@ namespace List (
 
     def map =
         [ F, nil -> nil
-        | F, cons X XX -> cons (F X) (map F XX) ]
+        | F, cons X XX -> let Y = F X in cons Y (map F XX) ]
 
     def reverse = 
        foldl (flip cons) nil
@@ -63,6 +63,14 @@ namespace List (
     def block =
         [ 0 -> nil
         | N -> cons (N-1) (block (N-1)) ]
+
+    def nth =
+        [ 0, cons X XX -> X
+        | N, cons X XX -> nth (N-1) XX ]
+
+    def insert =
+        [ 0, X, cons Y YY -> cons X YY
+        | I, X, cons Y YY -> cons Y (insert (I-1) X YY) ]
 
     def take =
         [ 0, XX -> nil

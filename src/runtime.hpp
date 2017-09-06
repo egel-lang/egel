@@ -101,6 +101,10 @@ typedef UnicodeString   vm_text_t;
 #define SYMBOL_CHAR     2
 #define SYMBOL_TEXT     3
 
+#define SYMBOL_NOP      4
+#define SYMBOL_TRUE     5
+#define SYMBOL_FALSE    6
+
 typedef uint32_t    symbol_t;
 typedef uint32_t    data_t;
 
@@ -233,6 +237,11 @@ public:
         return VMObjectPtr(new VMObjectInteger(*this));
     }
 
+    static VMObjectPtr create(const vm_int_t v) {
+        return VMObjectPtr(new VMObjectInteger(v));
+    }
+
+
     symbol_t symbol() const override {
         return SYMBOL_INT;
     }
@@ -269,6 +278,10 @@ public:
 
     VMObjectPtr clone() const {
         return VMObjectPtr(new VMObjectFloat(*this));
+    }
+
+    static VMObjectPtr create(const vm_float_t v) {
+        return VMObjectPtr(new VMObjectFloat(v));
     }
 
     symbol_t symbol() const override {
@@ -311,6 +324,10 @@ public:
         return VMObjectPtr(new VMObjectChar(*this));
     }
 
+    static VMObjectPtr create(const vm_char_t v) {
+        return VMObjectPtr(new VMObjectChar(v));
+    }
+
     symbol_t symbol() const override {
         return SYMBOL_CHAR;
     }
@@ -350,6 +367,10 @@ public:
 
     VMObjectPtr clone() const {
         return VMObjectPtr(new VMObjectText(*this));
+    }
+
+    static VMObjectPtr create(const UnicodeString& v) {
+        return VMObjectPtr(new VMObjectText(v));
     }
 
     symbol_t symbol() const override {
@@ -644,6 +665,35 @@ public:
 #ifdef DEBUG
         os << " (" << flag() << ") " ;
 #endif
+    }
+
+    // convenience routines
+    VMObjectPtr create_integer(const vm_int_t v) const {
+        return VMObjectInteger::create(v);
+    }
+
+    VMObjectPtr create_float(const vm_float_t v) const {
+        return VMObjectFloat::create(v);
+    }
+
+    VMObjectPtr create_char(const vm_char_t v) const {
+        return VMObjectChar::create(v);
+    }
+
+    VMObjectPtr create_text(const vm_text_t v) const {
+        return VMObjectText::create(v);
+    }
+
+    VMObjectPtr create_nop(const vm_text_t v) const {
+        return _machine->get_data_symbol(SYMBOL_NOP);
+    }
+
+    VMObjectPtr create_true(const vm_text_t v) const {
+        return _machine->get_data_symbol(SYMBOL_TRUE);
+    }
+
+    VMObjectPtr create_false(const vm_text_t v) const {
+        return _machine->get_data_symbol(SYMBOL_FALSE);
     }
 
 private:

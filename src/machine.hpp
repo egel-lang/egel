@@ -31,6 +31,12 @@ public:
         ASSERT(f == SYMBOL_FLOAT);
         ASSERT(c == SYMBOL_CHAR);
         ASSERT(t == SYMBOL_TEXT);
+        auto _nop   = enter(STRING_SYSTEM, STRING_NOP);
+        auto _true  = enter(STRING_SYSTEM, STRING_TRUE);
+        auto _false = enter(STRING_SYSTEM, STRING_FALSE);
+        ASSERT(_nop   == SYMBOL_NOP);
+        ASSERT(_true  == SYMBOL_TRUE);
+        ASSERT(_false == SYMBOL_FALSE);
     }
 
     symbol_t enter(const UnicodeString& s) {
