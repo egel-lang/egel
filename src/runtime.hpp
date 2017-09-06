@@ -696,6 +696,13 @@ public:
         return _machine->get_data_symbol(SYMBOL_FALSE);
     }
 
+    VMObjectPtr create_bool(const bool b) const {
+        if (b) {
+            return create_true();
+        } else {
+            return create_false();
+        }
+    }
 private:
     VM*         _machine;
     symbol_t    _symbol;
