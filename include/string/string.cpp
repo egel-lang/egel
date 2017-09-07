@@ -4,7 +4,7 @@
 /**
  * Egel's string combinators.
  *
- * Loosely follow libicu. Strings are immutable, combinators are pure.
+ * Loosely follow a subset of libicu. Strings are immutable, combinators are pure.
  **/
 
 // String.eq s0 s1
@@ -170,7 +170,7 @@ public:
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0.startsWith(s1));
+            return create_bool(s1.startsWith(s0));
         } else {
             return nullptr;
         }
@@ -187,7 +187,7 @@ public:
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0.endsWith(s1));
+            return create_bool(s1.endsWith(s0));
         } else {
             return nullptr;
         }
@@ -204,7 +204,7 @@ public:
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_integer(s0.indexOf(s1));
+            return create_integer(s1.indexOf(s0));
         } else {
             return nullptr;
         }
@@ -221,14 +221,14 @@ public:
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_integer(s0.lastIndexOf(s1));
+            return create_integer(s1.lastIndexOf(s0));
         } else {
             return nullptr;
         }
     }
 };
 
-// String.charAt s n
+// String.charAt n s
 // Return the code point that contains the code unit at offset offset. 
 class CharAt: public Dyadic {
 public:
@@ -236,8 +236,8 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER)) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            auto n = VM_OBJECT_INTEGER_VALUE(arg1);
+            auto n = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto s = VM_OBJECT_TEXT_VALUE(arg1);
             return create_char(s.char32At(n));
         } else {
             return nullptr;
@@ -363,7 +363,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             auto n  = VM_OBJECT_INTEGER_VALUE(arg1);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
-            return create_text(s0.insert(n, s1));
+            return create_text(s1.insert(n, s0));
         } else {
             return nullptr;
         }
@@ -381,7 +381,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             auto s2 = VM_OBJECT_TEXT_VALUE(arg2);
-            return create_text(s0.findAndReplace(s1, s2));
+            return create_text(s2.findAndReplace(s0, s1));
         } else {
             return nullptr;
         }

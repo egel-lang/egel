@@ -3,6 +3,7 @@ import "io.ego"
 import "math.ego"
 import "par.ego"
 import "random.ego"
+import "string.ego"
 
 namespace System (
 
