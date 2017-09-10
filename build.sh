@@ -42,6 +42,10 @@ function build {
     cd include/random
     make O3
     cd ../..
+
+    cd include/string
+    make O3
+    cd ../..
 }
 
 function clean {
@@ -68,10 +72,17 @@ function clean {
     cd include/random
     make clean
     cd ../..
+
+    cd include/string
+    make clean
+    cd ../..
 }
 
 if [ "$1" = "clean" ]; then
     clean
+elif [ "$1" = "rebuild" ]; then
+    clean
+    build
 else
     build
 fi

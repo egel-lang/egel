@@ -10,11 +10,72 @@
  * specification promises. Neither are all combinators implemented
  * according to spec.
  *
- * Copied from Javascript's Math object.
- *
  * Almost all of these combinators work only on floats. 
  **/
 
+// Math.isFinite x
+// Test on whether this float is finite.
+class IsFinite: public Monadic {
+public:
+    MONADIC_PREAMBLE(IsFinite, "Math", "isFinite");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_FLOAT) {
+            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+            return create_bool(isfinite(f));
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// Math.isInfinite x
+// Test on whether this float is infinite.
+class IsInfinite: public Monadic {
+public:
+    MONADIC_PREAMBLE(IsInfinite, "Math", "isInfinite");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_FLOAT) {
+            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+            return create_bool(isinf(f));
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// Math.isNan x
+// Test on whether this float is Not a Number.
+class IsNan: public Monadic {
+public:
+    MONADIC_PREAMBLE(IsNan, "Math", "isNan");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_FLOAT) {
+            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+            return create_bool(isnan(f));
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// Math.isNormal x
+// Test on whether this float is normal.
+class IsNormal: public Monadic {
+public:
+    MONADIC_PREAMBLE(IsNormal, "Math", "isNormal");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_FLOAT) {
+            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+            return create_bool(isnormal(f));
+        } else {
+            return nullptr;
+        }
+    }
+};
 
 // Math.e
 // Euler's constant and the base of natural logarithms, approximately 2.718.
@@ -519,7 +580,7 @@ public:
     }
 };
 
-// Math.sign x // XXX?
+// Math.sign x 
 // Returns the sign of the x, indicating whether x is positive, negative or zero.
 class Sign: public Monadic {
 public:
@@ -528,7 +589,8 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_FLOAT) {
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_integer((f<0)?(-1):((f>0)?1:0));
+            auto b = signbit(f);
+            return create_integer((b!=0)? (-1) : (1));
         } else {
             return nullptr;
         }
