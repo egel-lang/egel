@@ -235,7 +235,7 @@ public:
     DYADIC_PREAMBLE(CharAt, "String", "charAt");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER)) {
+        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_TEXT)) {
             auto n = VM_OBJECT_INTEGER_VALUE(arg0);
             auto s = VM_OBJECT_TEXT_VALUE(arg1);
             return create_char(s.char32At(n));
@@ -246,17 +246,17 @@ public:
 };
 
 
-// String.moveIndex s index delta
+// String.moveIndex index delta s
 // Move the code unit index along the string by delta code points. 
 class MoveIndex: public Triadic {
 public:
     TRIADIC_PREAMBLE(MoveIndex, "String", "moveIndex");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_INTEGER)) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            auto n = VM_OBJECT_INTEGER_VALUE(arg1);
-            auto d = VM_OBJECT_INTEGER_VALUE(arg2);
+        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto n = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto d = VM_OBJECT_INTEGER_VALUE(arg1);
+            auto s = VM_OBJECT_TEXT_VALUE(arg2);
             return create_integer(s.moveIndex32(n, d));
         } else {
             return nullptr;
@@ -388,17 +388,17 @@ public:
     }
 };
 
-// String.remove s0 n0 n1
+// String.remove n0 n1 s0
 // Remove the characters in the range [start, limit) from the UnicodeString object. 
 class Remove: public Triadic {
 public:
     TRIADIC_PREAMBLE(Remove, "String", "remove");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_INTEGER)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto n0 = VM_OBJECT_INTEGER_VALUE(arg1);
-            auto n1 = VM_OBJECT_INTEGER_VALUE(arg2);
+        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto n0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
             return create_text(s0.removeBetween(n0, n1));
         } else {
             return nullptr;
@@ -406,17 +406,17 @@ public:
     }
 };
 
-// String.retain s0 n0 n1
+// String.retain n0 n1 s0
 // Retain the characters in the range [start, limit) from the UnicodeString object. 
 class Retain: public Triadic {
 public:
     TRIADIC_PREAMBLE(Retain, "String", "retain");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_INTEGER)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto n0 = VM_OBJECT_INTEGER_VALUE(arg1);
-            auto n1 = VM_OBJECT_INTEGER_VALUE(arg2);
+        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto n0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
             return create_text(s0.retainBetween(n0, n1));
         } else {
             return nullptr;
