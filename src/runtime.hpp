@@ -361,6 +361,11 @@ public:
         : VMObjectLiteral(VM_OBJECT_TEXT), _value(v) {
     };
 
+    VMObjectText(const char* v)
+        : VMObjectLiteral(VM_OBJECT_TEXT) {
+        _value = UnicodeString::fromUTF8(StringPiece(v));
+    };
+
     VMObjectText(const VMObjectText& l)
         : VMObjectText(l.value()) {
     }
@@ -370,6 +375,10 @@ public:
     }
 
     static VMObjectPtr create(const UnicodeString& v) {
+        return VMObjectPtr(new VMObjectText(v));
+    }
+
+    static VMObjectPtr create(const char* v) {
         return VMObjectPtr(new VMObjectText(v));
     }
 
@@ -681,6 +690,10 @@ public:
     }
 
     VMObjectPtr create_text(const vm_text_t v) const {
+        return VMObjectText::create(v);
+    }
+
+    VMObjectPtr create_text(const char* v) const {
         return VMObjectText::create(v);
     }
 
