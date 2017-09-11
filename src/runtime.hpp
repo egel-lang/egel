@@ -386,6 +386,14 @@ public:
         return SYMBOL_TEXT;
     }
 
+    char* to_char() {
+        const int STRING_MAX_SIZE = 10000000; // XXX: i hate constants
+        auto len = _value.extract(0, STRING_MAX_SIZE, nullptr, (uint32_t) 0);
+        auto buffer = new char[len+1];
+        _value.extract(0, STRING_MAX_SIZE, buffer, len+1);
+        return buffer;
+    }
+
     void render(std::ostream& os) const override {
         UnicodeString s;
         s = uescape(value());
