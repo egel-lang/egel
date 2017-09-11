@@ -116,6 +116,7 @@
 #define STRING_CHAR              "char"
 #define STRING_STRING            "string"
 #define STRING_DOUBLE            "double"
+#define STRING_PTR               "ptr"
 
 #define STRING_TEXT              "text"
 
@@ -156,6 +157,8 @@
 
 #define STRING_SYSTEM_TUPLE     "System.tuple"
 #define STRING_SYSTEM_OBJECT    "System.object"
+
+#define STRING_SYSTEM_PTR       "System.ptr"
 
 #define STRING_SYSTEM_FAIL      "System.fail"
 

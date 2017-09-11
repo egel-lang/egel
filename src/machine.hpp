@@ -27,10 +27,12 @@ public:
         auto f = enter(STRING_SYSTEM, STRING_FLOAT);
         auto c = enter(STRING_SYSTEM, STRING_CHAR);
         auto t = enter(STRING_SYSTEM, STRING_TEXT);
+        auto p = enter(STRING_SYSTEM, STRING_PTR);
         ASSERT(i == SYMBOL_INT);
         ASSERT(f == SYMBOL_FLOAT);
         ASSERT(c == SYMBOL_CHAR);
         ASSERT(t == SYMBOL_TEXT);
+        ASSERT(p == SYMBOL_POINTER);
         auto _nop   = enter(STRING_SYSTEM, STRING_NOP);
         auto _true  = enter(STRING_SYSTEM, STRING_TRUE);
         auto _false = enter(STRING_SYSTEM, STRING_FALSE);

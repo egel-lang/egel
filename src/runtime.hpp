@@ -85,6 +85,7 @@ typedef enum {
     VM_OBJECT_FLOAT,
     VM_OBJECT_CHAR,
     VM_OBJECT_TEXT,
+    VM_OBJECT_POINTER,
     VM_OBJECT_OPAQUE,
     VM_OBJECT_COMBINATOR,
     VM_OBJECT_ARRAY,
@@ -94,16 +95,18 @@ typedef int64_t         vm_int_t;
 typedef double          vm_float_t;
 typedef UChar32         vm_char_t;
 typedef UnicodeString   vm_text_t;
+typedef void*           vm_ptr_t;
 
 // predefined symbols
 #define SYMBOL_INT      0
 #define SYMBOL_FLOAT    1
 #define SYMBOL_CHAR     2
 #define SYMBOL_TEXT     3
+#define SYMBOL_POINTER  4
 
-#define SYMBOL_NOP      4
-#define SYMBOL_TRUE     5
-#define SYMBOL_FALSE    6
+#define SYMBOL_NOP      5
+#define SYMBOL_TRUE     6
+#define SYMBOL_FALSE    7
 
 typedef uint32_t    symbol_t;
 typedef uint32_t    data_t;
@@ -417,6 +420,48 @@ typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
 #define VM_OBJECT_TEXT_VALUE(a) \
     (VM_OBJECT_TEXT_CAST(a)->value())
 
+class VMObjectPointer : public VMObjectLiteral {
+public:
+    VMObjectPointer(const vm_ptr_t &v)
+        : VMObjectLiteral(VM_OBJECT_POINTER), _value(v) {
+    };
+
+    VMObjectPointer(const VMObjectPointer& l)
+        : VMObjectPointer(l.value()) {
+    }
+
+    VMObjectPtr clone() const {
+        return VMObjectPtr(new VMObjectPointer(*this));
+    }
+
+    static VMObjectPtr create(const vm_ptr_t& v) {
+        return VMObjectPtr(new VMObjectPointer(v));
+    }
+
+    symbol_t symbol() const override {
+        return SYMBOL_POINTER;
+    }
+
+    void render(std::ostream& os) const override {
+        os << '<' << _value << '>';
+    }
+
+    vm_ptr_t value() const {
+        return _value;
+    }
+
+private:
+    vm_ptr_t    _value;
+};
+
+typedef std::shared_ptr<VMObjectPointer> VMObjectPointerPtr;
+#define VM_OBJECT_POINTER_CAST(a) \
+    std::static_pointer_cast<VMObjectPointer>(a)
+#define VM_OBJECT_POINTER_SPLIT(a, v) \
+    auto _##a = VM_OBJECT_POINTER_CAST(a); \
+    auto v    = _##a->value();
+#define VM_OBJECT_POINTER_VALUE(a) \
+    (VM_OBJECT_POINTER_CAST(a)->value())
 
 class VMObjectArray : public VMObject {
 public:
@@ -643,6 +688,7 @@ typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
     (VM_OBJECT_OPAQUE_CAST(o0))->compare(o1);
 #define VM_OBJECT_OPAQUE_SYMBOL(a) \
     (VM_OBJECT_OPAQUE_CAST(a)->symbol())
+
 class VMObjectCombinator : public VMObject {
 public:
     VMObjectCombinator(const vm_object_flag_t f, VM* m, const symbol_t s)
@@ -827,6 +873,14 @@ struct CompareVMObjectPtr
             case VM_OBJECT_TEXT: {
                     auto v0 = VM_OBJECT_TEXT_VALUE(a0);
                     auto v1 = VM_OBJECT_TEXT_VALUE(a1);
+                    if (v0 < v1) return -1;
+                    else if (v1 < v0) return 1;
+                    else return 0;
+                }
+                break;
+            case VM_OBJECT_POINTER: {
+                    auto v0 = VM_OBJECT_POINTER_VALUE(a0);
+                    auto v1 = VM_OBJECT_POINTER_VALUE(a1);
                     if (v0 < v1) return -1;
                     else if (v1 < v0) return 1;
                     else return 0;
