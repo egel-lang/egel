@@ -1,6 +1,6 @@
 # compiler and compile options
 CC=g++ --std=c++0x
-EGEL_SRC_DIR=../../egel/src/
+EGEL_SRC_DIR=../../../src/
 LIBS= \
 	-ldl \
 	-licudata \

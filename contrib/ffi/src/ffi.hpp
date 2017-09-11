@@ -1,4 +1,4 @@
-#include "../../egel/src/runtime.hpp"
+#include "../../../src/runtime.hpp"
 
 // type test
 template<typename T> struct typetest {};
@@ -143,6 +143,7 @@ public:
     }
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (!(typetest<A0>::func(arg0))) return nullptr;
         auto a0 = value_from<A0>::func(arg0);
         auto r0 = _call(a0);
         auto r1 = value_to<R>::func(r0);
@@ -170,6 +171,8 @@ public:
     }
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if (!(typetest<A0>::func(arg0))) return nullptr;
+        if (!(typetest<A1>::func(arg1))) return nullptr;
         auto a0 = value_from<A0>::func(arg0);
         auto a1 = value_from<A1>::func(arg1);
         auto r0 = _call(a0, a1);
@@ -198,6 +201,9 @@ public:
     }
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
+        if (!(typetest<A0>::func(arg0))) return nullptr;
+        if (!(typetest<A1>::func(arg1))) return nullptr;
+        if (!(typetest<A2>::func(arg2))) return nullptr;
         auto a0 = value_from<A0>::func(arg0);
         auto a1 = value_from<A1>::func(arg1);
         auto a2 = value_from<A2>::func(arg2);
