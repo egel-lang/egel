@@ -23,7 +23,7 @@ ROOT=`pwd`
 
 function copy {
     echo "copying $1 to $2"
-#    cp $1 $2
+    cp $1 $2
 }
 
 function remove {
@@ -38,7 +38,7 @@ function link {
 
 function makedir {
     echo "making directory $1"
-#    mkdir $1
+    mkdir $1
 }
 
 function removedir {
