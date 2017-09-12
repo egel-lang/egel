@@ -7,8 +7,8 @@
 # used to wipe the directories clean.
 #
 # After a build, all you need is the executable provided in the
-# 'src' directory and all scripts or dynamic libraries in the 
-# 'lib' directory.
+# 'src' directory and all scripts or dynamic includeraries in the 
+# 'include' directory.
 #
 # + use './build.sh' for a build.
 # + use './build.sh clean' for wiping all generated files
@@ -21,27 +21,27 @@ function build {
     make archive
     cd ..
 
-    cd lib/math
+    cd include/math
     make O3
     cd ../..
 
-    cd lib/io
+    cd include/io
     make O3
     cd ../..
 
-    cd lib/util
+    cd include/util
     make O3
     cd ../..
 
-    cd lib/par
+    cd include/par
     make O3
     cd ../..
 
-    cd lib/random
+    cd include/random
     make O3
     cd ../..
 
-    cd lib/string
+    cd include/string
     make O3
     cd ../..
 }
@@ -51,27 +51,27 @@ function clean {
     make clean
     cd ..
 
-    cd lib/math
+    cd include/math
     make clean
     cd ../..
 
-    cd lib/io
+    cd include/io
     make clean
     cd ../..
 
-    cd lib/util
+    cd include/util
     make clean
     cd ../..
 
-    cd lib/par
+    cd include/par
     make clean
     cd ../..
 
-    cd lib/random
+    cd include/random
     make clean
     cd ../..
 
-    cd lib/string
+    cd include/string
     make clean
     cd ../..
 }

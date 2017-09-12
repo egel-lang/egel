@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
     };
 
     // add include path from environment
-    auto istr = getenv("EGEL_LIB");
+    auto istr = getenv("EGEL_INCLUDE");
     if (istr != nullptr) {
         oo->add_include_path(UnicodeString(istr, -1, US_INV));
     } else {
