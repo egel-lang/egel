@@ -85,6 +85,9 @@ function install {
     for filename in prelude.eg; do
         copy "$filename" "$LIB_EGEL/$filename"
     done
+
+    echo "running ldconfig on $LIB_DIR to recreate cache"
+    ldconfig $LIB_DIR
 }
 
 function clean {

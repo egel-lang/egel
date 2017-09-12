@@ -1,4 +1,4 @@
-#include "../../../src/runtime.hpp"
+#include <egel/runtime.hpp>
 
 // type test
 template<typename T> struct typetest {};
