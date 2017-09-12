@@ -11,6 +11,8 @@
 # + use './install.sh clean' for wiping all copied files.
 ######################################################################
 
+shopt -s nullglob
+
 BIN_DIR=/usr/bin
 LIB_DIR=/usr/lib
 INC_DIR=/usr/include
@@ -21,7 +23,7 @@ ROOT=`pwd`
 
 function copy {
     echo "copying $1 to $2"
-    cp $1 $2
+#    cp $1 $2
 }
 
 function remove {
@@ -36,7 +38,7 @@ function link {
 
 function makedir {
     echo "making directory $1"
-    mkdir $1
+#    mkdir $1
 }
 
 function removedir {
@@ -65,7 +67,7 @@ function install {
     done
 
     changedir src
-    for filename in *.hpp; do
+    for filename in *.hpp ; do
         copy "$filename" "$INC_EGEL/$filename"
     done
 
@@ -75,7 +77,7 @@ function install {
     done
 
     changedir include
-    for filename in *.ego; do
+    for filename in *.ego ; do
         copy "$filename" "$LIB_EGEL/$filename"
     done
 
@@ -88,32 +90,32 @@ function install {
 function clean {
     changedir src
     for filename in egel; do
-        remove "$filename" "$BIN_DIR/$filename"
+        remove "$BIN_DIR/$filename"
     done
 
     changedir src
     for filename in libegel.so; do
-        remove "$filename" "$LIB_DIR/$filename"
+        remove "$LIB_DIR/$filename"
     done
 
     changedir src
     for filename in *.hpp; do
-        remove "$filename" "$INC_EGEL/$filename"
+        remove "$INC_EGEL/$filename"
     done
 
     changedir contrib/ffi/src
     for filename in ffi.hpp; do
-        remove "$filename" "$INC_EGEL/$filename"
+        remove "$INC_EGEL/$filename"
     done
 
     changedir include
     for filename in *.ego; do
-        remove "$filename" "$LIB_EGEL/$filename"
+        remove "$LIB_EGEL/$filename"
     done
 
     changedir include
     for filename in prelude.eg; do
-        remove "$filename" "$LIB_EGEL/$filename"
+        remove "$LIB_EGEL/$filename"
     done
 
     removedir $INC_EGEL
