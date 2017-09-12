@@ -2,14 +2,7 @@
 CC=g++ --std=c++0x
 CFLAGS=-c -Wall -pedantic
 LIBS= \
-	-licudata \
-	-licui18n \
-	-licuio \
-	-licule \
-	-liculx \
-	-licutest \
-	-licutu \
-	-licuuc
+	  $(shell pkg-config --libs --cflags icu-uc icu-io)
 LDFLAGS=$(LIBS)
 
 # source files and objects
@@ -35,10 +28,6 @@ gprof: $(SOURCES) $(SHARED)
 
 debug: CC=g++ -std=c++0x -g
 debug: $(SOURCES) $(SHARED)
-
-strip: CC=g++ -std=c++0x -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-s
-strip: $(SOURCES) $(SHARED)
-
 
 $(SHARED): $(OBJECTS) 
 	$(CC) -shared $(LDFLAGS) $(OBJECTS) -o $@
