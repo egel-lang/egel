@@ -91,6 +91,7 @@ typedef enum {
     VM_OBJECT_ARRAY,
 } vm_object_tag_t;
 
+typedef bool            vm_bool_t;
 typedef int64_t         vm_int_t;
 typedef double          vm_float_t;
 typedef UChar32         vm_char_t;

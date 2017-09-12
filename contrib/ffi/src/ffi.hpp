@@ -33,6 +33,12 @@ template<> struct typetest<vm_ptr_t> {
     }
 };
 
+template<> struct typetest<vm_bool_t> {
+    static inline bool func(const VMObjectPtr& o) {
+        return (o->symbol() == SYMBOL_FALSE) || (o->symbol() == SYMBOL_TRUE);
+    }
+};
+
 // value coercion from object
 template<typename T> struct value_from {};
 
@@ -66,36 +72,52 @@ template<> struct value_from<vm_ptr_t> {
     }
 };
 
+template<> struct value_from<vm_bool_t> {
+    static inline vm_bool_t func(const VMObjectPtr& o) {
+        return (o->symbol() == SYMBOL_TRUE);
+    }
+};
+
 // value coercion to object
 template<typename T> struct value_to {};
 
 template<> struct value_to<vm_int_t> {
-    static inline VMObjectPtr func(const vm_int_t& v) {
+    static inline VMObjectPtr func(VM* m, const vm_int_t& v) {
         return VMObjectInteger::create(v);
     }
 };
 
 template<> struct value_to<vm_float_t> {
-    static inline VMObjectPtr func(const vm_float_t& v) {
+    static inline VMObjectPtr func(VM* m, const vm_float_t& v) {
         return VMObjectFloat::create(v);
     }
 };
 
 template<> struct value_to<vm_text_t> {
-    static inline VMObjectPtr func(const vm_text_t& v) {
+    static inline VMObjectPtr func(VM* m, const vm_text_t& v) {
         return VMObjectText::create(v);
     }
 };
 
 template<> struct value_to<vm_char_t> {
-    static inline VMObjectPtr func(const vm_char_t& v) {
+    static inline VMObjectPtr func(VM* m, const vm_char_t& v) {
         return VMObjectChar::create(v);
     }
 };
 
 template<> struct value_to<vm_ptr_t> {
-    static inline VMObjectPtr func(const vm_ptr_t& v) {
+    static inline VMObjectPtr func(VM* m, const vm_ptr_t& v) {
         return VMObjectPointer::create(v);
+    }
+};
+
+template<> struct value_to<vm_bool_t> {
+    static inline VMObjectPtr func(VM* m, const vm_bool_t& v) {
+        if (v) {
+            return m->get_data_symbol(SYMBOL_TRUE);
+        } else {
+            return m->get_data_symbol(SYMBOL_FALSE);
+        }
     }
 };
 
@@ -118,7 +140,7 @@ public:
 
     VMObjectPtr apply() const override {
         auto r0 = _call();
-        auto r1 = value_to<R>::func(r0);
+        auto r1 = value_to<R>::func(machine(), r0);
         return r1;
     }
 
@@ -146,7 +168,7 @@ public:
         if (!(typetest<A0>::func(arg0))) return nullptr;
         auto a0 = value_from<A0>::func(arg0);
         auto r0 = _call(a0);
-        auto r1 = value_to<R>::func(r0);
+        auto r1 = value_to<R>::func(machine(), r0);
         return r1;
     }
 
@@ -176,7 +198,7 @@ public:
         auto a0 = value_from<A0>::func(arg0);
         auto a1 = value_from<A1>::func(arg1);
         auto r0 = _call(a0, a1);
-        auto r1 = value_to<R>::func(r0);
+        auto r1 = value_to<R>::func(machine(), r0);
         return r1;
     }
 
@@ -208,7 +230,7 @@ public:
         auto a1 = value_from<A1>::func(arg1);
         auto a2 = value_from<A2>::func(arg2);
         auto r0 = _call(a0, a1, a2);
-        auto r1 = value_to<R>::func(r0);
+        auto r1 = value_to<R>::func(machine(), r0);
         return r1;
     }
 

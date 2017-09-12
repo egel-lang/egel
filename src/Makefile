@@ -66,3 +66,4 @@ $(SHARED): $(OBJECTS)
 
 clean:
 	-rm -f $(OBJECTS) $(EXECUTABLE) $(ARCHIVE) $(SHARED) gmon.out massive.out out
+
