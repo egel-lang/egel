@@ -20,14 +20,12 @@ That should give you an interpreter named `egel` in the `src` directory
 and a number of dynamically loadable Egel object files in the
 `include` directory.
 
-An installation script is not provided since Linux systems tend
-to have divergent opinions on where to place different parts of
-a tool.
+For a system-wide install run the `install.sh` script after a build
+as root.
 
-Instead, please note that you only need the interpreter named
-`egel` and all files in the `include` directory if you want to
-do anything useful. 
-You can set the environment variable `EGEL_INCLUDE` to point 
+If you don't want to do that, please note that you only need the interpreter
+named `egel` and all files in the `lib` directory for simple tasks.
+You can set the environment variable `EGEL_LIB` to point 
 at the latter path.
 
 A number of example scripts are provided in the examples directory.
