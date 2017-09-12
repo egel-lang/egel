@@ -4,14 +4,7 @@ AR=ar rvs
 CFLAGS=-c -Wall -pedantic
 LIBS= \
 	-ldl \
-	-licudata \
-	-licui18n \
-	-licuio \
-	-licule \
-	-liculx \
-	-licutest \
-	-licutu \
-	-licuuc
+	$(shell pkg-config --libs --cflags icu-uc icu-io)
 LDFLAGS=$(LIBS)
 
 # source files and objects
@@ -37,11 +30,14 @@ EXECUTABLE=egel
 # archive
 ARCHIVE=libegel.a
 
+# shared
+SHARED=libegel.so
+
 # targets
-all: CC=g++ --std=c++0x
+all: CC=g++ --std=c++0x -fPIC
 all: $(SOURCES) $(EXECUTABLE)
 
-O3: CC=g++ --std=c++0x -O3
+O3: CC=g++ --std=c++0x -O3 -fPIC
 O3: $(SOURCES) $(EXECUTABLE)
 
 gprof: CC=g++ --std=c++0x -O3 -pg
@@ -50,11 +46,11 @@ gprof: $(SOURCES) $(EXECUTABLE)
 debug: CC=g++ --std=c++0x -g
 debug: $(SOURCES) $(EXECUTABLE)
 
-strip: CC=g++ --std=c++0x -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-s
-strip: $(SOURCES) $(EXECUTABLE)
-
 archive: CC=g++ --std=c++0x -O3
 archive: $(SOURCES) $(ARCHIVE)
+
+shared: CC=g++ --std=c++0x -O3 -fPIC
+shared: $(SOURCES) $(SHARED)
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
@@ -62,8 +58,11 @@ $(EXECUTABLE): $(OBJECTS)
 $(ARCHIVE): $(OBJECTS)
 	$(AR) $(ARCHIVE) $(filter-out egel.o, $(OBJECTS))
 
+$(SHARED): $(OBJECTS)
+	$(CC) -shared $(filter-out egel.o, $(OBJECTS)) -o $@
+
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	-rm -f $(OBJECTS) $(EXECUTABLE) $(ARCHIVE) gmon.out massive.out out
+	-rm -f $(OBJECTS) $(EXECUTABLE) $(ARCHIVE) $(SHARED) gmon.out massive.out out
