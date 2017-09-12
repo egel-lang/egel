@@ -6,13 +6,9 @@
 # This script either performes a 'make O3' on all targets or can be
 # used to wipe the directories clean.
 #
-# Egel doesn't provide an installation script since that it is 
-# platform dependent and different users might feel different on how
-# they would like the interpreter to be installed.
-#
 # After a build, all you need is the executable provided in the
 # 'src' directory and all scripts or dynamic libraries in the 
-# 'include' directory.
+# 'lib' directory.
 #
 # + use './build.sh' for a build.
 # + use './build.sh clean' for wiping all generated files
@@ -21,29 +17,31 @@
 function build {
     cd src
     make O3
+    make shared
+    make archive
     cd ..
 
-    cd include/math
+    cd lib/math
     make O3
     cd ../..
 
-    cd include/io
+    cd lib/io
     make O3
     cd ../..
 
-    cd include/util
+    cd lib/util
     make O3
     cd ../..
 
-    cd include/par
+    cd lib/par
     make O3
     cd ../..
 
-    cd include/random
+    cd lib/random
     make O3
     cd ../..
 
-    cd include/string
+    cd lib/string
     make O3
     cd ../..
 }
@@ -53,27 +51,27 @@ function clean {
     make clean
     cd ..
 
-    cd include/math
+    cd lib/math
     make clean
     cd ../..
 
-    cd include/io
+    cd lib/io
     make clean
     cd ../..
 
-    cd include/util
+    cd lib/util
     make clean
     cd ../..
 
-    cd include/par
+    cd lib/par
     make clean
     cd ../..
 
-    cd include/random
+    cd lib/random
     make clean
     cd ../..
 
-    cd include/string
+    cd lib/string
     make clean
     cd ../..
 }

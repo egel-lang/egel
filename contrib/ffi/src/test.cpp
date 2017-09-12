@@ -5,11 +5,11 @@ int answer() {
     return 42;
 }
 
+int mem = 0;
+
 extern "C" std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
 }
-
-int mem = 0;
 
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
