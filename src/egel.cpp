@@ -163,8 +163,13 @@ int main(int argc, char *argv[]) {
         };
     };
 
-    // check for include and library paths
+    // options
     OptionsPtr oo = Options().clone();
+
+    // always add local directory to the search path
+    oo->add_include_path(UnicodeString("./"));
+
+    // check for include paths
     for (auto& p : pp) {
         if (p.first == ("-I")) {
             oo->add_include_path(p.second);

@@ -282,7 +282,7 @@ public:
 
         dlerror();
 
-        _handle = dlopen(unicode_to_char(get_path()), RTLD_LAZY);
+        _handle = dlopen(unicode_to_char(get_path()), RTLD_LAZY); // XXX: leaks?
         if (!_handle) {
             UnicodeString err = "dynamic load error: ";
             err += dlerror();
@@ -567,7 +567,7 @@ public:
 
 protected:
     UnicodeString search(const UnicodeStrings& path, const UnicodeString& fn) {
-        if (file_exists(fn)) return fn;
+        // if (file_exists(fn)) return fn; // doesn't work with dynamic modules which should be given absolute paths
         for (auto p:path) {
             UnicodeString fn0 = path_combine(p, fn);
             if (file_exists(fn0)) return fn0;

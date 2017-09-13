@@ -182,7 +182,7 @@ public:
         Dyadic(m, n0, n1), _call(c) {
     }
 
-    ffi2<R, A0, A1>(VM* m, const symbol_t s, R(*c)(const A0, A1)): Dyadic(m, s), _call(c) {
+    ffi2<R, A0, A1>(VM* m, const symbol_t s, R(*c)(const A0, const A1)): Dyadic(m, s), _call(c) {
     }
 
     ffi2<R, A0, A1>(const ffi2<R, A0, A1>& o) : ffi2<R, A0, A1>(o.machine(), o.symbol(), o._call) {
@@ -208,11 +208,11 @@ protected:
 
 template<typename R, typename A0, typename A1, typename A2> class ffi3: public Triadic {
 public:
-    ffi3<R, A0, A1, A2>(VM* m, const UnicodeString& n0, const UnicodeString& n1, R(*c)(const A0, const A1, A2)):
+    ffi3<R, A0, A1, A2>(VM* m, const UnicodeString& n0, const UnicodeString& n1, R(*c)(const A0, const A1, const A2)):
         Triadic(m, n0, n1), _call(c) {
     }
 
-    ffi3<R, A0, A1, A2>(VM* m, const symbol_t s, R(*c)(const A0, A1, A2)): Triadic(m, s), _call(c) {
+    ffi3<R, A0, A1, A2>(VM* m, const symbol_t s, R(*c)(const A0, const A1, const A2)): Triadic(m, s), _call(c) {
     }
 
     ffi3<R, A0, A1, A2>(const ffi3<R, A0, A1, A2>& o) : ffi3<R, A0, A1, A2>(o.machine(), o.symbol(), o._call) {
@@ -235,6 +235,6 @@ public:
     }
 
 protected:
-    R (*_call)(const A0, const A1);
+    R (*_call)(const A0, const A1, const A2);
 };
 
