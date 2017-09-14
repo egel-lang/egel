@@ -23,6 +23,7 @@
  */
 import "prelude.eg"
 
+using OO
 using System
 
 // examples of a box and a circle class.

@@ -79,7 +79,8 @@ public:
             break;
         case STATE_DECLARE_FIELD:
             try {
-                auto nn0 = concat(_qualifications, nn);
+                const UnicodeStrings oo = {"OO"};
+                auto nn0 = concat(oo, nn);
                 auto q = qualified(nn0, n);
                 ::declare_implicit(_spaces, nn0, n, q);
             } catch (ErrorSemantical e) {
