@@ -25,7 +25,7 @@ namespace System (
     def flip = [ F, X, Y -> F Y X ]
 
     def @@ =
-        [ SELF, NAME -> (get SELF NAME) SELF ]
+        [ SELF, NAME -> (get NAME SELF) SELF ]
 
 )
 

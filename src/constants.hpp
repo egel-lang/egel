@@ -125,6 +125,7 @@
 #define STRING_CONS             "cons"
 
 #define STRING_TUPLE            "tuple"
+#define STRING_CLASS            "class"
 #define STRING_OBJECT           "object"
 #define STRING_EXTEND           "extend"   // this is the combinator
 #define STRING_EXTENDS          "extends"  // this is the keyword

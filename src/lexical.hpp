@@ -46,7 +46,7 @@ typedef enum {
     TOKEN_ARROW,
 
 //  objects
-    TOKEN_OBJECT,
+    TOKEN_CLASS,
     TOKEN_EXTENDS,
     TOKEN_WITH,
 

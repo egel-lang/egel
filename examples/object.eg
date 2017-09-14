@@ -26,26 +26,26 @@ import "prelude.eg"
 using System
 
 // examples of a box and a circle class.
-object box W H (
+class box W H (
     data width, W
     data height, H
 
     def resize =
         [ SELF, W, H ->
-             let Z = set SELF width in 
-                set SELF height H ]
+             let Z = set width W SELF in 
+                set height H SELF ]
 
     def area =
         [ SELF ->
-            ((get SELF width) * (get SELF height)) ]
+            ((get width SELF) * (get height SELF)) ]
 )
 
-object circle R (
+class circle R (
     data radius, R
 
     def area =
         [ SELF -> 
-            let RR = tofloat(get SELF radius) in
+            let RR = tofloat(get radius SELF) in
                 R*R*Math.pi ]
 )
     

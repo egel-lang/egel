@@ -216,7 +216,7 @@ public:
     }
 };
 
-// System.get O F
+// System.get F O
 // Retrieve an object field
 class GetField: public Binary {
 public:
@@ -226,8 +226,8 @@ public:
         static symbol_t object = 0;
         if (object == 0) object = machine()->enter_symbol("System", "object");
 
-        if (arg0->tag() == VM_OBJECT_ARRAY) {
-            auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
+        if (arg1->tag() == VM_OBJECT_ARRAY) {
+            auto ff = VM_OBJECT_ARRAY_VALUE(arg1);
             auto sz = ff.size();
             // check head is an object
             if (sz == 0) return nullptr;
@@ -236,7 +236,7 @@ public:
             CompareVMObjectPtr compare;
             unsigned int n;
             for (n = 1; n < sz; n=n+2) {
-                if (compare(arg1, ff[n]) == 0) break;
+                if (compare(arg0, ff[n]) == 0) break;
             }
             // return field
             if ( (n+1) < sz ) {
@@ -250,7 +250,7 @@ public:
     }
 };
 
-// System.set O F X
+// System.set F X O
 // set an object field
 class SetField: public Triadic {
 public:
@@ -260,8 +260,8 @@ public:
         static symbol_t object = 0;
         if (object == 0) object = machine()->enter_symbol("System", "object");
 
-        if (arg0->tag() == VM_OBJECT_ARRAY) {
-            auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
+        if (arg2->tag() == VM_OBJECT_ARRAY) {
+            auto ff = VM_OBJECT_ARRAY_VALUE(arg2);
             auto sz = ff.size();
             // check head is an object
             if (sz == 0) return nullptr;
@@ -270,12 +270,12 @@ public:
             CompareVMObjectPtr compare;
             unsigned int n;
             for (n = 1; n < sz; n=n+2) {
-                if (compare(arg1, ff[n]) == 0) break;
+                if (compare(arg0, ff[n]) == 0) break;
             }
             // set field
             if ( (n+1) < sz ) {
-                auto arr = VM_OBJECT_ARRAY_CAST(arg0); // XXX: clean up this cast once. need destructive update
-                arr->set(n+1, arg2);
+                auto arr = VM_OBJECT_ARRAY_CAST(arg2); // XXX: clean up this cast once. need destructive update
+                arr->set(n+1, arg1);
                 return arg0;
             } else {
                 return nullptr;

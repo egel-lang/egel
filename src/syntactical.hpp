@@ -632,7 +632,7 @@ public:
         return parse_arithmetic_expression();
     }
 
-    // object fields
+    // class fields
     bool is_field() {
         switch (tag()) {
         case TOKEN_DATA:
@@ -660,10 +660,21 @@ public:
     AstPtr parse_field_definition() {
         Position p = position();
         force_token(TOKEN_DEF);
-        auto c = parse_combinator();
-        force_token(TOKEN_EQ);
-        auto e = parse_expression();
-        return AstDeclDefinition(p, c, e).clone();
+        if (is_combinator()) {
+            AstPtr c = parse_combinator();
+            force_token(TOKEN_EQ);
+            AstPtr e = parse_expression();
+            return AstDeclDefinition(p, c, e).clone();
+            /*
+        } else if (is_operator()) {
+            AstPtr c = parse_operator();
+            force_token(TOKEN_EQ);
+            AstPtr e = parse_expression();
+            return AstDeclOperator(p, c, e).clone();
+            */
+        } else {
+            throw ErrorSyntactical(p, "combinator expected in field");
+        }
     }
 
     AstPtr parse_field() {
@@ -722,9 +733,9 @@ public:
         }
     }
 
-    AstPtr parse_decl_object() {
+    AstPtr parse_decl_class() {
         Position p = position();
-        force_token(TOKEN_OBJECT);
+        force_token(TOKEN_CLASS);
         AstPtr c = parse_combinator();
         AstPtrs vv;
         while (is_variable()) {
@@ -768,7 +779,7 @@ public:
         case TOKEN_DATA:
         case TOKEN_DEF:
         case TOKEN_NAMESPACE:
-        case TOKEN_OBJECT:
+        case TOKEN_CLASS:
             return true;
             break;
         default:
@@ -785,8 +796,8 @@ public:
         case TOKEN_DEF:
             return parse_decl_definition();
             break;
-        case TOKEN_OBJECT:
-            return parse_decl_object();
+        case TOKEN_CLASS:
+            return parse_decl_class();
             break;
         case TOKEN_NAMESPACE:
             return parse_decl_namespace();
