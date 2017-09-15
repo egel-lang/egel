@@ -49,12 +49,12 @@ public:
         _include_path(ii), _library_path(ll) {
     }
 
-    Options(const Options& o): 
+    Options(const Options& o):
         _interactive_flag(o._interactive_flag),
         _tokenize_flag(o._tokenize_flag), _unparse_flag(o._unparse_flag),
         _semantical_flag(o._semantical_flag), _desugar_flag(o._desugar_flag),
         _lift_flag(o._lift_flag), _bytecode_flag(o._bytecode_flag),
-        _include_path(o._include_path), 
+        _include_path(o._include_path),
         _library_path(o._library_path) {
     }
 
@@ -77,15 +77,15 @@ public:
     UnicodeStrings get_library_path() const {
         return _library_path;
     }
-    
+
     void add_include_path(const UnicodeString& p) {
         _include_path.push_back(p);
     }
-    
+
     void add_library_path(const UnicodeString& p) {
         _library_path.push_back(p);
     }
-    
+
     void set_interactive(bool f) {
         _interactive_flag = f;
     }
@@ -185,16 +185,45 @@ class ModuleManager;
 typedef std::shared_ptr<ModuleManager> ModuleManagerPtr;
 
 
+// modules may require other modules to be loaded by generating import requirements
+class Import {
+public:
+    Import():
+        _position(Position()), _filename("") {
+    }
+
+    Import(const Position& p, const UnicodeString& fn):
+        _position(p), _filename(fn) {
+    }
+
+    Import(const Import& i):
+        _position(i._position), _filename(i._filename) {
+    }
+
+    Position position() const {
+        return _position;
+    }
+
+    UnicodeString filename() const {
+        return _filename;
+    }
+private:
+    Position        _position;
+    UnicodeString   _filename;
+};
+
+typedef std::vector<Import>  Imports;
+
 typedef enum {
     MODULE_SOURCE,
+    MODULE_INTERNAL,
     MODULE_DYNAMIC,
-    MODULE_INTERACTIVE,
 } module_tag_t;
 
 class Module {
 public:
-    Module(const module_tag_t t, const UnicodeString& p, const UnicodeString& fn):
-        _tag(t), _path(p), _filename(fn) {
+    Module(const module_tag_t t, const UnicodeString& p, const UnicodeString& fn, VM* m):
+        _tag(t), _path(p), _filename(fn), _machine(m) {
     }
 
     virtual ModulePtr clone() const = 0;
@@ -219,26 +248,17 @@ public:
         return _tag;
     }
 
-    virtual void load(VM* vm) = 0;
+    VM* machine() const {
+        return _machine;
+    }
+
+    virtual void load() = 0;
 
     virtual void unload() = 0;
 
-    virtual AstPtrs imports() = 0;
+    virtual Imports imports() = 0;
 
-    // this is why OO is sometimes bad. but I am lazy at the moment. 
-    virtual void syntactical() {};
-
-    virtual void declarations(NamespacePtr& env) = 0;
-
-    virtual void semantical(NamespacePtr& env) {};
-
-    virtual void desugar() {};
-
-    virtual void lift() {};
-
-    virtual void datagen(VM* vm) {};
-
-    virtual void codegen(VM* vm) = 0;
+    virtual VMObjectPtrs exports() = 0;
 
     virtual void render(std::ostream& os) const = 0;
 
@@ -247,11 +267,97 @@ public:
         return os;
     }
 
+public:
+    // this is why OO is sometimes bad. but I am lazy at the moment.
+    // pretend every module is equivalent to an Egel source file.
+    virtual void syntactical() {};
+
+    virtual void declarations(NamespacePtr& env) {};
+
+    virtual void semantical(NamespacePtr& env) {};
+
+    virtual void desugar() {};
+
+    virtual void lift() {};
+
+    virtual void datagen(VM* m) {};
+
+    virtual void codegen(VM* m) {};
+
 private:
     module_tag_t    _tag;
     OptionsPtr      _options;
     UnicodeString   _path;
     UnicodeString   _filename;
+    VM*             _machine;
+};
+
+typedef std::vector<VMObjectPtr> (*exports_t)(VM*);
+
+class ModuleInternal: public Module {
+public:
+    ModuleInternal(const UnicodeString& fn, VM* m, const exports_t handle):
+        Module(MODULE_INTERNAL, fn, fn, m),
+            _handle(handle) {
+    }
+
+    ModuleInternal(const ModuleInternal& m):
+        Module(MODULE_INTERNAL, m.get_path(), m.get_filename(), m.machine()),
+            _handle(m._handle), _imports(m._imports), _exports(m._exports) {
+    }
+
+    ModulePtr clone() const override {
+        return ModulePtr(new ModuleInternal(*this));
+    }
+
+    void load() override {
+        _imports = Imports();
+        _exports = (*_handle)(machine());
+    }
+
+    void unload() override {
+    }
+
+    Imports imports() override {
+        return _imports;
+    }
+
+    VMObjectPtrs exports() override {
+        return _exports;
+    }
+
+    void declarations(NamespacePtr& env) override {
+        for (auto& o:_exports) {
+            if (o->tag() == VM_OBJECT_COMBINATOR) {
+                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+                auto s   = machine()->get_symbol(sym);
+
+                UnicodeStrings nn;
+                nn.push_back(first(s));
+                auto n = second(s);
+                ::declare(env, nn, n, s);
+            }
+        }
+    }
+
+    void codegen(VM* vm) override {
+        for (auto& o:_exports) {
+            vm->enter_data(o);
+        }
+    }
+
+    void render(std::ostream& os) const override {
+        os << "dynamic module: " << get_filename();
+    }
+
+    static bool filetype(const UnicodeString& fn) {
+        return unicode_endswith(fn, ".ego");
+    }
+
+private:
+    exports_t       _handle;
+    Imports         _imports;
+    VMObjectPtrs    _exports;
 };
 
 #define LINUX
@@ -261,14 +367,14 @@ private:
 
 class ModuleDynamic: public Module {
 public:
-    ModuleDynamic(const UnicodeString& p, const UnicodeString& fn): 
-        Module(MODULE_DYNAMIC, p, fn),
-            _handle(0), _imports(0), _exports(0), _machine(0) {
+    ModuleDynamic(const UnicodeString& p, const UnicodeString& fn, VM* m):
+        Module(MODULE_DYNAMIC, p, fn, m),
+            _handle(0), _imports(0), _exports(0) {
     }
 
     ModuleDynamic(const ModuleDynamic& m):
-        Module(MODULE_DYNAMIC, m.get_path(), m.get_filename()), 
-        _handle(m._handle), _imports(m._imports), _exports(m._exports), _machine(m._machine) {
+        Module(MODULE_DYNAMIC, m.get_path(), m.get_filename(), m.machine()),
+        _handle(m._handle), _imports(m._imports), _exports(m._exports) {
         set_options(m.get_options());
     }
 
@@ -276,8 +382,7 @@ public:
         return ModulePtr(new ModuleDynamic(*this));
     }
 
-    void load(VM* vm) override {
-        _machine = vm;
+    void load() override {
         char* error;
 
         dlerror();
@@ -288,9 +393,9 @@ public:
             err += dlerror();
             throw ErrorIO(err);
         }
-        
+
         std::vector<UnicodeString> (*egel_imports)();
-        egel_imports = (std::vector<UnicodeString> (*)()) 
+        egel_imports = (std::vector<UnicodeString> (*)())
                             dlsym(_handle, "egel_imports");
         error = dlerror();
         if (error != NULL) {
@@ -300,7 +405,7 @@ public:
         }
 
         std::vector<VMObjectPtr>   (*egel_exports)(VM*);
-        egel_exports = (std::vector<VMObjectPtr> (*)(VM*)) 
+        egel_exports = (std::vector<VMObjectPtr> (*)(VM*))
                             dlsym(_handle, "egel_exports");
         error = dlerror();
         if (error != NULL) {
@@ -309,28 +414,35 @@ public:
             throw ErrorIO(err);
         }
 
-        _imports = (*egel_imports)();
-        _exports = (*egel_exports)(vm);
+        auto ss = (*egel_imports)();
+
+        Imports ii;
+        Position p(get_path(), 1, 1);
+        for (auto& s:ss) {
+            ii.push_back(Import(p, s));
+        }
+
+        _imports = ii;
+        _exports = (*egel_exports)(machine());
     }
 
     void unload() override {
         dlclose(_handle);
     }
 
-    AstPtrs imports() override {
-        AstPtrs ii;
-        Position p(get_path(), 1, 1);
-        for (auto& s:_imports) {
-            ii.push_back(AstDirectImport(p, s).clone());
-        }
-        return ii;
+    Imports imports() override {
+        return _imports;
+    }
+
+    VMObjectPtrs exports() override {
+        return _exports;
     }
 
     void declarations(NamespacePtr& env) override {
         for (auto& o:_exports) {
             if (o->tag() == VM_OBJECT_COMBINATOR) {
                 auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-                auto s   = _machine->get_symbol(sym);
+                auto s   = machine()->get_symbol(sym);
 
                 UnicodeStrings nn;
                 nn.push_back(first(s));
@@ -356,22 +468,21 @@ public:
 
 private:
     void*           _handle;
-    UnicodeStrings  _imports;
+    Imports         _imports;
     VMObjectPtrs    _exports;
-    VM*             _machine;
 };
 #endif
 
 class ModuleSource : public Module {
 public:
-    ModuleSource(const UnicodeString& path, const UnicodeString& fn): 
-        Module(MODULE_SOURCE, path, fn),
-        _source(""), _ast(0), _qualified(false) {
+    ModuleSource(const UnicodeString& path, const UnicodeString& fn, VM* m):
+        Module(MODULE_SOURCE, path, fn, m),
+        _source(""), _ast(0) {
     }
 
     ModuleSource(const ModuleSource& m):
-        Module(MODULE_SOURCE, m.get_path(), m.get_filename()),
-        _source(m._source), _ast(m._ast), _qualified(m._qualified) {
+        Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
+        _source(m._source), _ast(m._ast) {
         set_options(m.get_options());
     }
 
@@ -379,7 +490,7 @@ public:
         return ModulePtr(new ModuleSource(*this));
     }
 
-    void load(VM* vm) override {
+    void load() override {
         if (file_exists(get_path())) {
             _source = file_read(get_path());
         } else {
@@ -390,8 +501,20 @@ public:
     void unload() override {
     }
 
-    AstPtrs imports() override {
-        return ::imports(_ast);
+    Imports imports() override {
+        auto aa = ::imports(_ast);
+        auto ii = Imports();
+        for (auto a:aa) {
+            if (a->tag() == AST_DIRECT_IMPORT) {
+                AST_DIRECT_IMPORT_SPLIT(a, p, s);
+                ii.push_back(Import(p, unicode_strip_quotes(s)));
+            }
+        }
+        return ii;        
+    }
+
+    VMObjectPtrs exports() override {
+        return VMObjectPtrs(); // XXX XXX XXX: implement this
     }
 
     void syntactical() override {
@@ -475,7 +598,6 @@ public:
 private:
     UnicodeString   _source;
     AstPtr          _ast;
-    bool            _qualified;
 };
 
 typedef std::vector<ModulePtr> ModulePtrs;
@@ -531,7 +653,7 @@ public:
         preload(p, fn);
         _loading[0]->set_options(_options);
         transitive_closure();
-         reverse(); // why was this again?
+         reverse(); // XXX: why was this again?
         process();
         flush();
     }
@@ -598,15 +720,15 @@ protected:
             if (!already_loaded(find)) {
                 ModulePtr m = nullptr;
                 if (ModuleSource::filetype(fn)) {
-                    m = ModuleSource(find, fn).clone();
+                    m = ModuleSource(find, fn, _machine).clone();
                 } else if (ModuleDynamic::filetype(fn)) {
-                    m = ModuleDynamic(find, fn).clone();
+                    m = ModuleDynamic(find, fn, _machine).clone();
                 } else {
                     throw ErrorIO(p, "file \"" + fn + "\" has wrong extension");
                 }
                 m->set_options(Options().clone());//XXX check this
                 try {
-                    m->load(_machine);
+                    m->load();
                 } catch (ErrorIO e) {
                     throw ErrorIO(p, e.message());
                 }
@@ -622,8 +744,7 @@ protected:
             m->syntactical();
             auto ii = m->imports();
             for (auto& i:ii) {
-                AST_DIRECT_IMPORT_SPLIT(i, p, fn);
-                preload(p, unicode_strip_quotes(fn));
+                preload(i.position(), i.filename());
             }
             n++;
         }
