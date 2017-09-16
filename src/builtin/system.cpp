@@ -531,6 +531,29 @@ public:
     }
 };
 
+int     application_argc = 0;
+char**  application_argv = nullptr;
+
+// System.arg n
+// Return the n-th application argument, otherwise return '0'
+class Arg: public Monadic {
+public:
+    MONADIC_PREAMBLE(Arg, "System", "arg");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_INTEGER) {
+            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
+            if (i < application_argc) {
+                return VMObjectText(application_argv[i]).clone();
+            } else {
+                return VMObjectInteger(0).clone();
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 extern "C" std::vector<VMObjectPtr> builtin_system(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -565,6 +588,8 @@ extern "C" std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(Toint(vm).clone());
     oo.push_back(Tofloat(vm).clone());
     oo.push_back(Totext(vm).clone());
+
+    oo.push_back(Arg(vm).clone());
 
     // move to string?
     oo.push_back(Unpack(vm).clone());

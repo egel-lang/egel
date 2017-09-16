@@ -10,6 +10,8 @@
 #include "modules.hpp"
 #include "eval.hpp"
 
+#include "builtin/system.hpp"
+
 #define EXECUTABLE_NAME "egel"
 
 #define EXECUTABLE_VERSION_MAJOR   "0"
@@ -247,6 +249,10 @@ int main(int argc, char *argv[]) {
             return (EXIT_FAILURE);
         }
     }
+
+    // set the application arguments
+    application_argc = argc;
+    application_argv = argv;
 
     // start either interactive or batch mode
     if (e != "") {
