@@ -625,10 +625,16 @@ public:
         set_options(oo);
         set_machine(vm);
         set_environment(env);
-        _loading.push_back(ModuleInternal("internal", vm, &builtin_system).clone());
-        _loading.push_back(ModuleInternal("internal", vm, &builtin_math).clone());
-        _loading.push_back(ModuleInternal("internal", vm, &builtin_string).clone());
-        _loading.push_back(ModuleInternal("internal", vm, &builtin_thread).clone());
+        // next code is slightly conceptually dirty, needs a better solution
+        auto sys = ModuleInternal("internal", vm, &builtin_system).clone();
+        auto mth = ModuleInternal("internal", vm, &builtin_math).clone();
+        auto str = ModuleInternal("internal", vm, &builtin_string).clone();
+        auto thd = ModuleInternal("internal", vm, &builtin_thread).clone();
+        sys->load(); mth->load(); str->load(); thd->load();
+        _loading.push_back(sys);
+        _loading.push_back(mth);
+        _loading.push_back(str);
+        _loading.push_back(thd);
         process();
         flush();
     }
