@@ -2,6 +2,7 @@
 #define MODULES_HPP
 
 #include <vector>
+
 #include "error.hpp"
 #include "ast.hpp"
 #include "environment.hpp"
@@ -12,7 +13,11 @@
 #include "lift.hpp"
 #include "runtime.hpp"
 #include "emit.hpp"
-#include "builtin.hpp"
+
+#include "builtin/system.hpp"
+#include "builtin/math.hpp"
+#include "builtin/string.hpp"
+#include "builtin/thread.hpp"
 
 // convenience
 inline UnicodeString first(const UnicodeString& s) {
@@ -620,9 +625,13 @@ public:
         set_options(oo);
         set_machine(vm);
         set_environment(env);
-        builtin();
+        _loading.push_back(ModuleInternal("internal", vm, &builtin_system).clone());
+        _loading.push_back(ModuleInternal("internal", vm, &builtin_math).clone());
+        _loading.push_back(ModuleInternal("internal", vm, &builtin_string).clone());
+        _loading.push_back(ModuleInternal("internal", vm, &builtin_thread).clone());
+        process();
+        flush();
     }
-
 
     void set_machine(VM* vm) {
         _machine = vm;
@@ -656,28 +665,6 @@ public:
          reverse(); // XXX: why was this again?
         process();
         flush();
-    }
-
-    void declare_object(const VMObjectPtr& o) {
-        if (o->tag() == VM_OBJECT_COMBINATOR) {
-            auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-            auto s   = _machine->get_symbol(sym);
-
-            UnicodeStrings nn;
-            nn.push_back(first(s));
-            auto n = second(s);
-            ::declare(_environment, nn, n, s);
-        }
-        _machine->enter_data(o);
-    }
-
-    void builtin() {
-        // XXX: move this to a module
-        auto oo = vm_export(_machine);
-
-        for (auto& o:oo) {
-            declare_object(o);
-        }
     }
 
     friend std::ostream& operator<<(std::ostream& os, const ModuleManager& mm) {

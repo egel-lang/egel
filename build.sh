@@ -21,27 +21,11 @@ function build {
     make archive
     cd ..
 
-    cd include/math
+    cd lib/io
     make O3
     cd ../..
 
-    cd include/io
-    make O3
-    cd ../..
-
-    cd include/util
-    make O3
-    cd ../..
-
-    cd include/par
-    make O3
-    cd ../..
-
-    cd include/random
-    make O3
-    cd ../..
-
-    cd include/string
+    cd lib/random
     make O3
     cd ../..
 }
@@ -51,27 +35,11 @@ function clean {
     make clean
     cd ..
 
-    cd include/math
+    cd lib/io
     make clean
     cd ../..
 
-    cd include/io
-    make clean
-    cd ../..
-
-    cd include/util
-    make clean
-    cd ../..
-
-    cd include/par
-    make clean
-    cd ../..
-
-    cd include/random
-    make clean
-    cd ../..
-
-    cd include/string
+    cd lib/random
     make clean
     cd ../..
 }

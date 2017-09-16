@@ -114,21 +114,21 @@ UnicodeString convert_to_text(const UnicodeString& s) {
     return s1;
 }
 
-UnicodeString convert_from_int(const int64_t n) {
+UnicodeString convert_from_int(const int64_t& n) {
     std::stringstream ss;
     ss << n;
     UnicodeString u(ss.str().c_str());
     return u;
 }
 
-UnicodeString convert_from_float(const double f) {
+UnicodeString convert_from_float(const double& f) {
     std::stringstream ss;
     ss << f;
     UnicodeString u(ss.str().c_str());
     return u;
 }
 
-UnicodeString convert_from_char(const UChar32 c) {
+UnicodeString convert_from_char(const UChar32& c) {
     std::stringstream ss;
     ss << c;
     UnicodeString u(ss.str().c_str());

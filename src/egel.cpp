@@ -9,7 +9,6 @@
 #include "machine.hpp"
 #include "modules.hpp"
 #include "eval.hpp"
-#include "builtin.hpp"
 
 #define EXECUTABLE_NAME "egel"
 

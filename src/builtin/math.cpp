@@ -1,4 +1,4 @@
-#include "../../src/runtime.hpp"
+#include "math.hpp"
 
 #include <stdlib.h>
 #include <math.h>
@@ -6,9 +6,7 @@
 /**
  * Egel's math built-ins.
  *
- * Unstable and not all combinators fully provide what their 
- * specification promises. Neither are all combinators implemented
- * according to spec.
+ * Unstable and untested.
  *
  * Almost all of these combinators work only on floats. 
  **/
@@ -696,11 +694,7 @@ public:
     }
 };
 
-extern "C" std::vector<UnicodeString> egel_imports() {
-    return std::vector<UnicodeString>();
-}
-
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
+extern "C" std::vector<VMObjectPtr> builtin_math(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Euler(vm).clone());
@@ -745,5 +739,4 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Trunc(vm).clone());
 
     return oo;
-
 }

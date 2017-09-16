@@ -3,7 +3,7 @@ CC=g++ --std=c++0x
 AR=ar rvs
 CFLAGS=-c -Wall -pedantic
 LIBS= \
-	-ldl \
+	-ldl -lpthread \
 	$(shell pkg-config --libs --cflags icu-uc icu-io)
 LDFLAGS=$(LIBS)
 
@@ -19,7 +19,10 @@ SOURCES= \
 	desugar.cpp \
 	lift.cpp \
 	emit.cpp \
-	builtin.cpp \
+	builtin/system.cpp \
+	builtin/math.cpp \
+	builtin/string.cpp \
+	builtin/thread.cpp \
 	egel.cpp 
 
 OBJECTS=$(SOURCES:.cpp=.o)

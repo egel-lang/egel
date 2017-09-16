@@ -124,11 +124,7 @@ public:
     }
 };
 
-extern "C" std::vector<UnicodeString> egel_imports() {
-    return std::vector<UnicodeString>();
-}
-
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
+extern "C" std::vector<VMObjectPtr> builtin_thread(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(VMObjectData(vm, "System", "thread").clone());

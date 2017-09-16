@@ -77,12 +77,12 @@ function install {
     done
 
     changedir include
-    for filename in *.ego ; do
+    for filename in prelude.eg; do
         copy "$filename" "$LIB_EGEL/$filename"
     done
 
-    changedir include
-    for filename in prelude.eg; do
+    changedir lib
+    for filename in *.ego ; do
         copy "$filename" "$LIB_EGEL/$filename"
     done
 
@@ -112,12 +112,12 @@ function clean {
     done
 
     changedir include
-    for filename in *.ego; do
+    for filename in prelude.eg; do
         remove "$LIB_EGEL/$filename"
     done
 
-    changedir include
-    for filename in prelude.eg; do
+    changedir lib
+    for filename in *.ego; do
         remove "$LIB_EGEL/$filename"
     done
 
