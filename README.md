@@ -18,7 +18,7 @@ installed. Most Linux package managers will provide that for you.
 To compile the system run the `build.sh` script.
 That should give you an interpreter named `egel` in the `src` directory
 and a number of dynamically loadable Egel object files in the
-`include` directory.
+`lib` directory.
 
 For a system-wide install run the `install.sh` script after a build
 as root.
