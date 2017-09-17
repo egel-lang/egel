@@ -134,6 +134,15 @@ bool unicode_endswith(const UnicodeString& s, const UnicodeString& sf);
 int64_t convert_to_int(const UnicodeString& s);
 
 /**
+ ** Parse and convert a hexadecimal integer. like 0xa3.
+ **
+ ** @param s  the unicode string
+ **
+ ** @return the integer recognized
+ **/
+int64_t convert_to_hexint(const UnicodeString& s);
+
+/**
  ** Parse and convert a float. like 3.14.
  **
  ** @param s  the unicode string

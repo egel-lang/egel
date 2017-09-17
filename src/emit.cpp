@@ -193,9 +193,15 @@ public:
     }
 
     void visit_expr_integer(const Position& p, const UnicodeString& v) override {
-        auto i = VMObjectInteger(convert_to_int(v)).clone();
-        auto d = get_machine()->enter_data(i);
-        visit_constant(d);
+        if (v.startsWith("0x")) {
+            auto i = VMObjectInteger(convert_to_hexint(v)).clone();
+            auto d = get_machine()->enter_data(i);
+            visit_constant(d);
+        } else {
+            auto i = VMObjectInteger(convert_to_int(v)).clone();
+            auto d = get_machine()->enter_data(i);
+            visit_constant(d);
+        }
     }
 
     void visit_expr_float(const Position& p, const UnicodeString& v) override {

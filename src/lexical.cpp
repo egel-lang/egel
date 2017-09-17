@@ -71,6 +71,17 @@ bool is_digit(UChar32 c) {
     return (bool) u_isdigit(c);
 }
 
+bool is_hexdigit(UChar32 c) {
+    return (bool) 
+        ( (u_isdigit(c)) ||
+            (c == (UChar32) 'a') ||
+            (c == (UChar32) 'b') ||
+            (c == (UChar32) 'c') ||
+            (c == (UChar32) 'd') ||
+            (c == (UChar32) 'e') ||
+            (c == (UChar32) 'f') );
+}
+
 bool is_lowercase(UChar32 c) {
     return (bool) u_isULowercase(c);
 }
@@ -371,6 +382,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
              *
              * An integer is in the regexp "[-]?[0-9]+". A float is either "[-]?[0-9]+[.][0-9]+"
              * or expanded with an exponent "[-]?[0-9]+[.][0-9]+[e][-]?[0-9]+".
+             * A hexint is "0x[0-9a-f]+".
              */
             UnicodeString str = UnicodeString("");
             // handle leading '-'
@@ -385,8 +397,21 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
                 reader.skip();
                 c = reader.look();
             };
+            // '0x' starts hexint
+            if ( (str == "0") && (c == 'x') ) {
+                str += c;
+                reader.skip();
+                if (reader.end()) goto handle_hexint_error;
+                c = reader.look();
+                if (!is_hexdigit(c)) goto handle_hexint_error;
+                while (is_hexdigit(c)) {
+                    str += c;
+                    reader.skip();
+                    c = reader.look();
+                };
+                token_writer.push(Token(TOKEN_INTEGER, p, str));
             // any '.' occurence signals the start of a forced floating point
-            if (!is_dot(c)) {
+            } else if (!is_dot(c)) {
                 token_writer.push(Token(TOKEN_INTEGER, p, str));
             } else {
                 // handle '.'
@@ -498,6 +523,11 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
     handle_string_error: {
         Position p = reader.position();
         throw ErrorLexical(p, "error in string");
+    }
+
+    handle_hexint_error: {
+        Position p = reader.position();
+        throw ErrorLexical(p, "error in hexadecimal int");
     }
 
     handle_float_error: {

@@ -95,6 +95,25 @@ int64_t convert_to_int(const UnicodeString& s) {
     return i;
 }
 
+int64_t convert_to_hexint(const UnicodeString& s) {
+    int i = 0;
+    int64_t n = 0;
+    UChar32 c = s.char32At(i);
+    while (c != 0xffff) {
+        n = n * 16;
+        if (c >= 48 && c <= 57) {  // 0-9
+            n += (((int)(c)) - 48);
+        } else if ((c >= 65 && c <= 70))  { // A-F
+            n += (((int)(c)) - 55);
+        } else if (c >= 97 && c <= 102) {  // a-f
+            n += (((int)(c)) - 87);
+        } // just ignore other chars (like starting 0x)
+        i++;
+        c = s.char32At(i);
+    }
+    return n;
+}
+
 double convert_to_float(const UnicodeString& s) {
     char* buf = unicode_to_char(s);
     auto f = atof(buf);
