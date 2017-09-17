@@ -17,8 +17,7 @@ ends.
 + Dynamic libraries
 + Optional system-wide install
 
-## v0.0 -- not even wrong
+## v0.0 -- initial release
 
-The initial commit and 'not even wrong' version. Expect lots and lots of
-bugs!
+The initial commit. Expect lots and lots of bugs!
 

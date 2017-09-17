@@ -147,6 +147,100 @@ public:
     }
 };
 
+class BinAnd: public Dyadic {
+public:
+    DYADIC_PREAMBLE(BinAnd, "System", "&&");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            return VMObjectInteger(i0&i1).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class BinOr: public Dyadic {
+public:
+    DYADIC_PREAMBLE(BinOr, "System", "||");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            return VMObjectInteger(i0|i1).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class BinXOr: public Dyadic {
+public:
+    DYADIC_PREAMBLE(BinXOr, "System", "^^");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            return VMObjectInteger(i0^i1).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class BinComplement: public Monadic {
+public:
+    MONADIC_PREAMBLE(BinComplement, "System", "!~");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            return VMObjectInteger(~i0).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class BinLeftShift: public Dyadic {
+public:
+    DYADIC_PREAMBLE(BinLeftShift, "System", "<<");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            return VMObjectInteger(i0<<i1).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+class BinRightShift: public Dyadic {
+public:
+    DYADIC_PREAMBLE(BinRightShift, "System", ">>");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
+             (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+            return VMObjectInteger(i0>>i1).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 class Less: public Dyadic {
 public:
     DYADIC_PREAMBLE(Less, "System", "<");
@@ -584,6 +678,13 @@ extern "C" std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(LessEq(vm).clone());
     oo.push_back(Eq(vm).clone());
     oo.push_back(NegEq(vm).clone());
+
+    oo.push_back(BinAnd(vm).clone());
+    oo.push_back(BinOr(vm).clone());
+    oo.push_back(BinXOr(vm).clone());
+    oo.push_back(BinComplement(vm).clone());
+    oo.push_back(BinLeftShift(vm).clone());
+    oo.push_back(BinRightShift(vm).clone());
 
     oo.push_back(Toint(vm).clone());
     oo.push_back(Tofloat(vm).clone());
