@@ -3,6 +3,10 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.0.1 -- heap of dung
+
++ added hexadecimal numbers and binary operators
+
 ## v0.0.0 -- not even wrong
 
 This is the version where a plethora of bugs were squashed, technically

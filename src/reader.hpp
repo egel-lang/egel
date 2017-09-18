@@ -7,8 +7,10 @@
 class CharReader {
 public:
     virtual UChar32 look() = 0;
+    virtual UChar32 look(int n) = 0;
     virtual void skip() = 0;
     virtual bool end() = 0;
+    virtual bool eol() = 0;
 
     virtual void reset() = 0;
 
@@ -25,7 +27,7 @@ public:
         _index = 0;
     }
 
-    Position position() {
+    Position position() override {
         return Position(_resource, _row, _column);
     }
 
@@ -33,12 +35,16 @@ public:
         return _content;
     }
 
-    UChar32 look() {
+    UChar32 look() override {
         if (end()) return '\0';
         return _content.char32At(_index);
     }
 
-    void skip() {
+    UChar32 look(int n) override { // need LL(2) in the lexer for '-1', to be decaprecated at some point
+        return _content.char32At(_index+1);
+    }
+
+    void skip() override {
         if (end()) return;
         UChar32 c = look();
         _index = _content.moveIndex32(_index, 1);
@@ -53,12 +59,12 @@ public:
         }
     }
 
-    bool end() {
+    bool end() override {
         if (_content.char32At(_index) == 65535) return true; // make absolutely sure we always detect the end
         return _index >= _content.length();
     }
 
-    bool eol() {
+    bool eol() override {
         if (end()) {
             return false;
         } else {
@@ -66,7 +72,7 @@ public:
         };
     }
  
-    void reset() {
+    void reset() override {
         _index = 0;
         _row = 1;
         _column = 1;

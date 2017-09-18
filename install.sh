@@ -54,6 +54,7 @@ function changedir {
 
 function install {
     makedir $INC_EGEL
+    makedir "$INC_EGEL/builtin"
     makedir $LIB_EGEL
 
     changedir src
@@ -69,6 +70,11 @@ function install {
     changedir src
     for filename in *.hpp ; do
         copy "$filename" "$INC_EGEL/$filename"
+    done
+
+    changedir "src/builtin"
+    for filename in *.hpp ; do
+        copy "$filename" "$INC_EGEL/builtin/$filename"
     done
 
     changedir contrib/ffi/src
@@ -106,6 +112,11 @@ function clean {
         remove "$INC_EGEL/$filename"
     done
 
+    changedir "src/builtin"
+    for filename in *.hpp; do
+        remove "$INC_EGEL/builtin/$filename"
+    done
+
     changedir contrib/ffi/src
     for filename in ffi.hpp; do
         remove "$INC_EGEL/$filename"
@@ -121,8 +132,8 @@ function clean {
         remove "$LIB_EGEL/$filename"
     done
 
-    removedir $INC_EGEL
-    removedir $LIB_EGEL
+    #removedir $INC_EGEL
+    #removedir $LIB_EGEL
 
 }
 
