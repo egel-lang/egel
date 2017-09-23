@@ -43,6 +43,12 @@ namespace List (
         [ F, Z, nil -> Z
         | F, Z, cons X XX -> F X (foldr F Z XX) ]
 
+    def head =
+        [ cons X XX -> X ]
+
+    def tail =
+        [ cons X XX -> XX ]
+
     def ++ =
         [ nil, YY -> YY
         | cons X XX, YY -> cons X (XX ++ YY) ]
