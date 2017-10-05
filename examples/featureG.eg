@@ -1,0 +1,25 @@
+/*
+ * FeatureG, often, we can do without explicit tupling but simply
+ * compose constants.
+ *
+ */
+
+import "prelude.eg"
+
+namespace Test (
+    using System
+
+    def fac =
+        [ 1 -> 1
+        | N -> N * (fac (N - 1)) ]
+
+    def combine_fac =
+        [ X -> X (fac X) ]
+
+)
+
+using System
+using List
+using Test
+
+def main = map combine_fac (fromto 1 5)

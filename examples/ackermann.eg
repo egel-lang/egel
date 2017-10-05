@@ -15,7 +15,7 @@ using System
 
 def ackermann =
     [ 0, N -> N + 1
-    | M, 0 -> ackermann (M-1) 1
-    | M, N -> ackermann (M-1) (ackermann M (N-1)) ]
+    | M, 0 -> ackermann (M - 1) 1
+    | M, N -> ackermann (M - 1) (ackermann M (N - 1)) ]
 
 def main = ackermann 3 4
