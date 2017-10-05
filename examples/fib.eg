@@ -10,7 +10,7 @@ namespace Fibonnaci (
   def fib =
     [ 0 -> 0
     | 1 -> 1
-    | N -> fib (N-2) + fib (N-1) ]
+    | N -> fib (N- 2) + fib (N- 1) ]
 )
 
 using Fibonnaci
