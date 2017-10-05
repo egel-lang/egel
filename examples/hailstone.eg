@@ -38,7 +38,7 @@ namespace Hailstone (
         [ 1 -> (1, 1)
         | N ->
             let M0 = hailpair N in
-            let M1 = largest (N-1) in
+            let M1 = largest (N- 1) in
                 hailmax M0 M1 ]
 )
 

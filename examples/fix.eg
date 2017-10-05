@@ -8,4 +8,4 @@ using System
 def fix = [ F -> F [ X -> (fix F) X ] ]
 
 def main =
-    fix [FAC, 0 -> 1 | FAC, N -> N * (FAC (N-1)) ] 5
+    fix [FAC, 0 -> 1 | FAC, N -> N * (FAC (N- 1)) ] 5
