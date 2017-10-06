@@ -3,7 +3,7 @@
 ######################################################################
 # Recursive make is considered harmful! So I decided to use bash.
 #
-# This script either performes a 'make O3' on all targets or can be
+# This script either performes a 'gmake O3' on all targets or can be
 # used to wipe the directories clean.
 #
 # After a build, all you need is the executable provided in the
@@ -16,31 +16,31 @@
 
 function build {
     cd src
-    make O3
-    make shared
-    make archive
+    gmake O3
+    gmake shared
+    gmake archive
     cd ..
 
     cd lib/io
-    make O3
+    gmake O3
     cd ../..
 
     cd lib/random
-    make O3
+    gmake O3
     cd ../..
 }
 
 function clean {
     cd src
-    make clean
+    gmake clean
     cd ..
 
     cd lib/io
-    make clean
+    gmake clean
     cd ../..
 
     cd lib/random
-    make clean
+    gmake clean
     cd ../..
 }
 

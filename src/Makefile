@@ -1,5 +1,5 @@
 # compiler and compile options
-CC=g++ --std=c++0x
+include ../conf.mk
 AR=ar rvs
 CFLAGS=-c -Wall -pedantic
 LIBS= \
@@ -37,22 +37,22 @@ ARCHIVE=libegel.a
 SHARED=libegel.so
 
 # targets
-all: CC=g++ --std=c++0x -fPIC
+all: CFLAGS+= -fPIC
 all: $(SOURCES) $(EXECUTABLE)
 
-O3: CC=g++ --std=c++0x -O3 -fPIC
+O3: CFLAGS+= -fPIC
 O3: $(SOURCES) $(EXECUTABLE)
 
-gprof: CC=g++ --std=c++0x -O3 -pg
+gprof: CFLAGS+= -O3 -pg
 gprof: $(SOURCES) $(EXECUTABLE)
 
-debug: CC=g++ --std=c++0x -g
+debug: CFLAGS+= -g
 debug: $(SOURCES) $(EXECUTABLE)
 
-archive: CC=g++ --std=c++0x -O3
+archive: CFLAGS+= -O3
 archive: $(SOURCES) $(ARCHIVE)
 
-shared: CC=g++ --std=c++0x -O3 -fPIC
+shared: CFLAGS+= -O3 -fPIC
 shared: $(SOURCES) $(SHARED)
 
 $(EXECUTABLE): $(OBJECTS) 

@@ -1,6 +1,6 @@
 # compiler and compile options
-CC=g++ --std=c++0x
-CFLAGS=-c -Wall -pedantic
+#
+include ../../conf.mk
 LIBS= \
 	  $(shell pkg-config --libs --cflags icu-uc icu-io)
 LDFLAGS=$(LIBS)
@@ -15,16 +15,16 @@ OBJECTS=$(SOURCES:.cpp=.o)
 SHARED=../random.ego
 
 # targets
-all: CC=g++ --std=c++0x
+all: 
 all: $(SOURCES) $(SHARED)
 
-O3: CC=g++ --std=c++0x -O3
+O3: CFLAGS+= -O3
 O3: $(SOURCES) $(SHARED)
 
-gprof: CC=g++ -std=c++0x -O3 -pg
+gprof: CFLAGS+= -O3 -pg
 gprof: $(SOURCES) $(SHARED)
 
-debug: CC=g++ -std=c++0x -g
+debug: CFLAGS+= -g
 debug: $(SOURCES) $(SHARED)
 
 $(SHARED): $(OBJECTS) 
