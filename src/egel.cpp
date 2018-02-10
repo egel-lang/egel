@@ -235,7 +235,14 @@ int main(int argc, char *argv[]) {
     ModuleManagerPtr mm = ModuleManager().clone();
     Machine m;
     NamespacePtr env = Namespace().clone();
-    mm->init(oo, &m, env);
+
+    // initialize (rebinding exceptions need to be caught)
+    try {
+        mm->init(oo, &m, env);
+    } catch (Error e) {
+        std::cerr << e << std::endl;
+        return (EXIT_FAILURE);
+    }
 
     // fire up the evaluator
     Eval eval(mm);

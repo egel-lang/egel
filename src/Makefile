@@ -40,7 +40,7 @@ SHARED=libegel.so
 all: CFLAGS+= -fPIC
 all: $(SOURCES) $(EXECUTABLE)
 
-O3: CFLAGS+= -fPIC
+O3: CFLAGS+= -fPIC -O3
 O3: $(SOURCES) $(EXECUTABLE)
 
 gprof: CFLAGS+= -O3 -pg

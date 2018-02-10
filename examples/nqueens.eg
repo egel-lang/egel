@@ -70,7 +70,7 @@ namespace NQueens (
                   (or (SC + SR == ICOL + IROW) 
                       (SC - SR == ICOL - IROW))]
                 SOLUTION
-                (fromto 0 (IROW-1))) ]
+                (fromto 0 (IROW - 1))) ]
 )
 
 using List

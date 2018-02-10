@@ -25,9 +25,14 @@ namespace Fibonnaci (
   using System
 
   def fib =
-    [ 0 -> 1
+    [ 0 -> 0
     | 1 -> 1
     | N -> fib (N- 2) + fib (N- 1) ]
+
+  def pfib = 
+    [ 0 -> 0 
+    | 1 -> 1 
+    | X -> [ (F0, F1) -> F0 + F1 ] (par [Y -> pfib (X - 1) ] [Z-> pfib (X - 2)]) ]
 
 )
 

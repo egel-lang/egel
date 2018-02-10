@@ -62,23 +62,23 @@ namespace List (
 
     def block =
         [ 0 -> nil
-        | N -> cons (N-1) (block (N-1)) ]
+        | N -> cons (N - 1) (block (N - 1)) ]
 
     def nth =
         [ 0, cons X XX -> X
-        | N, cons X XX -> nth (N-1) XX ]
+        | N, cons X XX -> nth (N - 1) XX ]
 
     def insert =
         [ 0, X, cons Y YY -> cons X YY
-        | I, X, cons Y YY -> cons Y (insert (I-1) X YY) ]
+        | I, X, cons Y YY -> cons Y (insert (I - 1) X YY) ]
 
     def take =
         [ 0, XX -> nil
-        | N, cons X XX -> cons X (take (N-1) XX) ]
+        | N, cons X XX -> cons X (take (N - 1) XX) ]
 
     def drop =
         [ 0, XX -> XX
-        | N, cons X XX -> drop (N-1) XX ]
+        | N, cons X XX -> drop (N - 1) XX ]
 
     def fromto =
         [ X, Y -> 

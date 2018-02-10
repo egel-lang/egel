@@ -1,0 +1,10 @@
+/**
+ * The 'yes' program in Egel. Used to measure throughput.
+ **/ 
+
+import "io.ego"
+
+def yes = let X = IO.print "y\n" in yes
+
+def main = yes
+

@@ -519,9 +519,9 @@ public:
 
 // Math.min x y
 // Returns the smallest of two numbers.
-class Min: public Dyadic {
+class MMin: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Min, "Math", "min");
+    DYADIC_PREAMBLE(MMin, "Math", "min");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
@@ -726,7 +726,7 @@ extern "C" std::vector<VMObjectPtr> builtin_math(VM* vm) {
     oo.push_back(Log10(vm).clone());
     oo.push_back(Log2(vm).clone());
     oo.push_back(Max(vm).clone());
-    oo.push_back(Min(vm).clone());
+    oo.push_back(MMin(vm).clone());
     oo.push_back(Pow(vm).clone());
     oo.push_back(Random(vm).clone());
     oo.push_back(Round(vm).clone());

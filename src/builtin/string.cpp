@@ -8,10 +8,10 @@
  **/
 
 // String.eq s0 s1
-// Equality operator. 
-class Eq: public Dyadic {
+// StringEquality operator. 
+class StringEq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Eq, "String", "eq");
+    DYADIC_PREAMBLE(StringEq, "String", "eq");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -26,9 +26,9 @@ public:
 
 // String.neq s0 s1
 // Inequality operator. 
-class Neq: public Dyadic {
+class StringNeq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Neq, "String", "neq");
+    DYADIC_PREAMBLE(StringNeq, "String", "neq");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -43,9 +43,9 @@ public:
 
 // String.gt s0 s1
 // Greater than operator. 
-class Gt: public Dyadic {
+class StringGt: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Gt, "String", "gt");
+    DYADIC_PREAMBLE(StringGt, "String", "gt");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -59,10 +59,10 @@ public:
 };
 
 // String.ls s0 s1
-// Less than operator. 
-class Ls: public Dyadic {
+// StringLess than operator. 
+class StringLs: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Ls, "String", "ls");
+    DYADIC_PREAMBLE(StringLs, "String", "ls");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -77,9 +77,9 @@ public:
 
 // String.ge s0 s1
 // Greater than or equal operator. 
-class Ge: public Dyadic {
+class StringGe: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Ge, "String", "ge");
+    DYADIC_PREAMBLE(StringGe, "String", "ge");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -93,10 +93,10 @@ public:
 };
 
 // String.le s0 s1
-// Less than or equal operator. 
-class Le: public Dyadic {
+// StringLess than or equal operator. 
+class StringLe: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Le, "String", "le");
+    DYADIC_PREAMBLE(StringLe, "String", "le");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -299,7 +299,7 @@ public:
 };
 
 // String.hashCode s 
-// Generate a hash code for this object. 
+// StringGenerate a hash code for this object. 
 class HashCode: public Monadic {
 public:
     MONADIC_PREAMBLE(HashCode, "String", "hashCode");
@@ -523,12 +523,12 @@ public:
 extern "C" std::vector<VMObjectPtr> builtin_string(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(Eq(vm).clone());
-    oo.push_back(Neq(vm).clone());
-    oo.push_back(Gt(vm).clone());
-    oo.push_back(Ls(vm).clone());
-    oo.push_back(Ge(vm).clone());
-    oo.push_back(Le(vm).clone());
+    oo.push_back(StringEq(vm).clone());
+    oo.push_back(StringNeq(vm).clone());
+    oo.push_back(StringGt(vm).clone());
+    oo.push_back(StringLs(vm).clone());
+    oo.push_back(StringGe(vm).clone());
+    oo.push_back(StringLe(vm).clone());
     oo.push_back(Compare(vm).clone());
     oo.push_back(CompareCodePointOrder(vm).clone());
     oo.push_back(CaseCompare(vm).clone());

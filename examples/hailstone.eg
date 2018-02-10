@@ -38,7 +38,7 @@ namespace Hailstone (
         [ 1 -> (1, 1)
         | N ->
             let M0 = hailpair N in
-            let M1 = largest (N- 1) in
+            let M1 = largest (N - 1) in
                 hailmax M0 M1 ]
 )
 
@@ -51,7 +51,7 @@ def task0 = let H27 = hailstone 27 in length H27
 def task1 = 
     let H27 = hailstone 27 in
     let L   = length H27 in
-        (take 4 H27, drop (L-4) H27)
+        (take 4 H27, drop (L - 4) H27)
 
 def task2 = largest 100000
 
