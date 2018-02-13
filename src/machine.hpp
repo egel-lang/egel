@@ -223,6 +223,7 @@ public:
         ee.push_back(nullptr); // k
         ee.push_back(nullptr); // exc
         ee.push_back(exc); // c
+        ee.push_back(nullptr); // arg0
         auto e = VMObjectArray(ee).clone();
 
         auto i = VMObjectInteger(5).clone();

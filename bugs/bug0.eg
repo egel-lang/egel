@@ -1,0 +1,4 @@
+
+def f = [ Y -> (try [ X -> throw Y ] catch 0) 1 ] "scope"
+
+def main = f

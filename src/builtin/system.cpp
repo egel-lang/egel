@@ -651,6 +651,9 @@ public:
 extern "C" std::vector<VMObjectPtr> builtin_system(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
+    // throw combinator
+    oo.push_back(VMThrow(vm).clone());
+
     // basic constants
     oo.push_back(VMObjectData(vm, "System", "int").clone());
     oo.push_back(VMObjectData(vm, "System", "float").clone());

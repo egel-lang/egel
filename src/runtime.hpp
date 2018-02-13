@@ -955,7 +955,7 @@ public:
         : VMObjectStub(d.machine(), d.symbol()) {
      }
 
-     VMObjectPtr clone() const {
+     VMObjectPtr clone() const override {
          return VMObjectPtr(new VMObjectStub(*this));
      }
 
@@ -986,6 +986,41 @@ inline VMObjectPtr VM::get_data_string(const std::vector<UnicodeString>& nn, con
     auto i = enter_symbol(nn, n);
     return get_data_symbol(i);
 }
+
+// the throw combinator, used in the runtime
+
+class VMThrow: public VMObjectCombinator {
+public:
+    VMThrow(VM* m): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, "System", "throw") {
+    }
+
+    VMThrow(const VMThrow& t)
+        : VMThrow(t.machine()) {
+    }
+
+    VMObjectPtr clone() const override {
+         return VMObjectPtr(new VMThrow(*this));
+     }
+
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        // when throw is reduced, it takes the exception, inserts it argument, 
+        // and reduces that
+
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        // auto rt  = tt[0];
+        // auto rti = tt[1];
+        // auto k   = tt[2];
+        auto exc   = tt[3];
+        // auto c   = tt[4];
+        auto r     = tt[5];
+
+        auto ee = VM_OBJECT_ARRAY_CAST(exc);
+        ee->set(5, r);
+
+        return exc;
+    }
+};
 
 // convenience classes for defining built-in combinators
 
