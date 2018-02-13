@@ -493,63 +493,49 @@ public:
         auto rti = get_register_rti();
         auto k   = get_register_k();
         auto exc = get_register_exc();
-        if (c->tag() == AST_EXPR_COMBINATOR) {
-            AST_EXPR_COMBINATOR_SPLIT(c, p, nn, n);
-            auto c = get_machine()->get_data_string(nn, n);
-            auto d = get_machine()->enter_data(c);
+        // evalute the catch block/exception handler and set up a thunk for the exception
+        // and its possible argument thrown
 
-            auto rt0 = get_coder()->generate_register();
-            auto rti0= get_coder()->generate_register();
-            auto k0  = get_coder()->generate_register();
-            auto exc0= get_coder()->generate_register();
-            auto c0  = get_coder()->generate_register();
+        // set up the exception thunk 
+        auto e_rt   = get_coder()->generate_register();
+        auto e_rti  = get_coder()->generate_register();
+        auto e_k    = get_coder()->generate_register();
+        auto e_exc  = get_coder()->generate_register();
+        auto e_arg0 = get_coder()->generate_register();
+        auto e_arg1 = get_coder()->generate_register();
 
-            auto exc1= get_coder()->generate_register();
+        get_coder()->emit_op_mov(e_rt, rt);
+        get_coder()->emit_op_mov(e_rti, rti);
+        get_coder()->emit_op_mov(e_k, k);
+        get_coder()->emit_op_mov(e_exc, exc);
+        get_coder()->emit_op_nil(e_arg0);
+        get_coder()->emit_op_nil(e_arg1);
 
-            get_coder()->emit_op_mov(rt0, rt);
-            get_coder()->emit_op_mov(rti0, rti);
-            get_coder()->emit_op_mov(k0, k);
-            get_coder()->emit_op_mov(exc0, exc);
-            get_coder()->emit_op_data(c0, d);
-            get_coder()->emit_op_array(exc1, rt0, c0);
+        auto new_exc = get_coder()->generate_register();
+        get_coder()->emit_op_array(new_exc, e_rt, e_arg1);
+        
+        // the try thunk evaluates with this exception thunk as its handler
+        set_register_exc(new_exc);
+        visit(t);
 
-            set_register_exc(exc1);
+        // the catch thunk evaluates with the old exception and places its result in the
+        // handler thunk as the combinator 
+        auto new_exci = get_coder()->generate_register();
+        auto i = VMObjectInteger(4).clone();
+        auto d = get_machine()->enter_data(i);
+        get_coder()->emit_op_data(new_exci, d);
 
-            visit(t);
+        set_register_exc(exc);
+        set_register_rt(new_exc);
+        set_register_rti(new_exci);
+        visit(c);
 
-            set_register_exc(exc);
-        } else {
-            PANIC("combinator expected");
-        }
+        set_register_rt(rt);
+        set_register_rti(rti);
     }
 
     void visit_expr_throw(const Position& p, const AstPtr& e) override {
-        auto exc = get_register_exc();
-
-        auto rt0 = get_coder()->generate_register();
-        /* auto rti0= */ get_coder()->generate_register();
-        /* auto k0  = */ get_coder()->generate_register();
-        /* auto exc0= */ get_coder()->generate_register();
-        auto c0  = get_coder()->generate_register();
-
-        get_coder()->emit_op_split(rt0, c0, exc);
-
-        auto nil0 = get_coder()->generate_register();
-        auto exc1 = get_coder()->generate_register();
-
-        get_coder()->emit_op_nil(nil0);
-        get_coder()->emit_op_array(exc1, rt0, nil0);
-
-        auto exc1i= get_coder()->generate_register();
-        auto i = VMObjectInteger(5).clone();
-        auto d = get_machine()->enter_data(i);
-        get_coder()->emit_op_data(exc1i, d);
-
-        set_register_k(exc1);
-        set_register_rt(exc1);
-        set_register_rti(exc1i);
-
-        visit(e);
+        PANIC("throw is combinator");
     }
 
     void visit_directive_import(const Position& p, const UnicodeString& i) override {
