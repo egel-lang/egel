@@ -13,10 +13,8 @@
  * imagine you would want other stuff for high-performance 
  * code.
  *
- * It doesn't handle exceptions right yet in that if one thread
- * throws an exception the other thread is allowed to keep
- * running and the resulting exception is just placed in
- * the resulting tuple.
+ * When an exception is thrown in a thread its result is
+ * simply returned.
  */
 
 import "prelude.eg"
@@ -39,4 +37,4 @@ namespace Fibonnaci (
 using Fibonnaci
 using System
 
-def main = par [ X -> fib 3 ] [ X -> fib 5]
+def main = pfib 10

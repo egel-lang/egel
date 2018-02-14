@@ -493,8 +493,6 @@ public:
         auto rti = get_register_rti();
         auto k   = get_register_k();
         auto exc = get_register_exc();
-        // evalute the catch block/exception handler and set up a thunk for the exception
-        // and its possible argument thrown
 
         // set up the exception thunk 
         auto e_rt   = get_coder()->generate_register();
@@ -530,6 +528,7 @@ public:
         set_register_rti(new_exci);
         visit(c);
 
+        // XXX: I am unsure after half a year whether to maintain an invariant here
         set_register_rt(rt);
         set_register_rti(rti);
     }

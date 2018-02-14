@@ -6,6 +6,7 @@ A list of all major changes between versions of the interpreter.
 ## v0.0.1 -- heap of dung
 
 + added hexadecimal numbers and binary operators
++ fixed a bug with lexical scope and try/catch blocks
 
 ## v0.0.0 -- not even wrong
 

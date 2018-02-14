@@ -1,0 +1,24 @@
+/*
+ * A scoping error was found on the #proglangdesign channel of freenode.
+ *
+ * The next function resulted in a core dump.
+ */
+
+def f = [ Y -> (try [ X -> throw Y ] catch 0) 1 ] "scope"
+
+/* This was a bug in Egel's operational semantics where it was assumed
+ * that try/catch blocks could be translated to bytecode directly.
+ * Instead, a different -more indirect- approach was needed. The 
+ * semantics of a try/catch block now is:
+ *
+ * 1. Evaluate the catch expression and install that as a handler.
+ * 2. Evaluate the try expression with that handler.
+ *
+ * This corresponds to a C++ approach where a handler is an
+ * (evaluated) closure over the variables in its lexical scope.
+ *
+ * The new semantics have been 'tested' with a small number of cases.
+ * It should work!
+ */
+
+def main = f
