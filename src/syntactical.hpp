@@ -907,6 +907,8 @@ public:
             r = parse_decl_definition();
         } else if (tag() == TOKEN_VAR) {
             r = parse_var();
+        } else if (tag() == TOKEN_DATA) {
+            r = parse_decl_data();
         } else {
             r = parse_expression();
         }

@@ -212,6 +212,37 @@ public:
         ::emit_code(vm, w);
     }
 
+    void handle_data(const AstPtr& d) {
+        auto vm = get_machine();
+        auto mm = get_manager();
+        auto p = d->position();
+
+        auto dd = AstPtrs();
+        for (auto& u:get_usings()) {
+            dd.push_back(u);
+        }
+        dd.push_back(d);
+        auto w = AstWrapper(p, dd).clone();
+
+        // bypass standard semantical analysis and declare the data in the context.
+        // that manner, data may be overridded in interactive mode.
+        if (d->tag() == AST_DECL_DATA) { // start off by (re-)declaring the def
+            AST_DECL_DATA_SPLIT(d, p0, nn);
+            for (auto& e:nn) {
+                if (e->tag() == AST_EXPR_COMBINATOR) {
+                    AST_EXPR_COMBINATOR_SPLIT(e, p, nn0, n0);
+                    auto e1 = AST_EXPR_COMBINATOR_CAST(e);
+                    ::declare_implicit(mm->get_environment(), nn0, n0, e1->to_text());
+                }
+            }
+        }
+        w = ::identify(mm->get_environment(), w);
+        w = ::desugar(w);
+        w = ::lift(w);
+        ::emit_data(vm, w);
+        ::emit_code(vm, w);
+    }
+
     void handle_expression(const AstPtr& a, const VMObjectPtr& r, const VMObjectPtr& exc) {
         auto vm = get_machine();
         auto p = a->position();
@@ -275,6 +306,8 @@ public:
                 handle_definition(a);
             } else if (a->tag() == AST_DECL_OPERATOR) {
                 handle_definition(a);
+            } else if (a->tag() == AST_DECL_DATA) {
+                handle_data(a);
             } else if (a->tag() == AST_VAR) {
                 handle_var(a, rr, e);
             } else {
