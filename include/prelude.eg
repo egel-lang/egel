@@ -17,6 +17,12 @@ namespace System (
 
     def flip = [ F, X, Y -> F Y X ]
 
+    def uncurry = [ F, (X,Y) -> F X Y ]
+
+    def fst = [ (X,Y) -> X ]
+
+    def snd = [ (X,Y) -> Y ]
+
     def @@ =
         [ SELF, NAME -> (get NAME SELF) SELF ]
 
@@ -94,6 +100,10 @@ namespace List (
         [ nil                   -> nil
         | cons nil YY           -> flatten YY
         | cons (cons X XX) YY   -> cons X (flatten (cons XX YY)) ]
+
+    def zip =
+        [ cons X XX, cons Y YY  -> cons (X,Y) (zip XX YY)
+        | XX, YY                -> nil ]
 
     def zipwith =
         [ Z, cons X XX, cons Y YY -> cons (Z X Y) (zipwith Z XX YY)
