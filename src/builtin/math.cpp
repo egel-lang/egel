@@ -289,7 +289,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float(atan2(f0, f1));
         } else {
             return nullptr;
@@ -508,7 +508,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float((f0<f1)?f1:f0);
         } else {
             return nullptr;
@@ -526,7 +526,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float((f0<f1)?f0:f1);
         } else {
             return nullptr;
@@ -543,7 +543,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg0);
+            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float(pow(f0, f1));
         } else {
             return nullptr;
