@@ -264,10 +264,10 @@ public:
             AstPtr e;
             if (is_wildcard()) {
                 e = parse_wildcard();
-            } else if (is_variable()) {
-                e = parse_variable();
             } else if (is_combinator()) {
                 e = parse_combinator();
+            } else if (is_variable()) {
+                e = parse_variable();
             } else {
                 throw ErrorSyntactical(position(), "pattern expected");
             }
