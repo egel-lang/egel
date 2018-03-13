@@ -478,11 +478,11 @@ public:
 // channel. This works only for regular files. On files of other
 // kinds, the result is meaningless.
 
-std::vector<UnicodeString> egel_imports() {
+extern "C" std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
 }
 
-std::vector<VMObjectPtr> egel_exports(VM* vm) {
+extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(VMObjectData(vm, "IO", "channel").clone());
