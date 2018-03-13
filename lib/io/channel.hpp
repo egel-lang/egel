@@ -117,19 +117,19 @@ public:
         return n;
     }
 
-    virtual vm_float_t read_float() {
+    virtual vm_float_t read_float() override {
         vm_float_t f;
         _channel >> f;
         return f;
     }
 
-    virtual vm_char_t read_char() {
+    virtual vm_char_t read_char() override {
         vm_char_t c;
         _channel >> c;
         return c;
     }
 
-    virtual UnicodeString read_line() {
+    virtual UnicodeString read_line() override {
         std::string line;
         std::getline(_channel, line);
         UnicodeString str(line.c_str(), -1, US_INV);
@@ -196,19 +196,19 @@ public:
         return n;
     }
 
-    virtual vm_float_t read_float() {
+    virtual vm_float_t read_float() override {
         vm_float_t f;
         _channel >> f;
         return f;
     }
 
-    virtual vm_char_t read_char() {
+    virtual vm_char_t read_char() override {
         vm_char_t c;
         _channel >> c;
         return c;
     }
 
-    virtual UnicodeString read_line() {
+    virtual UnicodeString read_line() override {
         std::string line;
         std::getline(_channel, line);
         UnicodeString str(line.c_str(), -1, US_INV);

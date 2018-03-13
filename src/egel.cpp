@@ -44,17 +44,17 @@ typedef struct {
 } option_t;
 
 static option_t options[] = {
-    "-h", "--help",    OPTION_NONE, "display usage",
-    "-v", "--version", OPTION_NONE, "display version",
-    "-",  "--in",      OPTION_NONE, "interactive mode (default)",
-    "-I", "--include", OPTION_DIR,  "add include directory",
-    "-e", "--eval",    OPTION_TEXT, "evaluate command",
-    "-T", "--tokens",  OPTION_NONE, "output all tokens (debug)",
-    "-U", "--unparse", OPTION_NONE, "output the parse tree (debug)",
-    "-X", "--check",   OPTION_NONE, "output analyzed tree (debug)",
-    "-D", "--desugar", OPTION_NONE, "output desugared tree (debug)",
-    "-C", "--lift",    OPTION_NONE, "output combinator lifted tree (debug)",
-    "-B", "--bytes",   OPTION_NONE, "output bytecode (debug)",
+    { "-h", "--help",    OPTION_NONE, "display usage", },
+    { "-v", "--version", OPTION_NONE, "display version", },
+    { "-",  "--in",      OPTION_NONE, "interactive mode (default)", },
+    { "-I", "--include", OPTION_DIR,  "add include directory", },
+    { "-e", "--eval",    OPTION_TEXT, "evaluate command", },
+    { "-T", "--tokens",  OPTION_NONE, "output all tokens (debug)", },
+    { "-U", "--unparse", OPTION_NONE, "output the parse tree (debug)", },
+    { "-X", "--check",   OPTION_NONE, "output analyzed tree (debug)", },
+    { "-D", "--desugar", OPTION_NONE, "output desugared tree (debug)", },
+    { "-C", "--lift",    OPTION_NONE, "output combinator lifted tree (debug)", },
+    { "-B", "--bytes",   OPTION_NONE, "output bytecode (debug)", },
 };
 
 #define OPTIONS_SIZE    (sizeof(options)/sizeof(option_t))

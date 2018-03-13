@@ -6,6 +6,6 @@
 extern "C" char** application_argv;
 extern "C" int    application_argc;
 
-extern "C" std::vector<VMObjectPtr> builtin_system(VM* vm);
+std::vector<VMObjectPtr> builtin_system(VM* vm);
 
 #endif

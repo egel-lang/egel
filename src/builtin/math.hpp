@@ -3,6 +3,6 @@
 
 #include "../runtime.hpp"
 
-extern "C" std::vector<VMObjectPtr> builtin_math(VM* vm);
+std::vector<VMObjectPtr> builtin_math(VM* vm);
 
 #endif

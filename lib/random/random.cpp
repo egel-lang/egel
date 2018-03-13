@@ -49,11 +49,11 @@ public:
     }
 };
 
-extern "C" std::vector<UnicodeString> egel_imports() {
+std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
 }
 
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
+std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Random(vm).clone());

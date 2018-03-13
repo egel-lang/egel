@@ -3,6 +3,6 @@
 
 #include "../runtime.hpp"
 
-extern "C" std::vector<VMObjectPtr> builtin_string(VM* vm);
+std::vector<VMObjectPtr> builtin_string(VM* vm);
 
 #endif

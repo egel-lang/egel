@@ -64,18 +64,18 @@ public:
     const char* opcode_to_text(const opcode_t op) {
 
     static constexpr opcode_text_t opcode_text_table[] {
-        OP_NIL, STRING_OP_NIL,
-        OP_MOV, STRING_OP_MOV,
-        OP_DATA, STRING_OP_DATA,
-        OP_SET, STRING_OP_SET,
-        OP_TAKEX, STRING_OP_TAKEX,
-        OP_SPLIT, STRING_OP_SPLIT,
-        OP_ARRAY, STRING_OP_ARRAY,
-        OP_CONCATX, STRING_OP_CONCATX,
-        OP_TEST, STRING_OP_TEST,
-        OP_TAG, STRING_OP_TAG,
-        OP_FAIL, STRING_OP_FAIL,
-        OP_RETURN, STRING_OP_RETURN,
+        { OP_NIL, STRING_OP_NIL, },
+        { OP_MOV, STRING_OP_MOV, },
+        { OP_DATA, STRING_OP_DATA, },
+        { OP_SET, STRING_OP_SET, },
+        { OP_TAKEX, STRING_OP_TAKEX, },
+        { OP_SPLIT, STRING_OP_SPLIT, },
+        { OP_ARRAY, STRING_OP_ARRAY, },
+        { OP_CONCATX, STRING_OP_CONCATX, },
+        { OP_TEST, STRING_OP_TEST, },
+        { OP_TAG, STRING_OP_TAG, },
+        { OP_FAIL, STRING_OP_FAIL, },
+        { OP_RETURN, STRING_OP_RETURN, },
     };
 
         for (int n = 0; n <= OP_RETURN; n++) {
@@ -524,7 +524,7 @@ public:
         : VMObjectBytecode(d.machine(), d.code(), d.symbol()) {
     }
     
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectBytecode(*this));
     }
 
@@ -539,7 +539,7 @@ public:
         return _code;
     }
 
-    VMObjectPtr reduce(const VMObjectPtr& thunk) const {
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
         Registers  reg;
 
         uint32_t pc = 0;

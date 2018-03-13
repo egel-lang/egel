@@ -18,7 +18,7 @@ public:
         : EvalResult(d.machine(), d.symbol(), d.callback()) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new EvalResult(*this));
     }
 

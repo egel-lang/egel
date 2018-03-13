@@ -143,7 +143,7 @@ public:
         : VMObjectResult(d.machine(), d.symbol(), d._result, d._exception) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectResult(*this));
     }
 

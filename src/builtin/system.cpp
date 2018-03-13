@@ -648,7 +648,7 @@ public:
     }
 };
 
-extern "C" std::vector<VMObjectPtr> builtin_system(VM* vm) {
+std::vector<VMObjectPtr> builtin_system(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     // throw combinator

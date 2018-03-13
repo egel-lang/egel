@@ -429,7 +429,7 @@ public:
         : AstExprCombinator(c.position(), c.path(), c.combinator()) {
     }
 
-    AstPtr clone() const {
+    AstPtr clone() const override {
         return AstPtr(new AstExprCombinator(*this));
     }
 
@@ -451,13 +451,13 @@ public:
         return str;
     }
 
-    uint_t approximate_length(uint_t indent) const {
+    uint_t approximate_length(uint_t indent) const override {
         uint_t l = indent;
         l += to_text().length();
         return l;
     }
 
-    void render(std::ostream& os, uint_t indent) const {
+    void render(std::ostream& os, uint_t indent) const override {
         os << to_text();
     }
 

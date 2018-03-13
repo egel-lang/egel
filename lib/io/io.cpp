@@ -34,7 +34,7 @@ public:
         return VMObjectPtr(new ChannelValue(*this));
     }
 
-    int compare(const VMObjectPtr& o) {
+    int compare(const VMObjectPtr& o) override {
         auto v = (std::static_pointer_cast<ChannelValue>(o))->value();
         if (_value < v) return -1;
         else if (v < _value) return 1;
@@ -478,11 +478,11 @@ public:
 // channel. This works only for regular files. On files of other
 // kinds, the result is meaningless.
 
-extern "C" std::vector<UnicodeString> egel_imports() {
+std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
 }
 
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
+std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(VMObjectData(vm, "IO", "channel").clone());

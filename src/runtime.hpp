@@ -237,7 +237,7 @@ public:
         : VMObjectInteger(l.value()) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectInteger(*this));
     }
 
@@ -280,7 +280,7 @@ public:
         : VMObjectFloat(l.value()) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectFloat(*this));
     }
 
@@ -324,7 +324,7 @@ public:
         : VMObjectChar(l.value()) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectChar(*this));
     }
 
@@ -374,7 +374,7 @@ public:
         : VMObjectText(l.value()) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectText(*this));
     }
 
@@ -431,7 +431,7 @@ public:
         : VMObjectPointer(l.value()) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectPointer(*this));
     }
 
@@ -474,7 +474,7 @@ public:
         : VMObjectArray(l.value()) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         if (size() == 1) {
             return get(0);
         } else {
@@ -631,7 +631,7 @@ public:
         return _machine;
     }
 
-    symbol_t symbol() const {
+    symbol_t symbol() const override {
         return _symbol;
     }
 
@@ -712,7 +712,7 @@ public:
         return _machine;
     }
 
-    symbol_t symbol() const {
+    symbol_t symbol() const override {
         return _symbol;
     }
 
@@ -1119,7 +1119,7 @@ public:
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
-    VMObjectPtr clone() const { \
+    VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
 
@@ -1201,7 +1201,7 @@ public:
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
-    VMObjectPtr clone() const { \
+    VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
 
@@ -1284,7 +1284,7 @@ public:
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
-    VMObjectPtr clone() const { \
+    VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
 
@@ -1368,7 +1368,7 @@ public:
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
-    VMObjectPtr clone() const { \
+    VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
 
@@ -1443,7 +1443,7 @@ public:
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
-    VMObjectPtr clone() const { \
+    VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
 
@@ -1531,7 +1531,7 @@ public:
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
-    VMObjectPtr clone() const { \
+    VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
 
@@ -1618,7 +1618,7 @@ public:
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
-    VMObjectPtr clone() const { \
+    VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
 

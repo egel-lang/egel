@@ -694,7 +694,7 @@ public:
     }
 };
 
-extern "C" std::vector<VMObjectPtr> builtin_math(VM* vm) {
+std::vector<VMObjectPtr> builtin_math(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Euler(vm).clone());

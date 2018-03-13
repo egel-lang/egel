@@ -28,7 +28,7 @@ public:
         : VMObjectThreadResult(d.machine(), d.symbol(), d._tuple, d._pos) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectThreadResult(*this));
     }
 
@@ -56,7 +56,7 @@ public:
         : VMObjectThreadException(d.machine(), d.symbol(), d._tuple, d._pos) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr clone() const override {
         return VMObjectPtr(new VMObjectThreadException(*this));
     }
 
@@ -124,7 +124,7 @@ public:
     }
 };
 
-extern "C" std::vector<VMObjectPtr> builtin_thread(VM* vm) {
+std::vector<VMObjectPtr> builtin_thread(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(VMObjectData(vm, "System", "thread").clone());

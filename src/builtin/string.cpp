@@ -520,7 +520,7 @@ public:
     }
 };
 
-extern "C" std::vector<VMObjectPtr> builtin_string(VM* vm) {
+std::vector<VMObjectPtr> builtin_string(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(StringEq(vm).clone());
