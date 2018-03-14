@@ -294,6 +294,8 @@ public:
 
     void render(std::ostream& os) const override {
         os.precision(EGEL_FLOAT_PRECISION);
+        //os.setf(std::ios::fixed, std::ios::floatfield);
+        os.setf(std::ios::showpoint);
         os << value();
     }
 
