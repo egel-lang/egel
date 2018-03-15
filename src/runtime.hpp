@@ -25,7 +25,7 @@
 #define PANIC(s)    { std::cerr << s << std::endl; exit(1); }
 #endif
 
-#define EGEL_FLOAT_PRECISION 17 // XXX: dbl::maxdigit doesn't seem to be defined on my system?
+#define EGEL_FLOAT_PRECISION 16 // XXX: dbl::maxdigit doesn't seem to be defined on my system?
 
 // libicu doesn't provide escaping..
 
