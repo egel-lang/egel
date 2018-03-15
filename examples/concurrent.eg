@@ -1,0 +1,15 @@
+/**
+ * Rosetta Code example Concurrent Programming.
+ *
+ * See: http://rosettacode.org
+ */
+import "prelude.eg"
+import "io.ego"
+
+using System
+using IO
+
+def main = 
+    let _ = par (par [_ -> print "enjoy\n"] 
+                    [_ -> print "rosetta\n"]) 
+                [_ -> print "code\n"] in nop
