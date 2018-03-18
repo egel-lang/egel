@@ -2,14 +2,14 @@ namespace List (
     using System
 
     def concat =
-        [ nil, YY   -> YY
-        | cons X XX, YY -> cons X (concat XX YY) ]
+        [ nil YY   -> YY
+        | (cons X XX) YY -> cons X (concat XX YY) ]
 
     def ++ = concat
 
     def map =
-        [ F, nil -> nil
-        | F, cons X XX -> cons (F X) (map F XX) ]
+        [ F nil -> nil
+        | F (cons X XX) -> cons (F X) (map F XX) ]
 )
 
 using System

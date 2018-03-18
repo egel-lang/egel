@@ -3,8 +3,8 @@ namespace FacTail (
     using System
 
     def factail =
-        [ 0, ACC -> ACC
-        | N, ACC -> factail (N-1) (N*ACC) ]
+        [ 0 ACC -> ACC
+        | N ACC -> factail (N - 1) (N*ACC) ]
 
     def fac =
         [ N -> factail N 1 ]

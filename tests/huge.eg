@@ -13,8 +13,8 @@ namespace Test (
     data nil, cons
 
     def concat =
-        [ nil, YY       -> YY
-        | cons X XX, YY -> cons X (concat XX YY) ]
+        [ nil YY         -> YY
+        | (cons X XX) YY -> cons X (concat XX YY) ]
 
     def double = [ X -> concat X X ]
 
@@ -24,7 +24,7 @@ namespace Test (
 
     def len =
         [ nil -> 0
-        | cons X XX -> 1 + (len XX) ]
+        | (cons X XX) -> 1 + (len XX) ]
 )
 
 using Test

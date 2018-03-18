@@ -3,11 +3,11 @@ namespace List (
 
     def len =
         [ nil -> 0
-        | cons X XX -> 1 + (len XX) ]
+        | (cons X XX) -> 1 + (len XX) ]
 
     def block =
         [ 0 -> nil
-        | N -> cons (N-1) (block (N-1)) ]
+        | N -> cons (N-1) (block (N - 1)) ]
 )
 
 using System

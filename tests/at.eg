@@ -1,6 +1,6 @@
 using System
 
-def @ = [ F, G, X -> F (G X) ]
+def @ = [ F G X -> F (G X) ]
 
 def plus1 = [ X -> X + 1 ]
 

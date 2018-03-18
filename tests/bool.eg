@@ -6,13 +6,13 @@ namespace Test (
         [ true -> false | _ -> true ]
 
     def and = 
-        [ true, true -> true | _, _ -> false ]
+        [ true true -> true | _ _ -> false ]
 
     def or = 
-        [ false, false -> false | _, _ -> true ]
+        [ false false -> false | _ _ -> true ]
 
     def nand = 
-        [ B0, B1 -> not (and B0 B1) ]
+        [ B0 B1 -> not (and B0 B1) ]
 
 )
 
