@@ -8,7 +8,7 @@ namespace Test (
     using System
 
     def sum = 
-        [ X, Y  -> sum (X + Y) 
+        [ X Y  -> sum (X + Y) 
         | X -> X ]         
 )
 

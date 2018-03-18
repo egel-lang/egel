@@ -11,7 +11,7 @@ using List
 using Math
 
 def swap =
-    [ I, J, XX -> insert I (nth J XX) (insert J (nth I XX) XX) ]
+    [ (I J) XX -> insert I (nth J XX) (insert J (nth I XX) XX) ]
 
 def shuffle =
     [ XX ->

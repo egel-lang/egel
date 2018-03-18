@@ -12,22 +12,22 @@ import "prelude.eg"
 
 using System
 
-object place X Y (
+class place X Y (
     data row, X
     data column, Y
 
     def move =
-        [ SELF, X, Y ->
+        [ SELF X Y ->
             let Z = set SELF row X in
                 set SELF column Y ]
 )
 
-object box W H extends place W 3 with (
+class box W H extends place W 3 with (
     data width, W
     data height, H
 
     def resize =
-        [ SELF, W, H ->
+        [ SELF W H ->
              let _ = set SELF width W in
                 set SELF height H ]
 

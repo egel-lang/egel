@@ -17,9 +17,9 @@
 
 namespace Test (
 
-    def f = [ X, Y -> X ]
+    def f = [ X Y -> X ]
 
-    def g = [ f X -> f X X ]
+    def g = [ (f X) -> f X X ]
 
 )
 

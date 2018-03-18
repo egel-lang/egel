@@ -14,7 +14,7 @@ import "prelude.eg"
 namespace Test (
     using System
 
-    def swap = [ X Y -> Y X ]
+    def swap = [ (X Y) -> Y X ]
 
     def swap2 = swap @ swap
 )

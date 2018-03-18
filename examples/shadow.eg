@@ -12,8 +12,8 @@ namespace OO (
     )
 
     def + =
-        [ X:object, Y -> (get plus X) X Y
-        | X, Y        -> X System.+ Y ]
+        [ X:object Y -> (get plus X) X Y
+        | X Y        -> X System.+ Y ]
 
 )
 
@@ -25,7 +25,7 @@ class c RE IM (
     data im, IM
 
     def plus =
-        [ THIS, THAT ->
+        [ THIS THAT ->
             c ((get re THIS) System.+ (get re THAT))
                 ((get im THIS) System.+ (get im THAT)) ]
 

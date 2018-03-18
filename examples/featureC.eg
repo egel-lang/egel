@@ -10,8 +10,8 @@ namespace Test (
     using System
 
     def add = 
-        [ X, Y  -> X + Y 
-        | X     -> X + 1 ]
+        [ X Y  -> X + Y 
+        | X    -> X + 1 ]
 )
 
 using Test

@@ -8,7 +8,7 @@ namespace Test (
     using System
 
     def f = 
-        [ X, Y  -> f (X, Y) // combine two arguments, recurse
+        [ X Y  -> f (X, Y) // combine two arguments, recurse
         | X -> X ]          // if only one argument, return that
 )
 

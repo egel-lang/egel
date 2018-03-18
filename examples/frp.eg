@@ -12,10 +12,10 @@ def ones = [ X -> (1, ones) ]
 def plus = [ X -> (1+X, plus) ]
 
 // compose two generators sequentially
-def seq = [ F, G, X -> [ (X0, F0) -> [ (Y0, G0) -> (Y0, seq F0 G0) ] (G X0) ] (F X) ]
+def seq = [ F G X -> [ (X0, F0) -> [ (Y0, G0) -> (Y0, seq F0 G0) ] (G X0) ] (F X) ]
 
 // compose two generators parallel
-def par = [ F, G, (X,Y) -> [ (X0, F0) -> [ (Y0, G0) -> ((X0,Y0), par F0 G0) ] (G Y) ] (F X) ]
+def par = [ F G (X,Y) -> [ (X0, F0) -> [ (Y0, G0) -> ((X0,Y0), par F0 G0) ] (G Y) ] (F X) ]
 
 // test it
 def main = seq ones plus "dummy"

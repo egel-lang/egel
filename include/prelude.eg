@@ -39,7 +39,7 @@ namespace List (
 
     def length =
         [ nil -> 0
-        | cons X XX -> 1 + (length XX) ]
+        | (cons X XX) -> 1 + (length XX) ]
 
     def foldl =
         [ F Z nil -> Z
@@ -50,10 +50,10 @@ namespace List (
         | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
     def head =
-        [ cons X XX -> X ]
+        [ (cons X XX) -> X ]
 
     def tail =
-        [ cons X XX -> XX ]
+        [ (cons X XX) -> XX ]
 
     def ++ =
         [ nil YY -> YY
