@@ -269,7 +269,7 @@ public:
             } else if (is_variable()) {
                 e = parse_variable();
             } else {
-                throw ErrorSyntactical(position(), "pattern expected");
+                throw ErrorSyntactical(position(), "0pattern expected");
             }
             if (tag() == TOKEN_COLON) {
                 Position p = position();
@@ -281,7 +281,7 @@ public:
             }
             break;
         }
-        throw ErrorSyntactical(position(), "pattern expected");
+        throw ErrorSyntactical(position(), "1pattern expected");
     }
 
     AstPtr parse_pattern_primaries() {
@@ -300,7 +300,7 @@ public:
                 return q;
             }
         } else {
-            throw ErrorSyntactical(position(), "pattern expected");
+            throw ErrorSyntactical(position(), "2pattern expected");
         }
     }
 
@@ -350,13 +350,13 @@ public:
         if (is_pattern_primary()) {
             return parse_pattern_primary();
         } else {
-            throw ErrorSyntactical(p, "pattern expected");
+            throw ErrorSyntactical(p, "3pattern expected");
         }
     }
 
     AstPtrs parse_patterns() {
         AstPtrs pp = AstPtrs();
-        while (tag() != TOKEN_ARROW) {
+        while (is_pattern_primary()) {
             AstPtr p = parse_pattern();
             pp.push_back(p);
         }
