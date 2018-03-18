@@ -13,18 +13,18 @@ namespace System (
         | X     -> true ]
 
     def @ =
-        [ F, G, X -> F (G X) ]
+        [ F G X -> F (G X) ]
 
-    def flip = [ F, X, Y -> F Y X ]
+    def flip = [ F X Y -> F Y X ]
 
-    def uncurry = [ F, (X,Y) -> F X Y ]
+    def uncurry = [ F (X,Y) -> F X Y ]
 
     def fst = [ (X,Y) -> X ]
 
     def snd = [ (X,Y) -> Y ]
 
     def @@ =
-        [ SELF, NAME -> (get NAME SELF) SELF ]
+        [ SELF NAME -> (get NAME SELF) SELF ]
 
 )
 
@@ -42,12 +42,12 @@ namespace List (
         | cons X XX -> 1 + (length XX) ]
 
     def foldl =
-        [ F, Z, nil -> Z
-        | F, Z, cons X XX -> foldl F (F Z X) XX ]
+        [ F Z nil -> Z
+        | F Z (cons X XX) -> foldl F (F Z X) XX ]
 
     def foldr =
-        [ F, Z, nil -> Z
-        | F, Z, cons X XX -> F X (foldr F Z XX) ]
+        [ F Z nil -> Z
+        | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
     def head =
         [ cons X XX -> X ]
@@ -56,12 +56,12 @@ namespace List (
         [ cons X XX -> XX ]
 
     def ++ =
-        [ nil, YY -> YY
-        | cons X XX, YY -> cons X (XX ++ YY) ]
+        [ nil YY -> YY
+        | (cons X XX) YY -> cons X (XX ++ YY) ]
 
     def map =
-        [ F, nil -> nil
-        | F, cons X XX -> let Y = F X in cons Y (map F XX) ]
+        [ F nil -> nil
+        | F (cons X XX) -> let Y = F X in cons Y (map F XX) ]
 
     def reverse = 
        foldl (flip cons) nil
@@ -71,51 +71,51 @@ namespace List (
         | N -> cons (N - 1) (block (N - 1)) ]
 
     def nth =
-        [ 0, cons X XX -> X
-        | N, cons X XX -> nth (N - 1) XX ]
+        [ 0 (cons X XX) -> X
+        | N (cons X XX) -> nth (N - 1) XX ]
 
     def insert =
-        [ 0, X, cons Y YY -> cons X YY
-        | I, X, cons Y YY -> cons Y (insert (I - 1) X YY) ]
+        [ 0 X (cons Y YY) -> cons X YY
+        | I X (cons Y YY) -> cons Y (insert (I - 1) X YY) ]
 
     def take =
-        [ 0, XX -> nil
-        | N, cons X XX -> cons X (take (N - 1) XX) ]
+        [ 0 XX -> nil
+        | N (cons X XX) -> cons X (take (N - 1) XX) ]
 
     def drop =
-        [ 0, XX -> XX
-        | N, cons X XX -> drop (N - 1) XX ]
+        [ 0 XX -> XX
+        | N (cons X XX) -> drop (N - 1) XX ]
 
     def fromto =
-        [ X, Y -> 
+        [ X Y -> 
             if X <= Y then cons X (fromto (X+1) Y)
             else nil ]
 
     def filter =
-        [ P, nil -> nil
-        | P, cons X XX -> if P X then cons X (filter P XX) 
+        [ P nil -> nil
+        | P (cons X XX) -> if P X then cons X (filter P XX) 
                                  else filter P XX ]
 
     def flatten =
         [ nil                   -> nil
-        | cons nil YY           -> flatten YY
-        | cons (cons X XX) YY   -> cons X (flatten (cons XX YY)) ]
+        | (cons nil YY)         -> flatten YY
+        | (cons (cons X XX) YY) -> cons X (flatten (cons XX YY)) ]
 
     def zip =
-        [ cons X XX, cons Y YY  -> cons (X,Y) (zip XX YY)
-        | XX, YY                -> nil ]
+        [ (cons X XX) (cons Y YY)  -> cons (X,Y) (zip XX YY)
+        | XX YY                    -> nil ]
 
     def zipwith =
-        [ Z, cons X XX, cons Y YY -> cons (Z X Y) (zipwith Z XX YY)
-        | Z, XX, YY               -> nil ]
+        [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) (zipwith Z XX YY)
+        | Z XX YY               -> nil ]
 
     def any =
-        [ P, nil        -> false
-        | P, cons B BB  -> if P B then true else any P BB ]
+        [ P nil          -> false
+        | P (cons B BB)  -> if P B then true else any P BB ]
 
     def all =
-        [ P, nil        -> true
-        | P, cons B BB  -> if P B then all P BB else false ]
+        [ P nil          -> true
+        | P (cons B BB)  -> if P B then all P BB else false ]
 
     def elem =
         [ X -> any ((==) X) ]
@@ -124,8 +124,8 @@ namespace List (
         [ X -> all ((!=) X) ]
 
     def insertEverywhere =
-        [ X, nil -> {{X}}
-        | X, cons Y YY -> cons (cons X (cons Y YY)) (map (cons Y) (insertEverywhere X YY)) ]
+        [ X nil -> {{X}}
+        | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insertEverywhere X YY)) ]
 
     def concatMap =
         [ F -> foldr ((++) @ F) nil ]
