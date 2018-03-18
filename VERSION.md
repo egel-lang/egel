@@ -3,6 +3,12 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.0.2 -- i was wrong
+
++ CHANGED TO STANDARD SYNTAX
++ provisional fix to always print a dot in floats
++ fixed a scope bug in let
+
 ## v0.0.1 -- heap of dung
 
 + added hexadecimal numbers and binary operators
