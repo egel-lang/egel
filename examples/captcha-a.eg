@@ -20,4 +20,7 @@ def captcha = [ XX ->
     let XX = map fst XX in
         foldl (+) 0 XX ]
 
-def main = captcha input
+//def main = captcha input
+def main = 
+    let XX = map char2int (unpack XX) in XX
+

@@ -148,13 +148,11 @@ public:
     }
 
     //  F( (l = r; b) ) -> ( [ l -> F(b) ] F(r) )
-    AstPtr rewrite_expr_let(const Position& p, const AstPtr& l, const AstPtr& r, const AstPtr& b) override {
+    AstPtr rewrite_expr_let(const Position& p, const AstPtrs& ll, const AstPtr& r, const AstPtr& b) override {
         auto r0 = rewrite(r);
         auto b0 = rewrite(b);
 
-        AstPtrs gg;
-        gg.push_back(l);
-        auto m = AstExprMatch(p, gg, AstEmpty().clone(), b0).clone();
+        auto m = AstExprMatch(p, ll, AstEmpty().clone(), b0).clone();
 
         AstPtrs mm;
         mm.push_back(m);

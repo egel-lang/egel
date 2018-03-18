@@ -284,22 +284,23 @@ public:
         throw ErrorSyntactical(position(), "pattern expected");
     }
 
-    AstPtr parse_pattern() {
+    AstPtr parse_pattern_primaries() {
         Position p = position();
-        AstPtr e;
         if (is_pattern_primary()) {
-            e = parse_pattern_primary();
-        } 
-        if (is_pattern_primary()) {
-            AstPtrs ee = AstPtrs();
-            ee.push_back(e);
-            while (is_pattern_primary()) {
-                e = parse_pattern_primary();
-                ee.push_back(e);
+            AstPtr q = parse_pattern_primary();
+            if (is_pattern_primary()) {
+                AstPtrs qq = AstPtrs();
+                qq.push_back(q);
+                while (is_pattern_primary()) {
+                    AstPtr q = parse_pattern_primary();
+                    qq.push_back(q);
+                }
+                return AstExprApplication(p, qq).clone();
+            } else {
+                return q;
             }
-            return AstExprApplication(p, ee).clone();
         } else {
-            return e;
+            throw ErrorSyntactical(position(), "pattern expected");
         }
     }
 
@@ -307,13 +308,13 @@ public:
         if (is_enclosed_operator()) return parse_enclosed_operator();
         Position p = position();
         force_token(TOKEN_LPAREN);
-        AstPtr q = parse_pattern();
+        AstPtr q = parse_pattern_primaries();
         if (tag() == TOKEN_COMMA) {
             AstPtrs qq = AstPtrs();
             qq.push_back(q);
             while (tag() == TOKEN_COMMA) {
                 skip();
-                AstPtr q = parse_pattern();
+                AstPtr q = parse_pattern_primaries();
                 qq.push_back(q);
             }
             force_token(TOKEN_RPAREN);
@@ -341,6 +342,15 @@ public:
             }
             force_token(TOKEN_RCURLY);
             return AstExprList(p, qq).clone();
+        }
+    }
+
+    AstPtr parse_pattern() {
+        Position p = position();
+        if (is_pattern_primary()) {
+            return parse_pattern_primary();
+        } else {
+            throw ErrorSyntactical(p, "pattern expected");
         }
     }
 
@@ -469,12 +479,12 @@ public:
     AstPtr parse_let() {
         Position p = position();
         force_token(TOKEN_LET);
-        AstPtr e0 = parse_pattern();
+        AstPtrs ee = parse_patterns();
         force_token(TOKEN_EQ);
         AstPtr e1 = parse_expression();
         force_token(TOKEN_IN);
         AstPtr e2 = parse_expression();
-        return AstExprLet(p, e0, e1, e2).clone();
+        return AstExprLet(p, ee, e1, e2).clone();
     }
 
     bool is_primary() {

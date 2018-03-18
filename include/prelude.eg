@@ -1,12 +1,12 @@
 namespace System (
 
     def or =
-        [ false, false -> false
-        | X, Y         -> true ]
+        [ false false -> false
+        | X Y         -> true ]
 
     def and =
-        [ true, true    -> true
-        | X, Y          -> false ]
+        [ true true    -> true
+        | X Y          -> false ]
 
     def not =
         [ true  -> false

@@ -295,10 +295,10 @@ public:
         return AstExprMatch(p, mm0, g0, e0).clone();
     }
 
-    AstPtr rewrite_expr_let(const Position& p, const AstPtr& lhs, const AstPtr& rhs, const AstPtr& body) override {
+    AstPtr rewrite_expr_let(const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) override {
         enter_range();
         set_identify_state(STATE_IDENTIFY_PATTERN);
-        auto lhs0 = rewrite(lhs);
+        auto lhs0 = rewrites(lhs);
         set_identify_state(STATE_IDENTIFY_USE);
         auto rhs0 = rewrite(rhs);
         set_identify_state(STATE_IDENTIFY_USE);

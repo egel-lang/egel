@@ -94,8 +94,8 @@ public:
         return AstExprBlock(p, alts0).clone();
     }
 
-    virtual AstPtr transform_expr_let(const AstPtr& a, const Position& p, const AstPtr& lhs, const AstPtr& rhs, const AstPtr& body) {
-        auto lhs0 = transform(lhs);
+    virtual AstPtr transform_expr_let(const AstPtr& a, const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) {
+        auto lhs0 = transforms(lhs);
         auto rhs0 = transform(rhs);
         auto body0 = transform(body);
         return AstExprLet(p, lhs0, rhs0, body0).clone();
@@ -428,8 +428,8 @@ public:
         return AstExprBlock(p, alts0).clone();
     }
 
-    virtual AstPtr rewrite_expr_let(const Position& p, const AstPtr& lhs, const AstPtr& rhs, const AstPtr& body) {
-        auto lhs0 = rewrite(lhs);
+    virtual AstPtr rewrite_expr_let(const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) {
+        auto lhs0 = rewrites(lhs);
         auto rhs0 = rewrite(rhs);
         auto body0 = rewrite(body);
         return AstExprLet(p, lhs0, rhs0, body0).clone();
@@ -740,8 +740,8 @@ public:
         visits(alts);
     }
 
-    virtual void visit_expr_let(const Position& p, const AstPtr& lhs, const AstPtr& rhs, const AstPtr& body) {
-        visit(lhs);
+    virtual void visit_expr_let(const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) {
+        visits(lhs);
         visit(rhs);
         visit(body);
     }

@@ -187,7 +187,9 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
     case AST_EXPR_LET: {
         AST_EXPR_LET_SPLIT(a0, p0, l0, r0, e0);
         AST_EXPR_LET_SPLIT(a1, p1, l1, r1, e1);
-        return compare_ast3(l0, l1, r0, r1, e0, e1);
+        c = compare_asts(l0, l1);
+        if (c != 0) return c;
+        return compare_ast2(r0, r1, e0, e1);
         break;
     }
     case AST_EXPR_TAG: {

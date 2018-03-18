@@ -1011,8 +1011,8 @@ typedef std::shared_ptr<AstExprLambda> AstExprLambdaPtr;
 
 class AstExprLet : public Ast {
 public:
-    AstExprLet(const Position &p, const AstPtr &e0, const AstPtr &e1, const AstPtr e2)
-        : Ast(AST_EXPR_LET, p), _lhs(e0), _rhs(e1), _expression(e2) {
+    AstExprLet(const Position &p, const AstPtrs &ee, const AstPtr &e1, const AstPtr e2)
+        : Ast(AST_EXPR_LET, p), _lhs(ee), _rhs(e1), _expression(e2) {
     }
 
     AstExprLet(const AstExprLet& a) 
@@ -1023,7 +1023,7 @@ public:
         return AstPtr(new AstExprLet(*this));
     }
 
-    AstPtr left_hand_side() const {
+    AstPtrs left_hand_side() const {
         return _lhs;
     }
 
@@ -1038,7 +1038,11 @@ public:
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
         if (l >= line_length) return l;
-        l = left_hand_side()->approximate_length(l);
+        for (auto p: left_hand_side()) {
+            l = p->approximate_length(l);
+            l += 2;
+            if (l >= line_length) return l;
+        }
         l += 3;
         if (l >= line_length) return l;
         l = right_hand_side()->approximate_length(l);
@@ -1050,10 +1054,16 @@ public:
 
     void render(std::ostream& os, uint_t indent) const {
         if (approximate_length(indent) <= line_length) {
-            os << "(let " << left_hand_side() << " = " << right_hand_side() << " in " << expression() << ")";
+            os << "(let ";
+            for (auto p: left_hand_side()) {
+                os << p << " ";
+            };
+            os << " = " << right_hand_side() << " in " << expression() << ")";
         } else {
             os << "(let ";
-            left_hand_side()->render(os, indent);
+            for (auto p: left_hand_side()) {
+                p->render(os, indent);
+            };
             os << " =";
             skip_line(os, indent+4);
             right_hand_side()->render(os, indent+4);
@@ -1065,7 +1075,7 @@ public:
     }
 
 private:
-    AstPtr  _lhs;
+    AstPtrs _lhs;
     AstPtr  _rhs;
     AstPtr  _expression;
 };

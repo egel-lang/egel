@@ -51,10 +51,11 @@ public:
         return AstExprMatch(p, mm, g0, e0).clone();
     }
 
-    AstPtr rewrite_expr_let(const Position& p, const AstPtr& lhs, const AstPtr& rhs, const AstPtr& body) override {
-        // XXX: rewrite this once that the lhs may be a pattern
-        if (occurs(_source, lhs)) {
-            return AstExprLet(p, lhs, rhs, body).clone();
+    AstPtr rewrite_expr_let(const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) override {
+        for (auto m:lhs) {
+            if (occurs(_source, m)) {
+                return AstExprLet(p, lhs, rhs, body).clone();
+            }
         }
         auto rhs0 = rewrite(rhs);
         auto body0 = rewrite(body);
@@ -127,11 +128,11 @@ public:
         set_state(FREEVARS_INSERT);
     }
 
-    void visit_expr_let(const Position& p, const AstPtr& lhs, const AstPtr& rhs, const AstPtr& body) override {
+    void visit_expr_let(const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) override {
         visit(rhs); // XXX: shouldn't introduce freevars?
         visit(body);
         set_state(FREEVARS_REMOVE);
-        visit(lhs);
+        visits(lhs);
         set_state(FREEVARS_INSERT);
     }
 
