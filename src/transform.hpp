@@ -114,6 +114,12 @@ public:
         return AstExprIf(p, i0, t0, e0).clone();
     }
 
+    virtual AstPtr transform_expr_statement(const AstPtr& a, const Position& p, const AstPtr& l, const AstPtr& r) {
+        auto r0 = transform(r);
+        auto l0 = transform(l);
+        return AstExprStatement(p, r0, l0).clone();
+    }
+
     virtual AstPtr transform_expr_try(const AstPtr& a, const Position& p, const AstPtr& t, const AstPtr& c) {
         auto t0 = transform(t);
         auto c0 = transform(c);
@@ -274,6 +280,11 @@ public:
         case AST_EXPR_IF: {
             AST_EXPR_IF_SPLIT(a, p, i, t, e);
             return transform_expr_if(a, p, i, t, e);
+            break;
+        }
+        case AST_EXPR_STATEMENT: {
+            AST_EXPR_STATEMENT_SPLIT(a, p, r, l);
+            return transform_expr_statement(a, p, r, l);
             break;
         }
         case AST_EXPR_TRY: {
@@ -448,6 +459,12 @@ public:
         return AstExprIf(p, i0, t0, e0).clone();
     }
 
+    virtual AstPtr rewrite_expr_statement(const Position& p, const AstPtr& r, const AstPtr& l) {
+        auto r0 = rewrite(r);
+        auto l0 = rewrite(l);
+        return AstExprStatement(p, r0, l0).clone();
+    }
+
     virtual AstPtr rewrite_expr_try(const Position& p, const AstPtr& t, const AstPtr& c) {
         auto t0 = rewrite(t);
         auto c0 = rewrite(c);
@@ -610,6 +627,11 @@ public:
             return rewrite_expr_if(p, i, t, e);
             break;
         }
+        case AST_EXPR_STATEMENT: {
+            AST_EXPR_STATEMENT_SPLIT(a, p, r, l);
+            return rewrite_expr_statement(p, r, l);
+            break;
+        }
         case AST_EXPR_TRY: {
             AST_EXPR_TRY_SPLIT(a, p, t, c);
             return rewrite_expr_try(p, t, c);
@@ -755,6 +777,11 @@ public:
         visit(i);
         visit(t);
         visit(e);
+    }
+
+    virtual void visit_expr_statement(const Position& p, const AstPtr& r, const AstPtr& l) {
+        visit(r);
+        visit(l);
     }
 
     virtual void visit_expr_try(const Position& p, const AstPtr& t, const AstPtr& c) {
@@ -906,6 +933,11 @@ public:
         case AST_EXPR_IF: {
             AST_EXPR_IF_SPLIT(a, p, i, t, e);
             return visit_expr_if(p, i, t, e);
+            break;
+        }
+        case AST_EXPR_STATEMENT: {
+            AST_EXPR_STATEMENT_SPLIT(a, p, r, l);
+            return visit_expr_statement(p, r, l);
             break;
         }
         case AST_EXPR_TRY: {

@@ -3,6 +3,8 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.0.2 -- why bother?
+
 ## v0.0.1 -- heap of dung
 
 + CHANGED TO STANDARD PATTERN MATCHING SYNTAX

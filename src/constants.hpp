@@ -163,6 +163,8 @@
 
 #define STRING_SYSTEM_FAIL      "System.fail"
 
+#define STRING_K                "k"
+
     // main section
 
 #define STRING_MAIN             "main"

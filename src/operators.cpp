@@ -112,7 +112,7 @@ bool    operator_is_infix(const UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
-        return true;
+        return false;
     } else {
         attr_t f = operator_char_attributes(i);
         return (f & INFIX) == INFIX;
@@ -123,7 +123,7 @@ bool    operator_is_prefix(const UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
-        return true;
+        return false;
     } else {
         attr_t f = operator_char_attributes(i);
         return (f & PREFIX) == PREFIX;

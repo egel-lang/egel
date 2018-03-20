@@ -204,6 +204,12 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         return compare_ast3(i0, i1, t0, t1, e0, e1);
         break;
     }
+    case AST_EXPR_STATEMENT: {
+        AST_EXPR_STATEMENT_SPLIT(a0, p0, l0, r0);
+        AST_EXPR_STATEMENT_SPLIT(a1, p1, l1, r1);
+        return compare_ast2(r0, r1, l0, l1);
+        break;
+    }
     case AST_EXPR_TRY: {
         AST_EXPR_TRY_SPLIT(a0, p0, t0, c0);
         AST_EXPR_TRY_SPLIT(a1, p1, t1, c1);

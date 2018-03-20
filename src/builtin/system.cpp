@@ -15,6 +15,15 @@
  * Basic operators, conversions, and some other.
  **/
 
+class K: public Dyadic {
+public:
+    DYADIC_PREAMBLE(K, "System", "k");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        return arg0;
+    }
+};
+
 class MonMin: public Monadic {
 public:
     MONADIC_PREAMBLE(MonMin, "System", "!-");
@@ -653,6 +662,9 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
 
     // throw combinator
     oo.push_back(VMThrow(vm).clone());
+
+    // K combinator
+    oo.push_back(K(vm).clone());
 
     // basic constants
     oo.push_back(VMObjectData(vm, "System", "int").clone());

@@ -269,7 +269,7 @@ public:
             } else if (is_variable()) {
                 e = parse_variable();
             } else {
-                throw ErrorSyntactical(position(), "0pattern expected");
+                throw ErrorSyntactical(position(), "pattern expected");
             }
             if (tag() == TOKEN_COLON) {
                 Position p = position();
@@ -281,7 +281,7 @@ public:
             }
             break;
         }
-        throw ErrorSyntactical(position(), "1pattern expected");
+        throw ErrorSyntactical(position(), "pattern expected");
     }
 
     AstPtr parse_pattern_primaries() {
@@ -300,7 +300,7 @@ public:
                 return q;
             }
         } else {
-            throw ErrorSyntactical(position(), "2pattern expected");
+            throw ErrorSyntactical(position(), "pattern expected");
         }
     }
 
@@ -350,7 +350,7 @@ public:
         if (is_pattern_primary()) {
             return parse_pattern_primary();
         } else {
-            throw ErrorSyntactical(p, "3pattern expected");
+            throw ErrorSyntactical(p, "pattern expected");
         }
     }
 
@@ -634,7 +634,15 @@ public:
     }
 
     AstPtr parse_expression() {
-        return parse_arithmetic_expression();
+        Position p = position();
+        AstPtr e0 = parse_arithmetic_expression();
+        if (tag() == TOKEN_SEMICOLON) {
+            skip();
+            AstPtr e1 = parse_expression();
+            return AstExprStatement(p, e0, e1).clone();
+        } else {
+            return e0;
+        }
     }
 
     // class fields

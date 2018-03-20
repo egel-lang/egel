@@ -147,7 +147,7 @@ public:
         return rewrite(a);
     }
 
-    //  F( (l = r; b) ) -> ( [ l -> F(b) ] F(r) )
+    //  F( (let l = r in b) ) -> ( [ l -> F(b) ] F(r) )
     AstPtr rewrite_expr_let(const Position& p, const AstPtrs& ll, const AstPtr& r, const AstPtr& b) override {
         auto r0 = rewrite(r);
         auto b0 = rewrite(b);
@@ -165,6 +165,33 @@ public:
 AstPtr pass_let(const AstPtr& a) {
     RewriteLet let;
     return let.let(a);
+}
+
+class RewriteStatement: public Rewrite {
+public:
+    AstPtr stat(const AstPtr& a) {
+        return rewrite(a);
+    }
+
+    //  F( r; l ) ) -> ( (System.k) F(l) F(r) )
+    AstPtr rewrite_expr_statement(const Position& p, const AstPtr& r, const AstPtr& l) override {
+        auto r0 = rewrite(r);
+        auto l0 = rewrite(l);
+
+        auto k = AstExprCombinator(p, STRING_SYSTEM, STRING_K).clone();
+
+        AstPtrs ee;
+        ee.push_back(k);
+        ee.push_back(l0);
+        ee.push_back(r0);
+
+        return AstExprApplication(p, ee).clone();
+    }
+};
+
+AstPtr pass_statement(const AstPtr& a) {
+    RewriteStatement stat;
+    return stat.stat(a);
 }
 
 class RewriteObject: public Rewrite {
@@ -252,6 +279,7 @@ AstPtr desugar(const AstPtr& a) {
     a0 = pass_tuple(a0);
     a0 = pass_list(a0);
     a0 = pass_let(a0);
+    a0 = pass_statement(a0);
     a0 = pass_lambda(a0);
     a0 = pass_object(a0);
     a0 = pass_throw(a0);

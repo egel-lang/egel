@@ -40,6 +40,7 @@ typedef enum {
     AST_EXPR_LAMBDA,        // desugared
     AST_EXPR_LET,           // desugared
     AST_EXPR_IF,            // desugared
+    AST_EXPR_STATEMENT,     // desugared
     // directives
     AST_DIRECT_IMPORT,      // flattened out
     AST_DIRECT_USING,       // flattened out
@@ -1285,6 +1286,65 @@ typedef std::shared_ptr<AstExprIf> AstExprIfPtr;
     auto i   = _##a->if0(); \
     auto t   = _##a->then0(); \
     auto e   = _##a->else0(); 
+
+class AstExprStatement : public Ast {
+public:
+    AstExprStatement(const Position &p, const AstPtr &e0, const AstPtr &e1)
+        : Ast(AST_EXPR_STATEMENT, p), _lhs(e0), _rhs(e1) {
+    }
+
+    AstExprStatement(const AstExprStatement& a) 
+        : AstExprStatement(a.position(), a.lhs(), a.rhs()) {
+    }
+
+    AstPtr clone() const {
+        return AstPtr(new AstExprStatement(*this));
+    }
+
+    AstPtr lhs() const {
+        return _lhs;
+    }
+
+    AstPtr rhs() const {
+        return _rhs;
+    }
+
+    uint_t approximate_length(uint_t indent) const {
+        uint_t l = indent;
+        l += 3;
+        l = lhs()->approximate_length(l);
+        l += 2;
+        if (l >= line_length) return l;
+        l = rhs()->approximate_length(l);
+        return l;
+    }
+
+    void render(std::ostream& os, uint_t indent) const {
+        if (approximate_length(indent) <= line_length) {
+            lhs()->render(os, indent);
+            os << "; ";
+            rhs()->render(os, indent);
+        } else {
+            skip_line(os, indent+4);
+            lhs()->render(os, indent+4);
+            os << ";";
+            skip_line(os, indent);
+            rhs()->render(os, indent+4);
+        }
+    }
+
+private:
+    AstPtr  _lhs;
+    AstPtr  _rhs;
+};
+
+typedef std::shared_ptr<AstExprStatement> AstExprStatementPtr;
+#define AST_EXPR_STATEMENT_CAST(a)    std::static_pointer_cast<AstExprStatement>(a)
+#define AST_EXPR_STATEMENT_SPLIT(a, p, l, r) \
+    auto _##a  = AST_EXPR_STATEMENT_CAST(a); \
+    auto p   = _##a->position(); \
+    auto l   = _##a->lhs(); \
+    auto r   = _##a->rhs(); 
 
 // declarations
 class AstDeclNamespace : public Ast {

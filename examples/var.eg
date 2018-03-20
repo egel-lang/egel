@@ -19,6 +19,9 @@
  * as mutable records which can be passed around; i.e., are not bound 
  * to any stack frame or lexical scope.
  *
+ * Egel rewrites a DAG. Mutability is a manner of creating cycles,
+ * so this is considered an unsafe extension.
+ *
  * Variables are not thread safe.
  */
 
