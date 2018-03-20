@@ -5,6 +5,8 @@ A list of all major changes between versions of the interpreter.
 
 ## v0.0.2 -- why bother?
 
++ added semicolons as syntactic sugar to the language
+
 ## v0.0.1 -- heap of dung
 
 + CHANGED TO STANDARD PATTERN MATCHING SYNTAX
