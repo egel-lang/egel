@@ -446,7 +446,7 @@ public:
         UnicodeString str = "";
         for (auto& p:_path) {
             str += p;
-            str += '.';
+            str += STRING_COLON;
         }
         str += _combinator;
         return str;
@@ -508,7 +508,7 @@ public:
         UnicodeString str = "";
         for (auto& p:_path) {
             str += p;
-            str += '.';
+            str += STRING_COLON;
         }
         str += _combinator;
         return str;
@@ -1378,7 +1378,7 @@ public:
         os << "namespace ";
         bool first = true;
         for (auto& n : name()) {
-            if (!first) os << '.';
+            if (!first) os << STRING_COLON;
             first = false;
             os << n;
         }
@@ -1755,7 +1755,7 @@ public:
         os << "using ";
         bool first = true;
         for (auto& u:using0()) {
-            if (!first) os << '.';
+            if (!first) os << STRING_COLON;
             first = false;
             os << u;
         }

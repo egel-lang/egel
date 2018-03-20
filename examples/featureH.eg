@@ -16,7 +16,7 @@ namespace Test (
 
     def swap = [ (X Y) -> Y X ]
 
-    def swap2 = swap @ swap
+    def swap2 = swap . swap
 )
 
 using System

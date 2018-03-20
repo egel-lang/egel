@@ -156,7 +156,8 @@ bool is_operator(UChar32 c) {
         (c == (UChar32) '/')    ||
         (c == (UChar32) '?')    ||
         (c == (UChar32) '<')    ||
-        (c == (UChar32) '>')  );
+        (c == (UChar32) '>')    ||
+        (c == (UChar32) '.')  );
 }
 
 typedef struct {
@@ -297,9 +298,6 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
 
         if (is_hash(c)) {
             token_writer.push(Token(TOKEN_HASH, p, c));
-            reader.skip();
-        } else if (is_dot(c)) {
-            token_writer.push(Token(TOKEN_DOT, p, c));
             reader.skip();
         } else if (is_comma(c)) {
             token_writer.push(Token(TOKEN_COMMA, p, c));

@@ -4,7 +4,7 @@
 
 import "io.ego"
 
-def yes = let X = IO.print "y\n" in yes
+def yes = let X = IO:print "y\n" in yes
 
 def main = yes
 

@@ -48,7 +48,7 @@ def updateboard =
             foldr [(X Y 0) BOARD -> BOARD | (X Y _) BOARD -> insert X Y BOARD ] empty YY ]
 
 def blinker =
-    (insert 1 2) @ (insert 2 2) @ (insert 3 2)
+    (insert 1 2) . (insert 2 2) . (insert 3 2)
 
 def main = 
     let GEN0 = blinker empty in

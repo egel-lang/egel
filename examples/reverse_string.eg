@@ -6,4 +6,4 @@ import "prelude.eg"
 using System
 using List
 
-def main = (pack @ reverse @ unpack) "asdf"
+def main = (pack . reverse . unpack) "asdf"

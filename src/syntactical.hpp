@@ -89,7 +89,7 @@ public:
 
     bool is_combinator() {
         uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DOT)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
             i += 2;
         }
         return look(i).tag() == TOKEN_LOWERCASE;
@@ -97,7 +97,7 @@ public:
 
     bool is_operator() {
         uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DOT)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
             i += 2;
         }
         return look(i).tag() == TOKEN_OPERATOR;
@@ -110,7 +110,7 @@ public:
     UnicodeString peek_operator() {
         // (uppercase '.')* operator
         uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DOT)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
             i += 2;
         }
         if (look(i).tag() == TOKEN_OPERATOR) {
@@ -125,7 +125,7 @@ public:
         uint_t i = 0;
         if (tag(i) != TOKEN_LPAREN) return false;
         i++;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DOT)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
             i += 2;
         }
         if (tag(i) != TOKEN_OPERATOR) return false;
@@ -154,7 +154,7 @@ public:
         Position p = position();
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_DOT) ) {
+                (tag(1) == TOKEN_COLON) ) {
             UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
@@ -169,7 +169,7 @@ public:
         Position p = position();
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_DOT) ) {
+                (tag(1) == TOKEN_COLON) ) {
             UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
@@ -184,7 +184,7 @@ public:
         Position p = position();
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_DOT) ) {
+                (tag(1) == TOKEN_COLON) ) {
             UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
@@ -208,7 +208,7 @@ public:
         UnicodeString s = look().text();
         ss.push_back(s);
         skip();
-        while ( (tag(0) == TOKEN_DOT) &&
+        while ( (tag(0) == TOKEN_COLON) &&
                 (tag(1) == TOKEN_UPPERCASE) ) {
             skip();
             UnicodeString s = look().text();

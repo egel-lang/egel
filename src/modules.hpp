@@ -22,13 +22,13 @@
 // convenience
 inline UnicodeString first(const UnicodeString& s) {
     auto d = s;
-    auto i = d.indexOf('.');
+    auto i = d.indexOf(':');
     return d.remove(i, d.length());
 }
 
 inline UnicodeString second(const UnicodeString& s) {
     auto d = s;
-    auto i = d.indexOf('.');
+    auto i = d.indexOf(':');
     return d.remove(0, i+1);
 }
 

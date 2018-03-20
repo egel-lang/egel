@@ -53,14 +53,14 @@ public:
     }
 
     symbol_t enter(const UnicodeString& n0, const UnicodeString& n1) {
-        UnicodeString n = n0 + '.' + n1;
+        UnicodeString n = n0 + STRING_COLON + n1;
         return enter(n);
     }
 
     symbol_t enter(const UnicodeStrings& nn, const UnicodeString& n) {
         UnicodeString s;
         for (auto& n0: nn) {
-            s += n0 + '.';
+            s += n0 + STRING_COLON;
         }
         s += n;
         return enter(s);
@@ -72,7 +72,7 @@ public:
 
     void render(std::ostream& os) {
         for (uint_t t = 0; t < _to.size(); t++) {
-            os << std::setw(8) << t << ":" << _to[t] << std::endl;
+            os << std::setw(8) << t << "=" << _to[t] << std::endl;
         }
     }
 

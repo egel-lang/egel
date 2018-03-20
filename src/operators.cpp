@@ -35,6 +35,7 @@ static operator_t operators[] = {
     {'$', "do", LEFT_ASSOC|  INFIX},
     {'&', "am", RIGHT_ASSOC| INFIX},
     {'|', "br", LEFT_ASSOC|  INFIX},
+    {'.', "dt", LEFT_ASSOC|  INFIX},
 };
 
 int     operator_char_entry(const UChar32& c) {

@@ -12,7 +12,7 @@ namespace System (
         [ true  -> false
         | X     -> true ]
 
-    def @ =
+    def . =
         [ F G X -> F (G X) ]
 
     def flip = [ F X Y -> F Y X ]
@@ -128,8 +128,8 @@ namespace List (
         | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insertEverywhere X YY)) ]
 
     def concatMap =
-        [ F -> foldr ((++) @ F) nil ]
+        [ F -> foldr ((++) . F) nil ]
 
     def permutations =
-        foldr (concatMap @ insertEverywhere) {{}}
+        foldr (concatMap . insertEverywhere) {{}}
 )
