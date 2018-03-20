@@ -1,0 +1,12 @@
+/**
+ * Basic test of foldl for performance testing.
+ *
+ * Egel isn't very fast. This takes around 16 seconds on my
+ * laptop. But it works.
+ */
+import "prelude.eg"
+
+using System
+using List
+
+def main = foldl (+) 0 (fromto 0 1000000)
