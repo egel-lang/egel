@@ -59,7 +59,7 @@ public:
     UnicodeString qualified(const UnicodeStrings& nn, const UnicodeString n) {
         UnicodeString s;
         for (auto& n: nn) {
-            s += n + '.';
+            s += n + STRING_COLON;
         }
         s += n;
         return s;
