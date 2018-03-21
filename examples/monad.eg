@@ -1,0 +1,22 @@
+/**
+ * A small state monad example.
+ */
+import "prelude.eg"
+
+namespace Calculate (
+
+    def return = [ A S -> (A,S) ]
+
+    def >>== = [ F G S0 -> [(A,S1) -> G A S1] (F S0) ]
+
+    def put = [ X S -> (System:nop, X) ]
+
+    def run = [ F S -> [(A,S) -> S] (F S) ]
+
+)
+
+using Calculate
+using System
+
+def main = 
+    run (return 1 >>== \A -> put (A+3)) 0
