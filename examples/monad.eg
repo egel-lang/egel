@@ -7,7 +7,7 @@ namespace Calculate (
 
     def return = [ A S -> (A,S) ]
 
-    def << = [ F G S0 -> [(A,S1) -> G A S1] (F S0) ]
+    def >>== = [ F G S0 -> [(A,S1) -> G A S1] (F S0) ]
 
     def run = [ F S -> [(A,M) -> A] (F S) ]
 
@@ -17,4 +17,4 @@ using Calculate
 using System
 
 def main = 
-    run (return 1 << (\A -> return (A+3))) 0
+    run (return 1 >>== (\A -> return (A+3))) 0
