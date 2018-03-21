@@ -271,7 +271,7 @@ public:
             } else {
                 throw ErrorSyntactical(position(), "pattern expected");
             }
-            if (tag() == TOKEN_COLON) {
+            if (tag() == TOKEN_DCOLON) {
                 Position p = position();
                 skip();
                 auto c = parse_combinator();

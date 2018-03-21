@@ -373,7 +373,7 @@ public:
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
         l = expression()->approximate_length(l);
-        l += 1;
+        l += 2;
         if (l >= line_length) return l;
         l = tag()->approximate_length(l);
         return l;
@@ -381,12 +381,12 @@ public:
 
     void render(std::ostream& os, uint_t indent) const {
         if (approximate_length(indent) <= line_length) {
-            os << "(" << expression() << ":" << tag() << ")";
+            os << "(" << expression() << STRING_DCOLON << tag() << ")";
         } else {
             os << "(";
             expression()->render(os, indent+1);
             skip_line(os, indent+1);
-            os << ":";
+            os << STRING_DCOLON;
             tag()->render(os, indent+1);
             os << ")";
             skip_line(os, indent);

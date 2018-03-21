@@ -49,7 +49,7 @@ class circle R (
     def area =
         [ SELF -> 
             let RR = tofloat(get radius SELF) in
-                R*R*Math.pi ]
+                R*R*Math:pi ]
 )
     
 def main =

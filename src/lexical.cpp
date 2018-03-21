@@ -181,6 +181,7 @@ static token_text_t token_text_table[] {
     { TOKEN_LCURLY, STRING_LCURLY, },
     { TOKEN_RCURLY, STRING_RCURLY, },
     { TOKEN_COLON, STRING_COLON, },
+    { TOKEN_DCOLON, STRING_DCOLON, },
     { TOKEN_SEMICOLON, STRING_SEMICOLON, },
     { TOKEN_HASH, STRING_HASH, },
     { TOKEN_BAR, STRING_BAR, },
@@ -321,8 +322,14 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             token_writer.push(Token(TOKEN_RCURLY, p, c));
             reader.skip();
         } else if (is_colon(c)) {
-            token_writer.push(Token(TOKEN_COLON, p, c));
             reader.skip();
+            c = reader.look();
+            if (is_colon(c)) {
+                reader.skip();
+                token_writer.push(Token(TOKEN_DCOLON, p, STRING_DCOLON));
+            } else {
+                token_writer.push(Token(TOKEN_COLON, p, c));
+            }
         } else if (is_semicolon(c)) {
             token_writer.push(Token(TOKEN_SEMICOLON, p, c));
             reader.skip();

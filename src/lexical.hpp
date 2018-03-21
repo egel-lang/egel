@@ -24,6 +24,7 @@ typedef enum {
     TOKEN_LCURLY,
     TOKEN_RCURLY,
     TOKEN_COLON,
+    TOKEN_DCOLON,
     TOKEN_SEMICOLON,
     TOKEN_HASH,
     TOKEN_BAR,
