@@ -371,7 +371,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
                     reader.skip();
                     if (reader.end() || is_eol(reader.look())) goto handle_string_error;
                     c = reader.look();
-                    if (!is_escaped(c)) goto handle_char_error;
+                    if (!is_escaped(c)) goto handle_string_error;
                 };
                 str += c;
                 reader.skip();
