@@ -10,6 +10,15 @@
 #include <math.h>
 
 /**
+ * For portable overflow detection use the portable snippets header file.
+ * I hope I can once discard this but that depends on C++ compiler implementors.
+ *
+ * Note: portable snippets generates a warning on Fedora, GCC 7.2.1., so I don't
+ * use it for now.
+ */
+// #include "portable-snippets/safe-math/safe-math.h"
+
+/**
  * Egel's system routines.
  *
  * Basic operators, conversions, and some other.
@@ -31,7 +40,12 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
             auto i = VM_OBJECT_INTEGER_VALUE(arg0);
-            return VMObjectInteger(-i).clone();
+            vm_int_t res;
+            if (__builtin_smull_overflow(-1, i, &res)) {
+                return nullptr;
+            } else {
+                return VMObjectInteger(res).clone();
+            }
         } else if (arg0->tag() == VM_OBJECT_FLOAT) {
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return VMObjectFloat(-f).clone();
@@ -50,7 +64,12 @@ public:
              (arg1->tag() == VM_OBJECT_INTEGER) ) {
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
-            return VMObjectInteger(i0+i1).clone();
+            vm_int_t res;
+            if (__builtin_saddl_overflow(i0, i1, &res)) {
+                return nullptr;
+            } else {
+                return VMObjectInteger(res).clone();
+            }
         } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
              (arg1->tag() == VM_OBJECT_FLOAT) ) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
@@ -76,7 +95,12 @@ public:
              (arg1->tag() == VM_OBJECT_INTEGER) ) {
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
-            return VMObjectInteger(i0-i1).clone();
+            vm_int_t res;
+            if (__builtin_ssubl_overflow(i0, i1, &res)) {
+                return nullptr;
+            } else {
+                return VMObjectInteger(res).clone();
+            }
         } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
              (arg1->tag() == VM_OBJECT_FLOAT) ) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
@@ -97,7 +121,12 @@ public:
              (arg1->tag() == VM_OBJECT_INTEGER) ) {
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
-            return VMObjectInteger(i0*i1).clone();
+            vm_int_t res;
+            if (__builtin_smull_overflow(i0, i1, &res)) {
+                return nullptr;
+            } else {
+                return VMObjectInteger(res).clone();
+            }
         } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
              (arg1->tag() == VM_OBJECT_FLOAT) ) {
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
@@ -119,7 +148,7 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             if (i1 == 0) {
-                throw machine()->get_data_string("System", "divzero");
+                return nullptr;
             }
             return VMObjectInteger(i0/i1).clone();
         } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
@@ -147,7 +176,7 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             if (i1 == 0) {
-                throw machine()->get_data_string("System", "divzero");
+                return nullptr;
             }
             return VMObjectInteger(i0%i1).clone();
         } else {

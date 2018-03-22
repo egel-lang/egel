@@ -5,6 +5,7 @@ A list of all major changes between versions of the interpreter.
 
 ## v0.0.2 -- why bother?
 
++ check for overflow on simple math operators
 + changed from dot to colon syntax to free up '.' as a combinator
 + added semicolons as syntactic sugar to the language
 
