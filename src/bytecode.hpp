@@ -619,11 +619,11 @@ public:
 
                 auto z0 = reg[z];
                 if (z0->tag() == VM_OBJECT_ARRAY) {
-                    auto zz = VM_OBJECT_ARRAY_VALUE(z0);
-                    flag = (( (int) y - (int) x + 1) <= (int) zz.size() - (int) i);
+                    auto zz = VM_OBJECT_ARRAY_CAST(z0);
+                    flag = (( (int) y - (int) x + 1) <= (int) zz->size() - (int) i);
                     if (flag) {
                         for (reg_t n = x; n <= y; n++) {
-                            reg[n] = zz[n-x+i];
+                            reg[n] = zz->get(n-x+i);
                         }
                     } else {
                         // XXX: insert prefetch code here once
@@ -642,11 +642,11 @@ public:
 
                 auto z0 = reg[z];
                 if (z0->tag() == VM_OBJECT_ARRAY) {
-                    auto zz = VM_OBJECT_ARRAY_VALUE(z0);
-                    flag = (( (int) y - (int) x + 1) == (int) zz.size() );
+                    auto zz = VM_OBJECT_ARRAY_CAST(z0);
+                    flag = (( (int) y - (int) x + 1) == (int) zz->size() );
                     if (flag) {
                         for (reg_t n = x; n <= y; n++) {
-                            reg[n] = zz[n-x];
+                            reg[n] = zz->get(n-x);
                         }
                     } else {
                         // XXX: insert prefetch code here once
@@ -663,11 +663,12 @@ public:
                 reg_t       y = FETCH_reg(_code,pc);
                 reg_t       z = FETCH_reg(_code,pc);
 
-                VMObjectPtrs xx;
+                auto xx0 = VMObjectArray::create();
+                auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
                 for (reg_t n = y; n <= z; n++) {
-                    xx.push_back(reg[n]);
+                    xx1->push_back(reg[n]);
                 }
-                reg[x] = VMObjectArray::create(xx);
+                reg[x] = xx1;
 
                 }
                 break;
@@ -684,10 +685,13 @@ public:
                     (z0->tag() == VM_OBJECT_ARRAY) ) {
                     auto yy = VM_OBJECT_ARRAY_VALUE(y0);
                     auto zz = VM_OBJECT_ARRAY_VALUE(z0);
-                    VMObjectPtrs xx;
-                    for (auto& y1:yy) xx.push_back(y1);
-                    for (int n = (int) i; n < (int) zz.size(); n++) xx.push_back(zz[n]);
-                    reg[x] = VMObjectArray::create(xx);
+
+                    auto xx0 = VMObjectArray::create();
+                    auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
+
+                    for (auto& y1:yy) xx1->push_back(y1);
+                    for (int n = (int) i; n < (int) zz.size(); n++) xx1->push_back(zz[n]);
+                    reg[x] = xx1;
                 } else {
                     PANIC("two arrays expected");
                     return nullptr;

@@ -468,6 +468,10 @@ typedef std::shared_ptr<VMObjectPointer> VMObjectPointerPtr;
 
 class VMObjectArray : public VMObject {
 public:
+    VMObjectArray()
+        : VMObject(VM_OBJECT_ARRAY, VM_OBJECT_FLAG_INTERNAL), _value(VMObjectPtrs()) {
+    };
+
     VMObjectArray(const VMObjectPtrs &v)
         : VMObject(VM_OBJECT_ARRAY, VM_OBJECT_FLAG_INTERNAL), _value(v) {
     };
@@ -482,6 +486,10 @@ public:
         } else {
             return VMObjectPtr(new VMObjectArray(*this));
         }
+    }
+
+    static VMObjectPtr create() {
+        return VMObjectPtr(new VMObjectArray());
     }
 
     static VMObjectPtr create(const VMObjectPtrs& pp) {
@@ -506,6 +514,10 @@ public:
 
     void set(uint i, const VMObjectPtr& o) {
         _value[i] = o;
+    }
+
+    void push_back(const VMObjectPtr& o) {
+        _value.push_back(o);
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override;
