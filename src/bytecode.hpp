@@ -494,12 +494,40 @@ private:
 #define FETCH_idx(c,pc)     FETCH_i16(c, pc)
 #define FETCH_lbl(c,pc)   FETCH_i32(c, pc)
 
-//#define FAST_REGISTERS //XXX: turned of for now
-#ifdef FAST_REGISTERS
-typedef VMObjectPtr Registers[128];
-#else
-typedef std::map<reg_t, VMObjectPtr>    Registers;
-#endif
+class Registers {
+public:
+    Registers() {
+        //_fast.reserve(MAX_REGISTERS);
+    }
+
+    VMObjectPtr get(const reg_t n) {
+        if (n < MAX_REGISTERS) {
+            return _fast[n];
+        } else {
+            return _fallback[n];
+        }
+    }
+
+    void set(const reg_t n, VMObjectPtr o) {
+        if (n < MAX_REGISTERS) {
+            _fast[n] = o;
+        } else {
+            _fallback[n] = o;
+        }
+    }
+
+    VMObjectPtr operator[](const reg_t n) {
+        return get(n);
+    }
+
+private:
+    static const int MAX_REGISTERS = 64;
+
+    //std::vector<VMObjectPtr>        _fast;
+    VMObjectPtr                     _fast[MAX_REGISTERS];
+    std::map<reg_t, VMObjectPtr>    _fallback;
+};
+
 
 class VMObjectBytecode: public VMObjectCombinator {
 public:
@@ -543,7 +571,7 @@ public:
         Registers  reg;
 
         uint32_t pc = 0;
-        reg[0] = thunk;
+        reg.set(0, thunk);
         bool flag = false;
 
         EqualVMObjectPtr equals;
@@ -554,11 +582,9 @@ public:
             std::cout << "eval: ";
             render(std::cout);
             std::cout << std::endl;
-            for (auto r:reg) {
-                if (r.second != nullptr) {
-                    std::cout << "reg[" << r.first << "] = " << r.second << std::endl;
-                } else {
-                    std::cout << "reg[" << r.first << "] = nullptr" << std::endl;
+            for (reg_t n = 0; n < 128; n++) {
+                if (reg[n] != nullptr) {
+                    std::cout << n << "\t" << reg[n] << std::endl;
                 }
             }
 #endif
@@ -568,7 +594,7 @@ public:
                 //  x           x := null
                 reg_t       x = FETCH_reg(_code,pc);
 
-                reg[x] = 0;
+                reg.set(x, nullptr);
 
                 }
                 break;
@@ -577,7 +603,7 @@ public:
                 reg_t       x = FETCH_reg(_code,pc);
                 reg_t       y = FETCH_reg(_code,pc);
 
-                reg[x] = reg[y];
+                reg.set(x, reg[y]);
 
                 }
                 break;
@@ -586,7 +612,7 @@ public:
                 reg_t       x = FETCH_reg(_code,pc);
                 int32_t     i32 = FETCH_i32(_code,pc);
 
-                reg[x] = machine()->get_data(i32);
+                reg.set(x, machine()->get_data(i32));
 
                 }
                 break;
@@ -623,7 +649,7 @@ public:
                     flag = (( (int) y - (int) x + 1) <= (int) zz->size() - (int) i);
                     if (flag) {
                         for (reg_t n = x; n <= y; n++) {
-                            reg[n] = zz->get(n-x+i);
+                            reg.set(n, zz->get(n-x+i));
                         }
                     } else {
                         // XXX: insert prefetch code here once
@@ -646,7 +672,7 @@ public:
                     flag = (( (int) y - (int) x + 1) == (int) zz->size() );
                     if (flag) {
                         for (reg_t n = x; n <= y; n++) {
-                            reg[n] = zz->get(n-x);
+                            reg.set(n, zz->get(n-x));
                         }
                     } else {
                         // XXX: insert prefetch code here once
@@ -668,7 +694,7 @@ public:
                 for (reg_t n = y; n <= z; n++) {
                     xx1->push_back(reg[n]);
                 }
-                reg[x] = xx1;
+                reg.set(x, xx1);
 
                 }
                 break;
@@ -691,7 +717,7 @@ public:
 
                     for (auto& y1:yy) xx1->push_back(y1);
                     for (int n = (int) i; n < (int) zz.size(); n++) xx1->push_back(zz[n]);
-                    reg[x] = xx1;
+                    reg.set(x, xx1);
                 } else {
                     PANIC("two arrays expected");
                     return nullptr;

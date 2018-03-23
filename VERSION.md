@@ -5,6 +5,8 @@ A list of all major changes between versions of the interpreter.
 
 ## v0.0.3 -- it may all break down yet
 
++ small performance tweaks
+
 ## v0.0.2 -- why bother?
 
 + check for overflow on simple math operators
