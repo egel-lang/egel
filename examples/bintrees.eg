@@ -1,0 +1,60 @@
+/**
+ * The binary trees benchmark.
+ *
+ * The Computer Language Benchmarks Game
+ * http://benchmarksgame.alioth.debian.org/
+ */
+
+import "prelude.eg"
+import "io.ego"
+
+using System
+using List
+using IO
+
+data node, leaf
+
+def make =
+    [ 0 -> leaf
+    | N -> node (make (N - 1)) (make (N - 1)) ]
+
+def check =
+    [ (node L R) -> 1 + (check L) + (check R)
+    | T          -> 1 ]
+
+def minN = 4
+
+def max =
+    [ X Y -> if X < Y then Y else X ]
+
+def make_stretch =
+    [ MAXN ->
+        let STRETCHN = MAXN + 1 in
+        let C = check (make STRETCHN) in
+            print "stretch tree of depth " STRETCHN "\t check: " C "\n" ]
+
+def sum_trees =
+    [ D 0 T -> T
+    | D N T -> let A = check (make D) in sum_trees D (N - 1) (T + A) ]
+
+def make_trees =
+    [ D M ->
+        let N = 1 << (M - D + minN) in
+        if D <= M then cons (N, D, sum_trees D N 0) (make_trees (D+2) M)
+        else nil ]
+
+def print_trees =
+    [ (cons (N, D, CHECK) TT) ->
+        print N "\ttrees of depth " D "\t check: " CHECK "\n";
+        print_trees TT
+    | _ -> nop ]
+
+def main =
+    let N = [ X::text -> toint X | X -> throw "bintrees <arg>" ] (arg 2) in
+    let MAXN     = max (minN + 2) N in
+    make_stretch MAXN;
+    let TT = make_trees minN MAXN in
+    print_trees TT;
+    let LONG = make MAXN in
+        print "long lived tree of depth " MAXN "\t check: " (check LONG) "\n" 
+
