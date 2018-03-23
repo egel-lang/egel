@@ -69,5 +69,5 @@ $(SHARED): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	-rm -f $(OBJECTS) $(EXECUTABLE) $(ARCHIVE) $(SHARED) gmon.out massive.out out
+	-rm -f $(OBJECTS) $(EXECUTABLE) $(ARCHIVE) $(SHARED) gmon.out massive.out out core.*
 

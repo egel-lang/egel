@@ -563,14 +563,14 @@ typedef std::shared_ptr<VMObjectArray> VMObjectArrayPtr;
 
 // here we can safely declare reduce
 inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr& thunk) const {
-    auto tt    = VM_OBJECT_ARRAY_VALUE(thunk);
+    auto tt    = VM_OBJECT_ARRAY_CAST(thunk);
     // optimize a bit for the case it's either a sole literal or an applied literal
-    if (tt.size() == 5) {
-        auto rt    = tt[0];
-        auto rti   = tt[1];
-        auto k     = tt[2];
+    if (tt->size() == 5) {
+        auto rt    = tt->get(0);
+        auto rti   = tt->get(1);
+        auto k     = tt->get(2);
         // auto exc   = tt[3];
-        auto c     = tt[4];
+        auto c     = tt->get(4);
 
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
         auto rta   = VM_OBJECT_ARRAY_CAST(rt);
@@ -578,13 +578,13 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr& thunk) const {
 
         return k;
     } else {
-        auto rt    = tt[0];
-        auto rti   = tt[1];
-        auto k     = tt[2];
+        auto rt    = tt->get(0);
+        auto rti   = tt->get(1);
+        auto k     = tt->get(2);
 
         VMObjectPtrs vv;
-        for (uint n = 4; n < tt.size(); n++) {
-            vv.push_back(tt[n]);
+        for (uint n = 4; (int) n < tt->size(); n++) {
+            vv.push_back(tt->get(n));
         }
 
         auto r = VMObjectArray(vv).clone();
