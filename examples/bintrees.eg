@@ -1,8 +1,32 @@
 /**
- * The binary trees benchmark.
+ * The binary trees benchmark. Allocate lots and
+ * lots of small and big binary trees.
+ *
+ * This 'standard' micro benchmark runs in about
+ * one and half hour on my laptop. That in
+ * comparison to OCaml and GHC which run in 
+ * about 10 and 25 seconds, respectively. But
+ * with employing four cores.
  *
  * The Computer Language Benchmarks Game
  * http://benchmarksgame.alioth.debian.org/
+ *
+ *  user$ time egel bintrees.eg 21
+ *  stretch tree of depth 22	 check: 8388607
+ *  2097152	trees of depth 4	 check: 65011712
+ *  524288	trees of depth 6	 check: 66584576
+ *  131072	trees of depth 8	 check: 66977792
+ *  32768	trees of depth 10	 check: 67076096
+ *  8192	trees of depth 12	 check: 67100672
+ *  2048	trees of depth 14	 check: 67106816
+ *  512	trees of depth 16	 check: 67108352
+ *  128	trees of depth 18	 check: 67108736
+ *  32	trees of depth 20	 check: 67108832
+ *  long lived tree of depth 21	 check: 4194303
+ *
+ *  real	91m12.224s
+ *  user	90m59.900s
+ *  sys	0m0.797s
  */
 
 import "prelude.eg"
@@ -40,7 +64,10 @@ def sum_trees =
 def make_trees =
     [ D M ->
         let N = 1 << (M - D + minN) in
-        if D <= M then cons (N, D, sum_trees D N 0) (make_trees (D+2) M)
+        if D <= M then 
+            // let _ = print "testing: " N " trees of depth " D "\n" in
+            let CHECK = sum_trees D N 0 in
+            cons (N, D, CHECK) (make_trees (D+2) M)
         else nil ]
 
 def print_trees =
@@ -52,9 +79,9 @@ def print_trees =
 def main =
     let N = [ X::text -> toint X | X -> throw "bintrees <arg>" ] (arg 2) in
     let MAXN     = max (minN + 2) N in
-    make_stretch MAXN;
+    let _ = make_stretch MAXN in
     let TT = make_trees minN MAXN in
-    print_trees TT;
+    let _ = print_trees TT in
     let LONG = make MAXN in
         print "long lived tree of depth " MAXN "\t check: " (check LONG) "\n" 
 
