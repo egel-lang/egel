@@ -13,9 +13,9 @@
 
 shopt -s nullglob
 
-BIN_DIR=/usr/bin
-LIB_DIR=/usr/lib
-INC_DIR=/usr/include
+BIN_DIR=/usr/local/bin
+LIB_DIR=/usr/local/lib
+INC_DIR=/usr/local/include
 INC_EGEL=$INC_DIR/egel
 LIB_EGEL=$LIB_DIR/egel
 
