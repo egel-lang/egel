@@ -32,6 +32,14 @@ public:
         }
     }
 
+    /**
+     * For corner cases this transform relies on a bit of `magic`.
+     *
+     * [ X -> [ X -> X | -> X ] 0 ] 1 rewrites to
+     * [ X -> [ X X -> X | X -> X ] 0 ] 1 ] which is only correct
+     * since the backend will correctly choose the second `X` in 
+     * the inner lambda.
+     */
     // XXX: if FV = 0 do nothing
     AstPtr rewrite_expr_block(const Position& p, const AstPtrs& mm) override {
         // rewrite the matches

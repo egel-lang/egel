@@ -834,7 +834,7 @@ public:
                 if (first) {
                     first = false;
                 } else {
-                    os << ", ";
+                    os << " ";
                 }
                 p->render(os, indent);
             }
@@ -849,7 +849,7 @@ public:
                 if (first) {
                     first = false;
                 } else {
-                    os << ", ";
+                    os << " ";
                 }
                 p->render(os, indent);
             }
