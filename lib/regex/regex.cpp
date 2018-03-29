@@ -9,6 +9,30 @@
 
 #define REGEX_STRING    "Regex"
 
+typedef std::vector<UnicodeString> UnicodeStrings;
+
+// convenience function
+VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
+    auto _nil = vm->get_data_string("System", "nil");
+
+    auto _cons = vm->get_data_string("System", "cons");
+
+    VMObjectPtr result = _nil;
+
+    for (int n = ss.size() - 1; n > 0; n--) {
+        VMObjectPtrs vv;
+        vv.push_back(_cons);
+        vv.push_back(VMObjectText(ss[n]).clone());
+        vv.push_back(result);
+
+        result = VMObjectArray(vv).clone();
+    }
+
+    return result;
+}
+
+
+// regex class holds a pattern
 class Regex;
 typedef std::shared_ptr<Regex>  RegexPtr;
 
@@ -58,7 +82,7 @@ public:
     }
     
     RegexMatcher* matcher(const UnicodeString& s) {
-        UErrorCode  error_code;
+        UErrorCode  error_code = U_ZERO_ERROR;
         auto m = _pattern->matcher(s, error_code);
         if (U_FAILURE(error_code)) {
             return nullptr; // XXX: do I leak here?
@@ -98,7 +122,7 @@ public:
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             UParseError parse_error;
-            UErrorCode  error_code;
+            UErrorCode  error_code = U_ZERO_ERROR;
             RegexPattern* p = icu::RegexPattern::compile(s0, parse_error, error_code);
             if (U_FAILURE(error_code)) {
                 return nullptr;
@@ -126,12 +150,15 @@ public:
 
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            UErrorCode  error_code;
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+
             auto r = pat->matcher(s0);
             if (r == nullptr) return nullptr;
+
+            UErrorCode  error_code = U_ZERO_ERROR;
             auto b = r->matches(error_code);
             delete r;
+
             if (b) {
                return _true;
             } else {
@@ -144,9 +171,133 @@ public:
 };
 
 // Regex.split pat s0
-// Regex.match pat s0
+class Split: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Split, REGEX_STRING, "split");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+
+            auto r = pat->matcher(s0);
+            if (r == nullptr) return nullptr;
+
+            UnicodeStrings ss;
+            int32_t pos = 0;
+            int32_t start = 0;
+            int32_t end = 0;
+            while (r->find()) {
+                UErrorCode  error_code = U_ZERO_ERROR;
+                start = r->start(error_code);
+                end   = r->end(error_code);
+                
+                UnicodeString s;
+                s0.extract(pos, start-pos, s);
+                ss.push_back(s);
+
+                pos = end;
+            }
+            UnicodeString s;
+            s0.extract(pos, s.length()-pos, s);
+            delete r;
+
+            return strings_to_list(machine(), ss);
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// Regex.matches pat s0
+class Matches: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Matches, REGEX_STRING, "matches");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+
+            auto r = pat->matcher(s0);
+            if (r == nullptr) return nullptr;
+
+            UnicodeStrings ss;
+            while (r->find()) {
+                UErrorCode  error_code = U_ZERO_ERROR;
+                auto start = r->start(error_code);
+                auto end   = r->end(error_code);
+                
+                UnicodeString s;
+                s0.extract(start, end-start, s);
+                ss.push_back(s);
+            }
+            delete r;
+
+            return strings_to_list(machine(), ss);
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 // Regex.replace pat s0 s1
+class Replace: public Triadic {
+public:
+    TRIADIC_PREAMBLE(Replace, REGEX_STRING, "replace");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
+
+            auto r = pat->matcher(s0);
+            if (r == nullptr) return nullptr;
+
+            UErrorCode  error_code = U_ZERO_ERROR;
+            auto s2 = r->replaceFirst(s1, error_code);
+            delete r;
+
+            if (U_FAILURE(error_code)) {
+                return nullptr;
+            } else {
+                return VMObjectText(s2).clone();
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 // Regex.replaceAll pat s0 s1
+class ReplaceAll: public Triadic {
+public:
+    TRIADIC_PREAMBLE(ReplaceAll, REGEX_STRING, "replaceAll");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
+
+            auto r = pat->matcher(s0);
+            if (r == nullptr) return nullptr;
+
+            UErrorCode  error_code = U_ZERO_ERROR;
+            auto s2 = r->replaceAll(s1, error_code);
+            delete r;
+
+            if (U_FAILURE(error_code)) {
+                return nullptr;
+            } else {
+                return VMObjectText(s2).clone();
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
 
 extern "C" std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
