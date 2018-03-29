@@ -19,7 +19,7 @@ VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
 
     VMObjectPtr result = _nil;
 
-    for (int n = ss.size() - 1; n > 0; n--) {
+    for (int n = ss.size() - 1; n >= 0; n--) {
         VMObjectPtrs vv;
         vv.push_back(_cons);
         vv.push_back(VMObjectText(ss[n]).clone());
@@ -46,7 +46,8 @@ public:
     }
 
     ~Regex() {
-        delete _pattern;
+        // XXX: leak for now
+        // delete _pattern; 
     }
 
     VMObjectPtr clone() const override {
@@ -123,7 +124,8 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             UParseError parse_error;
             UErrorCode  error_code = U_ZERO_ERROR;
-            RegexPattern* p = icu::RegexPattern::compile(s0, parse_error, error_code);
+            UnicodeString pat = s0;
+            RegexPattern* p = icu::RegexPattern::compile(pat, parse_error, error_code);
             if (U_FAILURE(error_code)) {
                 return nullptr;
             } else {
@@ -199,7 +201,8 @@ public:
                 pos = end;
             }
             UnicodeString s;
-            s0.extract(pos, s.length()-pos, s);
+            s0.extract(pos, s0.length()-pos, s);
+            ss.push_back(s);
             delete r;
 
             return strings_to_list(machine(), ss);
@@ -307,6 +310,11 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Compile(vm).clone());
+    oo.push_back(Match(vm).clone());
+    oo.push_back(Split(vm).clone());
+    oo.push_back(Matches(vm).clone());
+    oo.push_back(Replace(vm).clone());
+    oo.push_back(ReplaceAll(vm).clone());
 
     return oo;
 

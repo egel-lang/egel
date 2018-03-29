@@ -28,6 +28,9 @@
 #define EXECUTABLE_AUTHORS \
     "M.C.A. (Marco) Devillers"
 
+#define INCLUDE_PATH \
+    "/usr/local/lib/egel"
+
 typedef enum {
     OPTION_NONE,
     OPTION_FILE,
@@ -182,7 +185,7 @@ int main(int argc, char *argv[]) {
     if (istr != nullptr) {
         oo->add_include_path(UnicodeString(istr, -1, US_INV));
     } else {
-        oo->add_include_path("/usr/lib/egel/");
+        oo->add_include_path(INCLUDE_PATH);
     }
 
     // check for flags

@@ -28,6 +28,10 @@ function build {
     cd lib/random
     gmake O3
     cd ../..
+
+    cd lib/regex
+    gmake O3
+    cd ../..
 }
 
 function clean {
@@ -40,6 +44,10 @@ function clean {
     cd ../..
 
     cd lib/random
+    gmake clean
+    cd ../..
+
+    cd lib/regex
     gmake clean
     cd ../..
 }
