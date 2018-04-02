@@ -220,7 +220,7 @@ public:
     }
 
     virtual void write(vm_float_t f) override {
-        _channel.precision(17); // XXX: hacked precision constant
+        _channel.precision(16); // XXX: hacked precision constant
         _channel << f;
     }
 

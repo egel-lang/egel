@@ -405,10 +405,8 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             try {
-                std::string line;
-                std::getline(std::cin, line);
-                UnicodeString str(line.c_str());
-                return create_text(str);
+                auto s = chan->read_line();
+                return create_text(s);
             } catch (std::exception e) {
                 return nullptr;
             }

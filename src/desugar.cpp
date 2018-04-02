@@ -120,6 +120,32 @@ AstPtr pass_list(const AstPtr& a) {
     return list.list(a);
 }
 
+class RewriteStatement: public Rewrite {
+public:
+    AstPtr stat(const AstPtr& a) {
+        return rewrite(a);
+    }
+
+    //  F( r; l ) ) -> ( let _ = F(r) in F(l) )
+    AstPtr rewrite_expr_statement(const Position& p, const AstPtr& r, const AstPtr& l) override {
+        auto r0 = rewrite(r);
+        auto l0 = rewrite(l);
+
+        auto k = AstExprCombinator(p, STRING_SYSTEM, STRING_K).clone();
+ 
+        auto b0 = AstExprWildcard(p, "_").clone();
+        AstPtrs bb0;
+        bb0.push_back(b0);
+
+        return AstExprLet(p, bb0, r0, l0).clone();
+    }
+};
+
+AstPtr pass_statement(const AstPtr& a) {
+    RewriteStatement stat;
+    return stat.stat(a);
+}
+
 
 class RewriteLambda: public Rewrite {
 public:
@@ -165,33 +191,6 @@ public:
 AstPtr pass_let(const AstPtr& a) {
     RewriteLet let;
     return let.let(a);
-}
-
-class RewriteStatement: public Rewrite {
-public:
-    AstPtr stat(const AstPtr& a) {
-        return rewrite(a);
-    }
-
-    //  F( r; l ) ) -> ( (System.k) F(l) F(r) )
-    AstPtr rewrite_expr_statement(const Position& p, const AstPtr& r, const AstPtr& l) override {
-        auto r0 = rewrite(r);
-        auto l0 = rewrite(l);
-
-        auto k = AstExprCombinator(p, STRING_SYSTEM, STRING_K).clone();
-
-        AstPtrs ee;
-        ee.push_back(k);
-        ee.push_back(l0);
-        ee.push_back(r0);
-
-        return AstExprApplication(p, ee).clone();
-    }
-};
-
-AstPtr pass_statement(const AstPtr& a) {
-    RewriteStatement stat;
-    return stat.stat(a);
 }
 
 class RewriteObject: public Rewrite {
@@ -278,8 +277,8 @@ AstPtr desugar(const AstPtr& a) {
     a0 = pass_wildcard(a0);
     a0 = pass_tuple(a0);
     a0 = pass_list(a0);
-    a0 = pass_let(a0);
     a0 = pass_statement(a0);
+    a0 = pass_let(a0);
     a0 = pass_lambda(a0);
     a0 = pass_object(a0);
     a0 = pass_throw(a0);

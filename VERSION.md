@@ -5,7 +5,9 @@ A list of all major changes between versions of the interpreter.
 
 ## v0.0.3 -- it may all break down yet
 
++ regular expression support
 + small performance tweaks
++ got rid of lijero's K combinator solution for statements
 
 ## v0.0.2 -- why bother?
 
