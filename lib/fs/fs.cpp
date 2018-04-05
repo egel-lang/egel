@@ -13,7 +13,11 @@ namespace fs = std::experimental::filesystem;
 typedef std::vector<UnicodeString> UnicodeStrings;
 
 // convenience functions
-VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
+VMObjectPtr path_to_object(const fs::path& p) {
+    return VMObjectText(p.c_str()).clone();
+}
+
+VMObjectPtr paths_to_list(VM* vm, std::vector<fs::path> ss) {
     auto _nil = vm->get_data_string("System", "nil");
 
     auto _cons = vm->get_data_string("System", "cons");
@@ -23,17 +27,13 @@ VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
     for (int n = ss.size() - 1; n >= 0; n--) {
         VMObjectPtrs vv;
         vv.push_back(_cons);
-        vv.push_back(VMObjectText(ss[n]).clone());
+        vv.push_back(path_to_object(ss[n]));
         vv.push_back(result);
 
         result = VMObjectArray(vv).clone();
     }
 
     return result;
-}
-
-VMObjectPtr path_to_object(const fs::path& p) {
-    return VMObjectText(p.c_str()).clone();
 }
 
 fs::path object_to_path(const VMObjectPtr& o) {
@@ -1401,6 +1401,32 @@ public:
 };
 
 
+// FS.directory - lists the content of a directory
+class Directory: public Monadic {
+public:
+    MONADIC_PREAMBLE(Directory, FS_STRING, "directory");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_TEXT) {
+            try {
+                auto p0 = object_to_path(arg0);
+
+                std::vector<fs::path> ff;
+                for(auto& f: fs::directory_iterator(p0)) {
+                    ff.push_back(f);
+                }
+
+                return paths_to_list(machine(), ff);
+            } catch (const fs::filesystem_error& e) {
+                throw error_to_object(e);
+            } 
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+
 // FS.status_known - checks whether file status is known XXX
 
 extern "C" std::vector<UnicodeString> egel_imports() {
@@ -1470,6 +1496,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(IsRegularFile(vm).clone());
     oo.push_back(IsSocket(vm).clone());
     oo.push_back(IsSymlink(vm).clone());
+    oo.push_back(Directory(vm).clone());
 
     return oo;
 }
