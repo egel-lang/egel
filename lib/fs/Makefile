@@ -28,7 +28,7 @@ debug: CFLAGS+= -g
 debug: $(SOURCES) $(SHARED)
 
 $(SHARED): $(OBJECTS) 
-	$(CC) -shared $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) -shared $(LDFLAGS) $(OBJECTS) -lstdc++fs -o $@
 
 .cpp.o:
 	$(CC) -fPIC $(CFLAGS) $< -o $@
