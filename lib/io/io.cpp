@@ -407,7 +407,7 @@ public:
             try {
                 auto s = chan->read_line();
                 return create_text(s);
-            } catch (std::exception e) {
+            } catch (std::exception &e) {
                 return nullptr;
             }
         } else {

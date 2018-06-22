@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
     // initialize (rebinding exceptions need to be caught)
     try {
         mm->init(oo, &m, env);
-    } catch (Error e) {
+    } catch (Error &e) {
         std::cerr << e << std::endl;
         return (EXIT_FAILURE);
     }
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]) {
     if (fn != "") {
         try {
             eval.eval_load(fn);
-        } catch (Error e) {
+        } catch (Error &e) {
             std::cerr << e << std::endl;
             return (EXIT_FAILURE);
         }

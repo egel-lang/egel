@@ -73,7 +73,7 @@ public:
                 auto nn0 = concat(_qualifications, nn);
                 auto q = qualified(nn0, n);
                 ::declare(_spaces, nn0, n, q);
-            } catch (ErrorSemantical e) {
+            } catch (ErrorSemantical &e) {
                 throw ErrorSemantical(p, "redeclaration of " + n);
             }
             break;
@@ -83,7 +83,7 @@ public:
                 auto nn0 = concat(oo, nn);
                 auto q = qualified(nn0, n);
                 ::declare_implicit(_spaces, nn0, n, q);
-            } catch (ErrorSemantical e) {
+            } catch (ErrorSemantical &e) {
                 throw ErrorSemantical(p, "redeclaration of " + n);
             }
             break;
@@ -169,7 +169,7 @@ public:
     void declare(const Position& p, const UnicodeString& k, const UnicodeString& v) {
         try {
             ::declare(_range, k, v);
-        } catch (ErrorSemantical e) {
+        } catch (ErrorSemantical &e) {
             throw ErrorSemantical(p, "redeclaration of " + k);
         }
     }

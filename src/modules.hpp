@@ -722,7 +722,7 @@ protected:
                 m->set_options(Options().clone());//XXX check this
                 try {
                     m->load();
-                } catch (ErrorIO e) {
+                } catch (ErrorIO &e) {
                     throw ErrorIO(p, e.message());
                 }
                 _loading.push_back(m);

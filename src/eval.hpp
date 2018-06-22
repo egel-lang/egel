@@ -163,9 +163,9 @@ public:
             AST_DIRECT_IMPORT_SPLIT(a, p, s);
             try {
                 mm->load(p, unicode_strip_quotes(s));
-            } catch (ErrorIO e) {
+            } catch (ErrorIO &e) {
                 std::cerr << e << std::endl;
-            } catch (Error e) {
+            } catch (Error &e) {
                 std::cerr << e << std::endl;
             }
         }
@@ -329,7 +329,7 @@ public:
             auto in = UnicodeString::fromUTF8(StringPiece(s.c_str()));
             try {
                 eval_command(in);
-            } catch (Error e) {
+            } catch (Error &e) {
                 std::cout << e << std::endl;
             }
             std::cout << ">> ";
