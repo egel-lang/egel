@@ -1,6 +1,5 @@
-/**
- * Rosetta Code example Reverse String.
- */
+# Rosetta Code example Reverse String.
+
 import "prelude.eg"
 
 using System

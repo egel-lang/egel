@@ -298,8 +298,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
         UChar32 c = reader.look();
 
         if (is_hash(c)) {
-            token_writer.push(Token(TOKEN_HASH, p, c));
-            reader.skip();
+            while (!reader.end() && !is_eol(reader.look())) reader.skip();
         } else if (is_comma(c)) {
             token_writer.push(Token(TOKEN_COMMA, p, c));
             reader.skip();
@@ -461,19 +460,6 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             UnicodeString str = UnicodeString("");
             while (is_operator(c)) {
                 str += c;
-                if (str == "//") {
-                    while (!reader.end() && !is_eol(reader.look())) reader.skip();
-                    goto ignore;
-                }
-                if (str == "/*") {
-                    reader.skip();
-                    do {
-                        c = reader.look();
-                        reader.skip();
-                    } while (!reader.end() && !((c == '*') && (reader.look() == '/')));
-                    if ((c == '*') && (reader.look() == '/')) reader.skip();
-                    goto ignore;
-                }
                 reader.skip();
                 c = reader.look();
             };
@@ -502,8 +488,6 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
         } else {
             goto handle_error;
         }
-
-    ignore:
 
         while (!reader.end() && is_whitespace(reader.look())) reader.skip();
     }

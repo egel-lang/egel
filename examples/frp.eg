@@ -1,21 +1,19 @@
-/* 
- * Showcase Functional Reactive Programmers with simple
- * 'generator' functions. 
- */
+# Showcase Functional Reactive Programmers with simple
+# 'generator' functions. 
 
 using System
 
-// every time you 'push the button' generate a 1 and the next function
+# every time you 'push the button' generate a 1 and the next function
 def ones = [ X -> (1, ones) ]
 
-// for every input, add 1 and generate the next function
+# for every input, add 1 and generate the next function
 def plus = [ X -> (1+X, plus) ]
 
-// compose two generators sequentially
+# compose two generators sequentially
 def seq = [ F G X -> [ (X0, F0) -> [ (Y0, G0) -> (Y0, seq F0 G0) ] (G X0) ] (F X) ]
 
-// compose two generators parallel
+# compose two generators parallel
 def par = [ F G (X,Y) -> [ (X0, F0) -> [ (Y0, G0) -> ((X0,Y0), par F0 G0) ] (G Y) ] (F X) ]
 
-// test it
+# test it
 def main = seq ones plus "dummy"

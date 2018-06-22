@@ -1,6 +1,5 @@
-/**
- * A small state monad example.
- */
+# A small state monad example.
+
 import "prelude.eg"
 
 namespace Calculate (

@@ -1,13 +1,11 @@
-/*
- * FeatureH, not sure this is a feature but you do need
- * to think why this is correct behavior.
- *
- * Swapping composed constants.
- *
- * swap2 (1 2)      = (1 2)
- * swap2 (1 [X->X]) = swap 1
- * swap2 [X->X]     = swap
- */
+# FeatureH, not sure this is a feature but you do need
+# to think why this is correct behavior.
+#
+# Swapping composed constants.
+#
+# swap2 (1 2)      = (1 2)
+# swap2 (1 [X->X]) = swap 1
+# swap2 [X->X]     = swap
 
 import "prelude.eg"
 

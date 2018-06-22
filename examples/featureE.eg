@@ -1,15 +1,13 @@
-/*
- * FeatureE, recursively eat function arguments.
- *
- * Another manner to deal with variadic functions.
- */
+# FeatureE, recursively eat function arguments.
+#
+# Another manner to deal with variadic functions.
 
 namespace Test (
     using System
 
     def f = 
-        [ X Y  -> f (X, Y) // combine two arguments, recurse
-        | X -> X ]          // if only one argument, return that
+        [ X Y  -> f (X, Y) # combine two arguments, recurse
+        | X -> X ]         # if only one argument, return that
 )
 
 using Test

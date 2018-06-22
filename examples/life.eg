@@ -1,8 +1,7 @@
-/**
- * Rosetta Code example Conway's Life.
- *
- * See: http://rosettacode.org
- */
+# Rosetta Code example Conway's Life.
+#
+# See: http://rosettacode.org
+
 import "prelude.eg"
 import "io.ego"
 

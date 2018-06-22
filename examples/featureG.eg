@@ -1,8 +1,5 @@
-/*
- * FeatureG, often, we can do without explicit tupling but simply
- * compose constants.
- *
- */
+# FeatureG, often, we can do without explicit tupling but simply
+# compose constants.
 
 import "prelude.eg"
 

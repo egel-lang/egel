@@ -1,6 +1,4 @@
-/**
- * The 'yes' program in Egel. Used to measure throughput.
- **/ 
+# The 'yes' program in Egel. Used to measure throughput.
 
 import "io.ego"
 

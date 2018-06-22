@@ -1,10 +1,8 @@
-/*
- * FeatureC, exploit symbolic rewriting to define variadic functions.
- *
- * Egel functions match patterns in a naive manner from first to last.
- * You can exploit that feature to implement variadic functions which
- * could be nice for, for example, default values.
- */
+# FeatureC, exploit symbolic rewriting to define variadic functions.
+#
+# Egel functions match patterns in a naive manner from first to last.
+# You can exploit that feature to implement variadic functions which
+# could be nice for, for example, default values.
 
 namespace Test (
     using System

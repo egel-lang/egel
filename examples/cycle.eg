@@ -1,11 +1,9 @@
-/*
- * Egel supports variables though I didn't implement a nice syntax for
- * that yet.
- *
- * Variables can create cycles. For the moment, we don't do anything
- * about that though we may copy the argument once or fail to assign
- * given cycle detection.
- */
+# Egel supports variables though I didn't implement a nice syntax for
+# that yet.
+#
+# Variables can create cycles. For the moment, we don't do anything
+# about that though we may copy the argument once or fail to assign
+# given cycle detection.
 
 import "prelude.eg"
 

@@ -1,8 +1,6 @@
-/**
- * Rosetta Code example Number Reversal Game.
- *
- * See: http://rosettacode.org
- */
+# Rosetta Code example Number Reversal Game.
+#
+# See: http://rosettacode.org
 
 import "prelude.eg"
 import "io.ego"

@@ -1,7 +1,7 @@
-/* This is the solution to the first problem "captcha" of Advent of Code.
- *
- * See: http://adventofcode.com
- */
+# This is the solution to the first problem "captcha" of Advent of Code.
+#
+# See: http://adventofcode.com
+
 import "prelude.eg"
 
 using System

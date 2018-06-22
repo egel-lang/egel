@@ -1,45 +1,43 @@
-/**
- * The N-Queens problem as translated from Haskell to Egel.
- *
- * I only have a rough idea how the following program computes its
- * result. This example shows that it often should be possible to copy
- * a simple Haskell program verbatim and have it run in egel.
- *
- * This program takes a mediocre time to run, mostly because it 
- * cannot exploit lazy evaluation which is what the Haskell program
- * is optimized for.
- **/ 
+# The N-Queens problem as translated from Haskell to Egel.
+#
+# I only have a rough idea how the following program computes its
+# result. This example shows that it often should be possible to copy
+# a simple Haskell program verbatim and have it run in egel.
+#
+# This program takes a mediocre time to run, mostly because it 
+# cannot exploit lazy evaluation which is what the Haskell program
+# is optimized for.
 
-import "prelude.eg"
-/*
-    Taken from Haskell code.
 
-    queenPuzzle :: Int -> Int -> [[Int]]
-    queenPuzzle nRows nCols
-      | nRows <= 0 = [[]]
-      | otherwise =
-        foldr
-          (\solution a ->
-              a ++
-              foldr
-                (\iCol b ->
-                    if safe (nRows - 1) iCol solution
-                      then b ++ [solution ++ [iCol]]
-                      else b)
-                []
-                [1 .. nCols])
-          []
-          (queenPuzzle (nRows - 1) nCols)
-      where
-        safe iRow iCol solution =
-          True `notElem`
-          zipWith
-            (\sc sr ->
-                (iCol == sc) || (sc + sr == iCol + iRow) || (sc - sr == iCol - iRow))
-            solution
-            [0 .. iRow - 1]
-*/
+#   Taken from Haskell code.
+#
+#   queenPuzzle :: Int -> Int -> [[Int]]
+#   queenPuzzle nRows nCols
+#     | nRows <= 0 = [[]]
+#     | otherwise =
+#       foldr
+#         (\solution a ->
+#             a ++
+#             foldr
+#               (\iCol b ->
+#                   if safe (nRows - 1) iCol solution
+#                     then b ++ [solution ++ [iCol]]
+#                     else b)
+#               []
+#               [1 .. nCols])
+#         []
+#         (queenPuzzle (nRows - 1) nCols)
+#     where
+#       safe iRow iCol solution =
+#         True `notElem`
+#         zipWith
+#           (\sc sr ->
+#               (iCol == sc) || (sc + sr == iCol + iRow) || (sc - sr == iCol - iRow))
+#           solution
+#           [0 .. iRow - 1]
  
+import "prelude.eg"
+
 namespace NQueens (
 
     using System

@@ -1,8 +1,6 @@
-/*
- * The standard Fibonacci function defined in Egel.
- *
- * see: https://en.wikipedia.org/wiki/Fibonacci_number
- */
+# The standard Fibonacci function defined in Egel.
+#
+# see: https://en.wikipedia.org/wiki/Fibonacci_number
 
 namespace Fibonnaci (
   using System

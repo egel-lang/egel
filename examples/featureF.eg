@@ -1,8 +1,6 @@
-/*
- * FeatureE, recursively eat function arguments to implement a sum.
- *
- * Reduces: sum 1 2 3 4 -> sum 3 3 4 -> sum 6 4 -> sum 10 -> 10
- */
+# FeatureF, recursively eat function arguments to implement a sum.
+#
+# Reduces: sum 1 2 3 4 -> sum 3 3 4 -> sum 6 4 -> sum 10 -> 10
 
 namespace Test (
     using System

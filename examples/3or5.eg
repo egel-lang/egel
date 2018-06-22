@@ -1,9 +1,7 @@
-/**
- * Euler project[1] task 1. Sum the elements of a list 1..1000 which are
- * dividable by either three or five.
- *
- * [1]: https://projecteuler.net/
- **/ 
+# Euler project[1] task 1. Sum the elements of a list 1..1000 which are
+# dividable by either three or five.
+#
+# [1]: https://projecteuler.net/
 
 import "prelude.eg"
 

@@ -1,13 +1,12 @@
-/*
- * Inheritance is for the moment implemented with the extend
- * combinator.
- *
- * 'extend OBJECT0 OBJECT1' creates an object which is the union of
- * fields of OBJECT0 overwritten by OBJECT1.
- *
- * The extends keyword is syntactic sugar for using that 
- * combinator.
- */
+# Inheritance is for the moment implemented with the extend
+# combinator.
+#
+# 'extend OBJECT0 OBJECT1' creates an object which is the union of
+# fields of OBJECT0 overwritten by OBJECT1.
+#
+# The extends keyword is syntactic sugar for using that 
+# combinator.
+
 import "prelude.eg"
 
 using System

@@ -1,6 +1,5 @@
-/*
- * Shadowing of operators is used to get operators on objects.
- */
+# Shadowing of operators is used to get operators on objects.
+
 import "prelude.eg"
 
 namespace OO (

@@ -1,16 +1,15 @@
-/**
- * Factorial expressed with an eager fixed point combinator.
- */
+# Factorial expressed with an eager fixed point combinator.
+
 import "prelude.eg"
 
 using System
 
-// recursive eager fix
+# recursive eager fix
 def fix = [ F -> F [ X -> (fix F) X ] ]
 
-// non-recursive eager fix
+# non-recursive eager fix
 def fix2 = [F -> [X -> F [V -> (X X) V]] [X -> F [V -> (X X) V]]]
 
-// test it
+# test it
 def main =
     fix2 [FAC 0 -> 1 | FAC N -> N * (FAC (N- 1)) ] 5

@@ -1,28 +1,27 @@
-/*
- * EXPERIMENTAL!
- *
- * There are several manners in which you can try to emulate object
- * orientation (OO) in Egel. This is one manner.
- *
- * An object is a record of mutable fields.
- *
- * This is implemented pretty wastefully at the moment, an object
- * is syntactic sugar for a data record which holds named fields.
- * Lookup is O(c*n) with n the number of fields and c a large 
- * constant.
- *
- * That should become better once the runtime is overhauled.
- *
- * There are two ways of supporting mutable objects: the referential
- * transparant manner where on every update the object is
- * copied and returned, and the destructive manner -which
- * doesn't go well with Egel's term semantics- where a field
- * is just overwritten. For the moment, I opted for the latter
- * unsafe manner, you can create cyclic structures but you 
- * shouldn't.
- *
- * Objects are also not thread safe.
- */
+# EXPERIMENTAL!
+#
+# There are several manners in which you can try to emulate object
+# orientation (OO) in Egel. This is one manner.
+#
+# An object is a record of mutable fields.
+#
+# This is implemented pretty wastefully at the moment, an object
+# is syntactic sugar for a data record which holds named fields.
+# Lookup is O(c*n) with n the number of fields and c a large 
+# constant.
+#
+# That should become better once the runtime is overhauled.
+#
+# There are two ways of supporting mutable objects: the referential
+# transparant manner where on every update the object is
+# copied and returned, and the destructive manner -which
+# doesn't go well with Egel's term semantics- where a field
+# is just overwritten. For the moment, I opted for the latter
+# unsafe manner, you can create cyclic structures but you 
+# shouldn't.
+#
+# Objects are also not thread safe.
+
 import "prelude.eg"
 
 using OO
