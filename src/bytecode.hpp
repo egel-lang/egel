@@ -717,7 +717,12 @@ public:
 
                     for (auto& y1:yy) xx1->push_back(y1);
                     for (int n = (int) i; n < (int) zz.size(); n++) xx1->push_back(zz[n]);
-                    reg.set(x, xx1);
+
+                    if (xx1->size() == 1) { // XXX: move to reg.set?
+                        reg.set(x, xx1->get(0));
+                    } else {
+                        reg.set(x, xx1);
+                    }
                 } else {
                     PANIC("two arrays expected");
                     return nullptr;

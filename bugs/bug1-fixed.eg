@@ -1,0 +1,7 @@
+import "prelude.eg"
+
+using System
+
+def fac = [ 0 -> 1 | N -> N * fac (N - 1) ]
+
+def main = [ fac -> "fac" | X -> "other" ] fac
