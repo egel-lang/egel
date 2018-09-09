@@ -266,8 +266,13 @@ int main(int argc, char *argv[]) {
 
     // start either interactive or batch mode
     if (e != "") {
-        eval.eval_command(UnicodeString("using System"));
-        eval.eval_command(e);
+        try {
+            eval.eval_command(UnicodeString("using System"));
+            eval.eval_command(e);
+        } catch (Error &e) {
+            std::cerr << e << std::endl;
+            return (EXIT_FAILURE);
+        }
     } else if ((fn == "") || oo->interactive()) {
         eval.eval_interactive();
     } else {
