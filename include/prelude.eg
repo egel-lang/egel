@@ -123,6 +123,10 @@ namespace List (
     def notelem =
         [ X -> all ((!=) X) ]
 
+    def union =
+        [ nil YY            -> YY
+        | (cons X XX) YY    -> if elem X YY then union XX YY else cons X (union XX YY) ]
+
     def insertEverywhere =
         [ X nil -> {{X}}
         | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insertEverywhere X YY)) ]

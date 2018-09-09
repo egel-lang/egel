@@ -5,6 +5,8 @@ A list of all major changes between versions of the interpreter.
 
 ## v0.0.3 -- it may all break down yet
 
++ bugfix on '(1)' -length one array- results
++ switch to '#' style comments
 + regular expression support
 + small performance tweaks
 + got rid of lijero's K combinator solution for statements

@@ -1,0 +1,18 @@
+# Lambda encoding of booleans.
+
+# true
+def t = [ X Y -> X ]
+
+# false
+def f = [ X Y -> Y ]
+
+# not
+def n = [ P X Y -> P Y X ]
+
+# and
+def a = [ P Q -> P Q P ]
+
+# xor
+def x = [ P Q -> P (n Q) Q ]
+
+def main = x t f
