@@ -1,12 +1,193 @@
 #include "../../src/runtime.hpp"
 
-#include "channel.hpp"
-
 #include <stdlib.h>
-#include <ostream>
+#include <iostream>
 #include <fstream>
+
 #include <memory>
 #include <exception>
+
+/**
+ * In C++, copy constructors for streams are usually undefined
+ * which makes a simple solution of just assigning or passing
+ * iostream derived classes unworkable.
+ *
+ * These channel classes flatten C++ i/o streams hierarchy into
+ * one channel class with all operations and derived classes 
+ * which implement them.
+ **/
+
+class Unsupported : public std::exception {
+public:
+    Unsupported() :
+        _message("")  {
+    }
+
+    Unsupported(const UnicodeString &m) :
+        _message(m)  {
+    }
+
+    ~Unsupported() {
+    }
+
+    UnicodeString message() const {
+        return _message;
+    }
+
+    friend std::ostream & operator<<(std::ostream &os, const Unsupported &e) {
+        os << "unsupported(" << e.message() << ")";
+        return os;
+    }
+
+private:
+    UnicodeString   _message;
+};
+
+typedef enum {
+    CHANNEL_STREAM_IN,
+    CHANNEL_STREAM_OUT,
+    CHANNEL_STREAM_ERR,
+    CHANNEL_FILE,
+} channel_tag_t;
+
+class Channel;
+typedef std::shared_ptr<Channel> ChannelPtr;
+
+class Channel {
+public:
+    Channel(channel_tag_t t): _tag(t) {
+    }
+
+    channel_tag_t tag() {
+        return _tag;
+    }
+
+    virtual UnicodeString read() {
+        throw Unsupported();
+    }
+
+    virtual void write(const UnicodeString& n) {
+        throw Unsupported();
+    }
+
+    virtual void close() {
+    }
+
+    virtual void flush() {
+    }
+
+    virtual bool eof() {
+        return false;
+    }
+
+protected:
+    channel_tag_t   _tag;
+};
+
+class ChannelStreamIn: public Channel {
+public:
+    ChannelStreamIn(): Channel(CHANNEL_STREAM_IN) {
+    }
+
+    static ChannelPtr create() {
+        return ChannelPtr(new ChannelStreamIn());
+    }
+
+    virtual UnicodeString read() override {
+        UnicodeString s;
+        std::cin >> s;
+        return s;
+    }
+
+    virtual bool eof() override {
+        return std::cin.eof();
+    }
+};
+
+class ChannelStreamOut: public Channel {
+public:
+    ChannelStreamOut(): Channel(CHANNEL_STREAM_OUT) {
+
+    }
+
+    static ChannelPtr create() {
+        return ChannelPtr(new ChannelStreamOut());
+    }
+
+    virtual void write(const UnicodeString& s) override {
+        std::cout << s;
+    }
+
+    virtual void flush() override {
+        std::cout.flush();
+    }
+};
+
+class ChannelStreamErr: public Channel {
+public:
+    ChannelStreamErr(): Channel(CHANNEL_STREAM_ERR) {
+
+    }
+
+    static ChannelPtr create() {
+        return ChannelPtr(new ChannelStreamErr());
+    }
+
+    virtual void write(const UnicodeString& s) override {
+        std::cerr << s;
+    }
+
+    virtual void flush() override {
+        std::cerr.flush();
+    }
+};
+
+class ChannelFile: public Channel {
+public:
+    ChannelFile(const UnicodeString& fn): Channel(CHANNEL_FILE), _fn(fn) {
+        char* bf = unicode_to_char(fn);
+        _stream = std::fstream(bf);
+        delete bf;
+    }
+
+    static ChannelPtr create(const UnicodeString& fn) {
+        return ChannelPtr(new ChannelFile(fn));
+    }
+
+    virtual UnicodeString read() override {
+        UnicodeString str;
+        _stream >> str;
+        return str;
+    }
+
+    virtual void write(const UnicodeString& s) override {
+        _stream << s;
+    }
+
+    virtual void close() override {
+        _stream.close();
+    }
+
+    virtual void flush() override {
+        _stream.flush();
+    }
+
+    virtual bool eof() override {
+        return _stream.eof();
+    }
+private:
+    static char* unicode_to_char(const UnicodeString& str) {
+        unsigned int buffer_size = 1024; // XXX: this is always a bad idea.
+        char* buffer = new char[buffer_size];
+        unsigned int size = str.extract(0, str.length(), buffer, buffer_size, "UTF-8");//XXX: null, UTF-8, or platform specific?
+        buffer[size] = 0;
+        return buffer;
+    }
+
+protected:
+    UnicodeString   _fn;
+    std::fstream    _stream;
+};
 
 /**
  * Egel's primitive input/output combinators.
@@ -21,7 +202,7 @@
  **/
 
 // IO.channel
-// Values which are input/output streams
+// Values which are input/output channels
 class ChannelValue: public Opaque {
 public:
     OPAQUE_PREAMBLE(ChannelValue, "IO", "channel");
@@ -94,119 +275,13 @@ public:
     MEDADIC_PREAMBLE(Stderr, "IO", "stderr");
 
     VMObjectPtr apply() const override {
-        auto cerr = ChannelStreamOut::create();
+        auto cerr = ChannelStreamErr::create();
         auto err  = ChannelValue(machine());
         err.set_value(cerr);
         return err.clone();
     }
 };
 
-
-// IO.exit n
-// Flush all pending writes on stdout and stderr, and terminate the 
-// process and return the status code to the operating system.
-// (0 to indicate no errors, a small positive integer for failure.)
-
-class Exit: public Monadic {
-public:
-    MONADIC_PREAMBLE(Exit, "IO", "exit");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
-            // XXX: uh.. flushall, or something?
-            exit(i);
-            // play nice
-            return create_nop();
-        } else {
-            return nullptr;
-        }
-    }
-};
-
-// IO.print o0 .. on
-// Print objects on standard output; don't escape characters or 
-// strings when they are the argument. May recursively print large
-// objects leading to stack explosion.
-class Print: public Variadic {
-public:
-    VARIADIC_PREAMBLE(Print, "IO", "print");
-
-    VMObjectPtr apply(const VMObjectPtrs& args) const override {
-
-        UnicodeString s;
-        for (auto& arg:args) {
-            if (arg->tag() == VM_OBJECT_INTEGER) {
-                s += arg->to_text();
-            } else if (arg->tag() == VM_OBJECT_FLOAT) {
-                s += arg->to_text();
-            } else if (arg->tag() == VM_OBJECT_CHAR) {
-                s += VM_OBJECT_CHAR_VALUE(arg);
-            } else if (arg->tag() == VM_OBJECT_TEXT) {
-                s += VM_OBJECT_TEXT_VALUE(arg);
-            } else {
-                return nullptr;
-            }
-        }
-        std::cout << s;
-
-        return create_nop();
-    }
-};
-
-/* Input functions on standard input */
-
-// IO.getline
-// Read characters from standard input
-// until a newline character is encountered. Return the string of all
-// characters read, without the newline character at the end.
-
-class Getline: public Medadic {
-public:
-    MEDADIC_PREAMBLE(Getline, "IO", "getline");
-
-    VMObjectPtr apply() const override {
-        std::string line;
-        std::getline(std::cin, line);
-        UnicodeString str(line.c_str());
-        return create_text(str);
-    }
-};
-
-
-/*
-// IO.getint
-// Read one line from standard input and convert it to an integer. 
-
-class Getint: public Medadic {
-public:
-    MEDADIC_PREAMBLE(Getint, "IO", "getint");
-
-    VMObjectPtr apply() const override {
-        vm_int_t n;
-        std::cin >> n;
-        return VMObjectInteger(n).clone();
-    }
-};
-
-// IO.getfloat
-// Read one line from standard input and convert it to a 
-// floating-point number. The result is unspecified if the line read 
-// is not a valid representation of a floating-point number.
-
-class Getfloat: public Medadic {
-public:
-    MEDADIC_PREAMBLE(Getfloat, "IO", "getfloat");
-
-    VMObjectPtr apply() const override {
-        vm_float_t f;
-        std::cin >> f;
-        return VMObjectFloat(f).clone();
-    }
-};
-*/
-
-/* File channel creation and destruction */
 
 // IO.open s
 // Open the named file, and return a new channel on
@@ -253,6 +328,53 @@ public:
     }
 };
 
+// IO.read channel
+// Read a string from a channel.
+
+class Read: public Monadic {
+public:
+    MONADIC_PREAMBLE(Read, "IO", "read");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            UnicodeString str = chan->read();
+            return create_text(str);
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// IO.write chan o
+// Write the string s to channel chan.
+
+class Write: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Write, "IO", "write");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            if (arg1->tag() == VM_OBJECT_TEXT) {
+                auto s = VM_OBJECT_TEXT_VALUE(arg1);
+                chan->write(s);
+                return create_nop();
+            } else {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 // IO.flush channel
 // Flush the buffer associated with the given output channel, 
 // performing all pending writes on that channel. Interactive programs
@@ -284,197 +406,90 @@ public:
     MONADIC_PREAMBLE(Eof, "IO", "eof");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static VMObjectPtr _true = nullptr;
-        if (_true == nullptr) _true = machine()->get_data_string("System", "true");
-
-        static VMObjectPtr _false = nullptr;
-        if (_false == nullptr) _false = machine()->get_data_string("System", "false");
-
         static symbol_t sym = 0;
         if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
-            if (chan->eof()) {
-                return _true;
-            } else {
-                return _false;
-            }
+            return create_bool(chan->eof());
         } else {
             return nullptr;
         }
     }
 };
 
-// IO.write chan o
-// Write the primitive object on the given output channel. Do not escape
-// characters or strings. May recursively write an object leading to 
-// stack explosion.
 
-class Write: public Dyadic {
+
+
+// IO.print o0 .. on
+// Print objects on standard output; don't escape characters or 
+// strings when they are the argument. May recursively print large
+// objects leading to stack explosion.
+class Print: public Variadic {
 public:
-    DYADIC_PREAMBLE(Write, "IO", "write");
+    VARIADIC_PREAMBLE(Print, "IO", "print");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+    VMObjectPtr apply(const VMObjectPtrs& args) const override {
 
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
-            if (arg1->tag() == VM_OBJECT_INTEGER) {
-                auto i = VM_OBJECT_INTEGER_VALUE(arg1);
-                chan->write(i);
-                return create_nop();
-            } else if (arg1->tag() == VM_OBJECT_FLOAT) {
-                auto f = VM_OBJECT_FLOAT_VALUE(arg1);
-                chan->write(f);
-                return create_nop();
-            } else if (arg1->tag() == VM_OBJECT_CHAR) {
-                auto c = VM_OBJECT_CHAR_VALUE(arg1);
-                chan->write(c);
-                return create_nop();
-            } else if (arg1->tag() == VM_OBJECT_TEXT) {
-                auto s = VM_OBJECT_TEXT_VALUE(arg1);
-                chan->write(s);
-                return create_nop();
+        UnicodeString s;
+        for (auto& arg:args) {
+            if (arg->tag() == VM_OBJECT_INTEGER) {
+                s += arg->to_text();
+            } else if (arg->tag() == VM_OBJECT_FLOAT) {
+                s += arg->to_text();
+            } else if (arg->tag() == VM_OBJECT_CHAR) {
+                s += VM_OBJECT_CHAR_VALUE(arg);
+            } else if (arg->tag() == VM_OBJECT_TEXT) {
+                s += VM_OBJECT_TEXT_VALUE(arg);
             } else {
                 return nullptr;
             }
-            chan->flush();
+        }
+        std::cout << s;
+
+        return create_nop();
+    }
+};
+
+// IO.getline
+// Read characters from standard input
+// until a newline character is encountered. Return the string of all
+// characters read, without the newline character at the end.
+
+class Getline: public Medadic {
+public:
+    MEDADIC_PREAMBLE(Getline, "IO", "getline");
+
+    VMObjectPtr apply() const override {
+        std::string line;
+        std::getline(std::cin, line);
+        UnicodeString str(line.c_str());
+        return create_text(str);
+    }
+};
+
+
+// IO.exit n
+// Flush all pending writes on stdout and stderr, and terminate the 
+// process and return the status code to the operating system.
+// (0 to indicate no errors, a small positive integer for failure.)
+
+class Exit: public Monadic {
+public:
+    MONADIC_PREAMBLE(Exit, "IO", "exit");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_INTEGER) {
+            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
+            // XXX: uh.. flushall, or something?
+            exit(i);
+            // play nice
             return create_nop();
         } else {
             return nullptr;
         }
     }
 };
-
-/*
-class Readint: public Monadic {
-public:
-    MONADIC_PREAMBLE(Readint, "IO", "readint");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
-            try {
-                auto n = chan->readint();
-                return VMObjectInteger(n).clone();
-            } catch (exception e) {
-                return nullptr;
-            }
-        } else {
-            return nullptr;
-        }
-    }
-};
-
-class Readfloat: public Monadic {
-public:
-    MONADIC_PREAMBLE(Readfloat, "IO", "readfloat");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
-            try {
-                auto f = chan->readfloat();
-                return VMObjectFloat(f).clone();
-            } catch (exception e) {
-                return nullptr;
-            }
-        } else {
-            return nullptr;
-        }
-    }
-};
-*/
-
-class Readline: public Monadic {
-public:
-    MONADIC_PREAMBLE(Readline, "IO", "readline");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
-            try {
-                auto s = chan->read_line();
-                return create_text(s);
-            } catch (std::exception &e) {
-                return nullptr;
-            }
-        } else {
-            return nullptr;
-        }
-    }
-};
-
-// IO.output_byte channel i
-// Write one 8-bit integer (as the single character with that code) on
-// the given output channel. The given integer is taken modulo 256.
-
-// IO.seek_out channel i
-// seek_out chan pos sets the current writing position to pos for
-// channel chan. This works only for regular files. On files of other
-// kinds (such as terminals, pipes and sockets), the behavior is
-// unspecified.
-
-// IO.pos_out channel
-// Return the current writing position for the given channel.
-
-
-// IO.out_channel_length channel
-// Return the total length (number of characters) of the given
-// channel. This works only for regular files. On files of other
-// kinds, the result is meaningless.
-
-/* General input functions */
-
-// IO.open_in s
-// Open the named file for reading, and return a new input channel on
-// that file, positionned at the beginning of the file. Raise
-// sys__Sys_error if the file could not be opened.
-
-// IO.open_in_bin s
-// Same as open_in, but the file is opened in binary mode, so that no
-// translation takes place during reads. On operating systems that do
-// not distinguish between text mode and binary mode, this function
-// behaves like open_in.
-
-// IO.open_in_gen flags i s
-// open_in_gen mode rights filename opens the file named filename for
-// reading, as above. The extra arguments mode and rights specify the
-// opening mode and file permissions (see sys__open). open_in and
-// open_in_bin are special cases of this function.
-
-// IO.open_descriptor_in i
-// open_descriptor_in fd returns a buffered input channel reading from
-// the file descriptor fd. The file descriptor fd must have been
-// previously opened for reading, else the behavior is undefined.
-
-// IO.input_byte channel
-// Same as input_char, but return the 8-bit integer representing the
-// character. Raise End_of_file if an end of file was reached.
-
-// IO.seek_in channel n
-// seek_in chan pos sets the current reading position to pos for
-// channel chan. This works only for regular files. On files of other
-// kinds, the behavior is unspecified.
-
-// IO.pos_in channel
-// Return the current reading position for the given channel.
-
-// IO.in_channel_length channel
-// Return the total length (number of characters) of the given
-// channel. This works only for regular files. On files of other
-// kinds, the result is meaningless.
 
 extern "C" std::vector<UnicodeString> egel_imports() {
     return std::vector<UnicodeString>();
@@ -489,15 +504,14 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Stdin(vm).clone());
     oo.push_back(Stdout(vm).clone());
     oo.push_back(Stderr(vm).clone());
-    oo.push_back(Exit(vm).clone());
-    oo.push_back(Print(vm).clone());
-    oo.push_back(Getline(vm).clone());
     oo.push_back(Open(vm).clone());
     oo.push_back(Close(vm).clone());
+    oo.push_back(Read(vm).clone());
+    oo.push_back(Write(vm).clone());
     oo.push_back(Flush(vm).clone());
     oo.push_back(Eof(vm).clone());
-    oo.push_back(Write(vm).clone());
-    oo.push_back(Readline(vm).clone());
+    oo.push_back(Print(vm).clone());
+    oo.push_back(Exit(vm).clone());
 
     return oo;
 }

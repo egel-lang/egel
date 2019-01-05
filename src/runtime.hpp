@@ -21,6 +21,8 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
+using namespace icu_62;
+
 #ifndef PANIC
 #define PANIC(s)    { std::cerr << s << std::endl; exit(1); }
 #endif
@@ -704,7 +706,7 @@ typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
 #define VM_OBJECT_OPAQUE_SYMBOL(a) \
     (VM_OBJECT_OPAQUE_CAST(a)->symbol())
 
-class VMObjectCombinator : public VMObject {
+class VMObjectCombinator: public VMObject {
 public:
     VMObjectCombinator(const vm_object_flag_t f, VM* m, const symbol_t s)
         : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(s) {

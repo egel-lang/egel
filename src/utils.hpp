@@ -11,6 +11,8 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
+using namespace icu_62;
+
 typedef unsigned int uint_t;
 
 // debugging macros

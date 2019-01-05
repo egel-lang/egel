@@ -144,12 +144,6 @@ public:
     DYADIC_PREAMBLE(Match, REGEX_STRING, "match");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static VMObjectPtr _true = nullptr;
-        if (_true == nullptr) _true = machine()->get_data_string("System", "true");
-
-        static VMObjectPtr _false = nullptr;
-        if (_false == nullptr) _false = machine()->get_data_string("System", "false");
-
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
             auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
@@ -161,11 +155,7 @@ public:
             auto b = r->matches(error_code);
             delete r;
 
-            if (b) {
-               return _true;
-            } else {
-               return _false;
-            } 
+            return create_bool(b);
         } else {
             return nullptr;
         }
