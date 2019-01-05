@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 
+#include <string>
 #include <memory>
 #include <exception>
 
@@ -66,6 +67,14 @@ public:
         throw Unsupported();
     }
 
+    virtual UnicodeString read_char() { // XXX: wait for the libicu fix
+        throw Unsupported();
+    }
+
+    virtual UnicodeString read_line() { // implemented otherwise
+        throw Unsupported();
+    }
+
     virtual void write(const UnicodeString& n) {
         throw Unsupported();
     }
@@ -78,6 +87,16 @@ public:
 
     virtual bool eof() {
         return false;
+    }
+
+protected:
+
+    static char* unicode_to_char(const UnicodeString& str) {
+        unsigned int buffer_size = 1024; // XXX: this is always a bad idea.
+        char* buffer = new char[buffer_size];
+        unsigned int size = str.extract(0, str.length(), buffer, buffer_size, "UTF-8");//XXX: null, UTF-8, or platform specific?
+        buffer[size] = 0;
+        return buffer;
     }
 
 protected:
@@ -97,6 +116,12 @@ public:
         UnicodeString s;
         std::cin >> s;
         return s;
+    }
+
+    virtual UnicodeString read_line() override {
+        std::string str;
+        std::getline(std::cin, str);
+        return UnicodeString(str.c_str());
     }
 
     virtual bool eof() override {
@@ -160,6 +185,12 @@ public:
         return str;
     }
 
+    virtual UnicodeString read_line() override {
+        std::string str;
+        std::getline(_stream, str);
+        return UnicodeString(str.c_str());
+    }
+
     virtual void write(const UnicodeString& s) override {
         _stream << s;
     }
@@ -175,15 +206,6 @@ public:
     virtual bool eof() override {
         return _stream.eof();
     }
-private:
-    static char* unicode_to_char(const UnicodeString& str) {
-        unsigned int buffer_size = 1024; // XXX: this is always a bad idea.
-        char* buffer = new char[buffer_size];
-        unsigned int size = str.extract(0, str.length(), buffer, buffer_size, "UTF-8");//XXX: null, UTF-8, or platform specific?
-        buffer[size] = 0;
-        return buffer;
-    }
-
 protected:
     UnicodeString   _fn;
     std::fstream    _stream;
@@ -349,6 +371,27 @@ public:
     }
 };
 
+// IO.read_line channel
+// Read a string from a channel.
+
+class ReadLine: public Monadic {
+public:
+    MONADIC_PREAMBLE(ReadLine, "IO", "read_line");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            UnicodeString str = chan->read_line();
+            return create_text(str);
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 // IO.write chan o
 // Write the string s to channel chan.
 
@@ -507,6 +550,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Open(vm).clone());
     oo.push_back(Close(vm).clone());
     oo.push_back(Read(vm).clone());
+    oo.push_back(ReadLine(vm).clone());
     oo.push_back(Write(vm).clone());
     oo.push_back(Flush(vm).clone());
     oo.push_back(Eof(vm).clone());
