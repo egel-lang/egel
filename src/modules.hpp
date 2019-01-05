@@ -20,13 +20,13 @@
 #include "builtin/thread.hpp"
 
 // convenience
-inline UnicodeString first(const UnicodeString& s) {
+inline icu::UnicodeString first(const icu::UnicodeString& s) {
     auto d = s;
     auto i = d.indexOf(':');
     return d.remove(i, d.length());
 }
 
-inline UnicodeString second(const UnicodeString& s) {
+inline icu::UnicodeString second(const icu::UnicodeString& s) {
     auto d = s;
     auto i = d.indexOf(':');
     return d.remove(0, i+1);
@@ -83,11 +83,11 @@ public:
         return _library_path;
     }
 
-    void add_include_path(const UnicodeString& p) {
+    void add_include_path(const icu::UnicodeString& p) {
         _include_path.push_back(p);
     }
 
-    void add_library_path(const UnicodeString& p) {
+    void add_library_path(const icu::UnicodeString& p) {
         _library_path.push_back(p);
     }
 
@@ -197,7 +197,7 @@ public:
         _position(Position()), _filename("") {
     }
 
-    Import(const Position& p, const UnicodeString& fn):
+    Import(const Position& p, const icu::UnicodeString& fn):
         _position(p), _filename(fn) {
     }
 
@@ -209,12 +209,12 @@ public:
         return _position;
     }
 
-    UnicodeString filename() const {
+    icu::UnicodeString filename() const {
         return _filename;
     }
 private:
     Position        _position;
-    UnicodeString   _filename;
+    icu::UnicodeString   _filename;
 };
 
 typedef std::vector<Import>  Imports;
@@ -227,7 +227,7 @@ typedef enum {
 
 class Module {
 public:
-    Module(const module_tag_t t, const UnicodeString& p, const UnicodeString& fn, VM* m):
+    Module(const module_tag_t t, const icu::UnicodeString& p, const icu::UnicodeString& fn, VM* m):
         _tag(t), _path(p), _filename(fn), _machine(m) {
     }
 
@@ -241,11 +241,11 @@ public:
         return _options;
     }
 
-    UnicodeString get_path() const {
+    icu::UnicodeString get_path() const {
         return _path;
     }
 
-    UnicodeString get_filename() const {
+    icu::UnicodeString get_filename() const {
         return _filename;
     }
 
@@ -292,8 +292,8 @@ public:
 private:
     module_tag_t    _tag;
     OptionsPtr      _options;
-    UnicodeString   _path;
-    UnicodeString   _filename;
+    icu::UnicodeString   _path;
+    icu::UnicodeString   _filename;
     VM*             _machine;
 };
 
@@ -301,7 +301,7 @@ typedef std::vector<VMObjectPtr> (*exports_t)(VM*);
 
 class ModuleInternal: public Module {
 public:
-    ModuleInternal(const UnicodeString& fn, VM* m, const exports_t handle):
+    ModuleInternal(const icu::UnicodeString& fn, VM* m, const exports_t handle):
         Module(MODULE_INTERNAL, fn, fn, m),
             _handle(handle) {
     }
@@ -355,7 +355,7 @@ public:
         os << "dynamic module: " << get_filename();
     }
 
-    static bool filetype(const UnicodeString& fn) {
+    static bool filetype(const icu::UnicodeString& fn) {
         return unicode_endswith(fn, ".ego");
     }
 
@@ -372,7 +372,7 @@ private:
 
 class ModuleDynamic: public Module {
 public:
-    ModuleDynamic(const UnicodeString& p, const UnicodeString& fn, VM* m):
+    ModuleDynamic(const icu::UnicodeString& p, const icu::UnicodeString& fn, VM* m):
         Module(MODULE_DYNAMIC, p, fn, m),
             _handle(0), _imports(0), _exports(0) {
     }
@@ -394,17 +394,17 @@ public:
 
         _handle = dlopen(unicode_to_char(get_path()), RTLD_LAZY); // XXX: leaks?
         if (!_handle) {
-            UnicodeString err = "dynamic load error: ";
+            icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
             throw ErrorIO(err);
         }
 
-        std::vector<UnicodeString> (*egel_imports)();
-        egel_imports = (std::vector<UnicodeString> (*)())
+        std::vector<icu::UnicodeString> (*egel_imports)();
+        egel_imports = (std::vector<icu::UnicodeString> (*)())
                             dlsym(_handle, "egel_imports");
         error = dlerror();
         if (error != NULL) {
-            UnicodeString err = "dynamic load error: ";
+            icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
             throw ErrorIO(err);
         }
@@ -414,7 +414,7 @@ public:
                             dlsym(_handle, "egel_exports");
         error = dlerror();
         if (error != NULL) {
-            UnicodeString err = "dynamic load error: ";
+            icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
             throw ErrorIO(err);
         }
@@ -467,7 +467,7 @@ public:
         os << "dynamic module: " << get_filename();
     }
 
-    static bool filetype(const UnicodeString& fn) {
+    static bool filetype(const icu::UnicodeString& fn) {
         return unicode_endswith(fn, ".ego");
     }
 
@@ -480,7 +480,7 @@ private:
 
 class ModuleSource : public Module {
 public:
-    ModuleSource(const UnicodeString& path, const UnicodeString& fn, VM* m):
+    ModuleSource(const icu::UnicodeString& path, const icu::UnicodeString& fn, VM* m):
         Module(MODULE_SOURCE, path, fn, m),
         _source(""), _ast(0) {
     }
@@ -596,12 +596,12 @@ public:
         os << "source module " << get_filename();
     }
 
-    static bool filetype(const UnicodeString& fn) {
+    static bool filetype(const icu::UnicodeString& fn) {
         return unicode_endswith(fn, ".eg");
     }
 
 private:
-    UnicodeString   _source;
+    icu::UnicodeString   _source;
     AstPtr          _ast;
 };
 
@@ -664,7 +664,7 @@ public:
     }
 
     // implements incremental loading for interactive mode
-    void load(const Position& p, const UnicodeString& fn) {
+    void load(const Position& p, const icu::UnicodeString& fn) {
         preload(p, fn);
         _loading[0]->set_options(_options);
         transitive_closure();
@@ -681,17 +681,17 @@ public:
     }
 
 protected:
-    UnicodeString search(const UnicodeStrings& path, const UnicodeString& fn) {
+    icu::UnicodeString search(const UnicodeStrings& path, const icu::UnicodeString& fn) {
         // if (file_exists(fn)) return fn; // doesn't work with dynamic modules which should be given absolute paths
         for (auto p:path) {
-            UnicodeString fn0 = path_combine(p, fn);
+            icu::UnicodeString fn0 = path_combine(p, fn);
             if (file_exists(fn0)) return fn0;
         };
         return "";
     }
 
 
-    bool already_loaded(const UnicodeString& fn) {
+    bool already_loaded(const icu::UnicodeString& fn) {
         for (auto& m:_modules) {
             if (m->get_path().compare(fn) == 0) return true;
         }
@@ -701,7 +701,7 @@ protected:
         return false;
     }
 
-    void preload(const Position& p, const UnicodeString& fn) {
+    void preload(const Position& p, const icu::UnicodeString& fn) {
         if (fn[0] == '!') {
             // not implemented yet
         } else {

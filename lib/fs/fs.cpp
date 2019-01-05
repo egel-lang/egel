@@ -10,7 +10,7 @@ namespace fs = std::experimental::filesystem;
 
 #define FS_STRING    "FS"
 
-typedef std::vector<UnicodeString> UnicodeStrings;
+typedef std::vector<icu::UnicodeString> UnicodeStrings;
 
 // convenience functions
 VMObjectPtr path_to_object(const fs::path& p) {
@@ -1429,8 +1429,8 @@ public:
 
 // FS.status_known - checks whether file status is known XXX
 
-extern "C" std::vector<UnicodeString> egel_imports() {
-    return std::vector<UnicodeString>();
+extern "C" std::vector<icu::UnicodeString> egel_imports() {
+    return std::vector<icu::UnicodeString>();
 }
 
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {

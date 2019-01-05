@@ -18,14 +18,14 @@ public:
         _message("")  {
     }
 
-    Unsupported(const UnicodeString &m) :
+    Unsupported(const icu::UnicodeString &m) :
         _message(m)  {
     }
 
     ~Unsupported() {
     }
 
-    UnicodeString message() const {
+    icu::UnicodeString message() const {
         return _message;
     }
 
@@ -35,7 +35,7 @@ public:
     }
 
 private:
-    UnicodeString   _message;
+    icu::UnicodeString   _message;
 };
 
 typedef enum {
@@ -68,7 +68,7 @@ public:
         throw Unsupported();
     }
 
-    virtual void write(const UnicodeString& n) {
+    virtual void write(const icu::UnicodeString& n) {
         throw Unsupported();
     }
 
@@ -84,7 +84,7 @@ public:
         throw Unsupported();
     }
 
-    virtual UnicodeString read_line() {
+    virtual icu::UnicodeString read_line() {
         throw Unsupported();
     }
 
@@ -129,10 +129,10 @@ public:
         return c;
     }
 
-    virtual UnicodeString read_line() override {
+    virtual icu::UnicodeString read_line() override {
         std::string line;
         std::getline(_channel, line);
-        UnicodeString str(line.c_str(), -1, US_INV);
+        icu::UnicodeString str(line.c_str(), -1, US_INV);
         return str;
     }
 
@@ -163,10 +163,10 @@ public:
     }
 
     virtual void write(vm_char_t c) override {
-        _channel << (UnicodeString() + c);
+        _channel << (icu::UnicodeString() + c);
     }
 
-    virtual void write(const UnicodeString& s) override {
+    virtual void write(const icu::UnicodeString& s) override {
         _channel << s;
     }
 
@@ -180,13 +180,13 @@ protected:
 
 class ChannelFile: public Channel {
 public:
-    ChannelFile(const UnicodeString& fn): Channel(CHANNEL_FILE), _fn(fn) {
+    ChannelFile(const icu::UnicodeString& fn): Channel(CHANNEL_FILE), _fn(fn) {
         char* bf = unicode_to_char(fn);
         _channel = std::fstream(bf);
         delete bf;
     }
 
-    static ChannelPtr create(const UnicodeString& fn) {
+    static ChannelPtr create(const icu::UnicodeString& fn) {
         return ChannelPtr(new ChannelFile(fn));
     }
 
@@ -208,10 +208,10 @@ public:
         return c;
     }
 
-    virtual UnicodeString read_line() override {
+    virtual icu::UnicodeString read_line() override {
         std::string line;
         std::getline(_channel, line);
-        UnicodeString str(line.c_str(), -1, US_INV);
+        icu::UnicodeString str(line.c_str(), -1, US_INV);
         return str;
     }
 
@@ -225,10 +225,10 @@ public:
     }
 
     virtual void write(vm_char_t c) override {
-        _channel << (UnicodeString() + c);
+        _channel << (icu::UnicodeString() + c);
     }
 
-    virtual void write(const UnicodeString& s) override {
+    virtual void write(const icu::UnicodeString& s) override {
         _channel << s;
     }
 
@@ -244,7 +244,7 @@ public:
         return _channel.eof();
     }
 private:
-    static char* unicode_to_char(const UnicodeString& str) {
+    static char* unicode_to_char(const icu::UnicodeString& str) {
         unsigned int buffer_size = 1024; // XXX: this is always a bad idea.
         char* buffer = new char[buffer_size];
         unsigned int size = str.extract(0, str.length(), buffer, buffer_size, "UTF-8");//XXX: null, UTF-8, or platform specific?
@@ -253,7 +253,7 @@ private:
     }
 
 protected:
-    UnicodeString   _fn;
+    icu::UnicodeString   _fn;
     std::fstream    _channel;
 };
 

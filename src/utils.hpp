@@ -45,26 +45,26 @@ void panic_fail (const char *message, const char *file, uint_t line);
 #define DEBUG_ASSERT(_e)           ((void)0);
 #endif
 
-typedef std::vector<UnicodeString> UnicodeStrings;
+typedef std::vector<icu::UnicodeString> UnicodeStrings;
 // unicode routines
 
 /** 
- ** Converts a UnicodeString to a character array.
+ ** Converts a icu::UnicodeString to a character array.
  **
  ** @param str  the string
  **
  ** @return a character array (heap allocated)
  **/
-char* unicode_to_char(const UnicodeString &str);
+char* unicode_to_char(const icu::UnicodeString &str);
 
 /** 
- ** Converts a UnicodeString to a UChar array.
+ ** Converts a icu::UnicodeString to a UChar array.
  **
  ** @param str  the string
  **
  ** @return a UChar array (heap allocated)
  **/
-UChar* unicode_to_uchar(const UnicodeString &str);
+UChar* unicode_to_uchar(const icu::UnicodeString &str);
 
 /**
  ** Converts an unsigned int to Unicode.
@@ -73,7 +73,7 @@ UChar* unicode_to_uchar(const UnicodeString &str);
  **
  ** @return a Unicode string
  **/
-UnicodeString unicode_convert_uint(uint_t n);
+icu::UnicodeString unicode_convert_uint(uint_t n);
 
 /**
  ** Concatenate two unicode strings
@@ -83,7 +83,7 @@ UnicodeString unicode_convert_uint(uint_t n);
  **
  ** @return the concatenation, a Unicode string
  **/
-UnicodeString unicode_concat(const UnicodeString& s0, const UnicodeString& s1);
+icu::UnicodeString unicode_concat(const icu::UnicodeString& s0, const icu::UnicodeString& s1);
 
 /**
  ** Strip the leading and trailing quote of a Unicode string
@@ -92,7 +92,7 @@ UnicodeString unicode_concat(const UnicodeString& s0, const UnicodeString& s1);
  **
  ** @return a stripped string
  **/
-UnicodeString unicode_strip_quotes(const UnicodeString& s);
+icu::UnicodeString unicode_strip_quotes(const icu::UnicodeString& s);
 
 /**
  ** Escape certain characters in a Unicode string.
@@ -101,7 +101,7 @@ UnicodeString unicode_strip_quotes(const UnicodeString& s);
  **
  ** @return the escaped string
  **/
-UnicodeString unicode_escape(const UnicodeString& s);
+icu::UnicodeString unicode_escape(const icu::UnicodeString& s);
 
 /**
  ** Unescape certain characters in a Unicode string.
@@ -110,7 +110,7 @@ UnicodeString unicode_escape(const UnicodeString& s);
  **
  ** @return the unescaped string
  **/
-UnicodeString unicode_unescape(const UnicodeString& s);
+icu::UnicodeString unicode_unescape(const icu::UnicodeString& s);
 
 /**
  ** Determine if a string ends with a certain suffix.
@@ -120,7 +120,7 @@ UnicodeString unicode_unescape(const UnicodeString& s);
  **
  ** @return the unescaped string
  **/
-bool unicode_endswith(const UnicodeString& s, const UnicodeString& sf);
+bool unicode_endswith(const icu::UnicodeString& s, const icu::UnicodeString& sf);
 
 // convenience routines text to, and from, literals
 
@@ -131,7 +131,7 @@ bool unicode_endswith(const UnicodeString& s, const UnicodeString& sf);
  **
  ** @return the integer recognized
  **/
-int64_t convert_to_int(const UnicodeString& s);
+int64_t convert_to_int(const icu::UnicodeString& s);
 
 /**
  ** Parse and convert a hexadecimal integer. like 0xa3.
@@ -140,7 +140,7 @@ int64_t convert_to_int(const UnicodeString& s);
  **
  ** @return the integer recognized
  **/
-int64_t convert_to_hexint(const UnicodeString& s);
+int64_t convert_to_hexint(const icu::UnicodeString& s);
 
 /**
  ** Parse and convert a float. like 3.14.
@@ -149,7 +149,7 @@ int64_t convert_to_hexint(const UnicodeString& s);
  **
  ** @return the integer recognized
  **/
-double convert_to_float(const UnicodeString& s);
+double convert_to_float(const icu::UnicodeString& s);
 
 /**
  ** Parse and convert a char string. like 'a'.
@@ -158,7 +158,7 @@ double convert_to_float(const UnicodeString& s);
  **
  ** @return the char recognized
  **/
-UChar32 convert_to_char(const UnicodeString& s);
+UChar32 convert_to_char(const icu::UnicodeString& s);
 
 /**
  ** Parse and convert an integer. like 42.
@@ -167,7 +167,7 @@ UChar32 convert_to_char(const UnicodeString& s);
  **
  ** @return the integer recognized
  **/
-UnicodeString convert_from_int(const int64_t& s);
+icu::UnicodeString convert_from_int(const int64_t& s);
 
 /**
  ** Parse and convert a float. like 3.14.
@@ -176,7 +176,7 @@ UnicodeString convert_from_int(const int64_t& s);
  **
  ** @return the integer recognized
  **/
-UnicodeString convert_from_float(const double& s);
+icu::UnicodeString convert_from_float(const double& s);
 
 /**
  ** Parse and convert a char string. like 'a'.
@@ -185,7 +185,7 @@ UnicodeString convert_from_float(const double& s);
  **
  ** @return the char recognized
  **/
-UnicodeString convert_from_char(const UChar32& s);
+icu::UnicodeString convert_from_char(const UChar32& s);
 
 /**
  ** Parse and convert a text string. like "hello!".
@@ -194,7 +194,7 @@ UnicodeString convert_from_char(const UChar32& s);
  **
  ** @return the integer recognized
  **/
-UnicodeString convert_to_text(const UnicodeString& s);
+icu::UnicodeString convert_to_text(const icu::UnicodeString& s);
 
 // convenience io-routines
 
@@ -205,7 +205,7 @@ UnicodeString convert_to_text(const UnicodeString& s);
  **
  ** @return the contents of the file
  **/
-UnicodeString file_read(const UnicodeString &filename);
+icu::UnicodeString file_read(const icu::UnicodeString &filename);
 
 /** 
  ** Convenience. Writes a string to a file.
@@ -213,7 +213,7 @@ UnicodeString file_read(const UnicodeString &filename);
  ** @param filename     the filename
  ** @param str          the string
  **/
-void file_write(const UnicodeString &filename, const UnicodeString &str);
+void file_write(const icu::UnicodeString &filename, const icu::UnicodeString &str);
 
 /** 
  ** Convenience. Checks whether a given file exists. (Note the possible race conditions.)
@@ -222,7 +222,7 @@ void file_write(const UnicodeString &filename, const UnicodeString &str);
  **
  ** @return true iff the file exists
  **/
-bool file_exists(const UnicodeString &filename);
+bool file_exists(const icu::UnicodeString &filename);
 
 /** 
  ** Convenience. Combine two paths into a new path. OS specific.
@@ -232,6 +232,6 @@ bool file_exists(const UnicodeString &filename);
  **
  ** @return the combined path
  **/
-UnicodeString path_combine(const UnicodeString& p0, const UnicodeString& p1);
+icu::UnicodeString path_combine(const icu::UnicodeString& p0, const icu::UnicodeString& p1);
 
 #endif

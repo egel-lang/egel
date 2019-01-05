@@ -26,39 +26,39 @@ public:
     virtual void transform_pre(const AstPtr& a) {
     }
 
-    virtual AstPtr transform_expr_integer(const AstPtr& a, const Position& p, const UnicodeString& v) {
+    virtual AstPtr transform_expr_integer(const AstPtr& a, const Position& p, const icu::UnicodeString& v) {
         return a;
     }
 
-    virtual AstPtr transform_expr_hexinteger(const AstPtr& a, const Position& p, const UnicodeString& v) {
+    virtual AstPtr transform_expr_hexinteger(const AstPtr& a, const Position& p, const icu::UnicodeString& v) {
         return a;
     }
 
-    virtual AstPtr transform_expr_float(const AstPtr& a, const Position& p, const UnicodeString& v) {
+    virtual AstPtr transform_expr_float(const AstPtr& a, const Position& p, const icu::UnicodeString& v) {
         return a;
     }
 
-    virtual AstPtr transform_expr_character(const AstPtr& a, const Position& p, const UnicodeString& v) {
+    virtual AstPtr transform_expr_character(const AstPtr& a, const Position& p, const icu::UnicodeString& v) {
         return a;
     }
 
-    virtual AstPtr transform_expr_text(const AstPtr& a, const Position& p, const UnicodeString& v) {
+    virtual AstPtr transform_expr_text(const AstPtr& a, const Position& p, const icu::UnicodeString& v) {
         return a;
     }
 
-    virtual AstPtr transform_expr_variable(const AstPtr& a, const Position& p, const UnicodeString& n) {
+    virtual AstPtr transform_expr_variable(const AstPtr& a, const Position& p, const icu::UnicodeString& n) {
         return a;
     }
 
-    virtual AstPtr transform_expr_wildcard(const AstPtr& a, const Position& p, const UnicodeString& n) {
+    virtual AstPtr transform_expr_wildcard(const AstPtr& a, const Position& p, const icu::UnicodeString& n) {
         return a;
     }
 
-    virtual AstPtr transform_expr_combinator(const AstPtr& a, const Position& p, const UnicodeStrings& nn, const UnicodeString& n) {
+    virtual AstPtr transform_expr_combinator(const AstPtr& a, const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
         return a;
     }
 
-    virtual AstPtr transform_expr_operator(const AstPtr& a, const Position& p, const UnicodeStrings& nn, const UnicodeString& n) {
+    virtual AstPtr transform_expr_operator(const AstPtr& a, const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
         return a;
     }
 
@@ -131,7 +131,7 @@ public:
         return AstExprThrow(p, e0).clone();
     }
 
-    virtual AstPtr transform_directive_import(const AstPtr& a, const Position& p, const UnicodeString& i) {
+    virtual AstPtr transform_directive_import(const AstPtr& a, const Position& p, const icu::UnicodeString& i) {
         return a;
     }
 
@@ -368,40 +368,40 @@ public:
     }
 
     // literals
-    virtual AstPtr rewrite_expr_integer(const Position& p, const UnicodeString& v) {
+    virtual AstPtr rewrite_expr_integer(const Position& p, const icu::UnicodeString& v) {
         return AstExprInteger(p, v).clone();
     }
 
-    virtual AstPtr rewrite_expr_hexinteger(const Position& p, const UnicodeString& v) {
+    virtual AstPtr rewrite_expr_hexinteger(const Position& p, const icu::UnicodeString& v) {
         return AstExprHexInteger(p, v).clone();
     }
 
-    virtual AstPtr rewrite_expr_float(const Position& p, const UnicodeString& v) {
+    virtual AstPtr rewrite_expr_float(const Position& p, const icu::UnicodeString& v) {
         return AstExprFloat(p, v).clone();
     }
 
-    virtual AstPtr rewrite_expr_character(const Position& p, const UnicodeString& v) {
+    virtual AstPtr rewrite_expr_character(const Position& p, const icu::UnicodeString& v) {
         return AstExprCharacter(p, v).clone();
     }
 
-    virtual AstPtr rewrite_expr_text(const Position& p, const UnicodeString& v) {
+    virtual AstPtr rewrite_expr_text(const Position& p, const icu::UnicodeString& v) {
         return AstExprText(p, v).clone();
     }
 
     // variables and constants
-    virtual AstPtr rewrite_expr_variable(const Position& p, const UnicodeString& n) {
+    virtual AstPtr rewrite_expr_variable(const Position& p, const icu::UnicodeString& n) {
         return AstExprVariable(p, n).clone();
     }
 
-    virtual AstPtr rewrite_expr_wildcard(const Position& p, const UnicodeString& n) {
+    virtual AstPtr rewrite_expr_wildcard(const Position& p, const icu::UnicodeString& n) {
         return AstExprWildcard(p, n).clone();
     }
 
-    virtual AstPtr rewrite_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) {
+    virtual AstPtr rewrite_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
         return AstExprCombinator(p, nn, n).clone();
     }
 
-    virtual AstPtr rewrite_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) {
+    virtual AstPtr rewrite_expr_operator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
         return AstExprOperator(p, nn, n).clone();
     }
 
@@ -476,7 +476,7 @@ public:
         return AstExprThrow(p, e0).clone();
     }
 
-    virtual AstPtr rewrite_directive_import(const Position& p, const UnicodeString& i) {
+    virtual AstPtr rewrite_directive_import(const Position& p, const icu::UnicodeString& i) {
         return AstDirectImport(p, i).clone();
     }
 
@@ -709,31 +709,31 @@ public:
         }
     }
 
-    virtual void visit_expr_integer(const Position& p, const UnicodeString& v) {
+    virtual void visit_expr_integer(const Position& p, const icu::UnicodeString& v) {
     }
 
-    virtual void visit_expr_hexinteger(const Position& p, const UnicodeString& v) {
+    virtual void visit_expr_hexinteger(const Position& p, const icu::UnicodeString& v) {
     }
 
-    virtual void visit_expr_float(const Position& p, const UnicodeString& v) {
+    virtual void visit_expr_float(const Position& p, const icu::UnicodeString& v) {
     }
 
-    virtual void visit_expr_character(const Position& p, const UnicodeString& v) {
+    virtual void visit_expr_character(const Position& p, const icu::UnicodeString& v) {
     }
 
-    virtual void visit_expr_text(const Position& p, const UnicodeString& v) {
+    virtual void visit_expr_text(const Position& p, const icu::UnicodeString& v) {
     }
 
-    virtual void visit_expr_variable(const Position& p, const UnicodeString& n) {
+    virtual void visit_expr_variable(const Position& p, const icu::UnicodeString& n) {
     }
 
-    virtual void visit_expr_wildcard(const Position& p, const UnicodeString& n) {
+    virtual void visit_expr_wildcard(const Position& p, const icu::UnicodeString& n) {
     }
 
-    virtual void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) {
+    virtual void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
     }
 
-    virtual void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) {
+    virtual void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
     }
 
     virtual void visit_expr_tuple(const Position& p, const AstPtrs& tt) {
@@ -793,7 +793,7 @@ public:
         visit(e);
     }
 
-    virtual void visit_directive_import(const Position& p, const UnicodeString& i) {
+    virtual void visit_directive_import(const Position& p, const icu::UnicodeString& i) {
     }
 
     virtual void visit_directive_using(const Position& p, const UnicodeStrings& nn) {

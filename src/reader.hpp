@@ -19,7 +19,7 @@ public:
 
 class StringCharReader : public CharReader {
 public:
-    StringCharReader(const UnicodeString &resource, const UnicodeString &content) {
+    StringCharReader(const icu::UnicodeString &resource, const icu::UnicodeString &content) {
         _row = 1;
         _column = 1;
         _resource = resource;
@@ -31,7 +31,7 @@ public:
         return Position(_resource, _row, _column);
     }
 
-    UnicodeString content() {
+    icu::UnicodeString content() {
         return _content;
     }
 
@@ -79,11 +79,11 @@ public:
     }
 
 private:
-    UnicodeString _resource;
+    icu::UnicodeString _resource;
     int32_t _row;
     int32_t _column;
 
-    UnicodeString _content;
+    icu::UnicodeString _content;
     int32_t _index;
 };
 

@@ -134,7 +134,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtrs& args) const override {
 
-        UnicodeString s;
+        icu::UnicodeString s;
         for (auto& arg:args) {
             if (arg->tag() == VM_OBJECT_INTEGER) {
                 s += arg->to_text();
@@ -168,7 +168,7 @@ public:
     VMObjectPtr apply() const override {
         std::string line;
         std::getline(std::cin, line);
-        UnicodeString str(line.c_str());
+        icu::UnicodeString str(line.c_str());
         return create_text(str);
     }
 };
@@ -476,8 +476,8 @@ public:
 // channel. This works only for regular files. On files of other
 // kinds, the result is meaningless.
 
-extern "C" std::vector<UnicodeString> egel_imports() {
-    return std::vector<UnicodeString>();
+extern "C" std::vector<icu::UnicodeString> egel_imports() {
+    return std::vector<icu::UnicodeString>();
 }
 
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {

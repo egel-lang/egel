@@ -8,7 +8,7 @@ public:
         return _imports;
     }
 
-    void visit_directive_import(const Position& p, const UnicodeString& i) override {
+    void visit_directive_import(const Position& p, const icu::UnicodeString& i) override {
         _imports.push_back(AstDirectImport(p, i).clone());
     }
 

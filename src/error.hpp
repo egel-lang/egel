@@ -16,7 +16,7 @@ typedef enum {
 
 class Error : public std::exception {
 public:
-    Error(error_tag_t t, const Position &p, const UnicodeString &m) :
+    Error(error_tag_t t, const Position &p, const icu::UnicodeString &m) :
         _tag(t), _position(p), _message(m)  {
             // useful for debugging, uncomment to get stack trace in debug mode
             //Error* e = (Error*) nullptr;
@@ -30,12 +30,12 @@ public:
         return _position;
     }
     
-    UnicodeString message() const {
+    icu::UnicodeString message() const {
         return _message;
     }
 
-    UnicodeString error() const {
-        UnicodeString s = "";
+    icu::UnicodeString error() const {
+        icu::UnicodeString s = "";
         if (position().resource() != "") {
             s += position().to_text() + ":";
         }
@@ -68,42 +68,42 @@ public:
 private:
     error_tag_t     _tag;
     Position        _position;
-    UnicodeString   _message;
+    icu::UnicodeString   _message;
 };
 
 class ErrorIO: public Error {
 public:
-    ErrorIO(const Position& p, const UnicodeString& m)
+    ErrorIO(const Position& p, const icu::UnicodeString& m)
         : Error(ERROR_IO, p, m) { }
 
-    ErrorIO(const UnicodeString& m)
+    ErrorIO(const icu::UnicodeString& m)
         : Error(ERROR_IO, Position(), m) { }
 };
 
 class ErrorLexical: public Error {
 public:
-    ErrorLexical(const Position& p, const UnicodeString& m)
+    ErrorLexical(const Position& p, const icu::UnicodeString& m)
         : Error(ERROR_LEXICAL, p, m) {}
 };
 
 class ErrorSyntactical: public Error {
 public:
-    ErrorSyntactical(const Position& p, const UnicodeString& m)
+    ErrorSyntactical(const Position& p, const icu::UnicodeString& m)
         : Error(ERROR_SYNTACTICAL, p, m) {}
 };
 
 class ErrorIdentification: public Error {
 public:
-    ErrorIdentification(const Position& p, const UnicodeString& m)
+    ErrorIdentification(const Position& p, const icu::UnicodeString& m)
         : Error(ERROR_IDENTIFICATION, p, m) {}
 };
 
 class ErrorSemantical: public Error {
 public:
-    ErrorSemantical(const Position& p, const UnicodeString& m)
+    ErrorSemantical(const Position& p, const icu::UnicodeString& m)
         : Error(ERROR_SEMANTICAL, p, m) {}
 
-    ErrorSemantical(const UnicodeString& m)
+    ErrorSemantical(const icu::UnicodeString& m)
         : Error(ERROR_SEMANTICAL, Position(), m) { }
 };
 

@@ -536,15 +536,15 @@ public:
         : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _code(c) {
     };
     
-    VMObjectBytecode(VM* m, const Code& c, const UnicodeString& n)
+    VMObjectBytecode(VM* m, const Code& c, const icu::UnicodeString& n)
         : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, n), _code(c) {
     };
     
-    VMObjectBytecode(VM* m, const Code& c, const UnicodeString& n0, const UnicodeString& n1)
+    VMObjectBytecode(VM* m, const Code& c, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
         : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, n0, n1), _code(c) {
     };
     
-    VMObjectBytecode(VM* m, const Code& c, const UnicodeStrings& nn, const UnicodeString& n)
+    VMObjectBytecode(VM* m, const Code& c, const UnicodeStrings& nn, const icu::UnicodeString& n)
         : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, nn, n), _code(c) {
     };
     

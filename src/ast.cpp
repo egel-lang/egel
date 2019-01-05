@@ -40,7 +40,7 @@ int compare_asts(const AstPtrs& aa0, const AstPtrs& aa1) {
     }
 }
 
-int compare_text(const UnicodeString& t0, const UnicodeString& t1) {
+int compare_text(const icu::UnicodeString& t0, const icu::UnicodeString& t1) {
     return t0.compare(t1);
 }
 

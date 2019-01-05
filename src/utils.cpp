@@ -55,14 +55,14 @@ bool exists_file(const char* filename) {
 
 // Unicode routines
 
-char* unicode_to_char(const UnicodeString &str) {
+char* unicode_to_char(const icu::UnicodeString &str) {
     auto len = str.extract(0, STRING_MAX_SIZE, nullptr, (uint32_t) 0);
     auto buffer = new char[len+1];
     str.extract(0, STRING_MAX_SIZE, buffer, len+1);
     return buffer;
 }
 
-UChar* unicode_to_uchar(const UnicodeString &str) {
+UChar* unicode_to_uchar(const icu::UnicodeString &str) {
     UErrorCode error = U_ZERO_ERROR;
     UChar* buffer = new UChar[str.length()+1];
     int32_t size = str.extract(buffer, sizeof(buffer), error);
@@ -74,28 +74,28 @@ UChar* unicode_to_uchar(const UnicodeString &str) {
     return buffer;
 }
 
-UnicodeString unicode_convert_uint(uint_t n) {
+icu::UnicodeString unicode_convert_uint(uint_t n) {
     std::stringstream ss;
     ss << n;
-    UnicodeString u(ss.str().c_str());
+    icu::UnicodeString u(ss.str().c_str());
     return u;
 }
 
-UnicodeString unicode_concat(const UnicodeString& s0, const UnicodeString& s1) {
-    UnicodeString s;
+icu::UnicodeString unicode_concat(const icu::UnicodeString& s0, const icu::UnicodeString& s1) {
+    icu::UnicodeString s;
     s += s0;
     s += s1;
     return s;
 }
 
-int64_t convert_to_int(const UnicodeString& s) {
+int64_t convert_to_int(const icu::UnicodeString& s) {
     char* buf = unicode_to_char(s);
     auto i = atol(buf);
     delete buf;
     return i;
 }
 
-int64_t convert_to_hexint(const UnicodeString& s) {
+int64_t convert_to_hexint(const icu::UnicodeString& s) {
     int i = 0;
     int64_t n = 0;
     UChar32 c = s.char32At(i);
@@ -114,59 +114,59 @@ int64_t convert_to_hexint(const UnicodeString& s) {
     return n;
 }
 
-double convert_to_float(const UnicodeString& s) {
+double convert_to_float(const icu::UnicodeString& s) {
     char* buf = unicode_to_char(s);
     auto f = atof(buf);
     delete buf;
     return f;
 }
 
-UChar32 convert_to_char(const UnicodeString& s) {
+UChar32 convert_to_char(const icu::UnicodeString& s) {
     auto s0 = unicode_strip_quotes(s);
     auto s1 = unicode_unescape(s0);
     return s1.char32At(0);
 }
 
-UnicodeString convert_to_text(const UnicodeString& s) {
+icu::UnicodeString convert_to_text(const icu::UnicodeString& s) {
     auto s0 = unicode_strip_quotes(s);
     auto s1 = unicode_unescape(s0);
     return s1;
 }
 
-UnicodeString convert_from_int(const int64_t& n) {
+icu::UnicodeString convert_from_int(const int64_t& n) {
     std::stringstream ss;
     ss << n;
-    UnicodeString u(ss.str().c_str());
+    icu::UnicodeString u(ss.str().c_str());
     return u;
 }
 
-UnicodeString convert_from_float(const double& f) {
+icu::UnicodeString convert_from_float(const double& f) {
     std::stringstream ss;
     ss << f;
-    UnicodeString u(ss.str().c_str());
+    icu::UnicodeString u(ss.str().c_str());
     return u;
 }
 
-UnicodeString convert_from_char(const UChar32& c) {
+icu::UnicodeString convert_from_char(const UChar32& c) {
     std::stringstream ss;
     ss << c;
-    UnicodeString u(ss.str().c_str());
+    icu::UnicodeString u(ss.str().c_str());
     auto u1 = unicode_escape(u);
     return u1;
 }
 
-UnicodeString convert_from_text(const UnicodeString& s) {
+icu::UnicodeString convert_from_text(const icu::UnicodeString& s) {
     auto s1 = unicode_escape(s);
     return s1;
 }
 
-UnicodeString unicode_strip_quotes(const UnicodeString& s) {
-    UnicodeString copy(s);
+icu::UnicodeString unicode_strip_quotes(const icu::UnicodeString& s) {
+    icu::UnicodeString copy(s);
     return copy.retainBetween(1, copy.length() -1);
 }
 
-UnicodeString unicode_escape(const UnicodeString& s) {
-    UnicodeString s1;
+icu::UnicodeString unicode_escape(const icu::UnicodeString& s) {
+    icu::UnicodeString s1;
     int i=0;
     int len = s.length();
     for (i = 0; i < len; i++) {
@@ -210,26 +210,26 @@ UnicodeString unicode_escape(const UnicodeString& s) {
     return s1;
 }
 
-UnicodeString unicode_unescape(const UnicodeString& s) {
+icu::UnicodeString unicode_unescape(const icu::UnicodeString& s) {
     return s.unescape();
 }
 
-bool unicode_endswith(const UnicodeString& s, const UnicodeString& suffix) {
+bool unicode_endswith(const icu::UnicodeString& s, const icu::UnicodeString& suffix) {
     return s.endsWith(suffix);
 }
 
 // basic I/O routines
 
-UnicodeString file_read(const UnicodeString &filename) {
+icu::UnicodeString file_read(const icu::UnicodeString &filename) {
     char* fn = unicode_to_char(filename);
     UChar* chars = read_utf8_file(fn);
     delete[] fn;
-    UnicodeString str = UnicodeString(chars);
+    icu::UnicodeString str = icu::UnicodeString(chars);
     delete[] chars;
     return str;
 }
 
-void file_write(const UnicodeString &filename, const UnicodeString &str) {
+void file_write(const icu::UnicodeString &filename, const icu::UnicodeString &str) {
     char* fn = unicode_to_char(filename);
     UChar* s  = unicode_to_uchar(str);
     write_utf8_file(fn, s);
@@ -237,16 +237,16 @@ void file_write(const UnicodeString &filename, const UnicodeString &str) {
     delete[] s;
 }
 
-bool file_exists(const UnicodeString &filename) {
+bool file_exists(const icu::UnicodeString &filename) {
     char* fn = unicode_to_char(filename);
     bool b = exists_file(fn);
     delete[] fn;
     return b;
 }
 
-UnicodeString path_combine(const UnicodeString& p0, const UnicodeString& p1) {
+icu::UnicodeString path_combine(const icu::UnicodeString& p0, const icu::UnicodeString& p1) {
     // XXX: OS specific so this should once be generalized.
-    if (p0.endsWith(UnicodeString("/"))) {
+    if (p0.endsWith(icu::UnicodeString("/"))) {
         return p0 + p1;
     } else {
         return p0 + '/' + p1;

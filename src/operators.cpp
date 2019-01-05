@@ -47,8 +47,8 @@ int     operator_char_entry(const UChar32& c) {
     return -1;
 }
 
-UnicodeString operator_char_translation(int i) {
-    return UnicodeString(operators[i].translation);
+icu::UnicodeString operator_char_translation(int i) {
+    return icu::UnicodeString(operators[i].translation);
 }
 
 attr_t operator_char_attributes(int i) {
@@ -79,7 +79,7 @@ int     operator_char_compare(const UChar32 c0, const UChar32 c1) {
 }
 
 
-int     operator_compare(const UnicodeString& o0, const UnicodeString& o1) {
+int     operator_compare(const icu::UnicodeString& o0, const icu::UnicodeString& o1) {
     int l0 = o0.length();
     int l1 = o1.length();
 
@@ -103,13 +103,13 @@ int     operator_compare(const UnicodeString& o0, const UnicodeString& o1) {
     return 0;
 }
 
-UChar32 operator_head_char(const UnicodeString& o) {
+UChar32 operator_head_char(const icu::UnicodeString& o) {
     ASSERT(o.length() > 0);
     UChar32 c = o.char32At(0);
     return c;
 }
 
-bool    operator_is_infix(const UnicodeString& o) {
+bool    operator_is_infix(const icu::UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
@@ -120,7 +120,7 @@ bool    operator_is_infix(const UnicodeString& o) {
     }
 }
 
-bool    operator_is_prefix(const UnicodeString& o) {
+bool    operator_is_prefix(const icu::UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
@@ -131,7 +131,7 @@ bool    operator_is_prefix(const UnicodeString& o) {
     }
 }
 
-bool    operator_is_postfix(const UnicodeString& o) {
+bool    operator_is_postfix(const icu::UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
@@ -142,7 +142,7 @@ bool    operator_is_postfix(const UnicodeString& o) {
     }
 }
 
-bool    operator_is_left_associative(const UnicodeString& o) {
+bool    operator_is_left_associative(const icu::UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
@@ -153,7 +153,7 @@ bool    operator_is_left_associative(const UnicodeString& o) {
     }
 }
 
-bool    operator_is_right_associative(const UnicodeString& o) {
+bool    operator_is_right_associative(const icu::UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
@@ -164,7 +164,7 @@ bool    operator_is_right_associative(const UnicodeString& o) {
     }
 }
 
-bool    operator_is_not_associative(const UnicodeString& o) {
+bool    operator_is_not_associative(const icu::UnicodeString& o) {
     UChar32 c = operator_head_char(o);
     int i = operator_char_entry(c);
     if (i < 0) {
@@ -175,7 +175,7 @@ bool    operator_is_not_associative(const UnicodeString& o) {
     }
 }
 
-UnicodeString operator_to_ascii(const UnicodeString& o) {
+icu::UnicodeString operator_to_ascii(const icu::UnicodeString& o) {
     // XXX
     return "";
 }

@@ -120,11 +120,11 @@ public:
         auto c = vm->get_data_string("main");
 
         if (c->flag() != VM_OBJECT_FLAG_STUB) {
-            eval_command(UnicodeString("main"));
+            eval_command(icu::UnicodeString("main"));
         }
     }
 
-    void eval_load(const UnicodeString& lib) {
+    void eval_load(const icu::UnicodeString& lib) {
         auto mm = get_manager();
         Position p("", 0, 0);
         mm->load(p, lib);
@@ -280,7 +280,7 @@ public:
         }
     }
 
-    void eval_line(const UnicodeString& in, const callback_t& main, const callback_t& exc) {
+    void eval_line(const icu::UnicodeString& in, const callback_t& main, const callback_t& exc) {
         auto mm = get_manager();
         auto vm = get_machine();
 
@@ -316,7 +316,7 @@ public:
         }
     }
 
-    void eval_command(const UnicodeString& in) {
+    void eval_command(const icu::UnicodeString& in) {
         eval_line(in, &default_main_callback, &default_exception_callback);
     }
 
@@ -326,7 +326,7 @@ public:
         std::string s;
         std::cout << ">> ";
         while (std::getline(std::cin, s)) {
-            auto in = UnicodeString::fromUTF8(StringPiece(s.c_str()));
+            auto in = icu::UnicodeString::fromUTF8(icu::StringPiece(s.c_str()));
             try {
                 eval_command(in);
             } catch (Error &e) {

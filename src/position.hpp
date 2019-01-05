@@ -8,12 +8,12 @@
 class Position {
 public:
     Position() {
-        _resource = UnicodeString("");
+        _resource = icu::UnicodeString("");
         _row = 0;
         _column = 0;
     }
 
-    Position(const UnicodeString &resource, int32_t row, int32_t column) {
+    Position(const icu::UnicodeString &resource, int32_t row, int32_t column) {
         _resource = resource;
         _row = row;
         _column = column;
@@ -22,7 +22,7 @@ public:
     ~Position() {
     }
 
-    UnicodeString resource() const {
+    icu::UnicodeString resource() const {
         return _resource;
     }
 
@@ -34,10 +34,10 @@ public:
         return _column;
     }
 
-    UnicodeString to_text() {
+    icu::UnicodeString to_text() {
         std::stringstream ss;
         ss << *this;
-        UnicodeString u(ss.str().c_str());
+        icu::UnicodeString u(ss.str().c_str());
         return u;
     }
 
@@ -47,7 +47,7 @@ public:
     }
 
 private:
-    UnicodeString   _resource;
+    icu::UnicodeString   _resource;
     int32_t         _row;
     int32_t         _column;
 };

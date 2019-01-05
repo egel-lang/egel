@@ -5,14 +5,14 @@
 #include <memory>
 #include "error.hpp"
 
-typedef std::map<UnicodeString, UnicodeString> Table;
+typedef std::map<icu::UnicodeString, icu::UnicodeString> Table;
 
 class Scope;
 typedef std::shared_ptr<Scope>  ScopePtr;
 
 class Scope {
 public:
-    void declare(const UnicodeString& k, const UnicodeString& v) {
+    void declare(const icu::UnicodeString& k, const icu::UnicodeString& v) {
         if (_symbols.count(k) > 0) {
             throw ErrorSemantical("redeclaration of " + k);
         } else {
@@ -20,11 +20,11 @@ public:
         }
     }
 
-    void declare_implicit(const UnicodeString& k, const UnicodeString& v) {
+    void declare_implicit(const icu::UnicodeString& k, const icu::UnicodeString& v) {
         _symbols[k] = v;
     }
 
-    UnicodeString get(const UnicodeString& k) const {
+    icu::UnicodeString get(const icu::UnicodeString& k) const {
         if (_symbols.count(k) > 0) return _symbols.at(k);
         return "";
     }
@@ -37,10 +37,10 @@ public:
         }
     }
 
-    UnicodeString to_text() {
+    icu::UnicodeString to_text() {
         std::stringstream ss;
         render(ss, 0);
-        UnicodeString u(ss.str().c_str());
+        icu::UnicodeString u(ss.str().c_str());
         return u;
     }
 protected:
@@ -49,7 +49,7 @@ protected:
 
 class Namespace;
 typedef std::shared_ptr<Namespace>  NamespacePtr;
-typedef std::map<UnicodeString, NamespacePtr> NamespaceMap;
+typedef std::map<icu::UnicodeString, NamespacePtr> NamespaceMap;
 
 class Namespace: public Scope {
 public:
@@ -64,7 +64,7 @@ public:
         return NamespacePtr(new Namespace(*this));
     }
 
-    NamespacePtr create_namespace(const UnicodeString& n) {
+    NamespacePtr create_namespace(const icu::UnicodeString& n) {
         if (_embeds.count(n) > 0) {
             return _embeds.at(n);
         } else {
@@ -74,7 +74,7 @@ public:
         }
     }
 
-    NamespacePtr find_namespace(const UnicodeString& n) const {
+    NamespacePtr find_namespace(const icu::UnicodeString& n) const {
         if (_embeds.count(n) > 0) {
             return _embeds.at(n);
         } else {
@@ -159,7 +159,7 @@ inline NamespacePtr namespace_nil() {
     return std::make_shared<Namespace>();
 }
 
-inline void declare(const NamespacePtr& p, const UnicodeStrings& nn, const UnicodeString& n, const UnicodeString& v) {
+inline void declare(const NamespacePtr& p, const UnicodeStrings& nn, const icu::UnicodeString& n, const icu::UnicodeString& v) {
     auto ptr = p;
     for (auto& n: nn) {
         ptr = ptr->create_namespace(n);
@@ -167,7 +167,7 @@ inline void declare(const NamespacePtr& p, const UnicodeStrings& nn, const Unico
     ptr->declare(n, v);
 }
 
-inline void declare_implicit(const NamespacePtr& p, const UnicodeStrings& nn, const UnicodeString& n, const UnicodeString& v) {
+inline void declare_implicit(const NamespacePtr& p, const UnicodeStrings& nn, const icu::UnicodeString& n, const icu::UnicodeString& v) {
     auto ptr = p;
     for (auto& n: nn) {
         ptr = ptr->create_namespace(n);
@@ -175,7 +175,7 @@ inline void declare_implicit(const NamespacePtr& p, const UnicodeStrings& nn, co
     ptr->declare_implicit(n, v);
 }
 
-inline UnicodeString get(const NamespacePtr& p, const UnicodeStrings& nn, const UnicodeString& n) {
+inline icu::UnicodeString get(const NamespacePtr& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
     auto ptr = p;
     for (auto& n: nn) {
         ptr = ptr->find_namespace(n);
@@ -209,29 +209,29 @@ inline RangePtr leave_range(const RangePtr& p) {
     return p->embeds();
 }
 
-inline void declare(const RangePtr& p, const UnicodeString& k, const UnicodeString& v) {
+inline void declare(const RangePtr& p, const icu::UnicodeString& k, const icu::UnicodeString& v) {
     p->declare(k, v);
 }
 
-inline UnicodeString get(const RangePtr& r, const UnicodeString& n) {
+inline icu::UnicodeString get(const RangePtr& r, const icu::UnicodeString& n) {
     static UnicodeStrings nn;
     if (r == nullptr) return "";
-    UnicodeString s = r->get(n);
+    icu::UnicodeString s = r->get(n);
     if (s != "") {
         return s;
     } else {
         for (auto& ptr: r->uses()) {
-            UnicodeString s = get(ptr, nn, n);
+            icu::UnicodeString s = get(ptr, nn, n);
             if (s != "") return s;
         }
         return get(r->embeds(), n);
     }
 }
 
-inline UnicodeString get(const RangePtr& r, const UnicodeStrings& nn, const UnicodeString& n) {
+inline icu::UnicodeString get(const RangePtr& r, const UnicodeStrings& nn, const icu::UnicodeString& n) {
     if (r == nullptr) return "";
     for (auto& ptr: r->uses()) {
-        UnicodeString s = get(ptr, nn, n);
+        icu::UnicodeString s = get(ptr, nn, n);
         if (s != "") return s;
     }
     return get(r->embeds(), nn, n);
