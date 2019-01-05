@@ -1,0 +1,38 @@
+# Testing basic IO.
+#
+# This script reads standard input and prints it sorted to standard output.
+
+import "prelude.eg"
+import "io.ego"
+
+using System
+using IO
+using List
+
+def input =
+    let L = read_line stdin in
+    if eof stdin then nil else cons L input
+
+def output =
+    [ nil -> nop
+    | (cons L LL) -> let _  = print L "\n" in output LL ]
+
+def split =
+    [ nil -> (nil, nil)
+    | (cons X nil) -> (nil, cons X nil)
+    | (cons X0 (cons X1 XX)) -> 
+        let (YY, ZZ) = split XX in (cons X0 YY, cons X1 ZZ) ]
+
+def merge =
+    [ XX nil -> XX
+    | nil YY -> YY
+    | (cons X XX) (cons Y YY) ->
+        if X < Y then cons X (merge XX (cons Y YY)) else cons Y (merge (cons X XX) YY) ]
+
+def sort =
+    [ nil -> nil
+    | (cons X nil) -> cons X nil
+    | XX  -> let (YY, ZZ) = split XX in merge (sort YY) (sort ZZ) ] 
+
+def main = 
+    output (sort input)
