@@ -7,6 +7,15 @@
 #include <string>
 #include <memory>
 #include <exception>
+#include <thread>
+
+// lets hope all this C stuff can once be gone
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 /**
  * In C++, copy constructors for streams are usually undefined
@@ -49,6 +58,7 @@ typedef enum {
     CHANNEL_STREAM_OUT,
     CHANNEL_STREAM_ERR,
     CHANNEL_FILE,
+    CHANNEL_FD,
 } channel_tag_t;
 
 class Channel;
@@ -67,7 +77,7 @@ public:
         throw Unsupported();
     }
 
-    virtual UnicodeString read_char() { // XXX: wait for the libicu fix
+    virtual UChar32 read_char() { // XXX: wait for the libicu fix?
         throw Unsupported();
     }
 
@@ -79,6 +89,14 @@ public:
         throw Unsupported();
     }
 
+    virtual void write_char(const UChar32& n) {
+        throw Unsupported();
+    }
+
+    virtual void write_line(const UnicodeString& n) {
+        throw Unsupported();
+    }
+
     virtual void close() {
     }
 
@@ -87,16 +105,6 @@ public:
 
     virtual bool eof() {
         return false;
-    }
-
-protected:
-
-    static char* unicode_to_char(const UnicodeString& str) {
-        unsigned int buffer_size = 1024; // XXX: this is always a bad idea.
-        char* buffer = new char[buffer_size];
-        unsigned int size = str.extract(0, str.length(), buffer, buffer_size, "UTF-8");//XXX: null, UTF-8, or platform specific?
-        buffer[size] = 0;
-        return buffer;
     }
 
 protected:
@@ -143,6 +151,10 @@ public:
         std::cout << s;
     }
 
+    virtual void write_line(const UnicodeString& s) override {
+        std::cout << s << std::endl;
+    }
+
     virtual void flush() override {
         std::cout.flush();
     }
@@ -151,7 +163,6 @@ public:
 class ChannelStreamErr: public Channel {
 public:
     ChannelStreamErr(): Channel(CHANNEL_STREAM_ERR) {
-
     }
 
     static ChannelPtr create() {
@@ -162,6 +173,10 @@ public:
         std::cerr << s;
     }
 
+    virtual void write_line(const UnicodeString& s) override {
+        std::cerr << s << std::endl;
+    }
+
     virtual void flush() override {
         std::cerr.flush();
     }
@@ -170,9 +185,9 @@ public:
 class ChannelFile: public Channel {
 public:
     ChannelFile(const UnicodeString& fn): Channel(CHANNEL_FILE), _fn(fn) {
-        char* bf = unicode_to_char(fn);
-        _stream = std::fstream(bf);
-        delete bf;
+        std::string utf8;
+        fn.toUTF8String(utf8);
+        _stream = std::fstream(utf8.c_str()); // unsafe due to NUL
     }
 
     static ChannelPtr create(const UnicodeString& fn) {
@@ -195,6 +210,10 @@ public:
         _stream << s;
     }
 
+    virtual void write_line(const UnicodeString& s) override {
+        _stream << s << std::endl;
+    }
+
     virtual void close() override {
         _stream.close();
     }
@@ -211,16 +230,105 @@ protected:
     std::fstream    _stream;
 };
 
+// Convenience class for file descriptors from _sockets_.
+// should be removed as soon as C++ adds stream io on them.
+class ChannelFD: public Channel {
+public:
+    ChannelFD(const int fd): Channel(CHANNEL_FD), _fd(fd) {
+    }
+
+    static ChannelPtr create(const int fd) {
+        return ChannelPtr(new ChannelFD(fd));
+    }
+
+    UnicodeString read_line() override {
+        const int CHUNK_SIZE = 1024;
+        char* str = (char*) malloc(CHUNK_SIZE);
+        int allocated = CHUNK_SIZE; 
+        int count = 0;
+
+        _eof = false;
+
+        // XXX: replace this code once with buffered writes
+        // read to a char* one byte at a time until '\n'
+        int n = 0;
+        char ch;
+        do {
+            n = ::read(_fd, (void*) &ch, (size_t) 1);
+            if (n < 0) { // this signals an error
+                throw "error in read";
+            } else if (n == 0) { // this signals EOF
+                _eof = true;
+            } else { // n == 1
+                if (ch == '\n') {
+                } else {
+                    str[count] = ch;
+                    count++;
+                    if (count >= allocated) {
+                        str = (char*) realloc(str, allocated + CHUNK_SIZE);
+                        allocated += CHUNK_SIZE;
+                    }
+                }
+            }
+        } while ((n > 0) && (ch != '\n'));
+
+        auto s = UnicodeString::fromUTF8(StringPiece(str, count));
+        delete str;
+        return s;
+    }
+
+    void write_byte(const char c) {
+        char ch;
+        ch = c;
+        int n = 0;
+        do {
+            n = ::write(_fd, &ch, 1); // always remember write can fail, folks
+            if (n == 0) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(50)); // XXX
+            }
+        } while (n == 0); 
+        if (n < 0) {
+            throw "error in write";
+        }
+    }
+
+    void write_line(const UnicodeString& s) override {
+        std::string utf8;
+        s.toUTF8String(utf8);
+
+        auto len = utf8.length();
+        auto str = utf8.c_str();
+
+        for (long unsigned int i = 0; i < len; i++) {
+            write_byte(str[i]);
+        }
+
+        write_byte('\n');
+    }
+
+    void close() override {
+        ::close(_fd);
+    }
+
+    void flush() override {
+    }
+
+    bool eof() override {
+        return _eof;
+    }
+    
+protected:
+    int  _fd;
+    bool _eof;
+};
+
+
 /**
  * Egel's primitive input/output combinators.
  *
  * Unstable and not all combinators fully provide what their 
  * specification promises. Neither are all combinators implemented
  * according to spec.
- *
- * The spec was somewhat shamelessly adapted from ocaml's primitive
- * IO.
- * See https://ocaml.org/.
  **/
 
 // IO.channel
@@ -461,13 +569,11 @@ public:
     }
 };
 
-
-
-
 // IO.print o0 .. on
 // Print objects on standard output; don't escape characters or 
 // strings when they are the argument. May recursively print large
 // objects leading to stack explosion.
+
 class Print: public Variadic {
 public:
     VARIADIC_PREAMBLE(Print, "IO", "print");
@@ -532,6 +638,168 @@ public:
             return nullptr;
         }
     }
+};
+
+//////////////////////////////////////////////////////////////////////
+// Highly unstable and experimental client/server code.
+
+class ServerObject: public Opaque {
+public:
+    OPAQUE_PREAMBLE(ServerObject, "IO", "serverobject");
+
+    ServerObject(const ServerObject& so): Opaque(so.machine(), so.symbol()) {
+        memcpy( (char*) &_server_address,  (char *) &so._server_address, sizeof(_server_address));
+        _portno = so._portno;
+        _queue = so._queue;
+        _sockfd = so._sockfd;
+    }
+
+    VMObjectPtr clone() const override {
+        return VMObjectPtr(new ServerObject(*this));
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        // XXX: not the foggiest idea whether this words.
+        // I assume file descriptors are unique.
+        auto v = (std::static_pointer_cast<ServerObject>(o));
+        if (_sockfd < v->_sockfd) {
+            return -1;
+        } else if (_sockfd > v->_sockfd) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    void bind(int port, int in) {
+        _portno = port;
+        _queue = in;
+        _sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (_sockfd < 0) {
+            throw "error opening socket";
+        }
+
+        bzero((char *) &_server_address, sizeof(_server_address));
+        _server_address.sin_family = AF_INET;
+        _server_address.sin_addr.s_addr = INADDR_ANY;
+        _server_address.sin_port = htons(_portno);
+        if (::bind(_sockfd, (struct sockaddr *) &_server_address,
+                 sizeof(_server_address)) < 0) {
+            throw "error on binding";
+        }
+        listen(_sockfd,_queue);
+    }
+
+    VMObjectPtr accept() {
+        struct sockaddr_in address;
+        socklen_t n = sizeof(address); // XXX: What is the supposed lifetime of this?
+        int fd = ::accept(_sockfd,
+                     (struct sockaddr *) &address,
+                     &n);
+        if (fd < 0) {
+            throw "error opening socket";
+        }
+        auto cn = ChannelFD::create(fd);
+        auto c  = ChannelValue(machine());
+        c.set_value(cn);
+        return c.clone();
+    }
+
+protected:
+    struct sockaddr_in _server_address;
+    int _portno;
+    int _queue;
+    int _sockfd;
+};
+
+#define SERVER_OBJECT_TEST(o, sym) \
+    ((o->tag() == VM_OBJECT_OPAQUE) && \
+     (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
+#define SERVER_OBJECT_CAST(o) \
+    (std::static_pointer_cast<ServerObject>(o))
+
+// IO.accept serverobject
+class Accept: public Monadic {
+public:
+    MONADIC_PREAMBLE(Accept, "IO", "accept");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "serverobject");
+
+        if (SERVER_OBJECT_TEST(arg0, sym)) {
+            auto so = SERVER_OBJECT_CAST(arg0);
+            auto chan = so->accept();
+            return chan;
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// IO.server port in
+class Server: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Server, "IO", "server");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto port = VM_OBJECT_INTEGER_VALUE(arg0);
+            auto in   = VM_OBJECT_INTEGER_VALUE(arg1);
+
+            auto so = ServerObject(machine());
+            so.bind(port, in);
+
+            return so.clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
+// IO.client host port
+class Client: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Client, "IO", "client");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) ) {
+            auto host = VM_OBJECT_TEXT_VALUE(arg0);
+            auto port = VM_OBJECT_INTEGER_VALUE(arg1);
+
+            struct sockaddr_in server_address;
+            int sockfd;
+
+            sockfd = socket(AF_INET, SOCK_STREAM, 0);
+            if (sockfd < 0) {
+                throw "error opening socket";
+            }
+
+            bzero((char *) &server_address, sizeof(server_address));
+            server_address.sin_family = AF_INET;
+            server_address.sin_port = htons(port);
+
+            std::string utf8;
+            host.toUTF8String(utf8);
+            // Convert IPv4 and IPv6 addresses from text to binary form
+            if(::inet_pton(AF_INET, utf8.c_str(), &server_address.sin_addr)<=0) {
+                throw "invalid address";
+            }
+
+            if (::connect(sockfd, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
+                throw "connection failed";
+            }
+
+            auto cn = ChannelFD::create(sockfd);
+            auto c  = ChannelValue(machine());
+            c.set_value(cn);
+            return c.clone();
+
+        } else {
+            return nullptr;
+        }
+    }
+
 };
 
 extern "C" std::vector<UnicodeString> egel_imports() {
