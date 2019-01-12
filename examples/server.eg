@@ -2,10 +2,13 @@
 
 import "io.ego"
 using IO
+using System
 
 def main =
     let SERVER = server 5000 5 in
     let CHAN = accept SERVER in
-    write_line CHAN "Hello?";
-    print (read_line CHAN);
+    let IN  = read_line CHAN in
+    let OUT = blip (eval IN) in
+    print OUT;
+    write_line CHAN OUT;
     close CHAN

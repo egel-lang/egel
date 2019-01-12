@@ -10,7 +10,7 @@ using List
 data open, closed
 
 def toggle =
-    [ open N -> closed N | closed N -> open N ]
+    [ (open N) -> closed N | (closed N) -> open N ]
 
 def doors =
     [ N -> map [ N -> closed N ] (fromto 1 N) ]
