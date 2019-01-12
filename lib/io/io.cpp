@@ -526,6 +526,29 @@ public:
     }
 };
 
+class WriteLine: public Dyadic {
+public:
+    DYADIC_PREAMBLE(WriteLine, "IO", "write_line");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            if (arg1->tag() == VM_OBJECT_TEXT) {
+                auto s = VM_OBJECT_TEXT_VALUE(arg1);
+                chan->write_line(s);
+                return create_nop();
+            } else {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 // IO.flush channel
 // Flush the buffer associated with the given output channel, 
 // performing all pending writes on that channel. Interactive programs
@@ -676,7 +699,7 @@ public:
         _queue = in;
         _sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (_sockfd < 0) {
-            throw "error opening socket";
+            throw VMObjectText::create("error opening socket");
         }
 
         bzero((char *) &_server_address, sizeof(_server_address));
@@ -685,7 +708,7 @@ public:
         _server_address.sin_port = htons(_portno);
         if (::bind(_sockfd, (struct sockaddr *) &_server_address,
                  sizeof(_server_address)) < 0) {
-            throw "error on binding";
+            throw VMObjectText::create("error on bind");
         }
         listen(_sockfd,_queue);
     }
@@ -697,7 +720,7 @@ public:
                      (struct sockaddr *) &address,
                      &n);
         if (fd < 0) {
-            throw "error opening socket";
+            throw VMObjectText::create("error opening socket");
         }
         auto cn = ChannelFD::create(fd);
         auto c  = ChannelValue(machine());
@@ -706,10 +729,10 @@ public:
     }
 
 protected:
-    struct sockaddr_in _server_address;
-    int _portno;
-    int _queue;
-    int _sockfd;
+    struct sockaddr_in _server_address = {0};
+    int _portno = 0;
+    int _queue = 0;
+    int _sockfd = 0;
 };
 
 #define SERVER_OBJECT_TEST(o, sym) \
@@ -772,7 +795,7 @@ public:
 
             sockfd = socket(AF_INET, SOCK_STREAM, 0);
             if (sockfd < 0) {
-                throw "error opening socket";
+                throw VMObjectText::create("error opening socket");
             }
 
             bzero((char *) &server_address, sizeof(server_address));
@@ -783,11 +806,11 @@ public:
             host.toUTF8String(utf8);
             // Convert IPv4 and IPv6 addresses from text to binary form
             if(::inet_pton(AF_INET, utf8.c_str(), &server_address.sin_addr)<=0) {
-                throw "invalid address";
+                throw VMObjectText::create("invalid address");
             }
 
             if (::connect(sockfd, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
-                throw "connection failed";
+                throw VMObjectText::create("connection failed");
             }
 
             auto cn = ChannelFD::create(sockfd);
@@ -820,10 +843,17 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Read(vm).clone());
     oo.push_back(ReadLine(vm).clone());
     oo.push_back(Write(vm).clone());
+    oo.push_back(WriteLine(vm).clone());
     oo.push_back(Flush(vm).clone());
     oo.push_back(Eof(vm).clone());
     oo.push_back(Print(vm).clone());
     oo.push_back(Exit(vm).clone());
+
+// hacked TCP protocol
+    oo.push_back(ServerObject(vm).clone());
+    oo.push_back(Accept(vm).clone());
+    oo.push_back(Server(vm).clone());
+    oo.push_back(Client(vm).clone());
 
     return oo;
 }

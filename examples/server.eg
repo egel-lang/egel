@@ -1,0 +1,11 @@
+# Testing Egel's Unicode TCP transport.
+
+import "io.ego"
+using IO
+
+def main =
+    let SERVER = server 5000 5 in
+    let CHAN = accept SERVER in
+    write_line CHAN "Hello?";
+    print (read_line CHAN);
+    close CHAN

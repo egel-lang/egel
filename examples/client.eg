@@ -1,0 +1,10 @@
+# Testing Egel's Unicode TCP transport.
+
+import "io.ego"
+using IO
+
+def main =
+    let CHAN = client "127.0.0.1" 5000 in
+    write_line CHAN "Hello!";
+    print (read_line CHAN);
+    close CHAN
