@@ -274,9 +274,18 @@ public:
         _data.render(os);
     }
 
+    void* get_context() const override {
+        return _context;
+    }
+
+    void set_context(void* m) override {
+        _context = m;
+    }
+
 private:
     SymbolTable     _symbols;
     DataTable       _data;
+    void*           _context;
 };
 
 #endif

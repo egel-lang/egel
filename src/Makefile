@@ -22,8 +22,9 @@ SOURCES= \
 	builtin/system.cpp \
 	builtin/math.cpp \
 	builtin/string.cpp \
+	builtin/evaluate.cpp \
 	builtin/thread.cpp \
-	egel.cpp 
+	egel.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
 
@@ -57,7 +58,7 @@ shared: CFLAGS+= -O3 -fPIC
 shared: $(SOURCES) $(SHARED)
 
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
 $(ARCHIVE): $(OBJECTS)
 	$(AR) $(ARCHIVE) $(filter-out egel.o, $(OBJECTS))

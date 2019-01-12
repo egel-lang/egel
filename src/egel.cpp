@@ -6,11 +6,10 @@
 #include "reader.hpp"
 #include "lexical.hpp"
 #include "syntactical.hpp"
+#include "runtime.hpp"
 #include "machine.hpp"
-#include "modules.hpp"
 #include "eval.hpp"
-
-#include "builtin/system.hpp"
+#include "modules.hpp"
 
 #define EXECUTABLE_NAME "egel"
 
@@ -249,6 +248,8 @@ int main(int argc, char *argv[]) {
 
     // fire up the evaluator
     Eval eval(mm);
+    // make it possible for the low level machine to peek upward
+    m.set_context((void*) &eval);
 
     // load the file
     if (fn != "") {

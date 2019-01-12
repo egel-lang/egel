@@ -205,6 +205,10 @@ public:
 
     virtual void render(std::ostream& os) = 0;
 
+    // the VM sometimes needs to peek into it's context, which is the top level evaluator
+    virtual void set_context(void* c) = 0;
+    virtual void* get_context() const = 0;
+
     // convenience routines
     VMObjectPtr get_data_symbol(const symbol_t t);
     VMObjectPtr get_data_string(const UnicodeString& n);

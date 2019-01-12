@@ -19,6 +19,8 @@
 #include "builtin/string.hpp"
 #include "builtin/thread.hpp"
 
+extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward declaration
+
 // convenience
 inline UnicodeString first(const UnicodeString& s) {
     auto d = s;
@@ -630,11 +632,13 @@ public:
         auto mth = ModuleInternal("internal", vm, &builtin_math).clone();
         auto str = ModuleInternal("internal", vm, &builtin_string).clone();
         auto thd = ModuleInternal("internal", vm, &builtin_thread).clone();
-        sys->load(); mth->load(); str->load(); thd->load();
+        auto evl = ModuleInternal("internal", vm, &builtin_eval).clone();
+        sys->load(); mth->load(); str->load(); thd->load(); evl->load();
         _loading.push_back(sys);
         _loading.push_back(mth);
         _loading.push_back(str);
         _loading.push_back(thd);
+        _loading.push_back(evl);
         process();
         flush();
     }
