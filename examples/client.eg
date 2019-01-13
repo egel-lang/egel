@@ -6,6 +6,7 @@ using System
 
 def main =
     let CHAN = client "127.0.0.1" 5000 in
+    write_line CHAN "using System";
     write_line CHAN "1+1";
     print (read_line CHAN);
     close CHAN

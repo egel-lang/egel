@@ -4,11 +4,27 @@ import "io.ego"
 using IO
 using System
 
+def listener =
+    [ CHAN ->
+        let IN = read_line CHAN in
+        if eof CHAN then close CHAN
+        else
+            print "received: " IN "\n";
+            let OUT = eval IN in
+            print "sending: " OUT;
+            if OUT == nop then
+                listener CHAN
+            else
+                write_line CHAN (blip OUT); 
+                listener CHAN ]
+
+def spawn =
+    [ SERVER ->
+        let CHAN = accept SERVER in
+        print "spawned a listener\n";
+        let _ = par (spawn SERVER) (listener CHAN) in
+            nop ]
+        
 def main =
-    let SERVER = server 5000 5 in
-    let CHAN = accept SERVER in
-    let IN  = read_line CHAN in
-    let OUT = blip (eval IN) in
-    print OUT;
-    write_line CHAN OUT;
-    close CHAN
+    let SERVER = server 5000 5 in spawn SERVER
+    

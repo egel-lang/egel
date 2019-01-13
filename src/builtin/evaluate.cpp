@@ -20,7 +20,8 @@ public:
             try {
                 eval->eval_line(s, main, exc);
             } catch (Error &e) {
-                // XXX: do nothing for now
+                auto s = e.message();
+                throw VMObjectText::create(s);
             }
 
             if (e != nullptr) {

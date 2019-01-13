@@ -143,6 +143,7 @@ public:
      * + an import statement
      * + a using statement
      * + a definition
+     * + a veriable
      * + an expression
      *
      * Import statements load modules and therefor modify the state of the
@@ -259,7 +260,9 @@ public:
         }
     }
 
-    void handle_var(const AstPtr& d, const VMObjectPtr& r, const VMObjectPtr& exc) {
+    // XXX: very much wrong probably. A var declaration should not call the callbacks
+    // handlers but either throw a parse error or return nop.
+    void handle_var(const AstPtr& d) {
         auto vm = get_machine();
         auto mm = get_manager();
         auto p = d->position();
@@ -280,6 +283,20 @@ public:
         }
     }
 
+    void return_nop(const callback_t& callback) {
+        auto vm = get_machine();
+        auto nop = vm->get_data_string("System", "nop");
+
+        (callback)(vm, nop);
+    }
+
+    /** 'eval_line' is the work horse of the REPL, the IRC bot, and the 'System:eval' command.
+     *
+     * Three things can happen:
+     * - the 'in' command reduces to a value, 'main' is called, and 'eval_line' returns.
+     * - the 'in' command reduces to an exception, 'exc' is called, and 'eval_line' returns.
+     * - 'eval_line' throws an Error (due to, for example, improper syntax or I/O failure)
+     **/
     void eval_line(const UnicodeString& in, const callback_t& main, const callback_t& exc) {
         auto mm = get_manager();
         auto vm = get_machine();
@@ -300,16 +317,22 @@ public:
         if (a != nullptr) {
             if (a->tag() == AST_DIRECT_IMPORT) {
                 handle_import(a);
+                return_nop(main);
             } else if (a->tag() == AST_DIRECT_USING) {
                 handle_using(a);
+                return_nop(main);
             } else if (a->tag() == AST_DECL_DEFINITION) {
                 handle_definition(a);
+                return_nop(main);
             } else if (a->tag() == AST_DECL_OPERATOR) {
                 handle_definition(a);
+                return_nop(main);
             } else if (a->tag() == AST_DECL_DATA) {
                 handle_data(a);
+                return_nop(main);
             } else if (a->tag() == AST_VAR) {
-                handle_var(a, rr, e);
+                handle_var(a);
+                return_nop(main);
             } else {
                 handle_expression(a, rr, e);
             }
