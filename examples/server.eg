@@ -1,4 +1,7 @@
 # Testing Egel's Unicode TCP transport.
+#
+# The server spawns a listener for each incoming connection,
+# evaluates input from there, and sends the result back.
 
 import "io.ego"
 using IO
@@ -12,11 +15,8 @@ def listener =
             print "received: " IN "\n";
             let OUT = eval IN in
             print "sending: " OUT;
-            if OUT == nop then
-                listener CHAN
-            else
-                write_line CHAN (blip OUT); 
-                listener CHAN ]
+            write_line CHAN (blip OUT); 
+            listener CHAN ]
 
 def spawn =
     [ SERVER ->

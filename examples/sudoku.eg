@@ -244,7 +244,6 @@ def prop_clause_length =
 
 def prop_find_clause =
     [ (cons P PP) ->
-        let _ = print "XXX: " P in
         [ (nop, PP) ->
             if prop_clause_test P then (P,PP)
             else (nop, cons P PP)

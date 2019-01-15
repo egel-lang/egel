@@ -1,12 +1,24 @@
 # Testing Egel's Unicode TCP transport.
+#
+# The client implements an Egel REPL by connecting
+# to a server.
 
 import "io.ego"
 using IO
 using System
 
+def repl =
+    [ CHAN ->
+        print ">> ";
+        let O = read_line stdin in
+        write_line CHAN O;
+        let I = read_line CHAN in
+        if eof CHAN then nop
+        else
+            print I "\n";
+            repl CHAN ]
+    
 def main =
     let CHAN = client "127.0.0.1" 5000 in
-    write_line CHAN "using System";
-    write_line CHAN "1+1";
-    print (read_line CHAN);
+    repl CHAN;
     close CHAN
