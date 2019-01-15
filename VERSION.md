@@ -3,13 +3,18 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.0.4 -- life is worth living
+
++ text based basic input/output and TCP transport
++ 'eval' and 'blip'
+
 ## v0.0.3 -- it may all break down yet
 
 + bugfix on '(1)' -length one array- results
 + switch to '#' style comments
 + regular expression support
 + small performance tweaks
-+ got rid of lijero's K combinator solution for statements
++ got rid of the K combinator solution for statements
 
 ## v0.0.2 -- why bother?
 
@@ -31,13 +36,13 @@ This is the version where a plethora of bugs were squashed, technically
 most things are in place, but there are still a large number of loose
 ends.
 
-+ Symbolic rewriting
++ symbolic rewriting
 + REPL and batch mode support
-+ Initial support for a prelude and basic libraries
-+ Experiments with mutable state and OO
-+ Concurrency
-+ Dynamic libraries
-+ Optional system-wide install
++ initial support for a prelude and basic libraries
++ experiments with mutable state and OO
++ concurrency
++ dynamic libraries
++ optional system-wide install
 
 ## v0.0 -- initial release
 
