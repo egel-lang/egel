@@ -12,4 +12,4 @@ def fix2 = [F -> [X -> F [V -> (X X) V]] [X -> F [V -> (X X) V]]]
 
 # test it
 def main =
-    fix2 [FAC 0 -> 1 | FAC N -> N * (FAC (N- 1)) ] 5
+    fix [FAC 0 -> 1 | FAC N -> N * (FAC (N- 1)) ] 5

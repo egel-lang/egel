@@ -1,0 +1,374 @@
+######################################################################
+# The Slowest Sudoku Solver Ever!
+#
+# This solver is inspired by the classical Davis, Putman, Logemann and
+# Loveland (DPLL) binary procedure for solving boolean formulas in
+# conjunctive normal form.
+#
+# Given a Sudoku puzzle the solver constructs a 'propositional' formula
+# which is a conjunct of clauses. Clauses are either simple 
+# inequalities between number valued variables stating the constraints
+# on the puzzle, or a set of disjunctive equalities stating the 
+# possible values of a variable as stated in the puzzle to solve.
+#
+# The solver deterministically chooses a shortest clause of equalities
+# and tries the formula for each of these values until a solution is
+# found. Inequalities are used to prune the set of equalities.
+#
+# This solver takes a very abstract view. It implements a ''term 
+# rewriter'' in Egel, which is by itself a slow term rewriter.
+#
+# Example input file:
+#
+# 8 . 3 . . . . 4 .
+# . . 6 . . . . 9 .
+# . . . . 5 . . 3 .
+# 2 7 . . 4 6 . . .
+# . . 5 . 9 . . . .
+# . . . . . 1 . . .
+# . . . . 8 . 3 . 5
+# . 9 7 4 . . . . .
+# . 8 . 3 2 . 9 . .
+#
+# Output:
+#
+# 8 5 3 9 7 2 6 4 1
+# 7 4 6 8 1 3 5 9 2
+# 9 1 2 6 5 4 8 3 7
+# 2 7 9 5 4 6 1 8 3
+# 1 3 5 7 9 8 4 2 6
+# 4 6 8 2 3 1 7 5 9
+# 6 2 4 1 8 9 3 7 5
+# 3 9 7 4 6 5 2 1 8
+# 5 8 1 3 2 7 9 6 4
+# 
+# real	14m5.060s
+# user	14m3.176s
+# sys	0m0.597s
+######################################################################
+
+import "prelude.eg"
+import "io.ego"
+
+using System
+using IO
+using String
+using List
+
+######################################################################
+
+def fix = [ F -> F [ X -> (fix F) X ] ]
+
+def read_file =
+    [ FN ->
+        let CHAN = open FN in
+        let S = fix [ F CHAN -> let S = read_line CHAN in
+                      if eof CHAN then S else append S (F CHAN) ] CHAN 
+        in close CHAN; S ]
+
+######################################################################
+
+def text_to_board =
+    let C = 
+     [ '.' -> 0 | '1' -> 1 | '2' -> 2 | '3' -> 3 | '4' -> 4 | '5' -> 5
+     | '6' -> 6 | '7' -> 7 | '8' -> 8 | '9' -> 9 | _   -> -1 ]
+    in [ T -> filter [X -> 0 <= X ] (map C (unpack T)) ]
+
+def board_to_text =
+    [ II ->
+        let C = [ 0 -> ". " | X -> append (totext X) " " ] in
+        fix [ F nil _         -> ""
+            | F (cons I II) 9 -> append (append (C I) "\n")
+                                        (F II 1)
+            | F (cons I II) X -> append (C I) (F II (X+1)) ] 
+            II 1 ]
+
+######################################################################
+
+data pvar, pconst, peq, pneq, psum
+
+def ++ = psum
+
+def print_prop = 
+    [ (pconst N) -> print N
+    | (pvar I J) -> print "v" I J
+    | (peq P Q)  -> print_prop P; print " = "; print_prop Q
+    | (pneq P Q) -> print_prop P; print " != "; print_prop Q
+    | (psum P Q) -> print_prop P; print " + "; print_prop Q
+    | XXX        -> print "XXX: " (blip XXX) ]
+
+def print_props =
+    [ nil -> print "\n"
+    | (cons P PP) -> print_prop P; print " * \n"; print_props PP ]
+
+######################################################################
+
+def prop_substitute =
+    [ (pvar I0 J0) (pvar I1 J1) Q ->
+        if and (I0 == I1) (J0 == J1) then Q else (pvar I0 J0)
+    | (BIN P Q) S0 S1 -> BIN (prop_substitute P S0 S1)
+                             (prop_substitute Q S0 S1)
+    | P _ _ -> P ]
+
+def props_substitute =
+    [ PP S0 S1 -> map [P -> prop_substitute P S0 S1] PP ]
+
+######################################################################
+
+def prop_sum_to_list =
+    [ (psum XX YY) -> (List:++) (prop_sum_to_list XX) 
+                                (prop_sum_to_list YY) 
+    | X          -> cons X nil ]
+
+def reduce =
+    [ F (cons X nil) -> X | F (cons X XX)  -> F X (reduce F XX) ]
+
+def prop_sum_from_list =
+    [ nil   -> nop
+    | PP    -> reduce (++) PP ]
+
+######################################################################
+
+def xxx =
+    { (1,2), (1,3), (1,4), (1,5), (1,6), (1,7), (1,8), (1,9),
+      (2,3), (2,4), (2,5), (2,6), (2,7), (2,8), (2,9),
+      (3,4), (3,5), (3,6), (3,7), (3,8), (3,9),
+      (4,5), (4,6), (4,7), (4,8), (4,9),
+      (5,6), (5,7), (5,8), (5,9),
+      (6,7), (6,8), (6,9),
+      (7,8), (7,9),
+      (8,9) }
+
+def prop_row =
+    [ N -> List:map [(I,J) -> pneq (pvar N I) (pvar N J)] xxx ]
+
+def prop_column = 
+    [ N -> List:map [(I,J) -> pneq (pvar I N) (pvar J N)] xxx ]
+
+def prop_rows =
+    List:flatten (List:map [ N -> prop_row N ] (List:fromto 1 9))
+
+def prop_columns =
+    List:flatten (List:map [ N -> prop_column N ] (List:fromto 1 9))
+
+def yyy =
+     {
+                           ( (1,1), (1,2) ), ( (1,1), (1,3) ),
+         ( (1,1), (2,1) ), ( (1,1), (2,2) ), ( (1,1), (2,3) ),
+         ( (1,1), (3,1) ), ( (1,1), (3,2) ), ( (1,1), (3,3) ),
+ 
+                                             ( (1,2), (1,3) ),
+         ( (1,2), (2,1) ), ( (1,2), (2,2) ), ( (1,2), (2,3) ),
+         ( (1,2), (3,1) ), ( (1,2), (3,2) ), ( (1,2), (3,3) ),
+ 
+         ( (1,3), (2,1) ), ( (1,3), (2,2) ), ( (1,3), (2,3) ),
+         ( (1,3), (3,1) ), ( (1,3), (3,2) ), ( (1,3), (3,3) ),
+ 
+                           ( (2,1), (2,2) ), ( (2,1), (2,3) ),
+         ( (2,1), (3,1) ), ( (2,1), (3,2) ), ( (2,1), (3,3) ),
+ 
+                                             ( (2,2), (2,3) ),
+         ( (2,2), (3,1) ), ( (2,2), (3,2) ), ( (2,2), (3,3) ),
+ 
+         ( (2,3), (3,1) ), ( (2,3), (3,2) ), ( (2,3), (3,3) ),
+ 
+                           ( (3,1), (3,2) ), ( (3,1), (3,3) ),
+ 
+                                             ( (3,2), (3,3) )
+     }
+
+def prop_block =
+    [ (X, Y) ->
+         List:map [((I,J),(P,Q)) ->
+                   pneq (pvar (I+X) (J+Y)) (pvar (P+X) (Q+Y))] yyy ]
+ 
+def prop_blocks =
+    List:flatten (List:map [ P -> prop_block P ]
+         { (0,0),(0,3),(0,6),(3,0),(3,3),(3,6),(6,0),(6,3),(6,6) })
+ 
+def prop_constraints =
+    List:flatten {prop_rows, prop_columns, prop_blocks}
+
+######################################################################
+
+def prop_unknown =
+    [ I J ->
+        let V = pvar I J in
+        let C = pconst in
+          peq V (C 1) ++ peq V (C 2) ++ peq V (C 3) ++ peq V (C 4) ++
+          peq V (C 5) ++ peq V (C 6) ++ peq V (C 7) ++ peq V (C 8) ++
+          peq V (C 9) ]
+
+def prop_known =
+    [ I J N -> peq (pvar I J) (pconst N) ]
+
+def props_from_board =
+    [ CC ->
+        fix
+        [ F I J nil -> nil
+        | F I J (cons C CC) ->
+            let P = [ 0 -> prop_unknown I J
+                    | N -> prop_known I J N ] C
+            in
+            let (I,J) = if J == 9 then (I+1, 1) else (I, J+1) in
+                (cons P (F I J CC)) ] 1 1 CC ]
+
+######################################################################
+
+def prop_unit_test =
+    [ (peq (pvar _ _) (pconst _)) -> true
+    | (peq (pconst _) (pvar _ _))  -> true
+    | _ -> false ]
+
+def prop_find_unit =
+    [ (cons P PP) ->
+        if prop_unit_test P then (P,PP)
+        else [ (Q,PP) -> (Q, cons P PP)
+             | NOP    -> NOP ] (prop_find_unit PP)
+    | _  -> nop ]
+ 
+def prop_eq_to_substitution =
+    [ (peq (pvar I J) (pconst C)) -> (pvar I J, pconst C)
+    | (peq (pconst C) (pvar I J)) -> (pvar I J, pconst C) ]
+
+######################################################################
+
+def prop_clause_test =
+    [ (psum _ _) -> true
+    | (peq _ _)  -> true
+    | _          -> false ]
+
+def prop_clause_length =
+    [ (psum P Q) -> (prop_clause_length P) + (prop_clause_length Q)
+    | _          -> 1 ]
+
+def prop_find_clause =
+    [ (cons P PP) ->
+        let _ = print "XXX: " P in
+        [ (nop, PP) ->
+            if prop_clause_test P then (P,PP)
+            else (nop, cons P PP)
+        | (Q, PP)   ->
+            if prop_clause_test P then 
+                if prop_clause_length P < prop_clause_length Q
+                then (P, cons Q PP)
+                else (Q, cons P PP)
+            else
+                (Q, cons P PP) ] (prop_find_clause PP) 
+    | _ -> (nop, nil) ]
+
+######################################################################
+
+def prop_eval_constraint =
+    [ (pneq (pconst I) (pconst J)) ->
+        if I == J then false else true
+    | _ -> nop ]
+
+def prop_reduce_constraints =
+    [ nil -> nil
+    | (cons C CC) ->
+        [ true  -> prop_reduce_constraints CC
+        | false -> cons false nil
+        | nop   -> cons C (prop_reduce_constraints CC) ]
+            (prop_eval_constraint C) ]
+
+def prop_verify_constraints =
+    [ CC -> not (List:any [ false -> true | _ -> false ] CC) ]
+
+def prop_simplify_constraints =
+    [ EQ CC ->
+        let (S0,S1) = prop_eq_to_substitution EQ in
+        let CC = props_substitute CC S0 S1 in
+        let CC = prop_reduce_constraints CC in
+        if prop_verify_constraints CC then CC else nop ]
+
+######################################################################
+
+def prop_neq_extract =
+    [ (pneq (pvar I J) (pconst C)) -> (pneq (pvar I J) (pconst C))
+    | (pneq (pconst C) (pvar I J)) -> (pneq (pvar I J) (pconst C))
+    | _ -> nop ]
+
+def prop_neqs_extract =
+    [ CC -> List:filter [ nop -> false | _ -> true ] 
+                    (List:map prop_neq_extract CC)  ]
+
+def prop_neq_eval =
+    [ (pneq (pvar I J) (pconst C)) (peq (pvar K L) (pconst D))->
+            not (and (and (I == K) (J == L)) (C == D))
+    | _ -> true ]
+
+def prop_propagate_neq =
+    [ C P -> 
+        prop_sum_from_list
+        (List:filter [ P -> prop_neq_eval C P ] (prop_sum_to_list P))
+    ]
+
+def prop_propagate_neqs =
+    [ nil PP -> PP
+    | (cons C CC) PP -> prop_propagate_neqs CC
+                            (List:map (prop_propagate_neq C) PP) ]
+
+def prop_sums_valid =
+    [ PP -> List:all [ nop -> false | _ -> true ] PP ]
+
+######################################################################
+
+def track_solver_state =
+    [ (EE, CC, PP) ->
+        print "equalities:\n";
+        print_props EE;
+        print "constraints:\n";
+        print_props CC;
+        print "solutions:\n";
+        print_props PP ]
+    
+def prop_try_choices =
+    [ nil (EE, CC, PP) -> nop
+    | (cons EQ EQS) (EE, CC, PP) ->
+        [ nop -> prop_try_choices EQS (EE, CC, PP)
+        | CC0  -> 
+            [ nop -> prop_try_choices EQS (EE, CC, PP) | X -> X ]
+                (prop_solve (cons EQ EE, CC0, PP))
+        ] (prop_simplify_constraints EQ CC) ]
+
+def prop_solve =
+    [ (EE, CC, PP) ->
+        track_solver_state (EE, CC, PP);
+        let PP = prop_propagate_neqs (prop_neqs_extract CC) PP in
+        if prop_sums_valid PP then
+            [ (nop, PP) -> (EE, CC, PP)
+            | (P,   PP) -> prop_try_choices (prop_sum_to_list P) 
+                                            (EE, CC, PP) ]
+                (prop_find_clause PP) 
+        else nop ]
+
+######################################################################
+
+def prop_value = 
+    [ I J nil -> 0
+    | I J (cons EQ EQS) ->
+        let F = [ I J (peq (pvar X Y) (pconst Z)) ->
+                    if and (I == X) (J == Y) then Z else 0 ] in
+        let C = F I J EQ in
+        if C == 0 then prop_value I J EQS else C ]
+
+def prop_values =
+    [ I J EQS ->
+        if 9 < J then prop_values (I+1) 1 EQS
+        else if 9 < I then nil
+        else cons (prop_value I J EQS) (prop_values I (J+1) EQS) ]
+
+def props_to_board =
+    [ EQS -> prop_values 1 1 EQS ]
+
+######################################################################
+
+def main = 
+    let T = read_file "sudoku.txt" in
+    let S = text_to_board T in
+    let I = prop_constraints in
+    let P = props_from_board S in 
+    let (EQS, _, _) = prop_solve (nil, I, P) in
+        print (board_to_text (props_to_board EQS))
+
