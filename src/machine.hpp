@@ -8,6 +8,7 @@
 #include <set>
 #include <iomanip>
 #include <tuple>
+#include <mutex>
 
 #include "runtime.hpp"
 
@@ -260,11 +261,12 @@ public:
         return r;
     }
 
-    void add_lock() override {
-        std::cerr << "warning: thread support not implemented yet" << std::endl;
+    void lock() override {
+        _mutex.lock();
     }
 
-    void release_lock() override {
+    void unlock() override {
+        _mutex.unlock();
     }
                     
     void render(std::ostream& os) override {
@@ -286,6 +288,7 @@ private:
     SymbolTable     _symbols;
     DataTable       _data;
     void*           _context;
+    std::mutex      _mutex;
 };
 
 #endif

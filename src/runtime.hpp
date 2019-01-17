@@ -200,8 +200,8 @@ public:
     virtual VMReduceResult reduce(const VMObjectPtr& e) = 0;
 
     // for threadsafe reductions we lock the vm and rely on C++ threadsafe behavior on containers
-    virtual void add_lock() = 0;
-    virtual void release_lock() = 0;
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
 
     virtual void render(std::ostream& os) = 0;
 
