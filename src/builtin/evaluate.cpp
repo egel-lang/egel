@@ -1,9 +1,9 @@
 #include "evaluate.hpp"
 
 // System.eval text
-class Evaluate: public Monadic {
+class Evaluate: public Unary {
 public:
-    MONADIC_PREAMBLE(Evaluate, "System", "eval");
+    UNARY_PREAMBLE(Evaluate, "System", "eval");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {

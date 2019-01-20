@@ -1469,6 +1469,91 @@ public:
 
 // convenience classes which return continued evaluations
 
+class Unary: public VMObjectCombinator {
+public:
+    Unary(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    }
+
+    Unary(VM* m, const symbol_t s): 
+         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    }
+
+    virtual VMObjectPtr apply(const VMObjectPtr& arg0) const = 0;
+        
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+        auto exc = tt[3];
+
+        VMObjectPtr r;
+        if (tt.size() > 5) {
+            auto arg0 = tt[5];
+
+            try {
+                r = apply(arg0);
+                if (r == nullptr) {
+                    VMObjectPtrs rr;
+                    for (uint i = 4; i<tt.size(); i++) {
+                        rr.push_back(tt[i]);
+                    }
+                    r = VMObjectArray(rr).clone();
+
+                    auto index = VM_OBJECT_INTEGER_VALUE(rti);
+                    auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+                    rta->set(index, r);
+
+                    return k;
+                }
+            } catch (VMObjectPtr e) {
+                auto exc   = tt[3];
+                auto ee    = VM_OBJECT_ARRAY_VALUE(exc);
+
+                VMObjectPtrs rr;
+                rr.push_back(ee[0]);
+                rr.push_back(ee[1]);
+                rr.push_back(ee[2]);
+                rr.push_back(ee[3]);
+                rr.push_back(ee[4]);
+                rr.push_back(e);
+
+                return VMObjectArray(rr).clone();
+            }
+        } else {
+            VMObjectPtrs rr;
+            for (uint i = 4; i<tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            r = VMObjectArray(rr).clone();
+        }
+
+        VMObjectPtrs kk;
+        kk.push_back(rt);
+        kk.push_back(rti);
+        kk.push_back(k);
+        kk.push_back(exc);
+        kk.push_back(r);
+        for (unsigned int n = 6; n < tt.size(); n++) {
+            kk.push_back(tt[n]);
+        }
+
+        return VMObjectArray::create(kk);
+    }
+};
+
+#define UNARY_PREAMBLE(c, n0, n1) \
+    c(VM* m): Unary(m, n0, n1) { \
+    } \
+    c(VM* m, const symbol_t s): Unary(m, s) { \
+    } \
+    c(const c& o) : c(o.machine(), o.symbol()) { \
+    } \
+    VMObjectPtr clone() const override { \
+        return VMObjectPtr(new c(*this)); \
+    }
+
 class Binary: public VMObjectCombinator {
 public:
     Binary(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
