@@ -326,9 +326,9 @@ def prop_try_choices =
     [ nil (EE, CC, PP) -> nop
     | (cons EQ EQS) (EE, CC, PP) ->
         [ nop -> prop_try_choices EQS (EE, CC, PP)
-        | CC0  -> 
+        | CC  -> 
             [ nop -> prop_try_choices EQS (EE, CC, PP) | X -> X ]
-                (prop_solve (cons EQ EE, CC0, PP))
+                (prop_solve (cons EQ EE, CC, PP))
         ] (prop_simplify_constraints EQ CC) ]
 
 def prop_solve =

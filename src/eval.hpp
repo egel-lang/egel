@@ -244,17 +244,35 @@ public:
         ::emit_code(vm, w);
     }
 
+
+    // XXX XXX XXX: get rid of all of this once. See handle_expression.
+    std::mutex _lock;
+    uint_t _counter = 0;
+    UnicodeString generate_fresh_combinator() {
+        int n = _counter;
+        _lock.lock();
+        _counter++;
+        _lock.unlock();
+        return UnicodeString("Dummy") + unicode_convert_uint(n); 
+    }
+
+    /**
+     * XXX XXX XXX: Severily hacked since the introduction of the `eval` command. Since
+     * `eval` commands can run concurrently but can introduce combinators at the moment 
+     * I just let it leak. Probably the worst decision I made yet.
+     */
     void handle_expression(const AstPtr& a, const VMObjectPtr& r, const VMObjectPtr& exc) {
+        auto fv = generate_fresh_combinator();
         auto vm = get_machine();
         auto p = a->position();
-        auto n = AstExprCombinator(p, "Dummy").clone();
+        auto n = AstExprCombinator(p, fv).clone();
         auto d = AstDeclDefinition(p, n, a).clone();
 
         // treat it as a definition Dummy
         handle_definition(d);
 
         // reduce
-        auto c = vm->get_data_string("Dummy");
+        auto c = vm->get_data_string(fv);
         if (c->flag() != VM_OBJECT_FLAG_STUB) {
             vm->reduce(c, r, exc);
         }
@@ -296,6 +314,7 @@ public:
      * - the 'in' command reduces to a value, 'main' is called, and 'eval_line' returns.
      * - the 'in' command reduces to an exception, 'exc' is called, and 'eval_line' returns.
      * - 'eval_line' throws an Error (due to, for example, improper syntax or I/O failure)
+     *
      **/
     void eval_line(const UnicodeString& in, const callback_t& main, const callback_t& exc) {
         auto mm = get_manager();
