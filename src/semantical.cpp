@@ -153,7 +153,15 @@ public:
     AstPtr identify(NamespacePtr env, AstPtr a) {
         _identify_state = STATE_IDENTIFY_USE;
         _range = range_nil(env);
+        _counter = 0;
         return rewrite(a);
+    }
+
+    // variable
+    UnicodeString fresh_variable() {
+        UnicodeString v = UnicodeString("V_") + convert_from_int(_counter);
+        _counter++;
+        return v;
     }
 
     // state
@@ -236,8 +244,9 @@ public:
             }
             break;
         case STATE_IDENTIFY_PATTERN: {
-                declare(p, v, v);
-                return AstExprVariable(p, v).clone();
+                auto fv = fresh_variable();
+                declare(p, v, fv);
+                return AstExprVariable(p, fv).clone();
             }
             break;
         default:
@@ -413,6 +422,7 @@ private:
     RangePtr            _range;
     AstPtrs             _declarations;
     UnicodeStrings      _namespace;
+    int                 _counter;
 };
 
 AstPtr identify(NamespacePtr env, const AstPtr& a) {
