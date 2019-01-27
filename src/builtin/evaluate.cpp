@@ -37,12 +37,6 @@ public:
         }
     }
 
-    void main_callback(VM* vm, const VMObjectPtr& o) {
-    }
-
-    void exception_callback(VM* vm, const VMObjectPtr& o) {
-    }
-
     UnicodeString result(const VMObjectPtr& o) {
         return o->to_text();
     }
