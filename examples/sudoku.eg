@@ -18,6 +18,8 @@
 # This solver takes a very abstract view. It implements a ''term 
 # rewriter'' in Egel, which is by itself a slow term rewriter.
 #
+# XXX: It should also never have worked, I am rewriting this.
+#
 # Example input file:
 #
 # 8 . 3 . . . . 4 .
