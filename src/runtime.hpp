@@ -1522,11 +1522,17 @@ public:
                 return VMObjectArray(rr).clone();
             }
         } else {
+            // This seems the way to go about it.. Check Binary etc. for this.
             VMObjectPtrs rr;
             for (uint i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
             r = VMObjectArray(rr).clone();
+            auto index = VM_OBJECT_INTEGER_VALUE(rti);
+            auto rta   = VM_OBJECT_ARRAY_CAST(rt);
+            rta->set(index, r);
+
+            return k;
         }
 
         VMObjectPtrs kk;
