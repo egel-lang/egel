@@ -136,33 +136,6 @@
     // System
 
 #define STRING_SYSTEM           "System"
-
-#define STRING_SYSTEM_UNIT      "System.unit"
-#define STRING_SYSTEM_NOP       "System.nop"
-
-#define STRING_SYSTEM_BOOL      "System.bool"
-#define STRING_SYSTEM_TRUE      "System.true"
-#define STRING_SYSTEM_FALSE     "System.false"
-
-#define STRING_SYSTEM_INT       "System.int"
-#define STRING_SYSTEM_LONG      "System.long"
-#define STRING_SYSTEM_FLOAT     "System.float"
-#define STRING_SYSTEM_DOUBLE    "System.double"
-#define STRING_SYSTEM_CHAR      "System.char"
-
-#define STRING_SYSTEM_LIST      "System.list"
-#define STRING_SYSTEM_NIL       "System.nil"
-#define STRING_SYSTEM_CONS      "System.cons"
-
-#define STRING_SYSTEM_TEXT      "System.text"
-
-#define STRING_SYSTEM_TUPLE     "System.tuple"
-#define STRING_SYSTEM_OBJECT    "System.object"
-
-#define STRING_SYSTEM_PTR       "System.ptr"
-
-#define STRING_SYSTEM_FAIL      "System.fail"
-
 #define STRING_K                "k"
 
     // main section
