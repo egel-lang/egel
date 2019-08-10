@@ -11,7 +11,7 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
-using namespace icu_62;
+using namespace icu_63;
 
 typedef unsigned int uint_t;
 

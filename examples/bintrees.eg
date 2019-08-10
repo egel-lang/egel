@@ -63,7 +63,7 @@ def make_trees =
     [ D M ->
         let N = 1 << (M - D + minN) in
         if D <= M then 
-            // let _ = print "testing: " N " trees of depth " D "\n" in
+            # let _ = print "testing: " N " trees of depth " D "\n" in
             let CHECK = sum_trees D N 0 in
             cons (N, D, CHECK) (make_trees (D+2) M)
         else nil ]
