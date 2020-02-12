@@ -101,7 +101,7 @@ typedef UnicodeString   vm_text_t;
 typedef void*           vm_ptr_t;
 
 // predefined symbols
-#define SYMBOL_INT      0
+#define SYMBOL_INT     	0
 #define SYMBOL_FLOAT    1
 #define SYMBOL_CHAR     2
 #define SYMBOL_TEXT     3

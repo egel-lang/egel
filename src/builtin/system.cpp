@@ -341,7 +341,7 @@ public:
 
 class NegEq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(NegEq, "System", "!=");
+    DYADIC_PREAMBLE(NegEq, "System", "/=");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static VMObjectPtr _false = 0;
