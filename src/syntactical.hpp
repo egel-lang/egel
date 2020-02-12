@@ -107,7 +107,7 @@ public:
         return look().tag() == TOKEN_UPPERCASE;
     }
 
-    UnicodeString peek_operator() {
+    icu::UnicodeString peek_operator() {
         // (uppercase '.')* operator
         uint_t i = 0;
         while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
@@ -137,14 +137,14 @@ public:
     AstPtr parse_variable() {
         check_token(TOKEN_UPPERCASE);
         Position p = position();
-        UnicodeString s = look().text();
+        icu::UnicodeString s = look().text();
         skip();
         return AstExprVariable(p, s).clone();
     }
 
     AstPtr parse_wildcard() {
         Position p = position();
-        UnicodeString s = look().text();
+        icu::UnicodeString s = look().text();
         if (s != "_") throw ErrorSyntactical(p, "wildcard expected");
         skip();
         return AstExprWildcard(p, s).clone();
@@ -155,12 +155,12 @@ public:
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
                 (tag(1) == TOKEN_COLON) ) {
-            UnicodeString n = look().text();
+            icu::UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
         };
         check_token(TOKEN_LOWERCASE);
-        UnicodeString n = look().text();
+        icu::UnicodeString n = look().text();
         skip();
         return AstExprCombinator(p, nn, n).clone();
     }
@@ -170,12 +170,12 @@ public:
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
                 (tag(1) == TOKEN_COLON) ) {
-            UnicodeString n = look().text();
+            icu::UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
         };
         check_token(TOKEN_OPERATOR);
-        UnicodeString n = look().text();
+        icu::UnicodeString n = look().text();
         skip();
         return AstExprCombinator(p, nn, n).clone();
     }
@@ -185,12 +185,12 @@ public:
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
                 (tag(1) == TOKEN_COLON) ) {
-            UnicodeString n = look().text();
+            icu::UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
         };
         check_token(TOKEN_OPERATOR);
-        UnicodeString n = '!' + look().text();
+        icu::UnicodeString n = '!' + look().text();
         skip();
         return AstExprCombinator(p, nn, n).clone();
     }
@@ -205,13 +205,13 @@ public:
     UnicodeStrings parse_namespace() {
         UnicodeStrings ss;
         check_token(TOKEN_UPPERCASE);
-        UnicodeString s = look().text();
+        icu::UnicodeString s = look().text();
         ss.push_back(s);
         skip();
         while ( (tag(0) == TOKEN_COLON) &&
                 (tag(1) == TOKEN_UPPERCASE) ) {
             skip();
-            UnicodeString s = look().text();
+            icu::UnicodeString s = look().text();
             skip();
             ss.push_back(s);
         };
@@ -563,7 +563,7 @@ public:
     }
 
     AstPtr parse_primary_prefix() {
-        UnicodeString s = peek_operator();
+        icu::UnicodeString s = peek_operator();
         if ((s != "") && operator_is_prefix(s)) {
             AstPtr o = parse_prefix_operator();
             AstPtr e = parse_primary_prefix();
@@ -609,12 +609,12 @@ public:
      *      return lhs
      */
 
-    AstPtr parse_arithmetic_expression_1(AstPtr e0, UnicodeString mp) {
+    AstPtr parse_arithmetic_expression_1(AstPtr e0, icu::UnicodeString mp) {
         AstPtr lhs = e0;
-        UnicodeString la = peek_operator();
+        icu::UnicodeString la = peek_operator();
         while (((la.compare("") != 0) && operator_is_infix(la)) && (operator_compare(la, mp) >= 0)) {
             Position p = position();
-            UnicodeString opt = la;
+            icu::UnicodeString opt = la;
             AstPtr op = parse_operator();
             AstPtr rhs = parse_primaries();
             la = peek_operator();
@@ -847,7 +847,7 @@ public:
         Position p = position();
         force_token(TOKEN_IMPORT);
         check_token(TOKEN_TEXT);
-        UnicodeString n = look().text();
+        icu::UnicodeString n = look().text();
         skip();
         return AstDirectImport(p, n).clone();
     }

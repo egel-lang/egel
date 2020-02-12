@@ -74,11 +74,11 @@ typedef enum {
 
 } token_t;
 
-UnicodeString  token_text(token_t t);
+icu::UnicodeString  token_text(token_t t);
 
 class Token {
 public:
-    Token(token_t tag, const Position &position, const UnicodeString &text):
+    Token(token_t tag, const Position &position, const icu::UnicodeString &text):
         _tag(tag), _position(position), _text(text) {
     }
 
@@ -101,7 +101,7 @@ public:
         return _position;
     }
 
-    UnicodeString text() const {
+    icu::UnicodeString text() const {
         return _text;
     }
 
@@ -113,7 +113,7 @@ public:
 private:
     token_t         _tag;
     Position        _position;
-    UnicodeString   _text;
+    icu::UnicodeString   _text;
 };
 
 class TokenReader;
@@ -191,7 +191,7 @@ private:
     uint_t              _index;
 };
 
-UnicodeString  token_text(token_t t);
+icu::UnicodeString  token_text(token_t t);
 TokenReaderPtr tokenize_from_reader(CharReader &reader);
 
 #endif

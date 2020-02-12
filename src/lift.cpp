@@ -132,14 +132,14 @@ public:
         return _counter++;
     }
 
-    AstPtr combinator_expand(const AstPtr& c, UnicodeString s) {
+    AstPtr combinator_expand(const AstPtr& c, icu::UnicodeString s) {
         if (c->tag() == AST_EXPR_COMBINATOR) {
             AST_EXPR_COMBINATOR_SPLIT(c, p, nn, n);
-            UnicodeString n0 = n + "DOT" + s;
+            icu::UnicodeString n0 = n + "DOT" + s;
             return AstExprCombinator(p, nn, n0).clone();
         } else if (c->tag() == AST_EXPR_OPERATOR) {
             AST_EXPR_OPERATOR_SPLIT(c, p, nn, n); // XXX: keep source to source correct
-            UnicodeString n0 = n + "DOT" + s;
+            icu::UnicodeString n0 = n + "DOT" + s;
             return AstExprOperator(p, nn, n0).clone();
         } else {
             PANIC("combinator expected");

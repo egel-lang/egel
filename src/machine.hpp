@@ -15,8 +15,8 @@
 class SymbolTable {
 public:
     SymbolTable():
-            _to(std::vector<UnicodeString>()),
-            _from(std::map<UnicodeString, symbol_t>()) {
+            _to(std::vector<icu::UnicodeString>()),
+            _from(std::map<icu::UnicodeString, symbol_t>()) {
     }
 
     SymbolTable(const SymbolTable& other): 
@@ -42,7 +42,7 @@ public:
         ASSERT(_false == SYMBOL_FALSE);
     }
 
-    symbol_t enter(const UnicodeString& s) {
+    symbol_t enter(const icu::UnicodeString& s) {
         if (_from.count(s) == 0) {
             symbol_t n = _to.size();
             _to.push_back(s);
@@ -53,13 +53,13 @@ public:
         }
     }
 
-    symbol_t enter(const UnicodeString& n0, const UnicodeString& n1) {
-        UnicodeString n = n0 + STRING_COLON + n1;
+    symbol_t enter(const icu::UnicodeString& n0, const icu::UnicodeString& n1) {
+        icu::UnicodeString n = n0 + STRING_COLON + n1;
         return enter(n);
     }
 
-    symbol_t enter(const UnicodeStrings& nn, const UnicodeString& n) {
-        UnicodeString s;
+    symbol_t enter(const UnicodeStrings& nn, const icu::UnicodeString& n) {
+        icu::UnicodeString s;
         for (auto& n0: nn) {
             s += n0 + STRING_COLON;
         }
@@ -67,7 +67,7 @@ public:
         return enter(s);
     }
 
-    UnicodeString get(const symbol_t& s) {
+    icu::UnicodeString get(const symbol_t& s) {
         return _to[s];
     }
 
@@ -78,8 +78,8 @@ public:
     }
 
 private:
-    std::vector<UnicodeString>          _to;
-    std::map<UnicodeString, symbol_t>   _from;
+    std::vector<icu::UnicodeString>          _to;
+    std::map<icu::UnicodeString, symbol_t>   _from;
 };
 
 class DataTable {
@@ -169,27 +169,27 @@ public:
     }
 
     // import table manipulation
-    bool has_import(const UnicodeString& i) override {
+    bool has_import(const icu::UnicodeString& i) override {
         return false;
     }
 
-    void add_import(const UnicodeString& i) override {
+    void add_import(const icu::UnicodeString& i) override {
     }
 
     // symbol table manipulation
-    symbol_t enter_symbol(const UnicodeString& n) override {
+    symbol_t enter_symbol(const icu::UnicodeString& n) override {
         return _symbols.enter(n);
     }
 
-    symbol_t enter_symbol(const UnicodeString& n0, const UnicodeString& n1) override {
+    symbol_t enter_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) override {
         return _symbols.enter(n0, n1);
     }
 
-    symbol_t enter_symbol(const UnicodeStrings& nn, const UnicodeString& n) override {
+    symbol_t enter_symbol(const UnicodeStrings& nn, const icu::UnicodeString& n) override {
         return _symbols.enter(nn, n);
     }
 
-    UnicodeString get_symbol(symbol_t s) override {
+    icu::UnicodeString get_symbol(symbol_t s) override {
         return _symbols.get(s);
     }
 

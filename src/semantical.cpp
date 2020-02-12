@@ -56,8 +56,8 @@ public:
     }
 
     // helper functions 
-    UnicodeString qualified(const UnicodeStrings& nn, const UnicodeString n) {
-        UnicodeString s;
+    icu::UnicodeString qualified(const UnicodeStrings& nn, const icu::UnicodeString n) {
+        icu::UnicodeString s;
         for (auto& n: nn) {
             s += n + STRING_COLON;
         }
@@ -66,7 +66,7 @@ public:
     }
 
     // visits
-    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
+    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
         switch (get_declare_state()) {
         case STATE_DECLARE_GLOBAL:
             try {
@@ -174,7 +174,7 @@ public:
     }
 
     // range manipulation
-    void declare(const Position& p, const UnicodeString& k, const UnicodeString& v) {
+    void declare(const Position& p, const icu::UnicodeString& k, const icu::UnicodeString& v) {
         try {
             ::declare(_range, k, v);
         } catch (ErrorSemantical &e) {
@@ -182,13 +182,13 @@ public:
         }
     }
 
-    bool has(const UnicodeString& k) {
-        UnicodeString tmp = ::get(_range, k);
+    bool has(const icu::UnicodeString& k) {
+        icu::UnicodeString tmp = ::get(_range, k);
         return (tmp != "");
     }
 
-    UnicodeString get(const Position& p, const UnicodeString& k) {
-        UnicodeString tmp = ::get(_range, k);
+    icu::UnicodeString get(const Position& p, const icu::UnicodeString& k) {
+        icu::UnicodeString tmp = ::get(_range, k);
         if (tmp == "") {
             throw ErrorSemantical(p, "undeclared " + k);
         } else {
@@ -196,8 +196,8 @@ public:
         }
     }
 
-    UnicodeString get(const Position& p, const UnicodeStrings& kk, const UnicodeString& k) {
-        UnicodeString tmp = ::get(_range, kk, k);
+    icu::UnicodeString get(const Position& p, const UnicodeStrings& kk, const icu::UnicodeString& k) {
+        icu::UnicodeString tmp = ::get(_range, kk, k);
         if (tmp == "") {
             throw ErrorSemantical(p, "undeclared " + k);
         } else {
@@ -236,7 +236,7 @@ public:
     }
 
     // rewrites
-    AstPtr rewrite_expr_variable(const Position& p, const UnicodeString& v) override {
+    AstPtr rewrite_expr_variable(const Position& p, const icu::UnicodeString& v) override {
         switch (get_identify_state()) {
         case STATE_IDENTIFY_USE: {
                 auto v1 = get(p, v);
@@ -256,7 +256,7 @@ public:
         }
     }
 
-    AstPtr rewrite_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& t) override {
+    AstPtr rewrite_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
         case STATE_IDENTIFY_PATTERN:
@@ -274,7 +274,7 @@ public:
         return nullptr; // play nice with -Wall
     }
 
-    AstPtr rewrite_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& t) override {
+    AstPtr rewrite_expr_operator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
         case STATE_IDENTIFY_PATTERN: 

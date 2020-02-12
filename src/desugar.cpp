@@ -18,8 +18,8 @@ public:
         return _tick++;
     }
 
-    AstPtr rewrite_expr_wildcard(const Position& p, const UnicodeString& v) override {
-        UnicodeString w = "WILD";
+    AstPtr rewrite_expr_wildcard(const Position& p, const icu::UnicodeString& v) override {
+        icu::UnicodeString w = "WILD";
         w = w + unicode_convert_uint(tick());
         return AstExprVariable(p, w).clone();
     }

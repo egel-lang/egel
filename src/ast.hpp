@@ -97,10 +97,10 @@ public:
 
     virtual void render(std::ostream& os, uint_t indent) const = 0;
 
-    virtual UnicodeString to_text() const {
+    virtual icu::UnicodeString to_text() const {
         std::stringstream ss;
         render(ss, Ast::line_length);
-        UnicodeString u(ss.str().c_str());
+        icu::UnicodeString u(ss.str().c_str());
         return u;
     }
 
@@ -132,7 +132,7 @@ typedef std::set<AstPtr, LessAstPtr> AstPtrSet;
 class AstEmpty : public Ast {
 public:
     AstEmpty()
-        : Ast(AST_EMPTY, Position(UnicodeString(""), 0, 0)) {
+        : Ast(AST_EMPTY, Position(icu::UnicodeString(""), 0, 0)) {
     }
 
     AstEmpty(const AstEmpty& e): AstEmpty() {
@@ -158,11 +158,11 @@ typedef std::shared_ptr<AstEmpty> AstEmptyPtr;
 
 class AstAtom : public Ast {
 public:
-    AstAtom(ast_tag_t t, const Position &p,  const UnicodeString &n)
+    AstAtom(ast_tag_t t, const Position &p,  const icu::UnicodeString &n)
         : Ast(t, p), _text(n) {
     }
 
-    UnicodeString text() const {
+    icu::UnicodeString text() const {
         return _text;
     }
 
@@ -175,14 +175,14 @@ public:
     }
 
 private:
-    UnicodeString _text;
+    icu::UnicodeString _text;
 };
 
 // expression literals
 
 class AstExprInteger : public AstAtom {
 public:
-    AstExprInteger(const Position &p,  const UnicodeString &text)
+    AstExprInteger(const Position &p,  const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_INTEGER, p, text) {
     };
 
@@ -206,7 +206,7 @@ typedef std::shared_ptr<AstExprInteger> AstExprIntegerPtr;
 
 class AstExprHexInteger : public AstAtom {
 public:
-    AstExprHexInteger(const Position &p,  const UnicodeString &text)
+    AstExprHexInteger(const Position &p,  const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_HEXINTEGER, p, text)
     {};
 
@@ -230,7 +230,7 @@ typedef std::shared_ptr<AstExprHexInteger> AstExprHexIntegerPtr;
 
 class AstExprFloat : public AstAtom {
 public:
-    AstExprFloat(const Position &p,  const UnicodeString &text)
+    AstExprFloat(const Position &p,  const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_FLOAT, p, text)
     {};
 
@@ -254,7 +254,7 @@ typedef std::shared_ptr<AstExprFloat> AstExprFloatPtr;
 
 class AstExprCharacter : public AstAtom {
 public:
-    AstExprCharacter(const Position &p,  const UnicodeString &text)
+    AstExprCharacter(const Position &p,  const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_CHARACTER, p, text)
     {};
 
@@ -278,7 +278,7 @@ typedef std::shared_ptr<AstExprCharacter> AstExprCharacterPtr;
 
 class AstExprText : public AstAtom {
 public:
-    AstExprText(const Position &p,  const UnicodeString &text)
+    AstExprText(const Position &p,  const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_TEXT, p, text) {
     };
 
@@ -304,7 +304,7 @@ typedef std::shared_ptr<AstExprText> AstExprTextPtr;
 
 class AstExprVariable : public AstAtom {
 public:
-    AstExprVariable(const Position &p,  const UnicodeString &text)
+    AstExprVariable(const Position &p,  const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_VARIABLE, p, text) {
     };
 
@@ -327,7 +327,7 @@ typedef std::shared_ptr<AstExprVariable> AstExprVariablePtr;
 
 class AstExprWildcard : public AstAtom {
 public:
-    AstExprWildcard(const Position &p,  const UnicodeString &text)
+    AstExprWildcard(const Position &p,  const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_WILDCARD, p, text) {
     };
 
@@ -409,18 +409,18 @@ typedef std::shared_ptr<AstExprTag> AstExprTagPtr;
 
 class AstExprCombinator : public Ast {
 public:
-    AstExprCombinator(const Position &p,  const UnicodeStrings& pp, const UnicodeString &c)
+    AstExprCombinator(const Position &p,  const UnicodeStrings& pp, const icu::UnicodeString &c)
         : Ast(AST_EXPR_COMBINATOR, p), _path(pp), _combinator(c) {
     };
 
-    AstExprCombinator(const Position &p,  const UnicodeString& n, const UnicodeString &c)
+    AstExprCombinator(const Position &p,  const icu::UnicodeString& n, const icu::UnicodeString &c)
         : Ast(AST_EXPR_COMBINATOR, p), _combinator(c) {
             UnicodeStrings nn;
             nn.push_back(n);
             _path = nn;
     };
 
-    AstExprCombinator(const Position &p,  const UnicodeString &c)
+    AstExprCombinator(const Position &p,  const icu::UnicodeString &c)
         : Ast(AST_EXPR_COMBINATOR, p), _combinator(c) {
             UnicodeStrings nn;
             _path = nn;
@@ -438,12 +438,12 @@ public:
         return _path;
     }
 
-    UnicodeString combinator() const {
+    icu::UnicodeString combinator() const {
         return _combinator;
     }
 
-    UnicodeString to_text() const override {
-        UnicodeString str = "";
+    icu::UnicodeString to_text() const override {
+        icu::UnicodeString str = "";
         for (auto& p:_path) {
             str += p;
             str += STRING_COLON;
@@ -464,7 +464,7 @@ public:
 
 private:
     UnicodeStrings  _path;
-    UnicodeString   _combinator;
+    icu::UnicodeString   _combinator;
 };
 
 typedef std::shared_ptr<AstExprCombinator> AstExprCombinatorPtr;
@@ -477,11 +477,11 @@ typedef std::shared_ptr<AstExprCombinator> AstExprCombinatorPtr;
 
 class AstExprOperator : public Ast {
 public:
-    AstExprOperator(const Position &p,  const UnicodeStrings& pp, const UnicodeString &c)
+    AstExprOperator(const Position &p,  const UnicodeStrings& pp, const icu::UnicodeString &c)
         : Ast(AST_EXPR_OPERATOR, p), _path(pp), _combinator(c) {
     };
 
-    AstExprOperator(const Position &p,  const UnicodeString& n, const UnicodeString &c)
+    AstExprOperator(const Position &p,  const icu::UnicodeString& n, const icu::UnicodeString &c)
         : Ast(AST_EXPR_OPERATOR, p), _combinator(c) {
             UnicodeStrings nn;
             nn.push_back(n);
@@ -500,12 +500,12 @@ public:
         return _path;
     }
 
-    UnicodeString combinator() const {
+    icu::UnicodeString combinator() const {
         return _combinator;
     }
 
-    UnicodeString text() const {
-        UnicodeString str = "";
+    icu::UnicodeString text() const {
+        icu::UnicodeString str = "";
         for (auto& p:_path) {
             str += p;
             str += STRING_COLON;
@@ -531,7 +531,7 @@ public:
 
 private:
     UnicodeStrings  _path;
-    UnicodeString   _combinator;
+    icu::UnicodeString   _combinator;
 };
 
 typedef std::shared_ptr<AstExprOperator> AstExprOperatorPtr;
@@ -1685,7 +1685,7 @@ typedef std::shared_ptr<AstDeclObject> AstDeclObjectPtr;
 
 class AstDirectImport : public Ast {
 public:
-    AstDirectImport(const Position &p,  const UnicodeString &v)
+    AstDirectImport(const Position &p,  const icu::UnicodeString &v)
         : Ast(AST_DIRECT_IMPORT, p), _import(v) {
     }
 
@@ -1697,7 +1697,7 @@ public:
         return AstPtr(new AstDirectImport(*this));
     }
 
-    UnicodeString import() const {
+    icu::UnicodeString import() const {
         return _import;
     }
 
@@ -1713,7 +1713,7 @@ public:
     }
 
 private:
-    UnicodeString _import;
+    icu::UnicodeString _import;
 };
 
 typedef std::shared_ptr<AstDirectImport> AstDirectImportPtr;

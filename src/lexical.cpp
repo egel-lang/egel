@@ -232,16 +232,16 @@ static token_text_t token_text_table[] {
 
 #define TOKEN_TEXT_TABLE_SIZE sizeof(token_text_table)/sizeof(token_text_t)
 
-UnicodeString token_text(token_t t) {
+icu::UnicodeString token_text(token_t t) {
     for (uint_t i = 0; i < TOKEN_TEXT_TABLE_SIZE; i++) {
         if (t == token_text_table[i].tag) {
-            return UnicodeString(token_text_table[i].text);
+            return icu::UnicodeString(token_text_table[i].text);
         }
     }
 
     PANIC("Uknkown token.");
     // surpress warnings
-    return UnicodeString();
+    return icu::UnicodeString();
 }
 
 typedef struct {
@@ -338,7 +338,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
         // compound tokens
         } else if (is_quote(c)) {
             // FIXME: doesn't handle backslashes correct
-            UnicodeString str = UnicodeString("");
+            icu::UnicodeString str = icu::UnicodeString("");
             str += c;
             reader.skip();
             if (reader.end() || is_eol(reader.look())) goto handle_char_error;
@@ -359,7 +359,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             reader.skip();
             token_writer.push(Token(TOKEN_CHAR, p, str));
         } else if (is_dquote(c)) {
-            UnicodeString str = UnicodeString("");
+            icu::UnicodeString str = icu::UnicodeString("");
             str += c;
             reader.skip();
             if (reader.end() || is_eol(reader.look())) goto handle_string_error;
@@ -388,7 +388,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
              * or expanded with an exponent "[-]?[0-9]+[.][0-9]+[e][-]?[0-9]+".
              * A hexint is "0x[0-9a-f]+".
              */
-            UnicodeString str = UnicodeString("");
+            icu::UnicodeString str = icu::UnicodeString("");
             // handle leading '-'
             if (is_minus(c)) {
                 str += c;
@@ -457,7 +457,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
                 }
             }
         } else if (is_operator(c)) {
-            UnicodeString str = UnicodeString("");
+            icu::UnicodeString str = icu::UnicodeString("");
             while (is_operator(c)) {
                 str += c;
                 reader.skip();
@@ -465,7 +465,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             };
             token_writer.push(adjust_reserved(Token(TOKEN_OPERATOR, p, str)));
         } else if (is_uppercase(c)) {
-            UnicodeString str = UnicodeString("");
+            icu::UnicodeString str = icu::UnicodeString("");
             while (is_letter(c)) {
                 str += c;
                 reader.skip();
@@ -473,7 +473,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             };
             token_writer.push(adjust_reserved(Token(TOKEN_UPPERCASE, p, str)));
         } else if (is_lowercase(c)) {
-            UnicodeString str = UnicodeString("");
+            icu::UnicodeString str = icu::UnicodeString("");
             while (is_letter(c)) {
                 str += c;
                 reader.skip();
@@ -481,7 +481,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             };
             token_writer.push(adjust_reserved(Token(TOKEN_LOWERCASE, p, str)));
         } else if (is_underscore(c)) { // XXX: push a lowercase for an underscore?
-            UnicodeString str = UnicodeString("");
+            icu::UnicodeString str = icu::UnicodeString("");
             str += c;
             reader.skip();
             token_writer.push(Token(TOKEN_LOWERCASE, p, str));
@@ -494,14 +494,14 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
 
     {
         Position p = reader.position();
-        token_writer.push(Token(TOKEN_EOF, p, UnicodeString("EOF")));
+        token_writer.push(Token(TOKEN_EOF, p, icu::UnicodeString("EOF")));
     }
 
     return token_writer.clone_reader();
 
     handle_error: {
         Position p = reader.position();
-        throw ErrorLexical(p, UnicodeString("unrecognized lexeme ") + reader.look());
+        throw ErrorLexical(p, icu::UnicodeString("unrecognized lexeme ") + reader.look());
     }
 
     handle_char_error: {

@@ -61,7 +61,7 @@ static option_t options[] = {
 
 #define OPTIONS_SIZE    (sizeof(options)/sizeof(option_t))
 
-typedef std::vector<std::pair<UnicodeString, UnicodeString> > StringPairs;
+typedef std::vector<std::pair<icu::UnicodeString, icu::UnicodeString> > StringPairs;
 
 StringPairs parse_options(int argc, char *argv[]) {
     StringPairs pp;
@@ -75,26 +75,26 @@ StringPairs parse_options(int argc, char *argv[]) {
                 
                 switch (options[i].argument) {
                 case OPTION_NONE:
-                    pp.push_back(std::make_pair(UnicodeString(options[i].shortname), UnicodeString("")));
+                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString("")));
                     break;
                 case OPTION_FILE:
                     if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(UnicodeString(options[i].shortname), UnicodeString(argv[a+1])));
+                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
                     a++;
                     break;
                 case OPTION_DIR:
                     if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(UnicodeString(options[i].shortname), UnicodeString(argv[a+1])));
+                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
                     a++;
                     break;
                 case OPTION_NUMBER:
                     if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(UnicodeString(options[i].shortname), UnicodeString(argv[a+1])));
+                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
                     a++;
                     break;
                 case OPTION_TEXT:
                     if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(UnicodeString(options[i].shortname), UnicodeString(argv[a+1])));
+                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
                     a++;
                     break;
                 };
@@ -103,7 +103,7 @@ StringPairs parse_options(int argc, char *argv[]) {
         }
 
         if (sz == pp.size()) {
-            pp.push_back(std::make_pair(UnicodeString("--"), UnicodeString(argv[a])));
+            pp.push_back(std::make_pair(icu::UnicodeString("--"), icu::UnicodeString(argv[a])));
         }
     }
     return pp;
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
     OptionsPtr oo = Options().clone();
 
     // always add local directory to the search path
-    oo->add_include_path(UnicodeString("./"));
+    oo->add_include_path(icu::UnicodeString("./"));
 
     // check for include paths
     for (auto& p : pp) {
@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
     // add include path from environment
     auto istr = getenv("EGEL_INCLUDE");
     if (istr != nullptr) {
-        oo->add_include_path(UnicodeString(istr, -1, US_INV));
+        oo->add_include_path(icu::UnicodeString(istr, -1, US_INV));
     } else {
         oo->add_include_path(INCLUDE_PATH);
     }
@@ -213,8 +213,8 @@ int main(int argc, char *argv[]) {
     };
 
     // check for unique --/fn
-    UnicodeString fn;
-    std::vector<UnicodeString> aa;
+    icu::UnicodeString fn;
+    std::vector<icu::UnicodeString> aa;
     for (auto& p : pp) {
         if (p.first == ("--")) {
             if (fn == "") {
@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
     };
 
     // check for command
-    UnicodeString e;
+    icu::UnicodeString e;
     for (auto& p : pp) {
         if (p.first == ("-e")) {
             e = p.second;
@@ -268,7 +268,7 @@ int main(int argc, char *argv[]) {
     // start either interactive or batch mode
     if (e != "") {
         try {
-            eval.eval_command(UnicodeString("using System"));
+            eval.eval_command(icu::UnicodeString("using System"));
             eval.eval_command(e);
         } catch (Error &e) {
             std::cerr << e << std::endl;

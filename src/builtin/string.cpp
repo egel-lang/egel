@@ -110,7 +110,7 @@ public:
 };
 
 // String.compare s0 s1
-// Compare the characters bitwise in this UnicodeString to the characters in text. 
+// Compare the characters bitwise in this icu::UnicodeString to the characters in text. 
 class Compare: public Dyadic {
 public:
     DYADIC_PREAMBLE(Compare, "String", "compare");
@@ -331,7 +331,7 @@ public:
 };
 
 // String.append s0 s1
-// Append the characters in srcText to the UnicodeString object. 
+// Append the characters in srcText to the icu::UnicodeString object. 
 class Append: public Dyadic {
 public:
     DYADIC_PREAMBLE(Append, "String", "append");
@@ -353,7 +353,7 @@ public:
 
 
 // String.insert s0 n s1
-// Insert the characters in srcText into the UnicodeString object at offset start. 
+// Insert the characters in srcText into the icu::UnicodeString object at offset start. 
 class Insert: public Triadic {
 public:
     TRIADIC_PREAMBLE(Insert, "String", "insert");
@@ -389,7 +389,7 @@ public:
 };
 
 // String.remove n0 n1 s0
-// Remove the characters in the range [start, limit) from the UnicodeString object. 
+// Remove the characters in the range [start, limit) from the icu::UnicodeString object. 
 class Remove: public Triadic {
 public:
     TRIADIC_PREAMBLE(Remove, "String", "remove");
@@ -407,7 +407,7 @@ public:
 };
 
 // String.retain n0 n1 s0
-// Retain the characters in the range [start, limit) from the UnicodeString object. 
+// Retain the characters in the range [start, limit) from the icu::UnicodeString object. 
 class Retain: public Triadic {
 public:
     TRIADIC_PREAMBLE(Retain, "String", "retain");
@@ -425,7 +425,7 @@ public:
 };
 
 // String.trim s 
-// Trims leading and trailing whitespace from this UnicodeString. 
+// Trims leading and trailing whitespace from this icu::UnicodeString. 
 class Trim: public Monadic {
 public:
     MONADIC_PREAMBLE(Trim, "String", "trim");
@@ -441,7 +441,7 @@ public:
 };
 
 // String.reverse s 
-// Reverse this UnicodeString in place. 
+// Reverse this icu::UnicodeString in place. 
 class Reverse: public Monadic {
 public:
     MONADIC_PREAMBLE(Reverse, "String", "reverse");

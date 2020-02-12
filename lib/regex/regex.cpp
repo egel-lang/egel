@@ -9,7 +9,7 @@
 
 #define REGEX_STRING    "Regex"
 
-typedef std::vector<UnicodeString> UnicodeStrings;
+typedef std::vector<icu::UnicodeString> UnicodeStrings;
 
 // convenience function
 VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
@@ -38,7 +38,7 @@ typedef std::shared_ptr<Regex>  RegexPtr;
 
 class Regex: public Opaque {
 public:
-    Regex(VM* vm, RegexPattern* p)
+    Regex(VM* vm, icu::RegexPattern* p)
         : Opaque(vm, REGEX_STRING, "pattern"), _pattern(p) {
     }
 
@@ -74,15 +74,15 @@ public:
         }
     }
 
-    RegexPattern* pattern() const {
+    icu::RegexPattern* pattern() const {
         return _pattern;
     }
 
-    UnicodeString string() const {
+    icu::UnicodeString string() const {
         return _pattern->pattern();
     }
     
-    RegexMatcher* matcher(const UnicodeString& s) {
+    icu::RegexMatcher* matcher(const icu::UnicodeString& s) {
         UErrorCode  error_code = U_ZERO_ERROR;
         auto m = _pattern->matcher(s, error_code);
         if (U_FAILURE(error_code)) {
@@ -111,7 +111,7 @@ public:
     }
 
 private:
-    RegexPattern* _pattern;
+    icu::RegexPattern* _pattern;
 };
 
 // Regex.compile s0
@@ -124,8 +124,8 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
             UParseError parse_error;
             UErrorCode  error_code = U_ZERO_ERROR;
-            UnicodeString pat = s0;
-            RegexPattern* p = icu::RegexPattern::compile(pat, parse_error, error_code);
+            icu::UnicodeString pat = s0;
+            icu::RegexPattern* p = icu::RegexPattern::compile(pat, parse_error, error_code);
             if (U_FAILURE(error_code)) {
                 return nullptr;
             } else {
@@ -184,13 +184,13 @@ public:
                 start = r->start(error_code);
                 end   = r->end(error_code);
                 
-                UnicodeString s;
+                icu::UnicodeString s;
                 s0.extract(pos, start-pos, s);
                 ss.push_back(s);
 
                 pos = end;
             }
-            UnicodeString s;
+            icu::UnicodeString s;
             s0.extract(pos, s0.length()-pos, s);
             ss.push_back(s);
             delete r;
@@ -221,7 +221,7 @@ public:
                 auto start = r->start(error_code);
                 auto end   = r->end(error_code);
                 
-                UnicodeString s;
+                icu::UnicodeString s;
                 s0.extract(start, end-start, s);
                 ss.push_back(s);
             }
@@ -292,8 +292,8 @@ public:
     }
 };
 
-extern "C" std::vector<UnicodeString> egel_imports() {
-    return std::vector<UnicodeString>();
+extern "C" std::vector<icu::UnicodeString> egel_imports() {
+    return std::vector<icu::UnicodeString>();
 }
 
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {

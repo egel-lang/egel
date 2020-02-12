@@ -109,7 +109,7 @@ public:
         _fv.erase(a);
     }
 
-    void visit_expr_variable(const Position& p, const UnicodeString& n) override {
+    void visit_expr_variable(const Position& p, const icu::UnicodeString& n) override {
         switch (get_state()) {
         case FREEVARS_INSERT:
             insert(AstExprVariable(p, n).clone());

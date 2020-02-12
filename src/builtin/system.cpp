@@ -643,7 +643,7 @@ public:
         static symbol_t _cons = 0;
         if (_cons == 0) _cons = machine()->enter_symbol("System", "cons");
 
-        UnicodeString ss;
+        icu::UnicodeString ss;
         auto a = arg0;
 
         while ( (a->tag() == VM_OBJECT_ARRAY) ) {

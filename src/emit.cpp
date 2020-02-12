@@ -5,7 +5,7 @@
 #include "bytecode.hpp"
 #include "emit.hpp"
 
-typedef std::map<UnicodeString, reg_t> RegisterMap;
+typedef std::map<icu::UnicodeString, reg_t> RegisterMap;
 typedef std::unique_ptr<Coder>         CoderPtr;
 
 class EmitData: public Visit {
@@ -15,10 +15,10 @@ public:
         visit(a);
     }
 
-    void visit_directive_import(const Position& p, const UnicodeString& i) override {
+    void visit_directive_import(const Position& p, const icu::UnicodeString& i) override {
     }
 
-    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
+    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
         auto c = VMObjectData(_machine, nn, n).clone();
         _machine->define_data(c);
     }
@@ -137,11 +137,11 @@ public:
         return _arity;
     }
 
-    void add_variable_binding(const UnicodeString& v, const reg_t t) {
+    void add_variable_binding(const icu::UnicodeString& v, const reg_t t) {
         _variables[v] = t;
     }
 
-    reg_t get_variable_binding(const UnicodeString& v) {
+    reg_t get_variable_binding(const icu::UnicodeString& v) {
         return _variables[v];
     }
 
@@ -192,7 +192,7 @@ public:
         }
     }
 
-    void visit_expr_integer(const Position& p, const UnicodeString& v) override {
+    void visit_expr_integer(const Position& p, const icu::UnicodeString& v) override {
         if (v.startsWith("0x")) {
             auto i = VMObjectInteger(convert_to_hexint(v)).clone();
             auto d = get_machine()->enter_data(i);
@@ -204,35 +204,35 @@ public:
         }
     }
 
-    void visit_expr_float(const Position& p, const UnicodeString& v) override {
+    void visit_expr_float(const Position& p, const icu::UnicodeString& v) override {
         auto i = VMObjectFloat(convert_to_float(v)).clone();
         auto d = get_machine()->enter_data(i);
         visit_constant(d);
     }
 
-    void visit_expr_character(const Position& p, const UnicodeString& v) override {
+    void visit_expr_character(const Position& p, const icu::UnicodeString& v) override {
         auto i = VMObjectChar(convert_to_char(v)).clone();
         auto d = get_machine()->enter_data(i);
         visit_constant(d);
     }
 
-    void visit_expr_text(const Position& p, const UnicodeString& v) override {
+    void visit_expr_text(const Position& p, const icu::UnicodeString& v) override {
         auto i = VMObjectText(convert_to_text(v)).clone();
         auto d = get_machine()->enter_data(i);
         visit_constant(d);
     }
 
-    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
+    void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
         auto c = get_machine()->get_data_string(nn, n);
         auto d = get_machine()->enter_data(c);
         visit_constant(d);
     }
 
-    void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const UnicodeString& n) override {
+    void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
         visit_expr_combinator(p, nn, n);
     }
 
-    void visit_expr_variable(const Position& p, const UnicodeString& n) override {
+    void visit_expr_variable(const Position& p, const icu::UnicodeString& n) override {
         switch(get_state()) {
         case EMIT_PATTERN: {
             auto r = get_current_register();
@@ -537,7 +537,7 @@ public:
         PANIC("throw is combinator");
     }
 
-    void visit_directive_import(const Position& p, const UnicodeString& i) override {
+    void visit_directive_import(const Position& p, const icu::UnicodeString& i) override {
     }
 
     void visit_decl_data(const Position& p, const AstPtrs& nn) override {

@@ -31,8 +31,8 @@ using namespace icu_63;
 
 // libicu doesn't provide escaping..
 
-inline UnicodeString uescape(const UnicodeString& s) {
-    UnicodeString s1;
+inline icu::UnicodeString uescape(const icu::UnicodeString& s) {
+    icu::UnicodeString s1;
     int i=0;
     int len = s.length();
     for (i = 0; i < len; i++) {
@@ -97,7 +97,7 @@ typedef bool            vm_bool_t;
 typedef int64_t         vm_int_t;
 typedef double          vm_float_t;
 typedef UChar32         vm_char_t;
-typedef UnicodeString   vm_text_t;
+typedef icu::UnicodeString   vm_text_t;
 typedef void*           vm_ptr_t;
 
 // predefined symbols
@@ -155,10 +155,10 @@ public:
 
     virtual symbol_t symbol() const = 0;
 
-    UnicodeString to_text() {
+    icu::UnicodeString to_text() {
         std::stringstream ss;
         render(ss);
-        UnicodeString u(ss.str().c_str());
+        icu::UnicodeString u(ss.str().c_str());
         return u;
     }
 
@@ -181,14 +181,14 @@ public:
     VM() {};
 
     // import table manipulation
-    virtual bool has_import(const UnicodeString& i) = 0;
-    virtual void add_import(const UnicodeString& i) = 0;
+    virtual bool has_import(const icu::UnicodeString& i) = 0;
+    virtual void add_import(const icu::UnicodeString& i) = 0;
 
     // symbol table manipulation
-    virtual symbol_t enter_symbol(const UnicodeString& n) = 0;
-    virtual symbol_t enter_symbol(const UnicodeString& n0, const UnicodeString& n1) = 0;
-    virtual symbol_t enter_symbol(const std::vector<UnicodeString>& nn, const UnicodeString& n) = 0;
-    virtual UnicodeString get_symbol(symbol_t s) = 0;
+    virtual symbol_t enter_symbol(const icu::UnicodeString& n) = 0;
+    virtual symbol_t enter_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) = 0;
+    virtual symbol_t enter_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) = 0;
+    virtual icu::UnicodeString get_symbol(symbol_t s) = 0;
 
     // data table manipulation
     virtual data_t enter_data(const VMObjectPtr& o) = 0;
@@ -211,9 +211,9 @@ public:
 
     // convenience routines
     VMObjectPtr get_data_symbol(const symbol_t t);
-    VMObjectPtr get_data_string(const UnicodeString& n);
-    VMObjectPtr get_data_string(const UnicodeString& n0, const UnicodeString& n1);
-    VMObjectPtr get_data_string(const std::vector<UnicodeString>& nn, const UnicodeString& n);
+    VMObjectPtr get_data_string(const icu::UnicodeString& n);
+    VMObjectPtr get_data_string(const icu::UnicodeString& n0, const icu::UnicodeString& n1);
+    VMObjectPtr get_data_string(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n);
 
 };
 
@@ -345,7 +345,7 @@ public:
     }
 
     void render(std::ostream& os) const override {
-        UnicodeString s;
+        icu::UnicodeString s;
         s = uescape(s+value());
         os << "'" << s << "'";
     }
@@ -369,13 +369,13 @@ typedef std::shared_ptr<VMObjectChar> VMObjectCharPtr;
 
 class VMObjectText : public VMObjectLiteral {
 public:
-    VMObjectText(const UnicodeString &v)
+    VMObjectText(const icu::UnicodeString &v)
         : VMObjectLiteral(VM_OBJECT_TEXT), _value(v) {
     };
 
     VMObjectText(const char* v)
         : VMObjectLiteral(VM_OBJECT_TEXT) {
-        _value = UnicodeString::fromUTF8(StringPiece(v));
+        _value = icu::UnicodeString::fromUTF8(icu::StringPiece(v));
     };
 
     VMObjectText(const VMObjectText& l)
@@ -386,7 +386,7 @@ public:
         return VMObjectPtr(new VMObjectText(*this));
     }
 
-    static VMObjectPtr create(const UnicodeString& v) {
+    static VMObjectPtr create(const icu::UnicodeString& v) {
         return VMObjectPtr(new VMObjectText(v));
     }
 
@@ -407,17 +407,17 @@ public:
     }
 
     void render(std::ostream& os) const override {
-        UnicodeString s;
+        icu::UnicodeString s;
         s = uescape(value());
         os << '"' << s << '"';
     }
 
-    UnicodeString value() const {
+    icu::UnicodeString value() const {
         return _value;
     }
 
 private:
-    UnicodeString    _value;
+    icu::UnicodeString    _value;
 };
 
 typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
@@ -635,15 +635,15 @@ public:
         : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(s) {
     };
 
-    VMObjectOpaque(VM* m, const UnicodeString& n)
+    VMObjectOpaque(VM* m, const icu::UnicodeString& n)
         : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n)) {
     };
 
-    VMObjectOpaque(VM* m, const UnicodeString& n0, const UnicodeString& n1)
+    VMObjectOpaque(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
         : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
     };
 
-    VMObjectOpaque(VM* m, const std::vector<UnicodeString>& nn, const UnicodeString& n)
+    VMObjectOpaque(VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
         : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(nn, n)) {
     };
 
@@ -655,7 +655,7 @@ public:
         return _symbol;
     }
 
-    UnicodeString text() const {
+    icu::UnicodeString text() const {
         return _machine->get_symbol(_symbol);
     }
 
@@ -716,15 +716,15 @@ public:
         : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(s) {
     };
 
-    VMObjectCombinator(const vm_object_flag_t f, VM* m, const UnicodeString& n)
+    VMObjectCombinator(const vm_object_flag_t f, VM* m, const icu::UnicodeString& n)
         : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(m->enter_symbol(n)) {
     };
 
-    VMObjectCombinator(const vm_object_flag_t f, VM* m, const UnicodeString& n0, const UnicodeString& n1)
+    VMObjectCombinator(const vm_object_flag_t f, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
         : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
     };
 
-    VMObjectCombinator(const vm_object_flag_t f, VM* m, const std::vector<UnicodeString>& nn, const UnicodeString& n)
+    VMObjectCombinator(const vm_object_flag_t f, VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
         : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(m->enter_symbol(nn, n)) {
     };
 
@@ -736,7 +736,7 @@ public:
         return _symbol;
     }
 
-    UnicodeString text() const {
+    icu::UnicodeString text() const {
         return _machine->get_symbol(_symbol);
     }
 
@@ -802,15 +802,15 @@ public:
         : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, s) {
     };
 
-    VMObjectData(VM* m, const UnicodeString& n)
+    VMObjectData(VM* m, const icu::UnicodeString& n)
         : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, n) {
     };
 
-    VMObjectData(VM* m, const UnicodeString& n0, const UnicodeString& n1)
+    VMObjectData(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
         : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, n0, n1) {
     };
 
-    VMObjectData(VM* m, const std::vector<UnicodeString>& nn, const UnicodeString& n)
+    VMObjectData(VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
         : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, nn, n) {
     };
 
@@ -992,17 +992,17 @@ inline VMObjectPtr VM::get_data_symbol(const symbol_t s) {
     return get_data(d);
 }
 
-inline VMObjectPtr VM::get_data_string(const UnicodeString& n) {
+inline VMObjectPtr VM::get_data_string(const icu::UnicodeString& n) {
     auto i = enter_symbol(n);
     return get_data_symbol(i);
 }
 
-inline VMObjectPtr VM::get_data_string(const UnicodeString& n0, const UnicodeString& n1) {
+inline VMObjectPtr VM::get_data_string(const icu::UnicodeString& n0, const icu::UnicodeString& n1) {
     auto i = enter_symbol(n0, n1);
     return get_data_symbol(i);
 }
 
-inline VMObjectPtr VM::get_data_string(const std::vector<UnicodeString>& nn, const UnicodeString& n) {
+inline VMObjectPtr VM::get_data_string(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) {
     auto i = enter_symbol(nn, n);
     return get_data_symbol(i);
 }
@@ -1046,7 +1046,7 @@ public:
 
 class Opaque: public VMObjectOpaque {
 public:
-    Opaque(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Opaque(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectOpaque(m, n0, n1) {
     }
 
@@ -1065,7 +1065,7 @@ public:
 
 class Medadic: public VMObjectCombinator {
 public:
-    Medadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Medadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
     }
 
@@ -1145,7 +1145,7 @@ public:
 
 class Monadic: public VMObjectCombinator {
 public:
-    Monadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Monadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
     }
 
@@ -1227,7 +1227,7 @@ public:
 
 class Dyadic: public VMObjectCombinator {
 public:
-    Dyadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Dyadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
     }
 
@@ -1310,7 +1310,7 @@ public:
 
 class Triadic: public VMObjectCombinator {
 public:
-    Triadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Triadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
     }
 
@@ -1394,7 +1394,7 @@ public:
 
 class Variadic: public VMObjectCombinator {
 public:
-    Variadic(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Variadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
     }
 
@@ -1562,7 +1562,7 @@ public:
 
 class Binary: public VMObjectCombinator {
 public:
-    Binary(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Binary(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
     }
 
@@ -1648,7 +1648,7 @@ public:
 
 class Ternary: public VMObjectCombinator {
 public:
-    Ternary(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+    Ternary(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
          VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
     }
 

@@ -49,8 +49,8 @@ public:
     }
 };
 
-extern "C" std::vector<UnicodeString> egel_imports() {
-    return std::vector<UnicodeString>();
+extern "C" std::vector<icu::UnicodeString> egel_imports() {
+    return std::vector<icu::UnicodeString>();
 }
 
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {

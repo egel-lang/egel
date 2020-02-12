@@ -413,6 +413,90 @@ public:
 };
 
 
+// IO.print o0 .. on
+// Print objects on standard output; don't escape characters or 
+// strings when they are the argument. May recursively print large
+// objects leading to stack explosion.
+class Print: public Variadic {
+public:
+    VARIADIC_PREAMBLE(Print, "IO", "print");
+
+    VMObjectPtr apply(const VMObjectPtrs& args) const override {
+
+        icu::UnicodeString s;
+        for (auto& arg:args) {
+            if (arg->tag() == VM_OBJECT_INTEGER) {
+                s += arg->to_text();
+            } else if (arg->tag() == VM_OBJECT_FLOAT) {
+                s += arg->to_text();
+            } else if (arg->tag() == VM_OBJECT_CHAR) {
+                s += VM_OBJECT_CHAR_VALUE(arg);
+            } else if (arg->tag() == VM_OBJECT_TEXT) {
+                s += VM_OBJECT_TEXT_VALUE(arg);
+            } else {
+                return nullptr;
+            }
+        }
+        std::cout << s;
+
+        return create_nop();
+    }
+};
+
+/* Input functions on standard input */
+
+// IO.getline
+// Read characters from standard input
+// until a newline character is encountered. Return the string of all
+// characters read, without the newline character at the end.
+
+class Getline: public Medadic {
+public:
+    MEDADIC_PREAMBLE(Getline, "IO", "getline");
+
+    VMObjectPtr apply() const override {
+        std::string line;
+        std::getline(std::cin, line);
+        icu::UnicodeString str(line.c_str());
+        return create_text(str);
+    }
+};
+
+
+/*
+// IO.getint
+// Read one line from standard input and convert it to an integer. 
+
+class Getint: public Medadic {
+public:
+    MEDADIC_PREAMBLE(Getint, "IO", "getint");
+
+    VMObjectPtr apply() const override {
+        vm_int_t n;
+        std::cin >> n;
+        return VMObjectInteger(n).clone();
+    }
+};
+
+// IO.getfloat
+// Read one line from standard input and convert it to a 
+// floating-point number. The result is unspecified if the line read 
+// is not a valid representation of a floating-point number.
+
+class Getfloat: public Medadic {
+public:
+    MEDADIC_PREAMBLE(Getfloat, "IO", "getfloat");
+
+    VMObjectPtr apply() const override {
+        vm_float_t f;
+        std::cin >> f;
+        return VMObjectFloat(f).clone();
+    }
+};
+*/
+
+/* File channel creation and destruction */
+
 // IO.open s
 // Open the named file, and return a new channel on
 // that file, positionned at the beginning of the file. The file is
@@ -591,55 +675,6 @@ public:
         }
     }
 };
-
-// IO.print o0 .. on
-// Print objects on standard output; don't escape characters or 
-// strings when they are the argument. May recursively print large
-// objects leading to stack explosion.
-
-class Print: public Variadic {
-public:
-    VARIADIC_PREAMBLE(Print, "IO", "print");
-
-    VMObjectPtr apply(const VMObjectPtrs& args) const override {
-
-        UnicodeString s;
-        for (auto& arg:args) {
-            if (arg->tag() == VM_OBJECT_INTEGER) {
-                s += arg->to_text();
-            } else if (arg->tag() == VM_OBJECT_FLOAT) {
-                s += arg->to_text();
-            } else if (arg->tag() == VM_OBJECT_CHAR) {
-                s += VM_OBJECT_CHAR_VALUE(arg);
-            } else if (arg->tag() == VM_OBJECT_TEXT) {
-                s += VM_OBJECT_TEXT_VALUE(arg);
-            } else {
-                return nullptr;
-            }
-        }
-        std::cout << s;
-
-        return create_nop();
-    }
-};
-
-// IO.getline
-// Read characters from standard input
-// until a newline character is encountered. Return the string of all
-// characters read, without the newline character at the end.
-
-class Getline: public Medadic {
-public:
-    MEDADIC_PREAMBLE(Getline, "IO", "getline");
-
-    VMObjectPtr apply() const override {
-        std::string line;
-        std::getline(std::cin, line);
-        UnicodeString str(line.c_str());
-        return create_text(str);
-    }
-};
-
 
 // IO.exit n
 // Flush all pending writes on stdout and stderr, and terminate the 
@@ -825,8 +860,8 @@ public:
 
 };
 
-extern "C" std::vector<UnicodeString> egel_imports() {
-    return std::vector<UnicodeString>();
+extern "C" std::vector<icu::UnicodeString> egel_imports() {
+    return std::vector<icu::UnicodeString>();
 }
 
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
