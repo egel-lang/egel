@@ -121,7 +121,7 @@ namespace List (
         [ X -> any ((==) X) ]
 
     def notelem =
-        [ X -> all ((!=) X) ]
+        [ X -> all ((/=) X) ]
 
     def union =
         [ nil YY            -> YY
