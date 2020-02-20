@@ -12,6 +12,7 @@ def cohead = [ LL -> [ (cons H TT) -> H ] (LL nop) ]
 
 def cotail = [ LL -> [ (cons H TT) -> TT ] (LL nop) ]
 
-def map = [ _dd F LL -> [ nil -> nil | (cons H TT) -> cons (F H) (map F TT) ] (LL nop) ]
+def comap = [ F LL _ -> [ nil -> nil | (cons H TT) -> cons (F H) (comap F TT) ] (LL nop) ]
 
-def main = (cohead ones, cotail ones)
+def main = 
+    let TWOS = comap [ X -> X + 1 ] ones in (cohead (cotail (cotail TWOS)))
