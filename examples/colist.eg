@@ -1,0 +1,17 @@
+# Basic test of foldl for performance testing.
+#
+# Egel isn't very fast. This takes around 16 seconds on my
+# laptop. But it works.
+
+import "prelude.eg"
+
+using System
+using List
+
+def ones = [ _ -> cons 1 ones ]
+
+def cohead = [ LL -> [ (cons H TT) -> H ] (LL nop) ]
+
+def cotail = [ LL -> [ (cons H TT) -> TT ] (LL nop) ]
+
+def main = (cohead ones, cotail ones)
