@@ -1,7 +1,5 @@
-# Basic test of foldl for performance testing.
+# Colists example
 #
-# Egel isn't very fast. This takes around 16 seconds on my
-# laptop. But it works.
 
 import "prelude.eg"
 
@@ -13,5 +11,7 @@ def ones = [ _ -> cons 1 ones ]
 def cohead = [ LL -> [ (cons H TT) -> H ] (LL nop) ]
 
 def cotail = [ LL -> [ (cons H TT) -> TT ] (LL nop) ]
+
+def map = [ _dd F LL -> [ nil -> nil | (cons H TT) -> cons (F H) (map F TT) ] (LL nop) ]
 
 def main = (cohead ones, cotail ones)
