@@ -169,15 +169,18 @@ int main(int argc, char *argv[]) {
     // options
     OptionsPtr oo = Options().clone();
 
-    // always add local directory to the search path
-    oo->add_include_path(icu::UnicodeString("./"));
 
     // check for include paths
+    bool hasI = false;
     for (auto& p : pp) {
         if (p.first == ("-I")) {
             oo->add_include_path(p.second);
+            hasI = true;
         };
     };
+
+    // add local directory to the search path if no other where given
+    if (!hasI) oo->add_include_path(icu::UnicodeString("./"));
 
     // add include path from environment
     auto istr = getenv("EGEL_INCLUDE");
