@@ -2,7 +2,9 @@
 #define BYTECODE_HPP
 
 #include <iostream>
+#include <sstream>
 #include <iomanip>
+#include <map>
 #include "runtime.hpp"
 
 typedef uint16_t    reg_t;
@@ -565,6 +567,35 @@ public:
 
     Code code() const {
         return _code;
+    }
+
+    icu::UnicodeString disassemble() const {
+        std::stringstream ss;
+        ss << std::hex;
+
+        int sz = _code.size();
+        for( int i = 0; i < sz; ++i ) {
+            ss << std::setw(2) << std::setfill('0') << (int)_code[i];
+        }
+
+        icu::UnicodeString u(ss.str().c_str());
+        return u;
+    }
+
+    void assemble(const icu::UnicodeString& hex) {
+        uint8_t byte;
+
+        auto len = hex.extract(0, 10000, nullptr, (uint32_t) 0); // XXX: I hate constants
+        auto buffer = new char[len+1];
+        hex.extract(0, 10000, buffer, len+1);
+
+        std::istringstream stream(buffer);
+        while (!stream.eof()) {
+            stream >> byte;
+            _code.push_back(byte);
+        }
+
+        delete buffer;
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {

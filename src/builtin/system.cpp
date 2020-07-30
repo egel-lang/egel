@@ -1,6 +1,7 @@
 #include "system.hpp"
 
 #include "../utils.hpp"
+#include "../bytecode.hpp"
 
 #include <stdlib.h>
 #include <ostream>
@@ -663,6 +664,22 @@ public:
     }
 };
 
+// System.dis o
+// Dump the assembly of a combinator object
+class Dis: public Monadic {
+public:
+    MONADIC_PREAMBLE(Dis, "System", "dis");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (auto o = std::dynamic_pointer_cast<VMObjectBytecode>(arg0)) {
+            auto s = o->disassemble();
+            return VMObjectText(s).clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 int     application_argc = 0;
 char**  application_argv = nullptr;
 
@@ -736,12 +753,16 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
 
     oo.push_back(Arg(vm).clone());
 
+    // disassemble and reassemble
+    oo.push_back(Dis(vm).clone());
+
     // move to string?
     oo.push_back(Unpack(vm).clone());
     oo.push_back(Pack(vm).clone());
 
     // miscellaneous
     oo.push_back(VMObjectData(vm, "System", "v").clone());
+
 
     oo.push_back(Get(vm).clone());
     oo.push_back(Set(vm).clone());
