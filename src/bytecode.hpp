@@ -589,9 +589,8 @@ public:
         auto buffer = new char[len+1];
         hex.extract(0, 10000, buffer, len+1);
 
-        std::istringstream stream(buffer);
-        while (!stream.eof()) {
-            stream >> byte;
+        for(int j = 0; j < len / 2; j++) {
+            sscanf(buffer + j * 2, "%02hhX", &byte);
             _code.push_back(byte);
         }
 

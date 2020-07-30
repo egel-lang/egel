@@ -680,6 +680,25 @@ public:
     }
 };
 
+// System.asm s0 s1
+// Assemble bytecode into a combinator
+class Asm: public Binary {
+public:
+    BINARY_PREAMBLE(Asm, "System", "asm");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if (arg0->tag() == VM_OBJECT_TEXT && arg1->tag() == VM_OBJECT_TEXT) {
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
+            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto c = VMObjectBytecode(machine(), Code(), s0);
+            c.assemble(s1);
+            return c.clone();
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 int     application_argc = 0;
 char**  application_argv = nullptr;
 
@@ -755,6 +774,7 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
 
     // disassemble and reassemble
     oo.push_back(Dis(vm).clone());
+    oo.push_back(Asm(vm).clone());
 
     // move to string?
     oo.push_back(Unpack(vm).clone());

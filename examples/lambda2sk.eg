@@ -1,0 +1,31 @@
+# lambda to SK translator
+
+import "prelude.eg"
+
+using System
+using List
+
+data lam, app, vrr
+data s, k
+
+def fv = 
+    [ (vrr X)       -> {X}
+    | (app E0 E1)   -> (fv E0) ++ (fv E1)
+    | (lam X E)     -> filter [ V -> not (V == X) ] (fv E) 
+    | _             -> {} ]
+
+def free = [ V E -> any [ V0 -> V == V0 ] (fv E) ]
+
+def translate =
+    [ (vrr X)       -> vrr X
+    | (app E0 E1)   -> app (translate E0) (translate E1)
+    | (lam X E)     ->
+        [ false -> app k (translate E) 
+        | true  ->  [ (lam X0 (vrr X1))  -> [ true -> app (app s k) k ] (X0 == X1)
+                    | (lam X (lam Y E))  -> [ true -> translate (lam X (translate (lam Y E))) ] (free X E)
+                    | (lam X (app E0 E1))-> [ true -> app (app s (translate (lam X E0))) (translate (lam X E1)) ]
+                                                (or (free X E0) (free X E1)) ] (lam X E) ] (free X E)  
+    | k -> k | s -> s ] 
+
+def main =
+    translate (lam 0 (lam 1 (vrr 0)))
