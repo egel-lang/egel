@@ -28,4 +28,4 @@ def translate =
     | k -> k | s -> s ] 
 
 def main =
-    translate (lam 0 (lam 1 (vrr 0)))
+    translate (lam 0  (app (lam 1 (app (vrr 1) (vrr 1))) (lam 1 (app (vrr 1) (vrr 1)))))
