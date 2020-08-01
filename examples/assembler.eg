@@ -1,0 +1,6 @@
+# showcase assembler and disassembler routines
+
+using System
+
+def main =
+    asm (dis [ X -> X ]) 0
