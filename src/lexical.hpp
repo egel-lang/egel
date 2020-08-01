@@ -61,7 +61,7 @@ typedef enum {
     TOKEN_LET,
     TOKEN_IN,
 
-    TOKEN_VAR,
+    TOKEN_VAL,
 
 //  declarations
     TOKEN_DATA,

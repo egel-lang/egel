@@ -278,15 +278,15 @@ public:
         }
     }
 
-    // XXX: very much wrong probably. A var declaration should not call the callbacks
+    // XXX: very much wrong probably. A val declaration should not call the callbacks
     // handlers but either throw a parse error or return nop.
-    void handle_var(const AstPtr& d) {
+    void handle_val(const AstPtr& d) {
         auto vm = get_machine();
         auto mm = get_manager();
         auto p = d->position();
 
-        if (d->tag() == AST_VAR) { // start off by treating the var as a def
-            AST_VAR_SPLIT(d, p0, c0, e0);
+        if (d->tag() == AST_VAL) { // start off by treating the val as a def
+            AST_VAL_SPLIT(d, p0, c0, e0);
             handle_definition(AstDeclDefinition(p, c0, e0).clone());
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
@@ -349,8 +349,8 @@ public:
             } else if (a->tag() == AST_DECL_DATA) {
                 handle_data(a);
                 return_nop(main);
-            } else if (a->tag() == AST_VAR) {
-                handle_var(a);
+            } else if (a->tag() == AST_VAL) {
+                handle_val(a);
                 return_nop(main);
             } else {
                 handle_expression(a, rr, e);

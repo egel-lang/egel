@@ -218,7 +218,7 @@ static token_text_t token_text_table[] {
     { TOKEN_THROW, STRING_THROW, },
     { TOKEN_ARROW, STRING_ARROW, },
 
-    { TOKEN_VAR, STRING_VAR, },
+    { TOKEN_VAL, STRING_VAL, },
 
 // directives
     { TOKEN_USING, STRING_USING, },
@@ -272,7 +272,7 @@ static reserved_t reserved_table[] {
     { TOKEN_DATA, STRING_DATA, },
     { TOKEN_DEF,  STRING_DEF, },
     { TOKEN_NAMESPACE, STRING_NAMESPACE, },
-    { TOKEN_VAR, STRING_VAR, },
+    { TOKEN_VAL, STRING_VAL, },
 };
 
 #define RESERVED_TABLE_SIZE sizeof(reserved_table)/sizeof(reserved_t)

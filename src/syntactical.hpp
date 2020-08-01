@@ -905,11 +905,11 @@ public:
 
     AstPtr parse_var() {
         Position p = position();
-        force_token(TOKEN_VAR);
+        force_token(TOKEN_VAL);
         AstPtr e0 = parse_combinator();
         force_token(TOKEN_EQ);
         AstPtr e1 = parse_expression();
-        return AstVar(p, e0, e1).clone();
+        return AstVal(p, e0, e1).clone();
     }
 
     AstPtr parse_line() {
@@ -918,7 +918,7 @@ public:
             r = parse_directive();
         } else if (tag() == TOKEN_DEF) {
             r = parse_decl_definition();
-        } else if (tag() == TOKEN_VAR) {
+        } else if (tag() == TOKEN_VAL) {
             r = parse_var();
         } else if (tag() == TOKEN_DATA) {
             r = parse_decl_data();

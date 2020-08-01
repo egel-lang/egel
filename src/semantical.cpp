@@ -121,7 +121,7 @@ public:
         set_qualifications(nn0);
     }
 
-    void visit_var(const Position& p, const AstPtr& l, const AstPtr& r) override {
+    void visit_val(const Position& p, const AstPtr& l, const AstPtr& r) override {
         visit(l);
     }
 
@@ -408,11 +408,11 @@ public:
         return AstWrapper(p, aa).clone();
     }
 
-    AstPtr rewrite_var(const Position& p, const AstPtr& l, const AstPtr& r) override {
+    AstPtr rewrite_val(const Position& p, const AstPtr& l, const AstPtr& r) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
-        auto a =  AstVar(p, l0, r0).clone();
+        auto a =  AstVal(p, l0, r0).clone();
         push_declaration(a);
         return a;
     }

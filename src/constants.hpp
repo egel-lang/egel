@@ -88,7 +88,7 @@
 #define STRING_CATCH            "catch"
 #define STRING_LET              "let"
 #define STRING_IN               "in"
-#define STRING_VAR              "var"
+#define STRING_VAL              "val"
 
     // names, combinators, ..
 

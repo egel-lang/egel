@@ -174,10 +174,10 @@ public:
         return AstWrapper(p, dd0).clone();
     }
 
-    virtual AstPtr transform_var(const AstPtr& a, const Position& p, const AstPtr& l, const AstPtr& r) {
+    virtual AstPtr transform_val(const AstPtr& a, const Position& p, const AstPtr& l, const AstPtr& r) {
         auto l0 = transform(l);
         auto r0 = transform(r);
-        return AstVar(p, l0, r0).clone();
+        return AstVal(p, l0, r0).clone();
     }
 
     AstPtr transform(const AstPtr& a) {
@@ -339,9 +339,9 @@ public:
             AST_WRAPPER_SPLIT(a, p, dd);
             return transform_wrapper(a, p, dd);
         }
-        case AST_VAR: {
-            AST_VAR_SPLIT(a, p, l, r);
-            return transform_var(a, p, l, r);
+        case AST_VAL: {
+            AST_VAL_SPLIT(a, p, l, r);
+            return transform_val(a, p, l, r);
         }
         default:
         PANIC("transform exhausted");
@@ -519,10 +519,10 @@ public:
         return AstWrapper(p, dd0).clone();
     }
 
-    virtual AstPtr rewrite_var(const Position& p, const AstPtr& l, const AstPtr& r) {
+    virtual AstPtr rewrite_val(const Position& p, const AstPtr& l, const AstPtr& r) {
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
-        return AstVar(p, l0, r0).clone();
+        return AstVal(p, l0, r0).clone();
     }
 
     virtual AstPtr rewrite(const AstPtr& a) {
@@ -684,9 +684,9 @@ public:
             AST_WRAPPER_SPLIT(a, p, dd);
             return rewrite_wrapper(p, dd);
         }
-        case AST_VAR: {
-            AST_VAR_SPLIT(a, p, l, r);
-            return rewrite_var(p, l, r);
+        case AST_VAL: {
+            AST_VAL_SPLIT(a, p, l, r);
+            return rewrite_val(p, l, r);
         }
         default:
         PANIC("rewrite exhausted");
@@ -828,7 +828,7 @@ public:
         visits(dd);
     }
 
-    virtual void visit_var(const Position& p, const AstPtr& l, const AstPtr& r) {
+    virtual void visit_val(const Position& p, const AstPtr& l, const AstPtr& r) {
         visit(l);
         visit(r);
     }
@@ -987,15 +987,15 @@ public:
             return visit_decl_namespace(p, nn, dd);
             break;
         }
-        // wrapper and var
+        // wrapper and val
         case AST_WRAPPER: {
             AST_WRAPPER_SPLIT(a, p, dd);
             return visit_wrapper(p, dd);
             break;
         }
-        case AST_VAR: {
-            AST_VAR_SPLIT(a, p, r, l);
-            return visit_var(p, r, l);
+        case AST_VAL: {
+            AST_VAL_SPLIT(a, p, r, l);
+            return visit_val(p, r, l);
             break;
         }
         default:

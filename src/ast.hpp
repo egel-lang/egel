@@ -53,7 +53,7 @@ typedef enum {
     // wrapper
     AST_WRAPPER,
     // set
-    AST_VAR,
+    AST_VAL,
 } ast_tag_t;
 
 class Ast;
@@ -1812,18 +1812,18 @@ typedef std::shared_ptr<AstWrapper> AstWrapperPtr;
     auto dd  = _##a->content();
 
 
-class AstVar : public Ast {
+class AstVal : public Ast {
 public:
-    AstVar(const Position &p, const AstPtr &e0, const AstPtr &e1)
-        : Ast(AST_VAR, p), _lhs(e0), _rhs(e1) {
+    AstVal(const Position &p, const AstPtr &e0, const AstPtr &e1)
+        : Ast(AST_VAL, p), _lhs(e0), _rhs(e1) {
     }
 
-    AstVar(const AstVar& a) 
-        : AstVar(a.position(), a.left_hand_side(), a.right_hand_side()) {
+    AstVal(const AstVal& a) 
+        : AstVal(a.position(), a.left_hand_side(), a.right_hand_side()) {
     }
 
     AstPtr clone() const {
-        return AstPtr(new AstVar(*this));
+        return AstPtr(new AstVal(*this));
     }
 
     AstPtr left_hand_side() const {
@@ -1860,10 +1860,10 @@ private:
     AstPtr  _rhs;
 };
 
-typedef std::shared_ptr<AstVar> AstVarPtr;
-#define AST_VAR_CAST(a)    std::static_pointer_cast<AstVar>(a)
-#define AST_VAR_SPLIT(a, p, l, r) \
-    auto _##a  = AST_VAR_CAST(a); \
+typedef std::shared_ptr<AstVal> AstValPtr;
+#define AST_VAL_CAST(a)    std::static_pointer_cast<AstVal>(a)
+#define AST_VAL_SPLIT(a, p, l, r) \
+    auto _##a  = AST_VAL_CAST(a); \
     auto p   = _##a->position(); \
     auto l   = _##a->left_hand_side(); \
     auto r   = _##a->right_hand_side();
