@@ -672,8 +672,9 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (auto o = std::dynamic_pointer_cast<VMObjectBytecode>(arg0)) {
-            auto s = o->disassemble();
-            return VMObjectText(s).clone();
+            auto s0 = o->text();
+            auto s1 = o->disassemble();
+            return VMObjectText(s0+ "::" + s1).clone();
         } else {
             return nullptr;
         }
@@ -682,14 +683,19 @@ public:
 
 // System.asm s0 s1
 // Assemble bytecode into a combinator
-class Asm: public Binary {
+class Asm: public Unary {
 public:
-    BINARY_PREAMBLE(Asm, "System", "asm");
+    UNARY_PREAMBLE(Asm, "System", "asm");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT && arg1->tag() == VM_OBJECT_TEXT) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_TEXT) {
+            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+            auto l = s.length();
+            auto p = s.indexOf("::");
+            icu::UnicodeString s0;
+            icu::UnicodeString s1;
+            s.extract(0, p, s0);
+            s.extract(p+2, l-(p+2), s1);
             auto c = VMObjectBytecode(machine(), Code(), s0);
             c.assemble(s1);
             return c.clone();
