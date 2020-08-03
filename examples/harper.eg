@@ -17,7 +17,7 @@ data ff, tt, var, nor, fx
 def subs =
     [ X E (var Y)       -> if X == Y then E else var Y
     | X E (nor E0 E1)   -> nor (subs X E E0) (subs X E E1)
-    | X E (fx Y E0)     -> if (X == Y) then fx Y E else fx Y (subs X E E0)
+    | X E (fx Y E0)     -> if (X == Y) then fx Y E0 else fx Y (subs X E E0)
     | X E Z             -> Z ]
 
 def step =
