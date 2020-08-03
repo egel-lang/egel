@@ -1,6 +1,6 @@
 # A reducer for Harper's nor calculus[1]. 
 #
-# The problem of Harper's reducer is that it relies on an optimal 
+# A problem of Harper's semantics is that it relies on an optimal 
 # strategy.
 # I.e., given `nor (fix e.E) (fix e'.E')` it's unclear what option to 
 # reduce first.
