@@ -6,11 +6,9 @@
 # reduce first.
 #
 # This reducer evaluates by 'exploding' a term, it will step both 
-# branches of a nor. 
+# branches of a nor, recursively. 
 #
 # [1] https://www.youtube.com/watch?v=8cXl2Tfhy_Q
-
-import "random.ego"
 
 using System
 
