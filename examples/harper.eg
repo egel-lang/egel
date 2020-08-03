@@ -1,0 +1,39 @@
+# A reducer for Harper's nor calculus[1]. 
+#
+# The problem of Harper's reducer is that it relies on an optimal 
+# strategy.
+# I.e., given `nor (fix e.E) (fix e'.E')` it's unclear what option to 
+# reduce first.
+#
+# This reducer evaluates by 'exploding' a term, it will step both 
+# branches of a nor. 
+#
+# [1] https://www.youtube.com/watch?v=8cXl2Tfhy_Q
+
+import "random.ego"
+
+using System
+
+data ff, tt, var, nor, fx
+
+def subs =
+    [ X E (var Y)       -> if X == Y then E else var Y
+    | X E (nor E0 E1)   -> nor (subs X E E0) (subs X E E1)
+    | X E (fx Y E0)     -> if (X == Y) then fx Y E else fx Y (subs X E E0)
+    | X E Z             -> Z ]
+
+def step =
+    [ tt -> tt | ff -> ff
+    | (nor _ tt)    -> ff
+    | (nor tt _)    -> ff
+    | (nor ff ff)   -> tt
+    | (nor E0 E1)   -> nor (step E0) (step E1)
+    | (fx X E0)     -> subs X (fx X E0) E0 ]
+
+def eval =
+    [ tt -> tt | ff -> ff | E -> eval (step E) ]
+
+def latch = [ R S -> fx 'x' (nor R (nor (var 'x') S)) ]
+
+def main = eval (latch ff tt)
+    
