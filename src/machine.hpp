@@ -208,7 +208,7 @@ public:
     }
 
     // reduce an expression
-    void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc) override {
+    void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc, reducer_state_t* run) override {
         VMObjectPtrs rr;
         rr.push_back(nullptr); // rt
         rr.push_back(nullptr); // rti
@@ -237,15 +237,26 @@ public:
         auto t = VMObjectArray(tt).clone();
 
         auto trampoline = t;
-        while (trampoline != nullptr) {
-            ASSERT(trampoline->tag() == VM_OBJECT_ARRAY);
-            auto f = VM_OBJECT_ARRAY_CAST(trampoline)->get(4);
+        while ( (trampoline != nullptr) && (*run != HALTED) ) {
+            if (*run == RUNNING) {
+                ASSERT(trampoline->tag() == VM_OBJECT_ARRAY);
+                auto f = VM_OBJECT_ARRAY_CAST(trampoline)->get(4);
 #ifdef DEBUG
-            std::cout << "trace: " << f << std::endl;
-            std::cout << "on : " << trampoline << std::endl;
+                std::cout << "trace: " << f << std::endl;
+                std::cout << "on : " << trampoline << std::endl;
 #endif
-            trampoline = f->reduce(trampoline);
+                trampoline = f->reduce(trampoline);
+            } else if (*run == SLEEPING) {
+                usleep(100); // sleep for 100ms
+            } else { // *run == HALTED
+            }
         }
+        *run = HALTED;
+    }
+
+    void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc) override {
+        reducer_state_t run = RUNNING;
+        reduce(f, ret, exc, &run);
     }
 
     VMReduceResult reduce(const VMObjectPtr& f) override {

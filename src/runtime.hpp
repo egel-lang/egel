@@ -176,6 +176,12 @@ struct VMReduceResult {
     bool        exception;
 };
 
+typedef enum {
+    RUNNING,
+    SLEEPING,
+    HALTED
+} reducer_state_t;
+
 class VM {
 public:
     VM() {};
@@ -196,6 +202,7 @@ public:
     virtual VMObjectPtr get_data(const data_t d) = 0;
 
     // reduce an expression
+    virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc, reducer_state_t* run) = 0;
     virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc) = 0;
     virtual VMReduceResult reduce(const VMObjectPtr& e) = 0;
 
