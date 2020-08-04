@@ -1,0 +1,14 @@
+# A new feature, 'flexible' scoping for exceptions.
+
+using System
+
+def f = try [ 0 -> throw 0 ] catch [ E -> "inner" ]
+
+def g = try f 0 catch [ E -> "outer" ]
+
+def main =  
+    (g, 
+        try f 0 catch [ E -> "outer" ], 
+        try (try [ 0 -> throw 0 ] catch [ E -> "inner" ]) 0 catch [ E -> "outer" ])
+
+# reduces to ("inner", "inner", "outer"). Only the last answer is correct.
