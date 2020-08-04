@@ -1,0 +1,11 @@
+# A 'wart' in the Egel interpreter is the lack of application nodes.
+#
+# Concretely, `[(X Y) -> Y X] ((1 2) 3)` doesn't reduce since 
+# `(1 2) 3` equals `1 2 3` (without application nodes).
+#
+# This would be difficult to fix since what would 
+# `[(X Y) Z -> .. ]` than mean..
+#
+# So far, my only solution to that problem is to document it.
+
+def main = [(X Y) -> Y X] ((1 2) 3) 
