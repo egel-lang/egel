@@ -25,14 +25,24 @@
  * Basic operators, conversions, and some other.
  **/
 
-class K: public Dyadic {
+class K: public Binary {
 public:
-    DYADIC_PREAMBLE(K, "System", "k");
+    BINARY_PREAMBLE(K, "System", "k");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         return arg0;
     }
 };
+
+class Id: public Unary {
+public:
+    UNARY_PREAMBLE(Id, "System", "id");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return arg0;
+    }
+};
+
 
 class MonMin: public Monadic {
 public:
@@ -734,8 +744,9 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     // throw combinator
     oo.push_back(VMThrow(vm).clone());
 
-    // K combinator
+    // K, Id combinators
     oo.push_back(K(vm).clone());
+    oo.push_back(Id(vm).clone());
 
     // basic constants
     oo.push_back(VMObjectData(vm, "System", "int").clone());
