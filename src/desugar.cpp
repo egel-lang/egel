@@ -272,6 +272,29 @@ AstPtr pass_throw(const AstPtr& a) {
     return t.dethrow(a);
 }
 
+class RewriteTry: public Rewrite {
+public:
+    AstPtr idtry(const AstPtr& a) {
+        return rewrite(a);
+    }
+
+    //  F( throw e ) -> ( (System.throw e) )
+    AstPtr rewrite_expr_try(const Position& p, const AstPtr& t, const AstPtr& c) override {
+        auto id = AstExprCombinator(p, STRING_SYSTEM, STRING_ID).clone();
+        auto t0 = rewrite(t);
+        auto c0 = rewrite(c);
+
+        auto e0 = AstExprTry(p, t0, c0).clone();
+
+        return AstExprApplication(p, id, e0).clone();
+    }
+};
+
+AstPtr pass_try(const AstPtr& a) {
+    RewriteTry t;
+    return t.idtry(a);
+}
+
 AstPtr desugar(const AstPtr& a) {
     auto a0 = pass_condition(a);
     a0 = pass_wildcard(a0);
@@ -282,5 +305,6 @@ AstPtr desugar(const AstPtr& a) {
     a0 = pass_lambda(a0);
     a0 = pass_object(a0);
     a0 = pass_throw(a0);
+    a0 = pass_try(a0);
     return a0;
 }

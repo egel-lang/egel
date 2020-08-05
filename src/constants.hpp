@@ -137,6 +137,7 @@
 
 #define STRING_SYSTEM           "System"
 #define STRING_K                "k"
+#define STRING_ID               "id"
 
     // main section
 

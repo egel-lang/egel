@@ -1,0 +1,24 @@
+# A new feature, 'flexible' scoping for exceptions was discovered and fixed.
+
+using System
+
+def f = try [ 0 -> throw 0 ] catch [ E -> "inner" ]
+
+def g = try f 0 catch [ E -> "outer" ]
+
+def main =  
+    (g, 
+        try f 0 catch [ E -> "outer" ], 
+        try (try [ 0 -> throw 0 ] catch [ E -> "inner" ]) 0 catch [ E -> "outer" ])
+
+# reduced to ("inner", "inner", "outer"). Only the last answer is correct.
+# now reduces to ("outer", "outer", "outer")
+#
+# A short analysis is that the term
+# `try (try [ 0 -> throw 0 ] catch [ E -> "inner" ]) 0 catch [ E -> "outer" ])
+# is just a fancy manner of writing `([ 0 -> throw 0 ] 0)` with some 
+# handlers installed.
+# And there is no means of switching handlers half-way the reduction 
+# of a thunk.
+#
+# Now the reduction of a try/catch block is forced by prepending `id` to it.
