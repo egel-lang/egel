@@ -1,0 +1,94 @@
+
+# 'Double' CPS translation of lambda terms with exceptions.
+#
+# CPS[x] k h = k x
+# CPS[\x.e] k h = k (\x,k',h'.CPS[e] k' h')
+# CPS[e1 e2] k h = CPS[e1](\f.CPS[e2] (\v.f v k h) h) h
+# CPS[try e1 catch x.e2] k h = CPS[e1] k (\x.CPS[e2] k h)
+# CPS[raise e] k h = CPS[e] h h
+#
+# (Taken from course CS 152, Harvard School of Eng. and App. Science. Lec. 12)
+
+import "prelude.eg"
+
+using System
+using List
+
+def fix = [ F -> F [ X -> (fix F) X ] ]
+
+data const, var, app, lam, raise, tr
+
+def subs =
+    [ X E (const Y)     -> const Y
+    | X E (var Y)       -> if X == Y then E else var Y
+    | X E (app E0 E1)   -> app (subs X E E0) (subs X E E1)
+    | X E (lam Y E0)    -> if X == Y then lam Y E0 else lam Y (subs X E E0)
+    | X E (raise E0)    -> raise (subs X E E0)
+    | X E (tr E0 Y E1)  -> if X == Y then tr E0 Y E1 else tr E0 Y (subs X E E1) ]
+
+def fv =
+    [ (const X)     -> {}
+    | (var X)       -> {X}
+    | (app E0 E1)   -> (fv E0) ++ (fv E1)
+    | (lam X E)     -> filter [ V -> not (V == X) ] (fv E)
+    | (raise E)     -> fv E
+    | (tr E0 X E1)  -> (fv E0) ++ (fv (lam X E1)) ]
+
+def free =
+    [ V FV -> all [ V0 -> not (V == V0) ] FV ]
+
+def fresh =
+    let F = fix [ F V FV -> if free V FV then V else F (V + 1) FV ] in
+        [ FV -> F 0 FV ]
+
+def cps =
+    [ (const X)     -> let FV = fv (const X) in
+                       let K = fresh FV in 
+                       let H = fresh ({K} ++ FV) in 
+                           lam K (lam H (app (var K) (const X)))
+    | (var X)       -> let FV = fv (var X) in
+                       let K = fresh FV in 
+                       let H = fresh ({K} ++ FV) in 
+                           lam K (lam H (app (var K) (var X)))
+    | (app E0 E1)   -> let FV = fv (app E0 E1) in
+                       let K = fresh FV in
+                       let H = fresh ({K} ++ FV) in
+                       let F = fresh ({K,H} ++ FV) in
+                       let V = fresh ({K,H,F} ++ FV) in
+                       let C0 = cps E0 in let C1 = cps E1 in
+                           lam K (lam H (app (app C0 (lam F (app (app C1 (lam V (app (app (app (var F) (var V)) (var K)) (var H)))) (var H)))) (var H)))
+    | (lam X E)     -> let FV = fv (lam X E) in
+                       let K  = fresh FV in
+                       let K0 = fresh ({K} ++ FV) in
+                       let H  = fresh ({K, K0} ++ FV) in
+                       let H0 = fresh ({K, K0, H} ++ FV) in
+                       let C = cps E in
+                            lam K (lam H (app (var K) (lam X (lam K0 (lam H0 (app (app C (var K0)) (var H0)))))))
+    | (raise E)     -> let FV = fv (raise E) in
+                       let K  = fresh FV in
+                       let H  = fresh ({K} ++ FV) in
+                       let C = cps E in
+                            lam K (lam H (app (app C (var H)) (var H)))
+    | (tr E0 X E1)  -> let FV = fv (app (app (var X) E0) E1) in
+                       let K  = fresh FV in
+                       let H  = fresh ({K} ++ FV) in
+                       let C0 = cps E0 in let C1 = cps E1 in
+                            lam K (lam H (app (app C0 (var K)) (lam X (app (app C1 (var K)) (var H)))))
+    ]
+
+def eval =
+    [ (app (lam X E0) E1)   -> eval (subs X (eval E1) E0)
+    | (app E0 E1)           -> eval (app (eval E0) E1)
+    | X                     -> X ]
+
+
+def test0 =
+    app (lam 0 (var 0)) (const 'a')
+
+def test1 =
+    (tr (tr (raise (const 0)) 0 (raise (const "inner"))) 0 (raise (const "outer")))
+
+def main = 
+    eval (app (app (cps test1) (lam 0 (var 0))) (lam 0 (var 0)))
+
+
