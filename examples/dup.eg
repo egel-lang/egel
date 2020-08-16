@@ -1,0 +1,10 @@
+# Small explosion through dup example.
+
+using System
+
+def dup = [ F X -> F (F X) ]
+
+def inc = [ X -> X + 1 ]
+
+def main =
+    dup dup dup dup inc 0
