@@ -259,7 +259,7 @@ public:
         reduce(f, ret, exc, &run);
     }
 
-    VMReduceResult reduce(const VMObjectPtr& f) override {
+    VMReduceResult reduce(const VMObjectPtr& f, reducer_state_t* run) override {
         VMReduceResult r;
 
         auto sm = enter_symbol("Internal", "result");
@@ -268,8 +268,13 @@ public:
         auto se = enter_symbol("Internal", "exception");
         auto e  = VMObjectResult(this, se, &r, true).clone();
 
-        reduce(f, m, e);
+        reduce(f, m, e, run);
         return r;
+    }
+
+    VMReduceResult reduce(const VMObjectPtr& f) override {
+        reducer_state_t run = RUNNING;
+        return reduce(f, &run);
     }
 
     void lock() override {

@@ -204,6 +204,7 @@ public:
     // reduce an expression
     virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc, reducer_state_t* run) = 0;
     virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc) = 0;
+    virtual VMReduceResult reduce(const VMObjectPtr& e, reducer_state_t* run) = 0;
     virtual VMReduceResult reduce(const VMObjectPtr& e) = 0;
 
     // for threadsafe reductions we lock the vm and rely on C++ threadsafe behavior on containers
