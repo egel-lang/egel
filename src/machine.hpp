@@ -251,7 +251,6 @@ public:
             } else { // *run == HALTED
             }
         }
-        *run = HALTED;
     }
 
     void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc) override {

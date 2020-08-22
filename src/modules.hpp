@@ -18,6 +18,7 @@
 #include "builtin/math.hpp"
 #include "builtin/string.hpp"
 #include "builtin/thread.hpp"
+#include "builtin/process.hpp"
 
 extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward declaration
 
@@ -632,12 +633,14 @@ public:
         auto mth = ModuleInternal("internal", vm, &builtin_math).clone();
         auto str = ModuleInternal("internal", vm, &builtin_string).clone();
         auto thd = ModuleInternal("internal", vm, &builtin_thread).clone();
+        auto prc = ModuleInternal("internal", vm, &builtin_process).clone();
         auto evl = ModuleInternal("internal", vm, &builtin_eval).clone();
-        sys->load(); mth->load(); str->load(); thd->load(); evl->load();
+        sys->load(); mth->load(); str->load(); thd->load(); prc->load(); evl->load();
         _loading.push_back(sys);
         _loading.push_back(mth);
         _loading.push_back(str);
         _loading.push_back(thd);
+        _loading.push_back(prc);
         _loading.push_back(evl);
         process();
         flush();

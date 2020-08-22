@@ -24,6 +24,7 @@ SOURCES= \
 	builtin/string.cpp \
 	builtin/evaluate.cpp \
 	builtin/thread.cpp \
+	builtin/process.cpp \
 	egel.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
