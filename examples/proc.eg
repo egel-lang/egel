@@ -1,0 +1,26 @@
+# Egel's process abstraction.
+#
+# For the moment, I only implemented a number # of simplistic
+# combinators.
+#
+# `proc f`      - create a process object from f
+# `send m p`    - send message m to process p
+# `recv p`      - receive a message from process p (blocks)
+# `halt p`      - halt process p
+
+import "prelude.eg"
+import "io.ego"
+
+using System
+using IO
+
+def sum =
+    [ X Y -> let Z = X + Y in (Z, sum Z) ]
+
+def main = 
+    let P = proc (sum 0) in
+        send 2 P;
+        send 3 P;
+        print "received: " (recv P) "\n";
+        print "received: " (recv P) "\n";
+        halt P
