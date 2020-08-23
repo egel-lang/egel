@@ -1,6 +1,6 @@
 # Egel's process abstraction.
 #
-# For the moment, I only implemented a number # of simplistic
+# For the moment, I only implemented a number of simplistic
 # combinators.
 #
 # `proc f`      - create a process object from f
