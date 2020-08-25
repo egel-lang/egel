@@ -14,13 +14,13 @@ import "io.ego"
 using System
 using IO
 
-def sum =
-    [ X Y -> let Z = X + Y in (Z, sum Z) ]
+def sum = [ X Y -> let Z = X + Y in (Z, sum Z) ]
+
+val p = proc (sum 0)
 
 def main = 
-    let P = proc (sum 0) in
-        send 2 P;
-        send 3 P;
-        print "received: " (recv P) "\n";
-        print "received: " (recv P) "\n";
-        halt P
+    send 2 p;
+    send 3 p;
+    print "received: " (recv p) "\n";
+    print "received: " (recv p) "\n";
+    halt p
