@@ -268,6 +268,9 @@ int main(int argc, char *argv[]) {
     application_argc = argc;
     application_argv = argv;
 
+    // evaluate all values
+    eval.eval_values(); //XXX: handle exceptions once
+
     // start either interactive or batch mode
     if (e != "") {
         try {

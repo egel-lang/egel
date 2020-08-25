@@ -228,6 +228,25 @@ public:
         }
     }
 
+    AstPtr rewrite_decl_value(const Position& p, const AstPtr& c, const AstPtr& e) override {
+        set_scope(c);
+        AstPtr e0;
+        if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
+            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto mm0 = rewrites(mm);
+            e0 = AstExprBlock(p0, mm0).clone();
+        } else {
+            e0 = rewrite(e);
+        }
+        auto e1 = AstDeclValue(p, c, e0).clone();
+        if (get_lifted().size() == 0) {
+            return e1;
+        } else {
+            add_lifted(e1);
+            return AstWrapper(p, get_lifted()).clone();
+        }
+    }
+
 private:
     AstPtr  _scope;
     uint_t  _counter;
@@ -260,19 +279,28 @@ public:
         return AstDeclDefinition(p, c, e0).clone();
     }
 
+    // treat as a definition
     AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
-        AstPtr e0;
-        if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
-            e0 = e;
-        } else { // wrap all expressions in a nullary lambda to simplify code generation
-                 // (i.e., generate a return instruction at the end of each match)
-            AstPtrs vv;
-            auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
-            AstPtrs mm;
-            mm.push_back(m);
-            e0 = AstExprBlock(p, mm).clone();
+        auto e0 = rewrite_decl_definition(p, c, e);
+        if (e0->tag() == AST_DECL_DEFINITION) {
+            AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
+            return AstDeclOperator(p1, c1, e1).clone();
+        } else {
+            PANIC("didn't find a definition");
+            return nullptr;
         }
-        return AstDeclOperator(p, c, e0).clone();
+    }
+
+    // treat as a definition
+    AstPtr rewrite_decl_value(const Position& p, const AstPtr& c, const AstPtr& e) override {
+        auto e0 = rewrite_decl_definition(p, c, e);
+        if (e0->tag() == AST_DECL_DEFINITION) {
+            AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
+            return AstDeclValue(p1, c1, e1).clone();
+        } else {
+            PANIC("didn't find a definition");
+            return nullptr;
+        }
     }
 };
 

@@ -75,6 +75,7 @@
     // declarations
 
 #define STRING_DEF              "def"
+#define STRING_VAL              "val"
 #define STRING_DATA             "data"
 
     // expressions

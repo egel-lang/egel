@@ -279,9 +279,9 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
         return compare_asts(dd0, dd1);
         break;
     }
-    case AST_VAL: {
-        AST_VAL_SPLIT(a0, p0, l0, r0);
-        AST_VAL_SPLIT(a1, p1, l1, r1);
+    case AST_DECL_VALUE: {
+        AST_DECL_VALUE_SPLIT(a0, p0, l0, r0);
+        AST_DECL_VALUE_SPLIT(a1, p1, l1, r1);
         return compare_ast2(l0, l1, r0, r1);
         break;
     }

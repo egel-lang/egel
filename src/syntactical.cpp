@@ -19,6 +19,9 @@ public:
     void visit_decl_definition(const Position& p, const AstPtr& n, const AstPtr& e) override {
     }
 
+    void visit_decl_value(const Position& p, const AstPtr& n, const AstPtr& e) override {
+    }
+
     void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
     }
 
@@ -29,6 +32,36 @@ private:
 AstPtrs imports(const AstPtr& a) {
     Imports imports;
     return imports.imports(a);
+}
+
+class Values: public Visit {
+public:
+    AstPtrs values(const AstPtr& a) {
+        visit(a);
+        return _values;
+    }
+
+    void visit_decl_value(const Position& p, const AstPtr& n, const AstPtr& e) override {
+        _values.push_back(AstDeclValue(p, n, e).clone());
+    }
+
+    // cuts    
+    void visit_decl_data(const Position& p, const AstPtrs& nn) override {
+    }
+
+    void visit_decl_definition(const Position& p, const AstPtr& n, const AstPtr& e) override {
+    }
+
+    void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
+    }
+
+private:
+    AstPtrs _values;
+};
+
+AstPtrs values(const AstPtr& a) {
+    Values values;
+    return values.values(a);
 }
 
 AstPtr parse(TokenReaderPtr &r) {

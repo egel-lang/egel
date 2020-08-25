@@ -746,6 +746,19 @@ public:
         }
     }
 
+    AstPtr parse_decl_value() {
+        Position p = position();
+        force_token(TOKEN_VAL);
+        if (is_combinator()) {
+            AstPtr c = parse_combinator();
+            force_token(TOKEN_EQ);
+            AstPtr e = parse_expression();
+            return AstDeclValue(p, c, e).clone();
+        } else {
+            throw ErrorSyntactical(p, "combinator expected");
+        }
+    }
+
     AstPtr parse_decl_class() {
         Position p = position();
         force_token(TOKEN_CLASS);
@@ -791,6 +804,7 @@ public:
         switch (tag()) {
         case TOKEN_DATA:
         case TOKEN_DEF:
+        case TOKEN_VAL:
         case TOKEN_NAMESPACE:
         case TOKEN_CLASS:
             return true;
@@ -808,6 +822,9 @@ public:
             break;
         case TOKEN_DEF:
             return parse_decl_definition();
+            break;
+        case TOKEN_VAL:
+            return parse_decl_value();
             break;
         case TOKEN_CLASS:
             return parse_decl_class();
@@ -903,15 +920,6 @@ public:
     LineParser(TokenReaderPtr& r): Parser (r) {
     }
 
-    AstPtr parse_var() {
-        Position p = position();
-        force_token(TOKEN_VAL);
-        AstPtr e0 = parse_combinator();
-        force_token(TOKEN_EQ);
-        AstPtr e1 = parse_expression();
-        return AstVal(p, e0, e1).clone();
-    }
-
     AstPtr parse_line() {
         AstPtr r;
         if (is_directive()) {
@@ -919,7 +927,7 @@ public:
         } else if (tag() == TOKEN_DEF) {
             r = parse_decl_definition();
         } else if (tag() == TOKEN_VAL) {
-            r = parse_var();
+            r = parse_decl_value();
         } else if (tag() == TOKEN_DATA) {
             r = parse_decl_data();
         } else {
@@ -936,6 +944,7 @@ public:
 
 
 AstPtrs imports(const AstPtr &a); // XXX: didn't know where to place this
+AstPtrs values(const AstPtr &a); // XXX: didn't know where to place this
 
 AstPtr parse(TokenReaderPtr &r);
 

@@ -150,6 +150,12 @@ public:
         return AstDeclDefinition(p, n0, e0).clone();
     }
 
+    virtual AstPtr transform_decl_value(const AstPtr& a, const Position& p, const AstPtr& l, const AstPtr& r) {
+        auto l0 = transform(l);
+        auto r0 = transform(r);
+        return AstDeclValue(p, l0, r0).clone();
+    }
+
     virtual AstPtr transform_decl_operator(const AstPtr& a, const Position& p, const AstPtr& c, const AstPtr& e) {
         auto c0 = transform(c);
         auto e0 = transform(e);
@@ -172,12 +178,6 @@ public:
     virtual AstPtr transform_wrapper(const AstPtr& a, const Position& p, const AstPtrs& dd) {
         auto dd0 = transforms(dd);
         return AstWrapper(p, dd0).clone();
-    }
-
-    virtual AstPtr transform_val(const AstPtr& a, const Position& p, const AstPtr& l, const AstPtr& r) {
-        auto l0 = transform(l);
-        auto r0 = transform(r);
-        return AstVal(p, l0, r0).clone();
     }
 
     AstPtr transform(const AstPtr& a) {
@@ -319,6 +319,10 @@ public:
             return transform_decl_definition(a, p, n, e);
             break;
         }
+        case AST_DECL_VALUE: {
+            AST_DECL_VALUE_SPLIT(a, p, l, r);
+            return transform_decl_value(a, p, l, r);
+        }
         case AST_DECL_OPERATOR: {
             AST_DECL_OPERATOR_SPLIT(a, p, c, e);
             return transform_decl_operator(a, p, c, e);
@@ -338,10 +342,6 @@ public:
         case AST_WRAPPER: {
             AST_WRAPPER_SPLIT(a, p, dd);
             return transform_wrapper(a, p, dd);
-        }
-        case AST_VAL: {
-            AST_VAL_SPLIT(a, p, l, r);
-            return transform_val(a, p, l, r);
         }
         default:
         PANIC("transform exhausted");
@@ -495,6 +495,12 @@ public:
         return AstDeclDefinition(p, n0, e0).clone();
     }
 
+    virtual AstPtr rewrite_decl_value(const Position& p, const AstPtr& l, const AstPtr& r) {
+        auto l0 = rewrite(l);
+        auto r0 = rewrite(r);
+        return AstDeclValue(p, l0, r0).clone();
+    }
+
     virtual AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) {
         auto c0 = rewrite(c);
         auto e0 = rewrite(e);
@@ -517,12 +523,6 @@ public:
     virtual AstPtr rewrite_wrapper(const Position& p, const AstPtrs& dd) {
         auto dd0 = rewrites(dd);
         return AstWrapper(p, dd0).clone();
-    }
-
-    virtual AstPtr rewrite_val(const Position& p, const AstPtr& l, const AstPtr& r) {
-        auto l0 = rewrite(l);
-        auto r0 = rewrite(r);
-        return AstVal(p, l0, r0).clone();
     }
 
     virtual AstPtr rewrite(const AstPtr& a) {
@@ -664,6 +664,10 @@ public:
             return rewrite_decl_definition(p, n, e);
             break;
         }
+        case AST_DECL_VALUE: {
+            AST_DECL_VALUE_SPLIT(a, p, l, r);
+            return rewrite_decl_value(p, l, r);
+        }
         case AST_DECL_OPERATOR: {
             AST_DECL_OPERATOR_SPLIT(a, p, c, e);
             return rewrite_decl_operator(p, c, e);
@@ -683,10 +687,6 @@ public:
         case AST_WRAPPER: {
             AST_WRAPPER_SPLIT(a, p, dd);
             return rewrite_wrapper(p, dd);
-        }
-        case AST_VAL: {
-            AST_VAL_SPLIT(a, p, l, r);
-            return rewrite_val(p, l, r);
         }
         default:
         PANIC("rewrite exhausted");
@@ -808,6 +808,11 @@ public:
         visit(e);
     }
 
+    virtual void visit_decl_value(const Position& p, const AstPtr& l, const AstPtr& r) {
+        visit(l);
+        visit(r);
+    }
+
     virtual void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) {
         visit(c);
         visit(e);
@@ -826,11 +831,6 @@ public:
 
     virtual void visit_wrapper(const Position& p, const AstPtrs& dd) {
         visits(dd);
-    }
-
-    virtual void visit_val(const Position& p, const AstPtr& l, const AstPtr& r) {
-        visit(l);
-        visit(r);
     }
 
     virtual void visit(const AstPtr& a) {
@@ -972,6 +972,11 @@ public:
             return visit_decl_definition(p, n, e);
             break;
         }
+        case AST_DECL_VALUE: {
+            AST_DECL_VALUE_SPLIT(a, p, r, l);
+            return visit_decl_value(p, r, l);
+            break;
+        }
         case AST_DECL_OPERATOR: {
             AST_DECL_OPERATOR_SPLIT(a, p, c, e);
             return visit_decl_operator(p, c, e);
@@ -987,15 +992,10 @@ public:
             return visit_decl_namespace(p, nn, dd);
             break;
         }
-        // wrapper and val
+        // wrapper
         case AST_WRAPPER: {
             AST_WRAPPER_SPLIT(a, p, dd);
             return visit_wrapper(p, dd);
-            break;
-        }
-        case AST_VAL: {
-            AST_VAL_SPLIT(a, p, r, l);
-            return visit_val(p, r, l);
             break;
         }
         default:

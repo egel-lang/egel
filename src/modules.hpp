@@ -193,34 +193,34 @@ class ModuleManager;
 typedef std::shared_ptr<ModuleManager> ModuleManagerPtr;
 
 
-// modules may require other modules to be loaded by generating import requirements
-class Import {
+// modules may define imports or values
+class QualifiedString {
 public:
-    Import():
-        _position(Position()), _filename("") {
+    QualifiedString():
+        _position(Position()), _string("") {
     }
 
-    Import(const Position& p, const icu::UnicodeString& fn):
-        _position(p), _filename(fn) {
+    QualifiedString(const Position& p, const icu::UnicodeString& s):
+        _position(p), _string(s) {
     }
 
-    Import(const Import& i):
-        _position(i._position), _filename(i._filename) {
+    QualifiedString(const QualifiedString& i):
+        _position(i._position), _string(i._string) {
     }
 
     Position position() const {
         return _position;
     }
 
-    icu::UnicodeString filename() const {
-        return _filename;
+    icu::UnicodeString string() const {
+        return _string;
     }
 private:
-    Position        _position;
-    icu::UnicodeString   _filename;
+    Position            _position;
+    icu::UnicodeString  _string;
 };
 
-typedef std::vector<Import>  Imports;
+typedef std::vector<QualifiedString> QualifiedStrings;
 
 typedef enum {
     MODULE_SOURCE,
@@ -264,7 +264,9 @@ public:
 
     virtual void unload() = 0;
 
-    virtual Imports imports() = 0;
+    virtual QualifiedStrings imports() = 0;
+
+    virtual QualifiedStrings values() = 0;
 
     virtual VMObjectPtrs exports() = 0;
 
@@ -319,15 +321,20 @@ public:
     }
 
     void load() override {
-        _imports = Imports();
+        _imports = QualifiedStrings();
+        _values = QualifiedStrings();
         _exports = (*_handle)(machine());
     }
 
     void unload() override {
     }
 
-    Imports imports() override {
+    QualifiedStrings imports() override {
         return _imports;
+    }
+
+    QualifiedStrings values() override {
+        return _values;
     }
 
     VMObjectPtrs exports() override {
@@ -363,9 +370,10 @@ public:
     }
 
 private:
-    exports_t       _handle;
-    Imports         _imports;
-    VMObjectPtrs    _exports;
+    exports_t           _handle;
+    QualifiedStrings    _imports;
+    QualifiedStrings    _values;
+    VMObjectPtrs        _exports;
 };
 
 #define LINUX
@@ -424,10 +432,10 @@ public:
 
         auto ss = (*egel_imports)();
 
-        Imports ii;
+        QualifiedStrings ii;
         Position p(get_path(), 1, 1);
         for (auto& s:ss) {
-            ii.push_back(Import(p, s));
+            ii.push_back(QualifiedString(p, s));
         }
 
         _imports = ii;
@@ -438,8 +446,12 @@ public:
         dlclose(_handle);
     }
 
-    Imports imports() override {
+    QualifiedStrings imports() override {
         return _imports;
+    }
+
+    QualifiedStrings values() override {
+        return _values;
     }
 
     VMObjectPtrs exports() override {
@@ -475,9 +487,10 @@ public:
     }
 
 private:
-    void*           _handle;
-    Imports         _imports;
-    VMObjectPtrs    _exports;
+    void*               _handle;
+    QualifiedStrings    _imports;
+    QualifiedStrings    _values;
+    VMObjectPtrs        _exports;
 };
 #endif
 
@@ -509,13 +522,25 @@ public:
     void unload() override {
     }
 
-    Imports imports() override {
+    QualifiedStrings imports() override {
         auto aa = ::imports(_ast);
-        auto ii = Imports();
+        auto ii = QualifiedStrings();
         for (auto a:aa) {
             if (a->tag() == AST_DIRECT_IMPORT) {
                 AST_DIRECT_IMPORT_SPLIT(a, p, s);
-                ii.push_back(Import(p, unicode_strip_quotes(s)));
+                ii.push_back(QualifiedString(p, unicode_strip_quotes(s)));
+            }
+        }
+        return ii;        
+    }
+
+    QualifiedStrings values() override {
+        auto aa = ::values(_ast);
+        auto ii = QualifiedStrings();
+        for (auto a:aa) {
+            if (a->tag() == AST_DECL_VALUE) {
+                AST_DECL_VALUE_SPLIT(a, p, n, f);
+                ii.push_back(QualifiedString(p, n->to_text()));
             }
         }
         return ii;        
@@ -680,6 +705,17 @@ public:
         flush();
     }
 
+    QualifiedStrings values() {
+        QualifiedStrings ss;
+        for(auto& m:_modules) {
+            auto vv = m->values();
+            for (auto& s:vv) {
+                ss.push_back(s);
+            }
+        }
+        return ss;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const ModuleManager& mm) {
         for (auto m:mm._modules) {
             os << m << std::endl;
@@ -745,7 +781,7 @@ protected:
             m->syntactical();
             auto ii = m->imports();
             for (auto& i:ii) {
-                preload(i.position(), i.filename());
+                preload(i.position(), i.string());
             }
             n++;
         }

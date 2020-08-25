@@ -130,6 +130,21 @@ public:
         mm->load(p, lib);
     }
 
+    // XXX: handle exceptions properly once
+    void eval_values() {
+        auto vm = get_machine();
+        auto mm = get_manager();
+        auto vv = mm->values();
+        for (auto& v: vv) {
+            // std::cerr << "evaluating: " << v.string() << std::endl;
+            auto c = vm->get_data_string(v.string());
+            auto sym = c->symbol();
+            auto r = vm->reduce(c);
+            auto d = VarCombinator(vm, sym, r).clone();
+            vm->define_data(d);
+        }
+    }
+
     /*
      * Interactive evaluation.
      *
@@ -280,19 +295,20 @@ public:
 
     // XXX: very much wrong probably. A val declaration should not call the callbacks
     // handlers but either throw a parse error or return nop.
-    void handle_val(const AstPtr& d) {
+    void handle_value(const AstPtr& d) {
         auto vm = get_machine();
         auto mm = get_manager();
         auto p = d->position();
 
-        if (d->tag() == AST_VAL) { // start off by treating the val as a def
-            AST_VAL_SPLIT(d, p0, c0, e0);
+        if (d->tag() == AST_DECL_VALUE) { // start off by treating the val as a def
+            AST_DECL_VALUE_SPLIT(d, p0, c0, e0);
             handle_definition(AstDeclDefinition(p, c0, e0).clone());
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
                 auto c   = vm->get_data_string(c1->to_text());
                 auto sym = c->symbol();
                 if (c->flag() != VM_OBJECT_FLAG_STUB) {
+                    // XXX: handle exceptions properly once
                     auto r = vm->reduce(c);
                     auto v = VarCombinator(vm, sym, r).clone();
                     vm->define_data(v);
@@ -349,8 +365,8 @@ public:
             } else if (a->tag() == AST_DECL_DATA) {
                 handle_data(a);
                 return_nop(main);
-            } else if (a->tag() == AST_VAL) {
-                handle_val(a);
+            } else if (a->tag() == AST_DECL_VALUE) {
+                handle_value(a);
                 return_nop(main);
             } else {
                 handle_expression(a, rr, e);

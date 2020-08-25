@@ -27,9 +27,15 @@ public:
         visits(nn);
     }
 
+    // cut
     void visit_decl_definition(const Position& p, const AstPtr& n, const AstPtr& e) override {
     }
 
+    // cut
+    void visit_decl_value(const Position& p, const AstPtr& n, const AstPtr& e) override {
+    }
+
+    // cut
     void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
     }
 
@@ -594,6 +600,11 @@ public:
 
         get_coder()->reset();
         get_machine()->define_data(b);
+    }
+
+    // treat as a definition
+    void visit_decl_value(const Position& p, const AstPtr& o, const AstPtr& e) override {
+        visit_decl_definition(p, o, e);
     }
 
     void visit_decl_operator(const Position& p, const AstPtr& o, const AstPtr& e) override {

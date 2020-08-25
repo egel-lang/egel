@@ -102,6 +102,10 @@ public:
         visit(n);
     }
 
+    void visit_decl_value(const Position& p, const AstPtr& l, const AstPtr& r) override {
+        visit(l);
+    }
+
     void visit_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
         visit(c);
     }
@@ -119,10 +123,6 @@ public:
         set_qualifications(nn1);
         visits(dd);
         set_qualifications(nn0);
-    }
-
-    void visit_val(const Position& p, const AstPtr& l, const AstPtr& r) override {
-        visit(l);
     }
 
 private:
@@ -364,6 +364,15 @@ public:
         }
     }
 
+    AstPtr rewrite_decl_value(const Position& p, const AstPtr& l, const AstPtr& r) override {
+        set_identify_state(STATE_IDENTIFY_USE);
+        auto l0 = rewrite(l);
+        auto r0 = rewrite(r);
+        auto a =  AstDeclValue(p, l0, r0).clone();
+        push_declaration(a);
+        return a;
+    }
+
     AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
@@ -406,15 +415,6 @@ public:
         auto dd0 = rewrites(dd);
         auto aa = pop_declarations();
         return AstWrapper(p, aa).clone();
-    }
-
-    AstPtr rewrite_val(const Position& p, const AstPtr& l, const AstPtr& r) override {
-        set_identify_state(STATE_IDENTIFY_USE);
-        auto l0 = rewrite(l);
-        auto r0 = rewrite(r);
-        auto a =  AstVal(p, l0, r0).clone();
-        push_declaration(a);
-        return a;
     }
 
 private:

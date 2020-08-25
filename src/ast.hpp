@@ -53,7 +53,7 @@ typedef enum {
     // wrapper
     AST_WRAPPER,
     // set
-    AST_VAL,
+    AST_DECL_VALUE,
 } ast_tag_t;
 
 class Ast;
@@ -1538,6 +1538,68 @@ typedef std::shared_ptr<AstDeclDefinition> AstDeclDefinitionPtr;
     auto n   = _##a->name(); \
     auto e   = _##a->expression();
 
+class AstDeclValue : public Ast {
+public:
+    AstDeclValue(const Position &p, const AstPtr &e0, const AstPtr &e1)
+        : Ast(AST_DECL_VALUE, p), _name(e0), _expression(e1) {
+    }
+
+    AstDeclValue(const AstDeclValue& a) 
+        : AstDeclValue(a.position(), a.name(), a.expression()) {
+    }
+
+    AstPtr clone() const {
+        return AstPtr(new AstDeclValue(*this));
+    }
+
+    AstPtr name() const {
+        return _name;
+    }
+
+    AstPtr expression() const {
+        return _expression;
+    }
+
+    uint_t approximate_length(uint_t indent) const {
+        uint_t l = indent;
+        l += 4;
+        l = name()->approximate_length(l);
+        if (l >= line_length) return l;
+        l += 3;
+        l = expression()->approximate_length(l);
+        return l;
+    }
+
+    void render(std::ostream& os, uint_t indent) const {
+        if (approximate_length(indent) <= line_length) {
+            skip(os, indent);
+            os << STRING_VAL << " ";
+            os << name() << " = ";
+            os << expression();
+            os << std::endl;
+        } else {
+            skip(os, indent);
+            os << STRING_VAL << " ";
+            os << name() << " = ";
+            skip_line(os, indent+4);
+            expression()->render(os, indent+4);
+            os << std::endl;
+        }
+    }
+
+private:
+    AstPtr  _name;
+    AstPtr  _expression;
+};
+
+typedef std::shared_ptr<AstDeclValue> AstDeclValuePtr;
+#define AST_DECL_VALUE_CAST(a)    std::static_pointer_cast<AstDeclValue>(a)
+#define AST_DECL_VALUE_SPLIT(a, p, l, r) \
+    auto _##a  = AST_DECL_VALUE_CAST(a); \
+    auto p   = _##a->position(); \
+    auto l   = _##a->name(); \
+    auto r   = _##a->expression();
+
 class AstDeclOperator : public Ast {
 public:
     AstDeclOperator(const Position &p, const AstPtr& c, const AstPtr& e)
@@ -1810,62 +1872,5 @@ typedef std::shared_ptr<AstWrapper> AstWrapperPtr;
     auto _##a  = AST_WRAPPER_CAST(a); \
     auto p   = _##a->position(); \
     auto dd  = _##a->content();
-
-
-class AstVal : public Ast {
-public:
-    AstVal(const Position &p, const AstPtr &e0, const AstPtr &e1)
-        : Ast(AST_VAL, p), _lhs(e0), _rhs(e1) {
-    }
-
-    AstVal(const AstVal& a) 
-        : AstVal(a.position(), a.left_hand_side(), a.right_hand_side()) {
-    }
-
-    AstPtr clone() const {
-        return AstPtr(new AstVal(*this));
-    }
-
-    AstPtr left_hand_side() const {
-        return _lhs;
-    }
-
-    AstPtr right_hand_side() const {
-        return _rhs;
-    }
-
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent + 4;
-        if (l >= line_length) return l;
-        l = left_hand_side()->approximate_length(l);
-        l += 1;
-        if (l >= line_length) return l;
-        return right_hand_side()->approximate_length(l);
-    }
-
-    void render(std::ostream& os, uint_t indent) const {
-        if (approximate_length(indent) <= line_length) {
-            os << "set " << left_hand_side() << " " << right_hand_side();
-        } else {
-            os << "set ";
-            left_hand_side()->render(os, indent);
-            os << " ";
-            skip_line(os, indent+4);
-            right_hand_side()->render(os, indent+4);
-        }
-    }
-
-private:
-    AstPtr  _lhs;
-    AstPtr  _rhs;
-};
-
-typedef std::shared_ptr<AstVal> AstValPtr;
-#define AST_VAL_CAST(a)    std::static_pointer_cast<AstVal>(a)
-#define AST_VAL_SPLIT(a, p, l, r) \
-    auto _##a  = AST_VAL_CAST(a); \
-    auto p   = _##a->position(); \
-    auto l   = _##a->left_hand_side(); \
-    auto r   = _##a->right_hand_side();
 
 #endif
