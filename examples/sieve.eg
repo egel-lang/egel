@@ -1,0 +1,29 @@
+# A prime sieve using streams.
+
+import "prelude.eg"
+import "io.ego"
+
+using System
+using IO
+
+def fix = [ F -> F [ X -> (fix F) X ] ]
+
+def nums = 
+    let NUMS = fix [ NUMS X _ -> (X, NUMS (X + 1)) ] in
+        NUMS 2
+
+def filter =
+    [ F S I -> let (O, S) = S I in 
+        if F O then (O, filter F S) else filter F S I ]
+
+def sieve =
+    [ NN I -> 
+        let (N, NN) = NN I in
+        (N, sieve (filter [ X -> not ((X % N) == 0) ] NN)) ]
+
+def print_all =
+    [ S -> let (X, S) = S nop in print X "\n"; print_all S ]
+
+def main =
+    print_all (sieve nums)
+   
