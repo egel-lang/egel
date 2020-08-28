@@ -1,7 +1,7 @@
 # A prime sieve through continuations/callbacks.
 #
 # Generators through three primitives:
-# yield ret k0 k1   - return ret to to k0 then continue with k1
+# yield n k gen     - yield n to k and proceed with gen
 # step  gen k       - step generator gen then continue with k
 # run   k   gen     - run consumer k on producer gen
 
@@ -12,8 +12,7 @@ import "io.ego"
 using System
 using IO
 
-
-def yield = [ N K0 K1 -> K0 N K1 ]
+def yield = [ N K GEN -> K N GEN ]
 
 def step = [ GEN K -> GEN K ]
 
@@ -37,4 +36,3 @@ def print_all =
 
 def main =
     run print_all (sieve nums)
-
