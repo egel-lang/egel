@@ -23,8 +23,8 @@ def fix = [ F -> F [ X -> (fix F) X ] ]
 
 def nums = 
     [ K ->
-        let NUMS = fix [ NUMS K N -> yield N K [ K -> NUMS K (N+1) ] ] in
-        NUMS K 2 ]
+        let NUMS = fix [ NUMS N K -> yield N K (NUMS (N+1)) ] in
+        NUMS 2 K ]
 
 def filter =
     [ F GEN K -> step GEN
