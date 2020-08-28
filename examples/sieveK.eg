@@ -1,0 +1,42 @@
+# A prime sieve through continuations/callbacks.
+#
+# Generators through three primitives:
+# yield ret k0 k1   - return ret to to k0 then continue with k1
+# step  gen k       - step generator gen then continue with k
+# run   k   gen     - run consumer k on producer gen
+
+
+import "prelude.eg"
+import "io.ego"
+
+using System
+using IO
+
+
+def yield = [ N K0 K1 -> K0 N K1 ]
+
+def step = [ GEN K -> GEN K ]
+
+def run = [ K GEN -> GEN K ]
+
+def fix = [ F -> F [ X -> (fix F) X ] ]
+
+def nums = 
+    [ K ->
+        let NUMS = fix [ NUMS K N -> yield N K [ K -> NUMS K (N+1) ] ] in
+        NUMS K 2 ]
+
+def filter =
+    [ F GEN K -> step GEN
+        [ N GEN -> if F N then yield N K (filter F GEN) else (filter F GEN K)  ] ]
+
+def sieve =
+    [ GEN K -> step GEN
+        [ N GEN -> yield N K (filter [ X -> not (X % N == 0) ] GEN) ] ]
+        
+def print_all =
+    [ N GEN -> print N "\n"; step GEN print_all ]
+
+def main =
+    run print_all (sieve nums)
+
