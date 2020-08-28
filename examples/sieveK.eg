@@ -22,9 +22,7 @@ def run = [ K GEN -> GEN K ]
 def fix = [ F -> F [ X -> (fix F) X ] ]
 
 def nums = 
-    [ K ->
-        let NUMS = fix [ NUMS N K -> yield N K (NUMS (N+1)) ] in
-        NUMS 2 K ]
+    let NUMS = fix [ NUMS N K -> yield N K (NUMS (N+1)) ] in NUMS 2
 
 def filter =
     [ F GEN K -> step GEN
