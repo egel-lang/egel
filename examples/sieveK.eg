@@ -30,7 +30,7 @@ def filter =
 
 def sieve =
     [ GEN K -> step GEN
-        [ N GEN -> yield N K (filter [ X -> not (X % N == 0) ] GEN) ] ]
+        [ N GEN -> yield N K (sieve (filter [ X -> not (X % N == 0) ] GEN)) ] ]
         
 def print_all =
     [ N GEN -> print N "\n"; step GEN print_all ]
