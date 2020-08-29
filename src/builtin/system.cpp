@@ -715,7 +715,7 @@ int     application_argc = 0;
 char**  application_argv = nullptr;
 
 // System.arg n
-// Return the n-th application argument, otherwise return '0'
+// Return the n-th application argument, otherwise return 'nop'
 class Arg: public Monadic {
 public:
     MONADIC_PREAMBLE(Arg, "System", "arg");
@@ -726,7 +726,32 @@ public:
             if (i < application_argc) {
                 return VMObjectText(application_argv[i]).clone();
             } else {
-                return VMObjectInteger(0).clone();
+                auto nop = machine()->get_data_string("System", "nop");
+                return nop;
+            }
+        } else {
+            BADARGS;
+        }
+    }
+};
+
+// System.getenv s
+// Return the value of environment variable s, otherwise return 'nop'
+class Getenv: public Monadic {
+public:
+    MONADIC_PREAMBLE(Getenv, "System", "getenv");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_TEXT) {
+            auto t = VM_OBJECT_TEXT_VALUE(arg0);
+            char* s = unicode_to_char(t);
+            char* r = std::getenv(s);
+            delete s;
+            if (r != nullptr) {
+                return VMObjectText(r).clone(); // NOTE: don't call delete on r
+            } else {
+                auto nop = machine()->get_data_string("System", "nop");
+                return nop;
             }
         } else {
             BADARGS;
@@ -784,6 +809,7 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(Totext(vm).clone());
 
     oo.push_back(Arg(vm).clone());
+    oo.push_back(Getenv(vm).clone());
 
     // disassemble and reassemble
     oo.push_back(Dis(vm).clone());
