@@ -434,7 +434,7 @@ public:
             } else if (arg->tag() == VM_OBJECT_TEXT) {
                 s += VM_OBJECT_TEXT_VALUE(arg);
             } else {
-                return nullptr;
+                BADARGS;
             }
         }
         std::cout << s;
@@ -515,7 +515,7 @@ public:
             channel.set_value(stream);
             return channel.clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -537,7 +537,7 @@ public:
             chan->close();
             return create_nop();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -558,7 +558,7 @@ public:
             UnicodeString str = chan->read();
             return create_text(str);
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -579,7 +579,7 @@ public:
             UnicodeString str = chan->read_line();
             return create_text(str);
         } else {
-            return nullptr;
+            INVALID;
         }
     }
 };
@@ -602,10 +602,10 @@ public:
                 chan->write(s);
                 return create_nop();
             } else {
-                return nullptr;
+                INVALID;
             }
         } else {
-            return nullptr;
+            INVALID;
         }
     }
 };
@@ -625,10 +625,10 @@ public:
                 chan->write_line(s);
                 return create_nop();
             } else {
-                return nullptr;
+                INVALID;
             }
         } else {
-            return nullptr;
+            INVALID;
         }
     }
 };
@@ -651,7 +651,7 @@ public:
             chan->flush();
             return create_nop();
         } else {
-            return nullptr;
+            INVALID;
         }
     }
 };
@@ -671,7 +671,7 @@ public:
             auto chan = CHANNEL_VALUE(arg0);
             return create_bool(chan->eof());
         } else {
-            return nullptr;
+            INVALID;
         }
     }
 };
@@ -693,7 +693,7 @@ public:
             // play nice
             return create_nop();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -790,7 +790,7 @@ public:
             auto chan = so->accept();
             return chan;
         } else {
-            return nullptr;
+            INVALID;
         }
     }
 };
@@ -810,7 +810,7 @@ public:
 
             return so.clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -854,7 +854,7 @@ public:
             return c.clone();
 
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 

@@ -33,7 +33,7 @@ public:
             }
 
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 

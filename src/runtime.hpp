@@ -29,6 +29,12 @@ using namespace icu_65;
 
 #define EGEL_FLOAT_PRECISION 16 // XXX: dbl::maxdigit doesn't seem to be defined on my system?
 
+// handle different exceptional states within combinators
+#define OVERFLOW    throw VMObjectText(to_text() + " overflow").clone()
+#define DIVZERO     throw VMObjectText(to_text() + " divide by zero").clone()
+#define BADARGS     throw VMObjectText(to_text() + " bad arguments").clone()
+#define INVALID     throw VMObjectText(to_text() + " invalid arguments").clone()
+
 // libicu doesn't provide escaping..
 
 inline icu::UnicodeString uescape(const icu::UnicodeString& s) {
@@ -155,7 +161,7 @@ public:
 
     virtual symbol_t symbol() const = 0;
 
-    icu::UnicodeString to_text() {
+    icu::UnicodeString to_text() const {
         std::stringstream ss;
         render(ss);
         icu::UnicodeString u(ss.str().c_str());

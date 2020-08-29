@@ -22,7 +22,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_bool(isfinite(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -38,7 +38,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_bool(isinf(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -54,7 +54,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_bool(isnan(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -70,7 +70,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_bool(isnormal(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -174,7 +174,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(abs(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -190,7 +190,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(acos(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -207,7 +207,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(acosh(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -224,7 +224,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(asin(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -241,7 +241,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(asinh(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -258,7 +258,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(atan(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -274,7 +274,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(atanh(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -292,7 +292,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float(atan2(f0, f1));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -308,7 +308,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(cbrt(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -325,7 +325,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(ceil(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -341,7 +341,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(cos(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -358,7 +358,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(cosh(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -374,7 +374,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(exp(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -391,7 +391,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(expm1(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -407,7 +407,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(floor(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -425,7 +425,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(fround(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -443,7 +443,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(log(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -460,7 +460,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(log1p(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -477,7 +477,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(log10(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -494,7 +494,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(log2(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -511,7 +511,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float((f0<f1)?f1:f0);
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -529,7 +529,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float((f0<f1)?f0:f1);
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -546,7 +546,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return create_float(pow(f0, f1));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -573,7 +573,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_integer(lround(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -590,7 +590,7 @@ public:
             auto b = signbit(f);
             return create_integer((b!=0)? (-1) : (1));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -607,7 +607,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(sin(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -624,7 +624,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(sinh(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -641,7 +641,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(sqrt(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -657,7 +657,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(tan(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -673,7 +673,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(tanh(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -689,7 +689,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return create_float(trunc(f));
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };

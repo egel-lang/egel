@@ -43,7 +43,6 @@ public:
     }
 };
 
-
 class MonMin: public Monadic {
 public:
     MONADIC_PREAMBLE(MonMin, "System", "!-");
@@ -53,7 +52,7 @@ public:
             auto i = VM_OBJECT_INTEGER_VALUE(arg0);
             vm_int_t res;
             if (__builtin_smull_overflow(-1, i, &res)) {
-                return nullptr;
+                OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -61,7 +60,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return VMObjectFloat(-f).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -77,7 +76,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             vm_int_t res;
             if (__builtin_saddl_overflow(i0, i1, &res)) {
-                return nullptr;
+                OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -92,7 +91,7 @@ public:
             auto f1 = VM_OBJECT_TEXT_VALUE(arg1);
             return VMObjectText(f0+f1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -108,7 +107,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             vm_int_t res;
             if (__builtin_ssubl_overflow(i0, i1, &res)) {
-                return nullptr;
+                OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -118,7 +117,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return VMObjectFloat(f0-f1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -134,7 +133,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             vm_int_t res;
             if (__builtin_smull_overflow(i0, i1, &res)) {
-                return nullptr;
+                OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -144,7 +143,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return VMObjectFloat(f0*f1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -159,7 +158,7 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             if (i1 == 0) {
-                return nullptr;
+                DIVZERO;
             }
             return VMObjectInteger(i0/i1).clone();
         } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
@@ -167,12 +166,11 @@ public:
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             if (f1 == 0.0) {
-                throw 
-                    machine()->get_data_string("System", "divzero");
+                DIVZERO;
             }
             return VMObjectFloat(f0/f1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -187,11 +185,11 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             if (i1 == 0) {
-                return nullptr;
+                DIVZERO;
             }
             return VMObjectInteger(i0%i1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -207,7 +205,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0&i1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -223,7 +221,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0|i1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -239,7 +237,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0^i1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -253,7 +251,7 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             return VMObjectInteger(~i0).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -269,7 +267,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0<<i1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -285,7 +283,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0>>i1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -384,8 +382,8 @@ public:
             auto ff = VM_OBJECT_ARRAY_VALUE(arg1);
             auto sz = ff.size();
             // check head is an object
-            if (sz == 0) return nullptr;
-            if (ff[0]->symbol() != object) return nullptr;
+            if (sz == 0) INVALID;
+            if (ff[0]->symbol() != object) INVALID;
             // search for field
             CompareVMObjectPtr compare;
             unsigned int n;
@@ -396,10 +394,10 @@ public:
             if ( (n+1) < sz ) {
                 return ff[n+1];
             } else {
-                return nullptr;
+                INVALID;
             }
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -418,8 +416,8 @@ public:
             auto ff = VM_OBJECT_ARRAY_VALUE(arg2);
             auto sz = ff.size();
             // check head is an object
-            if (sz == 0) return nullptr;
-            if (ff[0]->symbol() != object) return nullptr;
+            if (sz == 0) INVALID;
+            if (ff[0]->symbol() != object) INVALID;
             // search field
             CompareVMObjectPtr compare;
             unsigned int n;
@@ -432,10 +430,10 @@ public:
                 arr->set(n+1, arg1);
                 return arg0;
             } else {
-                return nullptr;
+                INVALID;
             }
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -456,10 +454,10 @@ public:
             auto ff1 = VM_OBJECT_ARRAY_VALUE(arg1);
             auto sz1 = ff1.size();
             // check head is an object
-            if (sz0 == 0) return nullptr;
-            if (ff0[0]->symbol() != object) return nullptr;
-            if (sz1 == 0) return nullptr;
-            if (ff1[0]->symbol() != object) return nullptr;
+            if (sz0 == 0) INVALID;
+            if (ff0[0]->symbol() != object) INVALID;
+            if (sz1 == 0) INVALID;
+            if (ff1[0]->symbol() != object) INVALID;
             // create field union
             unsigned int n;
             std::map<VMObjectPtr, VMObjectPtr> fields;
@@ -481,7 +479,7 @@ public:
 
             return VMObjectArray::create(oo);
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -507,7 +505,7 @@ public:
             auto i = convert_to_int(s);
             return create_integer(i);
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -524,14 +522,12 @@ public:
             return create_float(i);
         } else if (arg0->tag() == VM_OBJECT_FLOAT) {
             return arg0;
-        } else if (arg0->tag() == VM_OBJECT_CHAR) {
-            return nullptr; // couldn't find a rationale for this
         } else if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             auto i = convert_to_float(s);
             return create_float(i);
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -558,7 +554,7 @@ public:
         } else if (arg0->tag() == VM_OBJECT_TEXT) {
             return arg0;
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -575,11 +571,11 @@ public:
 
         if (arg0->tag() == VM_OBJECT_ARRAY) {
             auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
-            if (ff.size() != 2) return nullptr;
-            if (ff[0]->symbol() != var) return nullptr;
+            if (ff.size() != 2) INVALID;
+            if (ff[0]->symbol() != var) INVALID;
             return ff[1];
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -596,13 +592,13 @@ public:
 
         if (arg0->tag() == VM_OBJECT_ARRAY) {
             auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
-            if (ff.size() != 2) return nullptr;
-            if (ff[0]->symbol() != var) return nullptr;
+            if (ff.size() != 2) INVALID;
+            if (ff[0]->symbol() != var) INVALID;
             auto arr = VM_OBJECT_ARRAY_CAST(arg0); // XXX: clean up this cast once. need destructive update
             arr->set(1, arg1);
             return arg0;
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -635,7 +631,7 @@ public:
             }
             return ss;
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -659,9 +655,9 @@ public:
 
         while ( (a->tag() == VM_OBJECT_ARRAY) ) {
             auto aa = VM_OBJECT_ARRAY_VALUE(a);
-            if (aa.size() != 3) return nullptr;
-            if (aa[0]->symbol() != _cons) return nullptr;
-            if (aa[1]->tag() != VM_OBJECT_CHAR) return nullptr;
+            if (aa.size() != 3) INVALID;
+            if (aa[0]->symbol() != _cons) INVALID;
+            if (aa[1]->tag() != VM_OBJECT_CHAR) INVALID;
 
             auto c = VM_OBJECT_CHAR_VALUE(aa[1]);
 
@@ -686,7 +682,7 @@ public:
             auto s1 = o->disassemble();
             return VMObjectText(s0+ "::" + s1).clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -710,7 +706,7 @@ public:
             c.assemble(s1);
             return c.clone();
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -733,7 +729,7 @@ public:
                 return VMObjectInteger(0).clone();
             }
         } else {
-            return nullptr;
+            BADARGS;
         }
     }
 };
@@ -761,7 +757,7 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(VMObjectData(vm, "System", "tuple").clone());
     oo.push_back(VMObjectData(vm, "System", "object").clone());
 
-    oo.push_back(VMObjectData(vm, "System", "divzero").clone());
+    //oo.push_back(VMObjectData(vm, "System", "divzero").clone());
 
     // operators
     oo.push_back(MonMin(vm).clone());
