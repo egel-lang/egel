@@ -381,8 +381,16 @@ public:
     void eval_interactive() {
         auto uu = AstPtrs();
 
+        const char* env_p = std::getenv("EGEL_PS0");
+        icu::UnicodeString ps0;
+        if (env_p) {
+            ps0 = icu::UnicodeString(env_p);
+        } else {
+            ps0 = ">> ";
+        }
+
         std::string s;
-        std::cout << ">> ";
+        std::cout << ps0;
         while (std::getline(std::cin, s)) {
             auto in = icu::UnicodeString::fromUTF8(icu::StringPiece(s.c_str()));
             try {
@@ -390,7 +398,7 @@ public:
             } catch (Error &e) {
                 std::cout << e << std::endl;
             }
-            std::cout << ">> ";
+            std::cout << ps0;
         }
         std::cout << std::endl;
     }
