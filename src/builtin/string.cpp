@@ -265,11 +265,11 @@ public:
 };
 
 
-// String.length s 
+// String.strlen s 
 // Count Unicode code points in the string. 
-class Length: public Monadic {
+class Strlen: public Monadic {
 public:
-    MONADIC_PREAMBLE(Length, "String", "length");
+    MONADIC_PREAMBLE(Strlen, "String", "strlen");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -538,7 +538,7 @@ std::vector<VMObjectPtr> builtin_string(VM* vm) {
     oo.push_back(LastIndexOf(vm).clone());
     oo.push_back(CharAt(vm).clone());
     oo.push_back(MoveIndex(vm).clone());
-    oo.push_back(Length(vm).clone());
+    oo.push_back(Strlen(vm).clone());
     oo.push_back(IsEmpty(vm).clone());
     oo.push_back(HashCode(vm).clone());
     oo.push_back(IsBogus(vm).clone());

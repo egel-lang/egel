@@ -1,6 +1,9 @@
 TODO
 ====
 
++ Changeable prompt.
++ Multiple expressions in interactive mode
++ Some kind of arity fix.
 + Clean up the source code
    + Unicode handling is utterly dirty
    + OO-ify the source files and introduce namespaces
