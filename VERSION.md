@@ -3,6 +3,12 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.0.5 -- social distancing
+
++ changed default behavior to throw exceptions on bad arguments
++ processes
++ asm and dis
+
 ## v0.0.4 -- life is worth living
 
 + text based basic input/output and TCP transport
