@@ -40,6 +40,12 @@ public:
         ASSERT(_nop   == SYMBOL_NOP);
         ASSERT(_true  == SYMBOL_TRUE);
         ASSERT(_false == SYMBOL_FALSE);
+        auto _tuple = enter(STRING_SYSTEM, STRING_TUPLE);
+        auto _nil   = enter(STRING_SYSTEM, STRING_NIL);
+        auto _cons  = enter(STRING_SYSTEM, STRING_CONS);
+        ASSERT(_tuple  == SYMBOL_TUPLE);
+        ASSERT(_nil    == SYMBOL_NIL);
+        ASSERT(_cons   == SYMBOL_CONS);
     }
 
     symbol_t enter(const icu::UnicodeString& s) {

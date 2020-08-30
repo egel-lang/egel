@@ -117,6 +117,10 @@ typedef void*           vm_ptr_t;
 #define SYMBOL_TRUE     6
 #define SYMBOL_FALSE    7
 
+#define SYMBOL_TUPLE    8
+#define SYMBOL_NIL      9
+#define SYMBOL_CONS     10
+
 typedef uint32_t    symbol_t;
 typedef uint32_t    data_t;
 
@@ -132,6 +136,11 @@ typedef enum {
 
 class VMObject;
 typedef std::shared_ptr<VMObject> VMObjectPtr;
+
+// forward declarations for pretty printing
+inline void render_tuple(const VMObjectPtr& tt, std::ostream& os);
+inline void render_nil(const VMObjectPtr& n, std::ostream& os);
+inline void render_cons(const VMObjectPtr& cc, std::ostream& os);
 
 class VMObject {
 public:
@@ -547,21 +556,28 @@ public:
     }
 
     void render(std::ostream& os) const override {
-        os << '(';
-        bool first = true;
-        for (auto& v:value()) {
-            if (first) {
-                first = false;
-            } else {
-                os << ' ';
+        auto head = value()[0];
+        if (head->symbol() == SYMBOL_TUPLE) {
+            render_tuple(this->clone(), os);
+        } else if (head->symbol() == SYMBOL_CONS) {
+            render_cons(this->clone(), os);
+        } else {
+            os << '(';
+            bool first = true;
+            for (auto& v:value()) {
+                if (first) {
+                    first = false;
+                } else {
+                    os << ' ';
+                }
+                if (v == nullptr) {
+                    os << ".";
+                } else {
+                    v->render(os);
+                }
             }
-            if (v == nullptr) {
-                os << ".";
-            } else {
-                v->render(os);
-            }
+            os << ')';
         }
-        os << ')';
     }
 
     VMObjectPtrs value() const {
@@ -751,7 +767,11 @@ public:
     }
 
     icu::UnicodeString text() const {
-        return _machine->get_symbol(_symbol);
+        if (_symbol == SYMBOL_NIL) {
+            return "{}";
+        } else {
+            return _machine->get_symbol(_symbol);
+        }
     }
 
     void debug(std::ostream& os) const override {
@@ -1746,5 +1766,80 @@ public:
     VMObjectPtr clone() const override { \
         return VMObjectPtr(new c(*this)); \
     }
+
+// 'pretty' printing
+
+inline void render_tuple(const VMObjectPtr& tt, std::ostream& os) {
+    if (tt == nullptr) {
+        os << '.';
+    } else if (tt->tag() == VM_OBJECT_ARRAY) {
+        os << '(';
+        auto vv = VM_OBJECT_ARRAY_VALUE(tt);
+        int  sz = (int) vv.size();
+        for (int n=1; n < sz; n++) {
+            if (vv[n] == nullptr) {
+                os << '.';
+            } else {
+                vv[n]->render(os);
+                if (n < sz - 1) {
+                    os << ", ";
+                }
+            }
+        }
+        os << ')';
+    } else {
+        os << "..";
+    }
+}
+
+inline void render_nil(const VMObjectPtr& n, std::ostream& os) {
+    if (n == nullptr) {
+        os << '.';
+    } else {
+        os << "{}";
+    }
+}
+
+inline void render_cons_elements(const VMObjectPtr& ee, std::ostream& os) {
+    if (ee == nullptr) {
+        os << '.';
+    } else if (ee->tag() == VM_OBJECT_COMBINATOR) {
+        auto sym = VM_OBJECT_COMBINATOR_SYMBOL(ee);
+        if (sym != SYMBOL_NIL) {
+            os << "...";
+        }
+    } else if (ee->tag() == VM_OBJECT_ARRAY) {
+        auto v = VM_OBJECT_ARRAY_VALUE(ee);
+        if (v.size() != 3) {
+            os << "...";
+        } else {
+            auto head = v[0];
+            if (head == nullptr) {
+                os << "...";
+            } else if (head->tag() == VM_OBJECT_COMBINATOR) {
+                auto h = VM_OBJECT_COMBINATOR_CAST(head);
+                if (h->symbol() != SYMBOL_CONS) {
+                    os << "...";
+                } else {
+                    v[1]->render(os);
+                    if (v[2]->tag() == VM_OBJECT_ARRAY) {
+                        os << ", ";
+                    }
+                    render_cons_elements(v[2], os);
+                }
+            } else {
+                os << "...";
+            }
+        }
+    } else {
+        os << "...";
+    }
+}
+
+inline void render_cons(const VMObjectPtr& c, std::ostream& os) {
+    os << "{";
+    render_cons_elements(c, os);
+    os << "}";
+}
 
 #endif
