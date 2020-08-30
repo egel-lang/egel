@@ -1,0 +1,16 @@
+# Showcase arguments and environment variables.
+#
+import "prelude.eg"
+
+using System
+using List
+
+def arglist =
+    [ N -> [ nop -> nil | A -> cons A (arglist (N + 1)) ] (arg N) ]
+
+def prompt =
+    getenv "EGEL_PS0"
+
+def main =
+    (arglist 0, prompt)
+
