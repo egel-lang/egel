@@ -1776,19 +1776,33 @@ inline void render_tuple(const VMObjectPtr& tt, std::ostream& os) {
         os << '(';
         auto vv = VM_OBJECT_ARRAY_VALUE(tt);
         int  sz = (int) vv.size();
-        for (int n=1; n < sz; n++) {
-            if (vv[n] == nullptr) {
-                os << '.';
+        if (sz == 2) { // NOTE, handle 'tuple 0 = (0,)' differently
+            if (vv[0] == nullptr) {
+                 os << '.';
             } else {
-                vv[n]->render(os);
-                if (n < sz - 1) {
-                    os << ", ";
+                 vv[0]->render(os);
+            }
+            os << ' ';
+            if (vv[1] == nullptr) {
+                 os << '.';
+            } else {
+                 vv[1]->render(os);
+            }
+        } else {
+            for (int n=1; n < sz; n++) {
+                if (vv[n] == nullptr) {
+                    os << '.';
+                } else {
+                    vv[n]->render(os);
+                    if (n < sz - 1) {
+                        os << ", ";
+                    }
                 }
             }
         }
         os << ')';
     } else {
-        os << "..";
+        PANIC("not a tuple");
     }
 }
 
@@ -1800,39 +1814,88 @@ inline void render_nil(const VMObjectPtr& n, std::ostream& os) {
     }
 }
 
-inline void render_cons_elements(const VMObjectPtr& ee, std::ostream& os) {
+inline void render_array_raw(const VMObjectPtr& ee, std::ostream& os) {
     if (ee == nullptr) {
         os << '.';
-    } else if (ee->tag() == VM_OBJECT_COMBINATOR) {
-        auto sym = VM_OBJECT_COMBINATOR_SYMBOL(ee);
-        if (sym != SYMBOL_NIL) {
-            os << "...";
+    } else if (ee->tag() == VM_OBJECT_ARRAY) {
+        auto vv = VM_OBJECT_ARRAY_VALUE(ee);
+        os << '(';
+        bool first = true;
+        for (auto& v: vv) {
+            if (first) {
+                first = false;
+            } else {
+                os << ' ';
+            }
+            if (v == nullptr) {
+                os << ".";
+            } else {
+                v->render(os);
+            }
         }
+        os << ')';
+    } else {
+        PANIC("array expected");
+    }
+}
+
+inline bool is_well_formed_nil(const VMObjectPtr& ee) {
+    if (ee->tag() == VM_OBJECT_COMBINATOR) {
+        auto sym = VM_OBJECT_COMBINATOR_SYMBOL(ee);
+        return sym == SYMBOL_NIL;
+    } else {
+        return false;
+    }
+}
+
+inline bool is_well_formed_const(const VMObjectPtr& ee) {
+    if (ee == nullptr) {
+        return false;
     } else if (ee->tag() == VM_OBJECT_ARRAY) {
         auto v = VM_OBJECT_ARRAY_VALUE(ee);
         if (v.size() != 3) {
-            os << "...";
+            return false;
         } else {
             auto head = v[0];
-            if (head == nullptr) {
-                os << "...";
-            } else if (head->tag() == VM_OBJECT_COMBINATOR) {
+            if (head->tag() == VM_OBJECT_COMBINATOR) {
                 auto h = VM_OBJECT_COMBINATOR_CAST(head);
-                if (h->symbol() != SYMBOL_CONS) {
-                    os << "...";
-                } else {
-                    v[1]->render(os);
-                    if (v[2]->tag() == VM_OBJECT_ARRAY) {
-                        os << ", ";
-                    }
-                    render_cons_elements(v[2], os);
-                }
+                return h->symbol() == SYMBOL_CONS;
             } else {
-                os << "...";
+                return false;
             }
         }
     } else {
-        os << "...";
+        return false;
+    }
+}
+
+inline void render_cons_elements(const VMObjectPtr& ee, std::ostream& os) {
+    if (ee == nullptr) {
+        os << '.';
+    } else if (is_well_formed_nil(ee)) {
+    } else if (is_well_formed_const(ee)) {
+        auto v = VM_OBJECT_ARRAY_VALUE(ee);
+        if ( (v[2] != nullptr) && is_well_formed_nil(v[2]) ) {
+            if (v[1] == nullptr) {
+                os << ".";
+            } else {
+                v[1]->render(os);
+            }
+        } else if ( (v[2] != nullptr) && is_well_formed_const(v[2]) ) {
+            if (v[1] == nullptr) {
+                os << ".";
+            } else {
+                v[1]->render(os);
+            }
+            os << ", ";
+            render_cons_elements(v[2], os);
+        } else {
+            os << "|";
+            render_array_raw(ee, os);
+        }
+    } else {
+        os << "|";
+        ee->render(os);
     }
 }
 
