@@ -1,4 +1,4 @@
-The Egel Language
+<img src="contrib/assets/egel-black-white.svg" height="50px"/>  The Egel Language
 =================
 
 The Egel language is a simple untyped algebraic toy language based on 
