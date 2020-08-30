@@ -559,7 +559,7 @@ public:
         auto head = value()[0];
         if (head->symbol() == SYMBOL_TUPLE) {
             render_tuple(this->clone(), os);
-        } else if (head->symbol() == SYMBOL_CONS) {
+        } else if ((head->symbol() == SYMBOL_CONS) && (value().size() == 3)) {
             render_cons(this->clone(), os);
         } else {
             os << '(';
