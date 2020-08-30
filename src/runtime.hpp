@@ -1890,8 +1890,17 @@ inline void render_cons_elements(const VMObjectPtr& ee, std::ostream& os) {
             os << ", ";
             render_cons_elements(v[2], os);
         } else {
-            os << "|";
-            render_array_raw(ee, os);
+            if (v[1] == nullptr) {
+                os << ".";
+            } else {
+                v[1]->render(os);
+            }
+            os << "| ";
+            if (v[2] == nullptr) {
+                os << ".";
+            } else {
+                v[2]->render(os);
+            }
         }
     } else {
         os << "|";
