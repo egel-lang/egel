@@ -920,21 +920,32 @@ public:
     LineParser(TokenReaderPtr& r): Parser (r) {
     }
 
-    AstPtr parse_line() {
-        AstPtr r;
+    AstPtr parse_command() {
         if (is_directive()) {
-            r = parse_directive();
+            return parse_directive();
         } else if (tag() == TOKEN_DEF) {
-            r = parse_decl_definition();
+            return parse_decl_definition();
         } else if (tag() == TOKEN_VAL) {
-            r = parse_decl_value();
+            return parse_decl_value();
         } else if (tag() == TOKEN_DATA) {
-            r = parse_decl_data();
+            return parse_decl_data();
         } else {
-            r = parse_expression();
+            return parse_expression();
+        }
+    }
+
+    AstPtr parse_line() {
+        Position p = position();
+        AstPtrs aa;
+        auto a = parse_command();
+        aa.push_back(a);
+        while (tag() == TOKEN_DSEMICOLON) {
+            force_token(TOKEN_DSEMICOLON);
+            a = parse_command();
+            aa.push_back(a);
         }
         if (tag() == TOKEN_EOF) {
-            return r;
+            return AstWrapper(p, aa).clone();
         } else {
             auto p = position();
             throw ErrorSyntactical(p, look(0).text() + " unexpected");

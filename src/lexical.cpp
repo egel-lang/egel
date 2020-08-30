@@ -183,6 +183,7 @@ static token_text_t token_text_table[] {
     { TOKEN_COLON, STRING_COLON, },
     { TOKEN_DCOLON, STRING_DCOLON, },
     { TOKEN_SEMICOLON, STRING_SEMICOLON, },
+    { TOKEN_DSEMICOLON, STRING_DSEMICOLON, },
     { TOKEN_HASH, STRING_HASH, },
     { TOKEN_BAR, STRING_BAR, },
     { TOKEN_QUESTION, STRING_QUESTION, },
@@ -330,8 +331,14 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
                 token_writer.push(Token(TOKEN_COLON, p, c));
             }
         } else if (is_semicolon(c)) {
-            token_writer.push(Token(TOKEN_SEMICOLON, p, c));
             reader.skip();
+            c = reader.look();
+            if (is_semicolon(c)) {
+                reader.skip();
+                token_writer.push(Token(TOKEN_DSEMICOLON, p, STRING_DSEMICOLON));
+            } else {
+                token_writer.push(Token(TOKEN_SEMICOLON, p, c));
+            }
         } else if (is_math(c)) {
             token_writer.push(Token(TOKEN_LOWERCASE, p, c));
             reader.skip();

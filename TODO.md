@@ -1,7 +1,6 @@
 TODO
 ====
 
-+ Changeable prompt.
 + Multiple expressions in interactive mode
 + Some kind of arity fix.
 + Clean up the source code

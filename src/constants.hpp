@@ -39,6 +39,7 @@
 #define STRING_COLON            ":"
 #define STRING_DCOLON           "::"
 #define STRING_SEMICOLON        ";"
+#define STRING_DSEMICOLON       ";;"
 #define STRING_DOT              "."
 #define STRING_COMMA            ","
 #define STRING_BAR              "|"

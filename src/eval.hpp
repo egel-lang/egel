@@ -337,10 +337,10 @@ public:
         auto vm = get_machine();
 
         // parse the line
-        AstPtr a;
+        AstPtr aa;
         StringCharReader r = StringCharReader("internal", in);
         TokenReaderPtr tt = tokenize_from_reader(r);
-        a = ::parse_line(tt);
+        aa = ::parse_line(tt);
 
         // set up the handlers
         auto sr = vm->enter_symbol("Internal", "result");
@@ -348,29 +348,38 @@ public:
         auto se = vm->enter_symbol("Internal", "exception");
         auto e = EvalResult(vm, se, exc).clone();
 
-        // handle the command
-        if (a != nullptr) {
-            if (a->tag() == AST_DIRECT_IMPORT) {
-                handle_import(a);
-                return_nop(main);
-            } else if (a->tag() == AST_DIRECT_USING) {
-                handle_using(a);
-                return_nop(main);
-            } else if (a->tag() == AST_DECL_DEFINITION) {
-                handle_definition(a);
-                return_nop(main);
-            } else if (a->tag() == AST_DECL_OPERATOR) {
-                handle_definition(a);
-                return_nop(main);
-            } else if (a->tag() == AST_DECL_DATA) {
-                handle_data(a);
-                return_nop(main);
-            } else if (a->tag() == AST_DECL_VALUE) {
-                handle_value(a);
-                return_nop(main);
-            } else {
-                handle_expression(a, rr, e);
+        // handle the commands
+        if (aa->tag() == AST_WRAPPER) {
+            AST_WRAPPER_SPLIT(aa, p, aa0);
+            for (auto& a:aa0) {
+                if (a != nullptr) {
+                    if (a->tag() == AST_DIRECT_IMPORT) {
+                        handle_import(a);
+                        return_nop(main);
+                    } else if (a->tag() == AST_DIRECT_USING) {
+                        handle_using(a);
+                        return_nop(main);
+                    } else if (a->tag() == AST_DECL_DEFINITION) {
+                        handle_definition(a);
+                        return_nop(main);
+                    } else if (a->tag() == AST_DECL_OPERATOR) {
+                        handle_definition(a);
+                        return_nop(main);
+                    } else if (a->tag() == AST_DECL_DATA) {
+                        handle_data(a);
+                        return_nop(main);
+                    } else if (a->tag() == AST_DECL_VALUE) {
+                        handle_value(a);
+                        return_nop(main);
+                    } else {
+                        handle_expression(a, rr, e);
+                    }
+                } else {
+                    PANIC("no command found");
+                }
             }
+        } else {
+            PANIC("no wrapper found");
         }
     }
 
