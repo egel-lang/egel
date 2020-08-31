@@ -196,7 +196,7 @@ public:
 
 class BinAnd: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinAnd, "System", "&&");
+    DYADIC_PREAMBLE(BinAnd, "System", "&");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -212,7 +212,7 @@ public:
 
 class BinOr: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinOr, "System", "||");
+    DYADIC_PREAMBLE(BinOr, "System", "$");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -228,7 +228,7 @@ public:
 
 class BinXOr: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinXOr, "System", "^^");
+    DYADIC_PREAMBLE(BinXOr, "System", "^");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
