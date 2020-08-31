@@ -132,15 +132,26 @@ public:
         return _counter++;
     }
 
+    UnicodeStrings localize(UnicodeStrings ss) {
+        UnicodeStrings ss0;
+        ss0.push_back(STRING_LOCAL);
+        for (auto& s:ss) {
+            ss0.push_back(s);
+        }
+        return ss0;
+    }
+
     AstPtr combinator_expand(const AstPtr& c, icu::UnicodeString s) {
         if (c->tag() == AST_EXPR_COMBINATOR) {
             AST_EXPR_COMBINATOR_SPLIT(c, p, nn, n);
-            icu::UnicodeString n0 = n + "DOT" + s;
-            return AstExprCombinator(p, nn, n0).clone();
+            icu::UnicodeString n0 = n + s;
+            auto nn0 = localize(nn);
+            return AstExprCombinator(p, nn0, n0).clone();
         } else if (c->tag() == AST_EXPR_OPERATOR) {
             AST_EXPR_OPERATOR_SPLIT(c, p, nn, n); // XXX: keep source to source correct
-            icu::UnicodeString n0 = n + "DOT" + s;
-            return AstExprOperator(p, nn, n0).clone();
+            icu::UnicodeString n0 = n + s;
+            auto nn0 = localize(nn);
+            return AstExprOperator(p, nn0, n0).clone();
         } else {
             PANIC("combinator expected");
             return nullptr;

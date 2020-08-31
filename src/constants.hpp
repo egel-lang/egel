@@ -210,4 +210,9 @@
 #define STRING_OP_JMP       "jmp"
 #define STRING_OP_BRANCH    "branch"
 
+    // local and a magic marker for local definitions
+#define STRING_LOCAL        "Local"
+#define STRING_MAGIC_START  "[["
+#define STRING_MAGIC_END    "]]"
+
 #endif
