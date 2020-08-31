@@ -434,7 +434,7 @@ public:
             } else if (arg->tag() == VM_OBJECT_TEXT) {
                 s += VM_OBJECT_TEXT_VALUE(arg);
             } else {
-                BADARGS;
+                s += arg->to_text();
             }
         }
         std::cout << s;

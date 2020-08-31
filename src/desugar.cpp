@@ -173,6 +173,22 @@ public:
         return rewrite(a);
     }
 
+    AstPtr float_left(const Position& p, const AstPtr& a, const AstPtr& b) {
+        if (b->tag() == AST_EXPR_APPLICATION) {
+            AST_EXPR_APPLICATION_SPLIT(b, p0, bb);
+            auto b0 = float_left(p, a, bb[0]);
+            AstPtrs cc;
+            cc.push_back(b0);
+            auto sz = (int) bb.size();
+            for (int n = 1; n < sz; n++) {
+                cc.push_back(bb[n]);
+            }
+            return AstExprApplication(p, cc).clone();
+        } else {
+            return AstExprApplication(p, a, b).clone();
+        }
+    }
+
     //  F( (let l = r in b) ) -> ( [ l -> F(b) ] F(r) )
     AstPtr rewrite_expr_let(const Position& p, const AstPtrs& ll, const AstPtr& r, const AstPtr& b) override {
         auto r0 = rewrite(r);
@@ -184,7 +200,7 @@ public:
         mm.push_back(m);
         auto q =  AstExprBlock(p, mm).clone();
 
-        return AstExprApplication(p, q, r0).clone();
+        return float_left(p, q, r0);
     }
 };
 
