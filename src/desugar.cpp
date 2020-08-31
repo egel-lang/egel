@@ -173,6 +173,7 @@ public:
         return rewrite(a);
     }
 
+    /*
     AstPtr float_left(const Position& p, const AstPtr& a, const AstPtr& b) {
         if (b->tag() == AST_EXPR_APPLICATION) {
             AST_EXPR_APPLICATION_SPLIT(b, p0, bb);
@@ -187,6 +188,10 @@ public:
         } else {
             return AstExprApplication(p, a, b).clone();
         }
+    }
+    */
+    AstPtr float_left(const Position& p, const AstPtr& a, const AstPtr& b) {
+        return AstExprApplication(p, a, b).clone();
     }
 
     //  F( (let l = r in b) ) -> ( [ l -> F(b) ] F(r) )
