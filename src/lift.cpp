@@ -134,10 +134,10 @@ public:
 
     UnicodeStrings localize(UnicodeStrings ss) {
         UnicodeStrings ss0;
-        ss0.push_back(STRING_LOCAL);
         for (auto& s:ss) {
             ss0.push_back(s);
         }
+        ss0.push_back(STRING_LOCAL);
         return ss0;
     }
 

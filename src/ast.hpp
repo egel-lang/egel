@@ -444,29 +444,20 @@ public:
 
     icu::UnicodeString to_text() const override {
         icu::UnicodeString str = ""; // XXX: change to some other datatype
-        if (is_local()) {
-            auto ss = strip_local();
-            str += STRING_MAGIC_START;
-            for (auto& p:ss) {
-                str += p;
-                str += STRING_COLON;
-            }
-            str += _combinator;
-            str += STRING_MAGIC_END;
-            return str;
-        } else {
-            for (auto& p:_path) {
-                str += p;
-                str += STRING_COLON;
-            }
-            str += _combinator;
-            return str;
+        for (auto& p:_path) {
+            str += p;
+            str += STRING_COLON;
         }
+        str += _combinator;
+        return str;
     }
 
     uint_t approximate_length(uint_t indent) const override {
         uint_t l = indent;
-        l += to_text().length(); // XXX: very expensive
+        for (auto& p:_path) {
+            l += p.length()+1;
+        }
+        l += _combinator.length();
         return l;
     }
 
@@ -474,22 +465,8 @@ public:
         os << to_text();
     }
 
-    // need normal head/tail operations on unicodestring vectors
-    UnicodeStrings strip_local() const {
-        UnicodeStrings ss;
-        bool first = true;
-        for (auto& s:_path) {
-            if (first) {
-                first = !first;
-            } else {
-                ss.push_back(s);
-            }
-        }
-        return ss;
-    }
-
     bool is_local() const {
-        return ((_path.size() > 0) && (_path[0] == STRING_LOCAL));
+        return ((_path.size() > 0) && (_path.back() == STRING_LOCAL));
     }
 
 private:
