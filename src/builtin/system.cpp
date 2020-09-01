@@ -799,6 +799,36 @@ public:
     }
 };
 
+// System.print o0 .. on
+// Print objects on standard output; don't escape characters or 
+// strings when they are the argument. May recursively print large
+// objects leading to stack explosion.
+class Print: public Variadic {
+public:
+    VARIADIC_PREAMBLE(Print, "System", "print");
+
+    VMObjectPtr apply(const VMObjectPtrs& args) const override {
+
+        icu::UnicodeString s;
+        for (auto& arg:args) {
+            if (arg->tag() == VM_OBJECT_INTEGER) {
+                s += arg->to_text();
+            } else if (arg->tag() == VM_OBJECT_FLOAT) {
+                s += arg->to_text();
+            } else if (arg->tag() == VM_OBJECT_CHAR) {
+                s += VM_OBJECT_CHAR_VALUE(arg);
+            } else if (arg->tag() == VM_OBJECT_TEXT) {
+                s += VM_OBJECT_TEXT_VALUE(arg);
+            } else {
+                s += arg->to_text();
+            }
+        }
+        std::cout << s;
+
+        return create_nop();
+    }
+};
+
 
 std::vector<VMObjectPtr> builtin_system(VM* vm) {
     std::vector<VMObjectPtr> oo;
@@ -861,6 +891,9 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     // lazy operators
     oo.push_back(LazyAnd(vm).clone());
     oo.push_back(LazyOr(vm).clone());
+
+    // the builtin print, override if unsafe
+    oo.push_back(Print(vm).clone());
 
     // miscellaneous
     oo.push_back(VMObjectData(vm, "System", "v").clone());

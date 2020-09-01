@@ -5,6 +5,8 @@ A list of all major changes between versions of the interpreter.
 
 ## v0.0.5 -- social distancing
 
++ added lazy ops
++ added multiple commands to line parsing
 + changed default behavior to throw exceptions on bad arguments
 + processes
 + asm and dis
