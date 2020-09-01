@@ -1,10 +1,8 @@
-/*
- * A small test on whether the language handles large data-structures. It
- * does but printing is implemented as a recursive C routine which 
- * subsequently runs out of stack space.
- *
- * This concatenates about a million (2^20) singleton lists.
- */
+# A small test on whether the language handles large data-structures. It
+# does but printing is implemented as a recursive C routine which 
+# subsequently runs out of stack space.
+#
+# This concatenates about a million (2^20) singleton lists.
 
 namespace Test (
 
@@ -29,7 +27,7 @@ namespace Test (
 
 using Test
 
-// def main = huge // XXX: bug
+# def main = huge # XXX: bug
 
 def main = len huge
 

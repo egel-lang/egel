@@ -7,7 +7,7 @@ namespace List (
 
     def block =
         [ 0 -> nil
-        | N -> cons (N-1) (block (N - 1)) ]
+        | N -> cons (N - 1) (block (N - 1)) ]
 )
 
 using System

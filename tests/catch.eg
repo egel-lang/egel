@@ -1,9 +1,0 @@
-namespace Test (
-
-    def do = try throw 0 catch [ X -> X ]
-
-)
-
-using Test
-
-def main = do

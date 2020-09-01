@@ -1,4 +1,0 @@
-def main =
-    let _ = 3 in
-    let _ = 4 in
-        5
