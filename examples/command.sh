@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-egel -e 'using String;; strlen "hello"'
+egel -e 'using String;; print (chr 0x1f994) "\n"'
