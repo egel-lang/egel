@@ -229,9 +229,11 @@ int main(int argc, char *argv[]) {
     };
 
     // check for command
+    bool command = false;
     icu::UnicodeString e;
     for (auto& p : pp) {
         if (p.first == ("-e")) {
+            command = true;
             e = p.second;
         };
     };
@@ -272,7 +274,7 @@ int main(int argc, char *argv[]) {
     eval.eval_values(); //XXX: handle exceptions once
 
     // start either interactive or batch mode
-    if (e != "") {
+    if (command) {
         try {
             eval.eval_command(icu::UnicodeString("using System"));
             eval.eval_command(e);

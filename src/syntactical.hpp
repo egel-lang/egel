@@ -937,6 +937,7 @@ public:
     AstPtr parse_line() {
         Position p = position();
         AstPtrs aa;
+        if (tag() == TOKEN_EOF) return AstWrapper(p, aa).clone();
         auto a = parse_command();
         aa.push_back(a);
         while (tag() == TOKEN_DSEMICOLON) {
