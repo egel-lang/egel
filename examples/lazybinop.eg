@@ -1,0 +1,8 @@
+# Showcase 'lazy' or 'short circuited' binary operators.
+#
+# `expr0 && expr1` is just shorthand for `expr0 && \_ -> expr1`.
+
+using System
+
+def main =
+    (false && "this never evals", true || "neither does this")
