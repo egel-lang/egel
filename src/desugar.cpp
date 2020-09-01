@@ -320,8 +320,8 @@ public:
             if (op->tag() == AST_EXPR_COMBINATOR) {
                 auto s = op->to_text();
                 if ( (s == "System:&&") || (s == "System:||") ) {
-                    auto arg0 = ee[1];
-                    auto arg1 = lambdify(ee[2]);
+                    auto arg0 = rewrite(ee[1]);
+                    auto arg1 = lambdify(rewrite(ee[2]));
 
                     AstPtrs ff;
                     ff.push_back(op);
@@ -330,13 +330,13 @@ public:
 
                     return AstExprApplication(p, ff).clone();
                 } else {
-                    return AstExprApplication(p, ee).clone();
+                    return AstExprApplication(p, rewrites(ee)).clone();
                 }
             } else {
-                return AstExprApplication(p, ee).clone();
+                return AstExprApplication(p, rewrites(ee)).clone();
             }
         } else {
-            return AstExprApplication(p, ee).clone();
+            return AstExprApplication(p, rewrites(ee)).clone();
         }
     }
 };
