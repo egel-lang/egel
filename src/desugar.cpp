@@ -173,28 +173,7 @@ public:
         return rewrite(a);
     }
 
-    /*
-    AstPtr float_left(const Position& p, const AstPtr& a, const AstPtr& b) {
-        if (b->tag() == AST_EXPR_APPLICATION) {
-            AST_EXPR_APPLICATION_SPLIT(b, p0, bb);
-            auto b0 = float_left(p, a, bb[0]);
-            AstPtrs cc;
-            cc.push_back(b0);
-            auto sz = (int) bb.size();
-            for (int n = 1; n < sz; n++) {
-                cc.push_back(bb[n]);
-            }
-            return AstExprApplication(p, cc).clone();
-        } else {
-            return AstExprApplication(p, a, b).clone();
-        }
-    }
-    */
-    AstPtr float_left(const Position& p, const AstPtr& a, const AstPtr& b) {
-        return AstExprApplication(p, a, b).clone();
-    }
-
-    //  F( (let l = r in b) ) -> ( [ l -> F(b) ] F(r) )
+    //  F( (let l = r in b) ) -> ( [ l -> F(b) ] (F(r)) )
     AstPtr rewrite_expr_let(const Position& p, const AstPtrs& ll, const AstPtr& r, const AstPtr& b) override {
         auto r0 = rewrite(r);
         auto b0 = rewrite(b);
@@ -205,7 +184,7 @@ public:
         mm.push_back(m);
         auto q =  AstExprBlock(p, mm).clone();
 
-        return float_left(p, q, r0);
+        return AstExprApplication(p, q, r0).clone();
     }
 };
 
@@ -316,6 +295,57 @@ AstPtr pass_try(const AstPtr& a) {
     return t.idtry(a);
 }
 
+class RewriteLazyOp: public Rewrite {
+public:
+    AstPtr lazyop(const AstPtr& a) {
+        return rewrite(a);
+    }
+
+    AstPtr lambdify(const AstPtr& e) {
+        auto p = e->position();
+        auto v = AstExprVariable(p, "WILD0").clone();
+        AstPtrs vv;
+        vv.push_back(v);
+        auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
+        AstPtrs mm;
+        mm.push_back(m);
+        return AstExprBlock(p, mm).clone();
+
+    }
+
+    //  e0 || e1 -> e0 || [ _ -> e1 ] and e0 && e1 -> e0 && [ _ -> e1 ]
+    AstPtr rewrite_expr_application(const Position& p, const AstPtrs& ee) override {
+        if (ee.size() == 3) {
+            auto op = ee[0];
+            if (op->tag() == AST_EXPR_COMBINATOR) {
+                auto s = op->to_text();
+                if ( (s == "System:&&") || (s == "System:||") ) {
+                    auto arg0 = ee[1];
+                    auto arg1 = lambdify(ee[2]);
+
+                    AstPtrs ff;
+                    ff.push_back(op);
+                    ff.push_back(arg0);
+                    ff.push_back(arg1);
+
+                    return AstExprApplication(p, ff).clone();
+                } else {
+                    return AstExprApplication(p, ee).clone();
+                }
+            } else {
+                return AstExprApplication(p, ee).clone();
+            }
+        } else {
+            return AstExprApplication(p, ee).clone();
+        }
+    }
+};
+
+AstPtr pass_lazyop(const AstPtr& a) {
+    RewriteLazyOp t;
+    return t.lazyop(a);
+}
+
 AstPtr desugar(const AstPtr& a) {
     auto a0 = pass_condition(a);
     a0 = pass_wildcard(a0);
@@ -327,5 +357,6 @@ AstPtr desugar(const AstPtr& a) {
     a0 = pass_object(a0);
     a0 = pass_throw(a0);
     a0 = pass_try(a0);
+    a0 = pass_lazyop(a0);
     return a0;
 }
