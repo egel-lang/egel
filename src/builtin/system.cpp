@@ -759,6 +759,47 @@ public:
     }
 };
 
+class LazyAnd: public Binary {
+public:
+    BINARY_PREAMBLE(LazyAnd, "System", "&&");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+             (arg0->symbol() == SYMBOL_FALSE) ) {
+            return arg0;
+        } else if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+             (arg0->symbol() == SYMBOL_TRUE) ) {
+            VMObjectPtrs thunk;
+            thunk.push_back(arg1);
+            thunk.push_back(machine()->get_data_string("System", "nop"));
+            return VMObjectArray(thunk).clone();
+        } else {
+            BADARGS;
+        }
+    }
+};
+
+class LazyOr: public Binary {
+public:
+    BINARY_PREAMBLE(LazyOr, "System", "||");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+             (arg0->symbol() == SYMBOL_TRUE) ) {
+            return arg0;
+        } else if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+             (arg0->symbol() == SYMBOL_FALSE) ) {
+            VMObjectPtrs thunk;
+            thunk.push_back(arg1);
+            thunk.push_back(machine()->get_data_string("System", "nop"));
+            return VMObjectArray(thunk).clone();
+        } else {
+            BADARGS;
+        }
+    }
+};
+
+
 std::vector<VMObjectPtr> builtin_system(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -781,8 +822,6 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(VMObjectData(vm, "System", "false").clone());
     oo.push_back(VMObjectData(vm, "System", "tuple").clone());
     oo.push_back(VMObjectData(vm, "System", "object").clone());
-
-    //oo.push_back(VMObjectData(vm, "System", "divzero").clone());
 
     // operators
     oo.push_back(MonMin(vm).clone());
@@ -818,6 +857,10 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     // move to string?
     oo.push_back(Unpack(vm).clone());
     oo.push_back(Pack(vm).clone());
+
+    // lazy operators
+    oo.push_back(LazyAnd(vm).clone());
+    oo.push_back(LazyOr(vm).clone());
 
     // miscellaneous
     oo.push_back(VMObjectData(vm, "System", "v").clone());
