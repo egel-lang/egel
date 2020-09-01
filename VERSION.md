@@ -3,7 +3,7 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
-## v0.0.5 -- social distancing
+## v0.0.5 -- social distancing sucks
 
 + added lazy ops
 + added multiple commands to line parsing
