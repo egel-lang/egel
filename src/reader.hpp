@@ -61,7 +61,7 @@ public:
 
     bool end() override {
         if (_content.char32At(_index) == 65535) return true; // make absolutely sure we always detect the end
-        return _index >= _content.length();
+        return _index >= _content.countChar32();
     }
 
     bool eol() override {

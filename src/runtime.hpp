@@ -40,7 +40,7 @@ using namespace icu_65;
 inline icu::UnicodeString uescape(const icu::UnicodeString& s) {
     icu::UnicodeString s1;
     int i=0;
-    int len = s.length();
+    int len = s.countChar32();
     for (i = 0; i < len; i++) {
         UChar32 c = s.char32At(i);
         switch (c) {
