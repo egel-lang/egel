@@ -12,14 +12,6 @@ namespace System (
         [ true  -> false
         | X     -> true ]
 
-    def || =
-        [ true  F -> true
-        | false F -> F nop ]
-
-    def && =
-        [ false F -> false
-        | true  F -> F nop ]
-
     def . =
         [ F G X -> F (G X) ]
 
