@@ -3,6 +3,10 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.0.6 -- rationality was a mistake
+
++ added reference objects
+
 ## v0.0.5 -- social distancing sucks
 
 + added lazy ops
