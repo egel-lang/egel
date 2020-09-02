@@ -74,5 +74,5 @@ namespace NQueens (
 using List
 using NQueens
 
-def main = length (nqueens 8 8)
+def main = nqueens 8 8
 
