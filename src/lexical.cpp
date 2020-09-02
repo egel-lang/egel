@@ -387,7 +387,8 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             str += c;
             reader.skip();
             token_writer.push(Token(TOKEN_TEXT, p, str));
-        } else if (is_digit(c) || (is_minus(c) && is_digit(reader.look(1)))) { // XXX: LL(2), to be solved by swapping skip/look
+//        } else if (is_digit(c) || (is_minus(c) && is_digit(reader.look(1)))) { // no longer lex a leading minus
+        } else if (is_digit(c) ) { // XXX: LL(2), to be solved by swapping skip/look
             /* This code handles numbers which are integers and floats. Integer and float
              * regular expressions are simplistic and overlap on their prefixes.
              *

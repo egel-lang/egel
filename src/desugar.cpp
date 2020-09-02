@@ -295,6 +295,51 @@ AstPtr pass_try(const AstPtr& a) {
     return t.idtry(a);
 }
 
+class RewriteMonmin: public Rewrite {
+public:
+    AstPtr monmin(const AstPtr& a) {
+        return rewrite(a);
+    }
+
+    AstPtr lambdify(const AstPtr& e) {
+        auto p = e->position();
+        auto v = AstExprVariable(p, "WILD0").clone();
+        AstPtrs vv;
+        vv.push_back(v);
+        auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
+        AstPtrs mm;
+        mm.push_back(m);
+        return AstExprBlock(p, mm).clone();
+
+    }
+
+    // (- x) -> -x
+    AstPtr rewrite_expr_application(const Position& p, const AstPtrs& ee) override {
+        if (ee.size() == 2) {
+            auto op = ee[0];
+            if (op->tag() == AST_EXPR_COMBINATOR) {
+                auto s = op->to_text();
+                auto arg0 = ee[1];
+                if ( (s == "System:!-") && (arg0->tag() == AST_EXPR_INTEGER) ) {
+                    AST_EXPR_INTEGER_SPLIT(arg0, p, s);
+                    return AstExprInteger(p, "-"+s).clone();
+                } else {
+                    return AstExprApplication(p, rewrites(ee)).clone();
+                }
+            } else {
+                return AstExprApplication(p, rewrites(ee)).clone();
+            }
+        } else {
+            return AstExprApplication(p, rewrites(ee)).clone();
+        }
+    }
+};
+
+AstPtr pass_monmin(const AstPtr& a) {
+    RewriteMonmin t;
+    return t.monmin(a);
+}
+
 class RewriteLazyOp: public Rewrite {
 public:
     AstPtr lazyop(const AstPtr& a) {
@@ -358,5 +403,6 @@ AstPtr desugar(const AstPtr& a) {
     a0 = pass_throw(a0);
     a0 = pass_try(a0);
     a0 = pass_lazyop(a0);
+    a0 = pass_monmin(a0);
     return a0;
 }
