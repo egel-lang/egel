@@ -1,0 +1,13 @@
+# Just a stress test to see how leaking behaves.
+# 
+
+using System
+
+def leak_one_cycle =
+    [ X -> setref X X ] (ref 0)
+
+def leak_more =
+    [ 0 -> nop | N -> leak_one_cycle; leak_more (N-1) ]
+
+def main =
+    leak_more 1000000
