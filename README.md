@@ -32,7 +32,7 @@ A number of example scripts are provided in the examples directory.
 If you set up your system correctly, you can run any of them
 with the command `egel example.eg`.
 
-Egel doesn't provide command line editing. You might
+The interpreter doesn't provide command line editing, you might
 want to wrap it with the command `alias egel="rlwrap egel"`.
 
 Disclaimer
