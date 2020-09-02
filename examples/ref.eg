@@ -1,0 +1,18 @@
+# Egel supports references though I didn't implement a nice syntax for
+# that yet.
+#
+# `ref x`       -- create a ref object from x
+# `setref r x`  -- set r to x
+# `getref r`    -- get contents of r
+#
+# References are unsafe since you can form cycles.
+#
+# References are not thread safe.
+
+using System
+
+val myglobal = ref 0
+
+def main = 
+    setref myglobal [ X -> X ];
+    getref myglobal "Hello"

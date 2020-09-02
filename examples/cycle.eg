@@ -10,6 +10,6 @@ import "prelude.eg"
 using System
 
 def main = 
-    let Y = v 0 in
-    let Y = setv Y Y in
+    let Y = ref 0 in
+    let Y = setref Y Y in
        Y

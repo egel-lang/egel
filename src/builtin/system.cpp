@@ -368,7 +368,7 @@ public:
     }
 };
 
-// System.get F O
+// System:get F O
 // Retrieve an object field
 class GetField: public Binary {
 public:
@@ -402,7 +402,7 @@ public:
     }
 };
 
-// System.set F X O
+// System:set F X O
 // set an object field
 class SetField: public Triadic {
 public:
@@ -438,7 +438,7 @@ public:
     }
 };
 
-// System.extend O0 O1
+// System:extend O0 O1
 // Extend object O0 with every field from O1
 class ExtendField: public Dyadic {
 public:
@@ -485,7 +485,7 @@ public:
 };
 
 
-// System.toint x
+// System:toint x
 // Try and convert an object to int.
 class Toint: public Monadic {
 public:
@@ -510,7 +510,7 @@ public:
     }
 };
 
-// System.tofloat x
+// System:tofloat x
 // Try and convert an object to float.
 class Tofloat: public Monadic {
 public:
@@ -532,7 +532,7 @@ public:
     }
 };
 
-// System.totext x
+// System:totext x
 // Try and convert an object to text.
 class Totext: public Monadic {
 public:
@@ -559,43 +559,84 @@ public:
     }
 };
 
-// System.getv x
-// Retrieve a var field
-class Get: public Monadic {
+// System:reference
+// an opaque reference object
+class Reference : public Opaque {
 public:
-    MONADIC_PREAMBLE(Get, "System", "getv");
+    OPAQUE_PREAMBLE(Reference, "System", "reference");
+
+    Reference(VM* vm, const VMObjectPtr& r)
+        : Opaque(vm, "System", "reference") {
+        _ref = r;
+    }
+
+    Reference(const Reference& ref): Opaque(ref.machine(), ref.symbol()) {
+        _ref = ref.getref();
+    }
+
+    VMObjectPtr clone() const override {
+        return VMObjectPtr(new Reference(*this));
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        return -1; // XXX: fix this once
+    }
+
+    VMObjectPtr getref() const {
+        return _ref;
+    }
+
+    void setref(const VMObjectPtr& r) {
+        _ref = r;
+    }
+
+protected:
+    VMObjectPtr _ref = nullptr;
+};
+
+// System:ref x
+// create a reference object from x
+class Ref: public Monadic {
+public:
+    MONADIC_PREAMBLE(Ref, "System", "ref");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t var = 0;
-        if (var == 0) var = machine()->enter_symbol("System", "v");
+        auto vm = machine();
+        auto r = Reference(vm, arg0).clone();
+        return r;
+    }
+};
 
-        if (arg0->tag() == VM_OBJECT_ARRAY) {
-            auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
-            if (ff.size() != 2) INVALID;
-            if (ff[0]->symbol() != var) INVALID;
-            return ff[1];
+// System:getref ref
+// get the term from ref
+class Getref: public Unary {
+public:
+    UNARY_PREAMBLE(Getref, "System", "getref");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        symbol_t sym = machine()->enter_symbol("System", "reference");
+
+        if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == sym)) {
+            auto r = std::static_pointer_cast<Reference>(arg0);
+            return r->getref();
         } else {
             BADARGS;
         }
     }
 };
 
-// System.setv x
-// Set a var field
-class Set: public Dyadic {
+// System:setref ref x
+// set reference object ref to x
+class Setref: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Set, "System", "setv");
+    DYADIC_PREAMBLE(Setref, "System", "setref");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static symbol_t var = 0;
-        if (var == 0) var = machine()->enter_symbol("System", "v");
+        symbol_t sym = machine()->enter_symbol("System", "reference");
 
-        if (arg0->tag() == VM_OBJECT_ARRAY) {
-            auto ff = VM_OBJECT_ARRAY_VALUE(arg0);
-            if (ff.size() != 2) INVALID;
-            if (ff[0]->symbol() != var) INVALID;
-            auto arr = VM_OBJECT_ARRAY_CAST(arg0); // XXX: clean up this cast once. need destructive update
-            arr->set(1, arg1);
+        if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == sym)) {
+            auto r = std::static_pointer_cast<Reference>(arg0);
+            r->setref(arg1);
             return arg0;
         } else {
             BADARGS;
@@ -603,7 +644,7 @@ public:
     }
 };
 
-// System.unpack s
+// System:unpack s
 // create a list of UChar32 from a Unicode string
 class Unpack: public Monadic {
 public:
@@ -636,8 +677,7 @@ public:
     }
 };
 
-
-// System.pack s
+// System:pack s
 // create a Unicode string from a list of UChar32
 class Pack: public Monadic {
 public:
@@ -670,7 +710,7 @@ public:
     }
 };
 
-// System.dis o
+// System:dis o
 // Dump the assembly of a combinator object
 class Dis: public Monadic {
 public:
@@ -687,7 +727,7 @@ public:
     }
 };
 
-// System.asm s0 s1
+// System:asm s0 s1
 // Assemble bytecode into a combinator
 class Asm: public Unary {
 public:
@@ -714,7 +754,7 @@ public:
 int     application_argc = 0;
 char**  application_argv = nullptr;
 
-// System.arg n
+// System:arg n
 // Return the n-th application argument, otherwise return 'nop'
 class Arg: public Monadic {
 public:
@@ -735,7 +775,7 @@ public:
     }
 };
 
-// System.getenv s
+// System:getenv s
 // Return the value of environment variable s, otherwise return 'nop'
 class Getenv: public Monadic {
 public:
@@ -759,6 +799,8 @@ public:
     }
 };
 
+// System:&&
+// short-circuited and
 class LazyAnd: public Binary {
 public:
     BINARY_PREAMBLE(LazyAnd, "System", "&&");
@@ -779,6 +821,8 @@ public:
     }
 };
 
+// System:||
+// short-circuited or
 class LazyOr: public Binary {
 public:
     BINARY_PREAMBLE(LazyOr, "System", "||");
@@ -799,7 +843,7 @@ public:
     }
 };
 
-// System.print o0 .. on
+// System:print o0 .. on
 // Print objects on standard output; don't escape characters or 
 // strings when they are the argument. May recursively print large
 // objects leading to stack explosion.
@@ -877,9 +921,6 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(Tofloat(vm).clone());
     oo.push_back(Totext(vm).clone());
 
-    oo.push_back(Arg(vm).clone());
-    oo.push_back(Getenv(vm).clone());
-
     // disassemble and reassemble
     oo.push_back(Dis(vm).clone());
     oo.push_back(Asm(vm).clone());
@@ -892,16 +933,20 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(LazyAnd(vm).clone());
     oo.push_back(LazyOr(vm).clone());
 
-    // the builtin print, override if unsafe
+    // system info, override if sandboxed
+    oo.push_back(Arg(vm).clone());
+    oo.push_back(Getenv(vm).clone());
+
+    // the builtin print, override if sandboxed
     oo.push_back(Print(vm).clone());
 
-    // miscellaneous
-    oo.push_back(VMObjectData(vm, "System", "v").clone());
+    // references
+    oo.push_back(Reference(vm).clone());
+    oo.push_back(Ref(vm).clone());
+    oo.push_back(Setref(vm).clone());
+    oo.push_back(Getref(vm).clone());
 
-
-    oo.push_back(Get(vm).clone());
-    oo.push_back(Set(vm).clone());
-
+    // OO fields
     oo.push_back(GetField(vm).clone());
     oo.push_back(SetField(vm).clone());
     oo.push_back(ExtendField(vm).clone());
