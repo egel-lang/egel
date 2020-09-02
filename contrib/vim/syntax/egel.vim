@@ -42,8 +42,7 @@ syn match egelQuestion			"?"
 syn match egelSquare			"[][]"
 syn match egelParen			"[()]"
 
-syn match egelComment			"//.*$"	contains=egelTodo,egelTab
-syn region egelMultilineComment		start=+/\*+ end=+\*/+ contains=egelTodo,egelTab
+syn match egelComment			"#.*$"	contains=egelTodo,egelTab
 
 "syn match egelError	"-\=\<\d\+\.\d\+\.[^*/\\^]"
 "syn match egelError	"-\=\<\d\+\.\d\+[eEdD][-+]\=\d\+\.\([^*/\\^]\)"
@@ -73,7 +72,6 @@ if !exists("did_egel_syntax_inits")
   HiLink egelFloat			Float
   HiLink egelError			Error
   HiLink egelComment			Comment
-  HiLink egelMultilineComment		Comment
 
 "optional highlighting
   HiLink egelIdentifier			Identifier
