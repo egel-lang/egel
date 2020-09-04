@@ -38,7 +38,7 @@ want to wrap it with the command `alias egel="rlwrap egel"`.
 The interpreter allocates lots of short-lived objects. If you want
 a bit of extra speed, it might pay off to switch the allocator to
 `jemalloc`. I use 
-`LD_PRELOAD=\`jemalloc-config --libdir\`/libjemalloc.so.\`jemalloc-config --revision`.
+``LD_PRELOAD=`jemalloc-config --libdir`/libjemalloc.so.`jemalloc-config --revision``.
 
 Disclaimer
 ----------
