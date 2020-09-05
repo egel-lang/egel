@@ -136,6 +136,7 @@ typedef enum {
 
 class VMObject;
 typedef std::shared_ptr<VMObject> VMObjectPtr;
+typedef std::weak_ptr<VMObject>   VMWeakObjectPtr;
 
 // forward declarations for pretty printing
 inline void render_tuple(const VMObjectPtr& tt, std::ostream& os);

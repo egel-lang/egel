@@ -494,7 +494,7 @@ private:
 #define FETCH_op(c, pc)     FETCH_i8(c, pc)
 #define FETCH_reg(c,pc)     FETCH_i16(c, pc)
 #define FETCH_idx(c,pc)     FETCH_i16(c, pc)
-#define FETCH_lbl(c,pc)   FETCH_i32(c, pc)
+#define FETCH_lbl(c,pc)     FETCH_i32(c, pc)
 
 class Registers {
 public:
@@ -510,7 +510,7 @@ public:
         }
     }
 
-    void set(const reg_t n, VMObjectPtr o) {
+    void set(const reg_t n, const VMObjectPtr& o) {
         if (n < MAX_REGISTERS) {
             _fast[n] = o;
         } else {
@@ -518,7 +518,7 @@ public:
         }
     }
 
-    VMObjectPtr operator[](const reg_t n) {
+    const VMObjectPtr operator[](const reg_t n) {
         return get(n);
     }
 
@@ -605,6 +605,7 @@ public:
         bool flag = false;
 
         EqualVMObjectPtr equals;
+
         while (true) {
 
 #ifdef DEBUG
