@@ -744,16 +744,24 @@ public:
                     auto yy = VM_OBJECT_ARRAY_VALUE(y0);
                     auto zz = VM_OBJECT_ARRAY_VALUE(z0);
 
-                    auto xx0 = VMObjectArray::create();
-                    auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
+                    if ( i < zz.size()) {
+                        auto xx0 = VMObjectArray::create();
+                        auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
 
-                    for (auto& y1:yy) xx1->push_back(y1);
-                    for (int n = (int) i; n < (int) zz.size(); n++) xx1->push_back(zz[n]);
+                        for (auto& y1:yy) xx1->push_back(y1);
+                        for (int n = (int) i; n < (int) zz.size(); n++) xx1->push_back(zz[n]);
 
-                    if (xx1->size() == 1) { // XXX: move to reg.set?
-                        reg.set(x, xx1->get(0));
-                    } else {
-                        reg.set(x, xx1);
+                        if (xx1->size() == 1) { // XXX: move to reg.set?
+                            reg.set(x, xx1->get(0));
+                        } else {
+                            reg.set(x, xx1);
+                        }
+                    } else { // optimize for `drop i z = {}` case
+                        if (yy.size() == 1) { // XXX: move to reg.set?
+                            reg.set(x, yy[0]);
+                        } else {
+                            reg.set(x, y0);
+                        }
                     }
                 } else {
                     PANIC("two arrays expected");
