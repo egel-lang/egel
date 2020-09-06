@@ -741,10 +741,13 @@ public:
                 auto z0 = reg[z];
                 if ((y0->tag() == VM_OBJECT_ARRAY) &&
                     (z0->tag() == VM_OBJECT_ARRAY) ) {
-                    auto yy = VM_OBJECT_ARRAY_VALUE(y0);
-                    auto zz = VM_OBJECT_ARRAY_VALUE(z0);
+                    auto yc = VM_OBJECT_ARRAY_CAST(y0);
+                    auto zc = VM_OBJECT_ARRAY_CAST(z0);
 
-                    if ( i < zz.size()) {
+                    if ( i < zc->size()) { // XXX: rewrite to use the cast
+                        auto yy = VM_OBJECT_ARRAY_VALUE(y0);
+                        auto zz = VM_OBJECT_ARRAY_VALUE(z0);
+
                         auto xx0 = VMObjectArray::create();
                         auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
 
@@ -757,8 +760,8 @@ public:
                             reg.set(x, xx1);
                         }
                     } else { // optimize for `drop i z = {}` case
-                        if (yy.size() == 1) { // XXX: move to reg.set?
-                            reg.set(x, yy[0]);
+                        if (yc->size() == 1) { // XXX: move to reg.set?
+                            reg.set(x, yc->get(0));
                         } else {
                             reg.set(x, y0);
                         }
