@@ -502,7 +502,7 @@ public:
         //_fast.reserve(MAX_REGISTERS);
     }
 
-    VMObjectPtr get(const reg_t n) {
+    const VMObjectPtr get(const reg_t n) {
         if (n < MAX_REGISTERS) {
             return _fast[n];
         } else {
@@ -720,10 +720,11 @@ public:
                 reg_t       y = FETCH_reg(_code,pc);
                 reg_t       z = FETCH_reg(_code,pc);
 
-                auto xx0 = VMObjectArray::create();
+                auto xx0 = VMObjectArray::create(1+z-y);
                 auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
                 for (reg_t n = y; n <= z; n++) {
-                    xx1->push_back(reg[n]);
+                //    xx1->push_back(reg[n]);
+                    xx1->set(n-y, reg[n]);
                 }
                 reg.set(x, xx1);
 

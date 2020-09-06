@@ -510,6 +510,10 @@ public:
         : VMObjectArray(l.value()) {
     }
 
+    VMObjectArray(const int size)
+        : VMObject(VM_OBJECT_ARRAY, VM_OBJECT_FLAG_INTERNAL), _value(VMObjectPtrs(size)) {
+    }
+
     VMObjectPtr clone() const override {
         if (size() == 1) {
             return get(0);
@@ -520,6 +524,10 @@ public:
 
     static VMObjectPtr create() {
         return VMObjectPtr(new VMObjectArray());
+    }
+
+    static VMObjectPtr create(int size) {
+        return VMObjectPtr(new VMObjectArray(size));
     }
 
     static VMObjectPtr create(const VMObjectPtrs& pp) {
