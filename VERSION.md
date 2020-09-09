@@ -7,6 +7,8 @@ A list of all major changes between versions of the interpreter.
 
 + added reference objects
 + added monadic minus pass
++ performance (abysmal) tweaks
++ format
 
 ## v0.0.5 -- social distancing sucks
 
