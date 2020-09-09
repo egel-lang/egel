@@ -884,7 +884,7 @@ public:
     VMObjectPtr apply(const VMObjectPtrs& args) const override {
 
         if (args.size() < 1) {
-            BADARGS;
+            return nullptr;
         } else {
             auto a0 = args[0];
             if (a0->tag() == VM_OBJECT_TEXT) {
