@@ -1,0 +1,6 @@
+# Showcase Egel's (C++20) format combinator
+
+using System
+
+def main =
+    format "{} {} {:#06x} {:.2}" "Hello" "World" 1023 3.1415
