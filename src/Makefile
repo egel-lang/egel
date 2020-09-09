@@ -9,6 +9,7 @@ LDFLAGS=$(LIBS)
 
 # source files and objects
 SOURCES= \
+	builtin/fmt/format.cpp \
 	utils.cpp \
 	lexical.cpp \
 	operators.cpp \

@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "./fmt/format.h"
+
 /**
  * For portable overflow detection use the portable snippets header file.
  * I hope I can once discard this but that depends on C++ compiler implementors.
@@ -873,6 +875,68 @@ public:
     }
 };
 
+// System:format fmt x y ...
+// Create a string from formatted string fmt and objects x,y,...
+class Format: public Variadic {
+public:
+    VARIADIC_PREAMBLE(Format, "System", "format");
+
+    VMObjectPtr apply(const VMObjectPtrs& args) const override {
+
+        if (args.size() < 1) {
+            BADARGS;
+        } else {
+            auto a0 = args[0];
+            if (a0->tag() == VM_OBJECT_TEXT) {
+                auto f = VM_OBJECT_TEXT_VALUE(a0);
+                auto fmt = unicode_to_char(f);
+
+                fmt::dynamic_format_arg_store<fmt::format_context> store;
+                
+                for (int n = 1; n < (int) args.size(); n++) {
+                    auto arg = args[n];
+                    if (arg->tag() == VM_OBJECT_INTEGER) {
+                        auto i = VM_OBJECT_INTEGER_VALUE(arg);
+                        store.push_back(i);
+                    } else if (arg->tag() == VM_OBJECT_FLOAT) {
+                        auto f = VM_OBJECT_FLOAT_VALUE(arg);
+                        store.push_back(f);
+                    } else if (arg->tag() == VM_OBJECT_CHAR) {
+                        auto c = VM_OBJECT_CHAR_VALUE(arg);
+                        auto s0 = icu::UnicodeString(c);
+                        auto s1 = unicode_to_char(s0);
+                        store.push_back(s1);
+                        delete s1;
+                    } else if (arg->tag() == VM_OBJECT_TEXT) {
+                        auto t = VM_OBJECT_TEXT_VALUE(arg);
+                        auto s0 = unicode_to_char(t);
+                        store.push_back(s0);
+                        delete s0;
+                    } else {
+                        auto a = arg->to_text();
+                        auto s0 = unicode_to_char(a);
+                        store.push_back(s0);
+                        delete s0;
+                    }
+                }
+
+                std::string r;
+                try {
+                    r = fmt::vformat(fmt, store);
+                } catch (fmt::v7::format_error& e) {
+                    INVALID;
+                }
+                auto u = icu::UnicodeString(r.c_str());
+                delete fmt;
+
+                return VMObjectText(u).clone();
+            } else {
+                INVALID;
+            }
+        }
+    }
+};
+
 
 std::vector<VMObjectPtr> builtin_system(VM* vm) {
     std::vector<VMObjectPtr> oo;
@@ -939,6 +1003,7 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
 
     // the builtin print, override if sandboxed
     oo.push_back(Print(vm).clone());
+    oo.push_back(Format(vm).clone());
 
     // references
     oo.push_back(Reference(vm).clone());
