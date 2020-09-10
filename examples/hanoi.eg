@@ -1,0 +1,18 @@
+# Towers of Hanoi example.
+#
+# Via numberphile [https://www.youtube.com/watch?v=8lhxIOAfDss].
+
+using System
+
+def move =
+    [ F T -> print (format "Move disc from {} to {}\n" F T) ]
+
+def hanoi =
+    [ N F H T ->
+        if N == 0 then nop
+        else 
+            hanoi (N-1) F T H;
+            move F T;
+            hanoi (N-1) H F T ]
+
+def main = hanoi 4 "A" "B" "C"
