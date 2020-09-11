@@ -8,11 +8,7 @@ def move =
     [ F T -> print (format "Move disc from {} to {}\n" F T) ]
 
 def hanoi =
-    [ N F H T ->
-        if N == 0 then nop
-        else 
-            hanoi (N-1) F T H;
-            move F T;
-            hanoi (N-1) H F T ]
+    [ 0 F H T -> nop
+    | N F H T -> hanoi (N-1) F T H; move F T; hanoi (N-1) H F T ]
 
 def main = hanoi 4 "A" "B" "C"
