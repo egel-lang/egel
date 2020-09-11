@@ -26,6 +26,7 @@ To compile the system run the `build.sh` script.
     cd build
     cmake ..
     make
+```
 
 That should give you an interpreter named `egel`
 and a number of dynamically loadable Egel object files in the
