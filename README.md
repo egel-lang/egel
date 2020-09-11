@@ -19,7 +19,6 @@ Most Linux package managers will provide that for you.
 
 This interpreter is made with `cmake` in the standard manner. Run
 the following commands on a Linux system.
-To compile the system run the `build.sh` script.
 
 ```
     mkdir build
