@@ -10,7 +10,6 @@ tasks.
 Installation
 ------------
 
-----------------------------------------------------------------------
 This interpreter is being developed on Linux and uses libicu for 
 Unicode support and fmt for formatting. 
 You need to have GCC/g++, the GNU compiler chain, and the development 
