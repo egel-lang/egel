@@ -27,8 +27,7 @@
 #define EXECUTABLE_AUTHORS \
     "M.C.A. (Marco) Devillers"
 
-#define INCLUDE_PATH \
-    "/usr/local/lib/egel"
+#define INCLUDE_PATH "/usr/local/lib64/egel"
 
 typedef enum {
     OPTION_NONE,

@@ -407,6 +407,7 @@ public:
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
+            err += " on open(" + get_path() + ")";
             throw ErrorIO(err);
         }
 

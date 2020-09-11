@@ -3,6 +3,10 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.0.7 -- the work of the devil
+
++ cmake
+
 ## v0.0.6 -- rationality was a mistake
 
 + added reference objects

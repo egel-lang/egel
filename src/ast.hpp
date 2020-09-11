@@ -135,7 +135,7 @@ public:
         : Ast(AST_EMPTY, Position(icu::UnicodeString(""), 0, 0)) {
     }
 
-    AstEmpty(const AstEmpty& e): AstEmpty() {
+    AstEmpty(const AstEmpty&): AstEmpty() {
     }
 
     AstPtr clone() const {
@@ -146,7 +146,7 @@ public:
         return indent;
     }
 
-    void render(std::ostream& os, uint_t indent) const {
+    void render(std::ostream& os, uint_t ) const {
         os << "(XX)";
     }
 };
@@ -170,7 +170,7 @@ public:
         return (indent + text().length());
     }
 
-    void render(std::ostream& os, uint_t indent) const {
+    void render(std::ostream& os, uint_t ) const {
         os << text(); 
     }
 
@@ -461,7 +461,7 @@ public:
         return l;
     }
 
-    void render(std::ostream& os, uint_t indent) const override {
+    void render(std::ostream& os, uint_t ) const override {
         os << to_text();
     }
 
@@ -532,7 +532,7 @@ public:
         return l;
     }
 
-    void render(std::ostream& os, uint_t indent) const {
+    void render(std::ostream& os, uint_t ) const {
         os << text();
     }
 

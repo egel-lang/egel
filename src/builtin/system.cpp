@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "./fmt/format.h"
+#include <fmt/core.h> // std::format
 
 /**
  * For portable overflow detection use the portable snippets header file.
@@ -923,7 +923,7 @@ public:
                 std::string r;
                 try {
                     r = fmt::vformat(fmt, store);
-                } catch (fmt::v7::format_error& e) {
+                } catch (std::runtime_error& e) {
                     INVALID;
                 }
                 auto u = icu::UnicodeString(r.c_str());

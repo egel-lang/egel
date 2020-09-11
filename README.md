@@ -10,18 +10,29 @@ tasks.
 Installation
 ------------
 
+----------------------------------------------------------------------
 This interpreter is being developed on Linux and uses libicu for 
-Unicode support. You need to have GCC/g++, the GNU compiler chain,
-and the development files for libicu
-installed. Most Linux package managers will provide that for you.
+Unicode support and fmt for formatting. 
+You need to have GCC/g++, the GNU compiler chain, and the development 
+files for libicu and fmt installed. 
+Most Linux package managers will provide that for you.
 
+This interpreter is made with `cmake` in the standard manner. Run
+the following commands on a Linux system.
 To compile the system run the `build.sh` script.
-That should give you an interpreter named `egel` in the `src` directory
-and a number of dynamically loadable Egel object files in the
-`lib` directory.
 
-For a system-wide install run the `install.sh` script after a build
-as root. On a Fedora system..
+```
+    mkdir build
+    cd build
+    cmake ..
+    make
+
+That should give you an interpreter named `egel`
+and a number of dynamically loadable Egel object files in the
+`build` directory.
+
+For a system-wide install run `make install` after a build
+as root.
 
 If you don't want to do that, please note that you only need the interpreter
 named `egel` and all files in the `include` directory for simple tasks.

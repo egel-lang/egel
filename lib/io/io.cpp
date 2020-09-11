@@ -764,7 +764,7 @@ public:
     }
 
 protected:
-    struct sockaddr_in _server_address = {0};
+    struct sockaddr_in _server_address;
     int _portno = 0;
     int _queue = 0;
     int _sockfd = 0;
