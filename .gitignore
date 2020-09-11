@@ -38,3 +38,7 @@ src/libegel.a
 *.ego
 # Don't follow generated test cases
 tests/large.eg
+
+# Don't follow cmake build
+_build/*
+build/*
