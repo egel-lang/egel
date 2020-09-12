@@ -64,9 +64,9 @@ def fix = [ F -> F [ X -> (fix F) X ] ]
 def read_file =
     [ FN ->
         let CHAN = open FN in
-        let S = fix [ F CHAN -> let S = read_line CHAN in
-                      if eof CHAN then S else append S (F CHAN) ] CHAN 
-        in close CHAN; S ]
+        let LINES = fix [ F CHAN -> let LINE = read_line CHAN in
+                      if eof CHAN then {} else append LINE (F CHAN) ] CHAN 
+        in close CHAN; LINES ]
 
 ######################################################################
 

@@ -292,6 +292,39 @@ public:
     }
 };
 
+// Regex.group pat s0
+class Group: public Dyadic {
+public:
+    DYADIC_PREAMBLE(Group, REGEX_STRING, "group");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+
+            auto r = pat->matcher(s0);
+            if (r == nullptr) INVALID;
+
+            UnicodeStrings ss;
+            UErrorCode err;
+
+            if (r->matches(err)) {
+                int32_t gc = r->groupCount();
+                for (int n = 1; n <= gc; n++) {
+                    auto s = r->group(n, err);
+                    ss.push_back(s);
+                }
+            }
+
+            delete r;
+
+            return strings_to_list(machine(), ss);
+        } else {
+            BADARGS;
+        }
+    }
+};
+
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
 }
@@ -305,6 +338,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Matches(vm).clone());
     oo.push_back(Replace(vm).clone());
     oo.push_back(ReplaceAll(vm).clone());
+    oo.push_back(Group(vm).clone());
 
     return oo;
 
