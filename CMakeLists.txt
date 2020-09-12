@@ -76,6 +76,14 @@ set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 add_executable(egel $<TARGET_OBJECTS:objlib>)
 target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
 
+# compiler dependent stuff
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_libraries(egel stdc++fs)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+endif()
+
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib PROPERTIES OUTPUT_NAME egel)

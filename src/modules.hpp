@@ -726,11 +726,12 @@ public:
 
 protected:
     icu::UnicodeString search(const UnicodeStrings& path, const icu::UnicodeString& fn) {
-        if (file_exists(fn)) return fn; //  XXXX? doesn't work with dynamic modules which should be given absolute paths
-        if (fn.startsWith('/')) return "";
+        auto fn_here = path_absolute(fn); // XXX: shouldn't this be in path?
+        if (file_exists(fn_here)) return fn_here;
         for (auto p:path) {
-            icu::UnicodeString fn0 = path_combine(p, fn);
-            if (file_exists(fn0)) return fn0;
+            auto fn0 = path_combine(p, fn);
+            auto fn1 = path_absolute(fn0);
+            if (file_exists(fn1)) return fn1;
         };
         return "";
     }

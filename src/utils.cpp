@@ -1,8 +1,10 @@
 #include <sstream>
 #include <string.h>
 #include "utils.hpp"
+#include <experimental/filesystem>
 
 #define STRING_MAX_SIZE 65536
+
 // C routines
 void assert_fail(const char *assertion, const char *file, uint_t line) {
     std::cerr << file << ':' << line << ": assertion failed " << assertion << '\n';
@@ -220,6 +222,33 @@ bool unicode_endswith(const icu::UnicodeString& s, const icu::UnicodeString& suf
 
 // basic I/O routines
 
+namespace fs = std::experimental::filesystem;
+
+fs::path string_to_path(const icu::UnicodeString& s) {
+    char* cc = unicode_to_char(s);
+    fs::path p = fs::u8path(cc);
+    delete cc;
+    return p;
+}
+
+icu::UnicodeString path_to_string(const fs::path& p) {
+    icu::UnicodeString s(p.c_str()); // XXX: utf8
+    return s;
+}
+
+icu::UnicodeString path_absolute(const icu::UnicodeString& s) {
+    auto p0 = string_to_path(s);
+    auto p1 = fs::absolute(p0);
+    return path_to_string(p1);
+}
+
+icu::UnicodeString path_combine(const icu::UnicodeString& s0, const icu::UnicodeString& s1) {
+    auto p0 = string_to_path(s0);
+    auto p1 = string_to_path(s1);
+    p0 /= p1;
+    return path_to_string(p0);
+}
+
 icu::UnicodeString file_read(const icu::UnicodeString &filename) {
     char* fn = unicode_to_char(filename);
     UChar* chars = read_utf8_file(fn);
@@ -244,12 +273,4 @@ bool file_exists(const icu::UnicodeString &filename) {
     return b;
 }
 
-icu::UnicodeString path_combine(const icu::UnicodeString& p0, const icu::UnicodeString& p1) {
-    // XXX: OS specific so this should once be generalized.
-    if (p0.endsWith(icu::UnicodeString("/"))) {
-        return p0 + p1;
-    } else {
-        return p0 + '/' + p1;
-    }
-}
 

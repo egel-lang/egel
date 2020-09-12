@@ -11,8 +11,6 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
-using namespace icu_65;
-
 typedef unsigned int uint_t;
 
 // debugging macros
@@ -227,13 +225,22 @@ void file_write(const icu::UnicodeString &filename, const icu::UnicodeString &st
 bool file_exists(const icu::UnicodeString &filename);
 
 /** 
+ ** Convenience. Get the absolute path. OS specific.
+ **
+ ** @param s      the path
+ **
+ ** @return the absolute path
+ **/
+icu::UnicodeString path_absolute(const icu::UnicodeString& s);
+
+/** 
  ** Convenience. Combine two paths into a new path. OS specific.
  **
- ** @param p0     the first path
- ** @param p1     the second path
+ ** @param s0     the first path
+ ** @param s1     the second path
  **
  ** @return the combined path
  **/
-icu::UnicodeString path_combine(const icu::UnicodeString& p0, const icu::UnicodeString& p1);
+icu::UnicodeString path_combine(const icu::UnicodeString& s0, const icu::UnicodeString& s1);
 
 #endif
