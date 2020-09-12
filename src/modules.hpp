@@ -14,11 +14,12 @@
 #include "runtime.hpp"
 #include "emit.hpp"
 
-#include "builtin/system.hpp"
-#include "builtin/math.hpp"
-#include "builtin/string.hpp"
-#include "builtin/thread.hpp"
-#include "builtin/process.hpp"
+#include "builtin_system.hpp"
+#include "builtin_math.hpp"
+#include "builtin_string.hpp"
+#include "builtin_thread.hpp"
+#include "builtin_process.hpp"
+#include "builtin_eval.hpp"
 
 extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward declaration
 

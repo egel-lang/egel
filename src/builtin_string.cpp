@@ -1,4 +1,5 @@
-#include "../../src/runtime.hpp"
+#include "runtime.hpp"
+#include "builtin_string.hpp"
 
 
 /**

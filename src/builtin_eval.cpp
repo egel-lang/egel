@@ -1,4 +1,15 @@
-#include "evaluate.hpp"
+#include "builtin_eval.hpp"
+
+#include "runtime.hpp"
+#include "utils.hpp" 
+#include "position.hpp" 
+#include "reader.hpp" 
+#include "lexical.hpp" 
+#include "syntactical.hpp" 
+#include "machine.hpp" 
+#include "modules.hpp" 
+#include "eval.hpp" 
+#include <functional> 
 
 // System.eval text
 class Evaluate: public Unary {

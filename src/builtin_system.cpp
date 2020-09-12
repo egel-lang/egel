@@ -1,25 +1,18 @@
-#include "system.hpp"
+#include "builtin_system.hpp"
 
-#include "../utils.hpp"
-#include "../bytecode.hpp"
+#include "utils.hpp"
+#include "bytecode.hpp"
 
 #include <stdlib.h>
 #include <ostream>
 #include <map>
-
 #include <stdlib.h>
 #include <math.h>
-
 #include <fmt/core.h> // std::format
 
-/**
- * For portable overflow detection use the portable snippets header file.
- * I hope I can once discard this but that depends on C++ compiler implementors.
- *
- * Note: portable snippets generates a warning on Fedora, GCC 7.2.1., so I don't
- * use it for now.
- */
-// #include "portable-snippets/safe-math/safe-math.h"
+// globals
+int    application_argc = 0;
+char** application_argv = nullptr;
 
 /**
  * Egel's system routines.
@@ -752,9 +745,6 @@ public:
         }
     }
 };
-
-int     application_argc = 0;
-char**  application_argv = nullptr;
 
 // System:arg n
 // Return the n-th application argument, otherwise return 'nop'

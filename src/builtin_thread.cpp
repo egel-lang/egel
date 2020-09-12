@@ -1,4 +1,5 @@
-#include "../../src/runtime.hpp"
+#include "builtin_thread.hpp"
+#include "runtime.hpp"
 
 #include <stdlib.h>
 #include <math.h>

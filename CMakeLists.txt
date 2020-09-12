@@ -56,8 +56,8 @@ project(Egel DESCRIPTION "The Egel interpreter"
         VERSION ${PVERSION} LANGUAGES CXX)
 
 # for the moment, glob sources and headers
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS  "${CMAKE_SOURCE_DIR}/src/*.hpp")
-file(GLOB_RECURSE SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.hpp")
+file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # check for ICU, Threads, fmt
 # ICU components: data, i18n, io, le, lx, test, tu and uc.
