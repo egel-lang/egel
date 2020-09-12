@@ -867,7 +867,7 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectData(vm, "IO", "channel").clone());
+//    oo.push_back(VMObjectData(vm, "IO", "channel").clone());
 
     oo.push_back(ChannelValue(vm).clone());
     oo.push_back(Stdin(vm).clone());

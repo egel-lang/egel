@@ -105,9 +105,19 @@ set_target_properties(io PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # fs.ego
 file(GLOB FS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/fs/*.cpp")
-add_library(fs MODULE ${IO_LIST})
+add_library(fs MODULE ${FS_LIST})
 target_link_libraries(fs ICU::uc ICU::i18n)
+
+# compiler dependent stuff
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_libraries(fs stdc++fs)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+endif()
+
 set_target_properties(fs PROPERTIES PREFIX "" SUFFIX ".ego")
+
 
 # regex.ego
 file(GLOB REGEX_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/regex/*.cpp")

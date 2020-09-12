@@ -404,7 +404,7 @@ public:
 
         dlerror();
 
-        _handle = dlopen(unicode_to_char(get_path()), RTLD_LAZY); // XXX: leaks?
+        _handle = dlopen(unicode_to_char(get_path()), RTLD_LAZY | RTLD_GLOBAL); // XXX: leaks?
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
