@@ -76,8 +76,7 @@ protected:
 };
 
 
-// System.par f g
-// Concurrently evaluate 'f nop' and 'g nop'
+//## System:par f g - concurrently evaluate 'f nop' and 'g nop'
 class Par: public Dyadic {
 public:
     DYADIC_PREAMBLE(Par, "System", "par");

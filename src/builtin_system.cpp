@@ -20,6 +20,7 @@ char** application_argv = nullptr;
  * Basic operators, conversions, and some other.
  **/
 
+//## System:k x y - k combinator
 class K: public Binary {
 public:
     BINARY_PREAMBLE(K, "System", "k");
@@ -29,6 +30,7 @@ public:
     }
 };
 
+//## System:id x - identity combinator
 class Id: public Unary {
 public:
     UNARY_PREAMBLE(Id, "System", "id");
@@ -38,6 +40,7 @@ public:
     }
 };
 
+//## System:!- x - monadic minus
 class MonMin: public Monadic {
 public:
     MONADIC_PREAMBLE(MonMin, "System", "!-");
@@ -60,6 +63,7 @@ public:
     }
 };
 
+//## System:+ x y - addition
 class Add: public Dyadic {
 public:
     DYADIC_PREAMBLE(Add, "System", "+");
@@ -91,6 +95,7 @@ public:
     }
 };
 
+//## System:+ x y - substraction
 class Min: public Dyadic {
 public:
     DYADIC_PREAMBLE(Min, "System", "-");
@@ -117,6 +122,7 @@ public:
     }
 };
 
+//## System:* x y - multiplication
 class Mul: public Dyadic {
 public:
     DYADIC_PREAMBLE(Mul, "System", "*");
@@ -143,6 +149,7 @@ public:
     }
 };
 
+//## System:/ x y - division
 class Div: public Dyadic {
 public:
     DYADIC_PREAMBLE(Div, "System", "/");
@@ -170,6 +177,7 @@ public:
     }
 };
 
+//## System:% x y - modulo
 class Mod: public Dyadic {
 public:
     DYADIC_PREAMBLE(Mod, "System", "%");
@@ -189,6 +197,7 @@ public:
     }
 };
 
+//## System:& x y - bitwise and
 class BinAnd: public Dyadic {
 public:
     DYADIC_PREAMBLE(BinAnd, "System", "&");
@@ -205,6 +214,7 @@ public:
     }
 };
 
+//## System:$ x y - bitwise or
 class BinOr: public Dyadic {
 public:
     DYADIC_PREAMBLE(BinOr, "System", "$");
@@ -221,6 +231,7 @@ public:
     }
 };
 
+//## System:^ x y - bitwise xor
 class BinXOr: public Dyadic {
 public:
     DYADIC_PREAMBLE(BinXOr, "System", "^");
@@ -237,6 +248,7 @@ public:
     }
 };
 
+//## System:!~ x - bitwise complement
 class BinComplement: public Monadic {
 public:
     MONADIC_PREAMBLE(BinComplement, "System", "!~");
@@ -251,6 +263,7 @@ public:
     }
 };
 
+//## System:<< x y - bitwise left shift
 class BinLeftShift: public Dyadic {
 public:
     DYADIC_PREAMBLE(BinLeftShift, "System", "<<");
@@ -267,6 +280,7 @@ public:
     }
 };
 
+//## System:>> x y - bitwise right shift
 class BinRightShift: public Dyadic {
 public:
     DYADIC_PREAMBLE(BinRightShift, "System", ">>");
@@ -283,6 +297,7 @@ public:
     }
 };
 
+//## System:< x y - builtin less
 class Less: public Dyadic {
 public:
     DYADIC_PREAMBLE(Less, "System", "<");
@@ -303,6 +318,7 @@ public:
     }
 };
 
+//## System:<= x y - builtin less or equals
 class LessEq: public Dyadic {
 public:
     DYADIC_PREAMBLE(LessEq, "System", "<=");
@@ -323,6 +339,7 @@ public:
     }
 };
 
+//## System:== x y - builtin equality
 class Eq: public Dyadic {
 public:
     DYADIC_PREAMBLE(Eq, "System", "==");
@@ -343,6 +360,7 @@ public:
     }
 };
 
+//## System:/= x y - builtin inequality
 class NegEq: public Dyadic {
 public:
     DYADIC_PREAMBLE(NegEq, "System", "/=");
@@ -363,8 +381,7 @@ public:
     }
 };
 
-// System:get F O
-// Retrieve an object field
+//## System:get field obj - retrieve an object field
 class GetField: public Binary {
 public:
     BINARY_PREAMBLE(GetField, "System", "get");
@@ -397,8 +414,7 @@ public:
     }
 };
 
-// System:set F X O
-// set an object field
+//## System:set field val obj - set an object field
 class SetField: public Triadic {
 public:
     TRIADIC_PREAMBLE(SetField, "System", "set");
@@ -433,8 +449,7 @@ public:
     }
 };
 
-// System:extend O0 O1
-// Extend object O0 with every field from O1
+//## System:extend obj0 obj1 - extend object obj0 with every field from obj1
 class ExtendField: public Dyadic {
 public:
     DYADIC_PREAMBLE(ExtendField, "System", "extend");
@@ -480,8 +495,7 @@ public:
 };
 
 
-// System:toint x
-// Try and convert an object to int.
+//## System:toint x - Try and convert an object to int
 class Toint: public Monadic {
 public:
     MONADIC_PREAMBLE(Toint, "System", "toint");
@@ -505,8 +519,7 @@ public:
     }
 };
 
-// System:tofloat x
-// Try and convert an object to float.
+//## System:tofloat x - try and convert an object to float
 class Tofloat: public Monadic {
 public:
     MONADIC_PREAMBLE(Tofloat, "System", "tofloat");
@@ -527,8 +540,7 @@ public:
     }
 };
 
-// System:totext x
-// Try and convert an object to text.
+//## System:totext x - try and convert an object to text
 class Totext: public Monadic {
 public:
     MONADIC_PREAMBLE(Totext, "System", "totext");
@@ -554,8 +566,7 @@ public:
     }
 };
 
-// System:reference
-// an opaque reference object
+//## System:reference - an opaque reference object
 class Reference : public Opaque {
 public:
     OPAQUE_PREAMBLE(Reference, "System", "reference");
@@ -589,8 +600,7 @@ protected:
     VMObjectPtr _ref = nullptr;
 };
 
-// System:ref x
-// create a reference object from x
+//## System:ref x - create a reference object from x
 class Ref: public Monadic {
 public:
     MONADIC_PREAMBLE(Ref, "System", "ref");
@@ -602,8 +612,7 @@ public:
     }
 };
 
-// System:getref ref
-// get the term from ref
+//## System:getref ref - get the stored value from ref
 class Getref: public Unary {
 public:
     UNARY_PREAMBLE(Getref, "System", "getref");
@@ -620,8 +629,7 @@ public:
     }
 };
 
-// System:setref ref x
-// set reference object ref to x
+//## System:setref ref x - set reference object ref to x
 class Setref: public Dyadic {
 public:
     DYADIC_PREAMBLE(Setref, "System", "setref");
@@ -639,8 +647,7 @@ public:
     }
 };
 
-// System:unpack s
-// create a list of UChar32 from a Unicode string
+//## System:unpack s - create a list of chars from a string
 class Unpack: public Monadic {
 public:
     MONADIC_PREAMBLE(Unpack, "System", "unpack");
@@ -672,8 +679,7 @@ public:
     }
 };
 
-// System:pack s
-// create a Unicode string from a list of UChar32
+//## System:pack s - create a string from a list of code points
 class Pack: public Monadic {
 public:
     MONADIC_PREAMBLE(Pack, "System", "pack");
@@ -705,8 +711,7 @@ public:
     }
 };
 
-// System:dis o
-// Dump the assembly of a combinator object
+//## System:dis o - disassemble a combinator object
 class Dis: public Monadic {
 public:
     MONADIC_PREAMBLE(Dis, "System", "dis");
@@ -722,8 +727,7 @@ public:
     }
 };
 
-// System:asm s0 s1
-// Assemble bytecode into a combinator
+//## System:asm s0 s1 - assemble bytecode into a combinator
 class Asm: public Unary {
 public:
     UNARY_PREAMBLE(Asm, "System", "asm");
@@ -746,8 +750,7 @@ public:
     }
 };
 
-// System:arg n
-// Return the n-th application argument, otherwise return 'nop'
+//## System:arg n - return the n-th application argument, otherwise return 'nop'
 class Arg: public Monadic {
 public:
     MONADIC_PREAMBLE(Arg, "System", "arg");
@@ -767,8 +770,7 @@ public:
     }
 };
 
-// System:getenv s
-// Return the value of environment variable s, otherwise return 'nop'
+//## System:getenv s - return the value of environment variable s, otherwise return 'nop'
 class Getenv: public Monadic {
 public:
     MONADIC_PREAMBLE(Getenv, "System", "getenv");
@@ -791,8 +793,7 @@ public:
     }
 };
 
-// System:&&
-// short-circuited and
+//## System:&& - short-circuited and
 class LazyAnd: public Binary {
 public:
     BINARY_PREAMBLE(LazyAnd, "System", "&&");
@@ -813,8 +814,7 @@ public:
     }
 };
 
-// System:||
-// short-circuited or
+//## System:|| - short-circuited or
 class LazyOr: public Binary {
 public:
     BINARY_PREAMBLE(LazyOr, "System", "||");
@@ -835,10 +835,7 @@ public:
     }
 };
 
-// System:print o0 .. on
-// Print objects on standard output; don't escape characters or 
-// strings when they are the argument. May recursively print large
-// objects leading to stack explosion.
+//## System:print o0 .. on - print terms, don't escape characters or texts 
 class Print: public Variadic {
 public:
     VARIADIC_PREAMBLE(Print, "System", "print");
@@ -865,8 +862,7 @@ public:
     }
 };
 
-// System:format fmt x y ...
-// Create a string from formatted string fmt and objects x,y,...
+//## System:format fmt x ...  - create a string from formatted string fmt and objects x,..
 class Format: public Variadic {
 public:
     VARIADIC_PREAMBLE(Format, "System", "format");

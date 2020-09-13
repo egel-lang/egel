@@ -1,0 +1,104 @@
+#!/usr/bin/env egel
+# Documentation generator for the Egel language.
+#
+# Usage: egeldoc.eg <fn>
+#
+# Grabs documentation strings from file <fn> and
+# outputs a markdown file. 
+
+import "prelude.eg"
+import "regex.ego"
+import "fs.ego"
+import "io.ego"
+
+using System
+
+def fix = [ F -> F [ X -> (fix F) X ] ]
+
+## usage
+def print_usage =
+    print  "usage: egeldoc <fn>\n"
+
+def test_file =
+    [ FN::text -> FS:exists FN
+    | _        -> false ]
+
+def read_file =
+    [ FN ->
+        let CHAN = IO:open FN in
+        let LINES = fix [ F CHAN -> let LINE = IO:read_line CHAN in
+                      if IO:eof CHAN then {} else cons LINE (F CHAN) ] CHAN 
+        in IO:close CHAN; LINES ]
+
+## .cpp/.hpp handling
+val cc_regex_comment = Regex:compile "//(.*)"
+
+def cc_strip_lines =
+    [ {} -> {} | (cons L LL) -> 
+        [ {L} -> cons L (cc_strip_lines LL) | E -> cc_strip_lines LL ]
+            (Regex:group cc_regex_comment L) ]
+
+def cc_strip =
+    [ FN LL ->
+        if (String:endsWith ".cpp" FN) || (String:endsWith ".hpp" FN)
+        then cc_strip_lines LL else LL ]
+
+## strip comments
+val eg_regex_comment = Regex:compile "##(.*)"
+
+def eg_strip_comments =
+    [ {} -> {} | (cons L LL) -> 
+        [ {L} -> cons L (eg_strip_comments LL) | E -> eg_strip_comments LL ]
+            (Regex:group eg_regex_comment L) ]
+
+data file, space, comb
+
+## spaces
+val eg_regex_space = 
+    Regex:compile " *namespace (.*) - (.*)"
+
+def eg_spacify =
+    [ {} -> {} | (cons L LL) ->
+        [ {S, T} -> cons (space S T) (eg_spacify LL) 
+        | E -> cons L (eg_spacify LL) ]
+            (Regex:group eg_regex_space L) ]
+
+## combinators
+val eg_regex_combinator = 
+    Regex:compile " *(.*):(.*) (.*)- (.*)"
+
+def eg_combify =
+    [ {} -> {} 
+    | (cons (L::text) LL) ->
+        [ {N, C, AA, T} -> cons (comb N C AA T) (eg_combify LL) 
+        | E -> cons L (eg_combify LL) ]
+            (Regex:group eg_regex_combinator L)
+    | (cons L LL) -> cons L (eg_combify LL) ]
+
+# rendering
+def render_lines =
+    [ {} -> nop
+    | (cons (space S C) LL) ->
+        print (format "## namespace {} - {}\n" S C); render_lines LL
+    | (cons (comb N C AA T) LL) ->
+        print (format "`{}:{}` {} - {}\n" N C AA T); render_lines LL
+    | (cons L LL) -> render_lines LL ]
+
+
+def render =
+    [ FN LL ->
+        print (format "# File: {}\n"  FN);
+        render_lines LL ]
+
+## main
+def main =
+    let FN = arg 2 in
+    if not (test_file FN)  then
+        print_usage
+    else
+        let LINES = read_file FN in
+        let LINES = cc_strip FN LINES in
+        let LINES = eg_strip_comments LINES in
+        let LINES = eg_spacify LINES in
+        let LINES = eg_combify LINES in
+            render FN LINES
