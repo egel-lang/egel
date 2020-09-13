@@ -306,12 +306,13 @@ public:
             if (r == nullptr) INVALID;
 
             UnicodeStrings ss;
-            UErrorCode err;
+            UErrorCode  error_code = U_ZERO_ERROR;
 
-            if (r->matches(err)) {
+            if (r->matches(error_code)) {
                 int32_t gc = r->groupCount();
                 for (int n = 1; n <= gc; n++) {
-                    auto s = r->group(n, err);
+                    error_code = U_ZERO_ERROR;
+                    auto s = r->group(n, error_code);
                     ss.push_back(s);
                 }
             }
