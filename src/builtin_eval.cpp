@@ -11,7 +11,9 @@
 #include "eval.hpp" 
 #include <functional> 
 
-// System.eval text
+//## namespace System - the `eval` combinator
+
+//## System:eval text - evaluatate the expression in `text`
 class Evaluate: public Unary {
 public:
     UNARY_PREAMBLE(Evaluate, "System", "eval");
@@ -53,7 +55,8 @@ public:
     }
 };
 
-// System.blip expr
+// deprecated
+// System:blip expr - 
 class Blip: public Monadic {
 public:
     MONADIC_PREAMBLE(Blip, "System", "blip");
@@ -68,7 +71,7 @@ std::vector<VMObjectPtr> builtin_eval(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Evaluate(vm).clone());
-    oo.push_back(Blip(vm).clone());
+//    oo.push_back(Blip(vm).clone());
 
     return oo;
 }

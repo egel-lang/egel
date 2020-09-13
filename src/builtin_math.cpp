@@ -11,8 +11,9 @@
  * Almost all of these combinators work only on floats. 
  **/
 
-// Math.isFinite x
-// Test on whether this float is finite.
+//## namespace Math - builtin mathematical operators
+
+//## Math:isFinite x - test whether this float is finite
 class IsFinite: public Monadic {
 public:
     MONADIC_PREAMBLE(IsFinite, "Math", "isFinite");
@@ -27,8 +28,7 @@ public:
     }
 };
 
-// Math.isInfinite x
-// Test on whether this float is infinite.
+//## Math:isInfinite x - test whether this float is infinite
 class IsInfinite: public Monadic {
 public:
     MONADIC_PREAMBLE(IsInfinite, "Math", "isInfinite");
@@ -43,8 +43,7 @@ public:
     }
 };
 
-// Math.isNan x
-// Test on whether this float is Not a Number.
+//## Math:isNan x - test whether this float is Not a Number
 class IsNan: public Monadic {
 public:
     MONADIC_PREAMBLE(IsNan, "Math", "isNan");
@@ -59,8 +58,7 @@ public:
     }
 };
 
-// Math.isNormal x
-// Test on whether this float is normal.
+//## Math:isNormal x - test whether this float is normal
 class IsNormal: public Monadic {
 public:
     MONADIC_PREAMBLE(IsNormal, "Math", "isNormal");
@@ -75,8 +73,7 @@ public:
     }
 };
 
-// Math.e
-// Euler's constant and the base of natural logarithms, approximately 2.718.
+//## Math:e - Euler's constant and the base of natural logarithms, approximately 2.718
 class Euler: public Medadic {
 public:
     MEDADIC_PREAMBLE(Euler, "Math", "e");
@@ -86,8 +83,7 @@ public:
     }
 };
 
-// Math.ln2
-// Natural logarithm of 2, approximately 0.693.
+//## Math:ln2 - Natural logarithm of 2, approximately 0.693
 class Ln2: public Medadic {
 public:
     MEDADIC_PREAMBLE(Ln2, "Math", "ln2");
@@ -97,8 +93,7 @@ public:
     }
 };
 
-// Math.ln10
-// Natural logarithm of 10, approximately 2.303.
+//## Math:ln10 - natural logarithm of 10, approximately 2.303
 class Ln10: public Medadic {
 public:
     MEDADIC_PREAMBLE(Ln10, "Math", "ln10");
@@ -108,8 +103,7 @@ public:
     }
 };
 
-// Math.log2e
-// Base 2 logarithm of E, approximately 1.443.
+//## Math:log2e - base 2 logarithm of E, approximately 1.443
 class Log2e: public Medadic {
 public:
     MEDADIC_PREAMBLE(Log2e, "Math", "log2e");
@@ -119,8 +113,7 @@ public:
     }
 };
 
-// Math.log10e
-// Base 10 logarithm of E, approximately 0.434.
+//## Math:log10e - base 10 logarithm of E, approximately 0.434
 class Log10e: public Medadic {
 public:
     MEDADIC_PREAMBLE(Log10e, "Math", "log10e");
@@ -130,8 +123,7 @@ public:
     }
 };
 
-// Math.pi
-// Ratio of the circumference of a circle to its diameter, approximately 3.14159.
+//## Math:pi - ratio of the circumference of a circle to its diameter, approximately 3.14159
 class Pi: public Medadic {
 public:
     MEDADIC_PREAMBLE(Pi, "Math", "pi");
@@ -141,8 +133,7 @@ public:
     }
 };
 
-// Math.sqrt1_2
-// Square root of 1/2; equivalently, 1 over the square root of 2, approximately 0.707.
+//## Math:sqrt1_2 - square root of 1/2; equivalently, 1 over the square root of 2, approximately 0.707
 class Sqrt1_2: public Medadic {
 public:
     MEDADIC_PREAMBLE(Sqrt1_2, "Math", "sqrt1_2");
@@ -152,8 +143,7 @@ public:
     }
 };
 
-// Math.sqrt2
-// Square root of 2, approximately 1.414.
+//## Math:sqrt2 - square root of 2, approximately 1.414
 class Sqrt2: public Medadic {
 public:
     MEDADIC_PREAMBLE(Sqrt2, "Math", "sqrt2");
@@ -163,8 +153,7 @@ public:
     }
 };
 
-// Math.abs x
-// Returns the absolute value of a number.
+//## Math:abs x - returns the absolute value of a number
 class Abs: public Monadic {
 public:
     MONADIC_PREAMBLE(Abs, "Math", "abs");
@@ -179,8 +168,7 @@ public:
     }
 };
 
-// Math.acos x
-// Returns the arccosine of a number.
+//## Math:acos x - returns the arccosine of a number
 class Acos: public Monadic {
 public:
     MONADIC_PREAMBLE(Acos, "Math", "acos");
@@ -196,8 +184,7 @@ public:
 };
 
 
-// Math.acosh x
-// Returns the hyperbolic arccosine of a number.
+//## Math:acosh x - returns the hyperbolic arccosine of a number
 class Acosh: public Monadic {
 public:
     MONADIC_PREAMBLE(Acosh, "Math", "acosh");
@@ -213,8 +200,7 @@ public:
 };
 
 
-// Math.asin x
-// Returns the arcsine of a number.
+//## Math:asin x - returns the arcsine of a number
 class Asin: public Monadic {
 public:
     MONADIC_PREAMBLE(Asin, "Math", "asin");
@@ -230,8 +216,7 @@ public:
 };
 
 
-// Math.asinh x
-// Returns the hyperbolic arcsine of a number.
+//## Math:asinh x - returns the hyperbolic arcsine of a number
 class Asinh: public Monadic {
 public:
     MONADIC_PREAMBLE(Asinh, "Math", "asinh");
@@ -247,8 +232,7 @@ public:
 };
 
 
-// Math.atan x
-// Returns the arctangent of a number.
+//## Math:atan x - returns the arctangent of a number
 class Atan: public Monadic {
 public:
     MONADIC_PREAMBLE(Atan, "Math", "atan");
@@ -263,8 +247,7 @@ public:
     }
 };
 
-// Math.atanh x
-// Returns the hyperbolic arctangent of a number.
+//## Math:atanh x - returns the hyperbolic arctangent of a number
 class Atanh: public Monadic {
 public:
     MONADIC_PREAMBLE(Atanh, "Math", "atanh");
@@ -280,8 +263,7 @@ public:
 };
 
 
-// Math.atan2 y x
-// Returns the arctangent of the quotient of its arguments.
+//## Math:atan2 y x - returns the arctangent of the quotient of its arguments
 class Atan2: public Dyadic {
 public:
     DYADIC_PREAMBLE(Atan2, "Math", "atan2");
@@ -297,8 +279,7 @@ public:
     }
 };
 
-// Math.cbrt x
-// Returns the cube root of a number.
+//## Math:cbrt x - returns the cube root of a number
 class Cbrt: public Monadic {
 public:
     MONADIC_PREAMBLE(Cbrt, "Math", "cbrt");
@@ -314,8 +295,7 @@ public:
 };
 
 
-// Math.ceil x
-// Returns the smallest integer greater than or equal to a number.
+//## Math:ceil x - returns the smallest integer greater than or equal to a number
 class Ceil: public Monadic {
 public:
     MONADIC_PREAMBLE(Ceil, "Math", "ceil");
@@ -330,8 +310,7 @@ public:
     }
 };
 
-// Math.cos x
-// Returns the cosine of a number.
+//## Math:cos x - returns the cosine of a number
 class Cos: public Monadic {
 public:
     MONADIC_PREAMBLE(Cos, "Math", "cos");
@@ -347,8 +326,7 @@ public:
 };
 
 
-// Math.cosh x
-// Returns the hyperbolic cosine of a number.
+//## Math:cosh x - returns the hyperbolic cosine of a number
 class Cosh: public Monadic {
 public:
     MONADIC_PREAMBLE(Cosh, "Math", "cosh");
@@ -363,8 +341,7 @@ public:
     }
 };
 
-// Math.exp x
-// Returns Ex, where x is the argument, and E is Euler's constant (2.718…), the base of the natural logarithm.
+//## Math:exp x - Returns Ex, where x is the argument, and E is Euler's constant (2.718…), the base of the natural logarithm
 class Exp: public Monadic {
 public:
     MONADIC_PREAMBLE(Exp, "Math", "exp");
@@ -380,8 +357,7 @@ public:
 };
 
 
-// Math.expm1 x
-// Returns subtracting 1 from exp x.
+//## Math:expm1 x - returns subtracting 1 from exp x
 class Expm1: public Monadic {
 public:
     MONADIC_PREAMBLE(Expm1, "Math", "expm1");
@@ -396,8 +372,7 @@ public:
     }
 };
 
-// Math.floor x
-// Returns the largest integer less than or equal to a number.
+//## Math:floor x - returns the largest integer less than or equal to a number
 class Floor: public Monadic {
 public:
     MONADIC_PREAMBLE(Floor, "Math", "floor");
@@ -414,8 +389,7 @@ public:
 
 
 /*
-// Math.fround x
-// Returns the nearest single precision float representation of a number.
+// Math:fround x - returns the nearest single precision float representation of a number
 class Fround: public Monadic {
 public:
     MONADIC_PREAMBLE(Fround, "Math", "fround");
@@ -432,8 +406,7 @@ public:
 */
 
 
-// Math.log x
-// Returns the natural logarithm (loge, also ln) of a number.
+//## Math:log x - returns the natural logarithm (loge, also ln) of a number
 class Log: public Monadic {
 public:
     MONADIC_PREAMBLE(Log, "Math", "log");
@@ -449,8 +422,7 @@ public:
 };
 
 
-// Math.log1p x
-// Returns the natural logarithm (loge, also ln) of 1 + x for a number x.
+//## Math:log1p x - returns the natural logarithm (loge, also ln) of 1 + x for a number x
 class Log1p: public Monadic {
 public:
     MONADIC_PREAMBLE(Log1p, "Math", "log1p");
@@ -466,8 +438,7 @@ public:
 };
 
 
-// Math.log10 x
-// Returns the base 10 logarithm of a number.
+//## Math:log10 x - returns the base 10 logarithm of a number
 class Log10: public Monadic {
 public:
     MONADIC_PREAMBLE(Log10, "Math", "log10");
@@ -483,8 +454,7 @@ public:
 };
 
 
-// Math.log2 x
-// Returns the base 2 logarithm of a number.
+//## Math:log2 x - returns the base 2 logarithm of a number
 class Log2: public Monadic {
 public:
     MONADIC_PREAMBLE(Log2, "Math", "log2");
@@ -499,8 +469,7 @@ public:
     }
 };
 
-// Math.max x y
-// Returns the largest of two numbers.
+//## Math:max x y - returns the largest of two numbers
 class Max: public Dyadic {
 public:
     DYADIC_PREAMBLE(Max, "Math", "max");
@@ -517,8 +486,7 @@ public:
 };
 
 
-// Math.min x y
-// Returns the smallest of two numbers.
+//## Math:min x y - returns the smallest of two numbers
 class MMin: public Dyadic {
 public:
     DYADIC_PREAMBLE(MMin, "Math", "min");
@@ -534,8 +502,7 @@ public:
     }
 };
 
-// Math.pow x y
-// Returns base to the exponent power, that is, baseexponent.
+//## Math:pow x y - returns base to the exponent power, that is, baseexponent
 class Pow: public Dyadic {
 public:
     DYADIC_PREAMBLE(Pow, "Math", "pow");
@@ -551,8 +518,7 @@ public:
     }
 };
 
-// Math.random
-// Returns a pseudo-random number between 0 and 1.
+//## Math:random - returns a pseudo-random number between 0 and 1
 class Random: public Medadic {
 public:
     MEDADIC_PREAMBLE(Random, "Math", "random");
@@ -562,8 +528,7 @@ public:
     }
 };
 
-// Math.round x
-// Returns the value of a number rounded to the nearest integer.
+//## Math:round x - returns the value of a number rounded to the nearest integer
 class Round: public Monadic {
 public:
     MONADIC_PREAMBLE(Round, "Math", "round");
@@ -578,8 +543,7 @@ public:
     }
 };
 
-// Math.sign x 
-// Returns the sign of the x, indicating whether x is positive, negative or zero.
+//## Math:sign x - returns the sign of the x, indicating whether x is positive, negative or zero
 class Sign: public Monadic {
 public:
     MONADIC_PREAMBLE(Sign, "Math", "sign");
@@ -596,8 +560,7 @@ public:
 };
 
 
-// Math.sin x
-// Returns the sine of a number.
+//## Math:sin x - returns the sine of a number
 class Sin: public Monadic {
 public:
     MONADIC_PREAMBLE(Sin, "Math", "sin");
@@ -613,8 +576,7 @@ public:
 };
 
 
-// Math.sinh x
-// Returns the hyperbolic sine of a number.
+//## Math:sinh x - returns the hyperbolic sine of a number
 class Sinh: public Monadic {
 public:
     MONADIC_PREAMBLE(Sinh, "Math", "sinh");
@@ -630,8 +592,7 @@ public:
 };
 
 
-// Math.sqrt x
-// Returns the positive square root of a number.
+//## Math:sqrt x - returns the positive square root of a number
 class Sqrt: public Monadic {
 public:
     MONADIC_PREAMBLE(Sqrt, "Math", "sqrt");
@@ -646,8 +607,7 @@ public:
     }
 };
 
-// Math.tan x
-// Returns the tangent of a number.
+//## Math:tan x - returns the tangent of a number
 class Tan: public Monadic {
 public:
     MONADIC_PREAMBLE(Tan, "Math", "tan");
@@ -662,8 +622,7 @@ public:
     }
 };
 
-// Math.tanh x
-// Returns the hyperbolic tangent of a number.
+//## Math:tanh x - returns the hyperbolic tangent of a number
 class Tanh: public Monadic {
 public:
     MONADIC_PREAMBLE(Tanh, "Math", "tanh");
@@ -678,8 +637,7 @@ public:
     }
 };
 
-// Math.trunc x
-// Returns the integral part of the number x, removing any fractional digits.
+//## Math:trunc x - returns the integral part of the number x, removing any fractional digits
 class Trunc: public Monadic {
 public:
     MONADIC_PREAMBLE(Trunc, "Math", "trunc");
