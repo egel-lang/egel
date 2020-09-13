@@ -11,6 +11,9 @@
  * Egel's process implementation.
  **/
 
+//## namespace System - process support
+
+//## System:process - opaque process object
 class Process : public Opaque {
 public:
     OPAQUE_PREAMBLE(Process, "System", "process");
@@ -158,8 +161,7 @@ void run_process(const VMObjectPtr& o) {
     process->run();
 }
 
-// System.proc f 
-// Create a process object from f
+//## System:proc f - create a process object from f
 class Proc: public Monadic {
 public:
     MONADIC_PREAMBLE(Proc, "System", "proc");
@@ -177,8 +179,7 @@ public:
     }
 };
 
-// System.send msg proc
-// Send proc a message
+//## System:send msg proc - send proc a message msg
 class Send: public Dyadic {
 public:
     DYADIC_PREAMBLE(Send, "System", "send");
@@ -196,8 +197,7 @@ public:
     }
 };
 
-// System.recv proc
-// Receive a message from proc
+//## System:recv proc - receive a message from process proc
 class Recv: public Monadic {
 public:
     MONADIC_PREAMBLE(Recv, "System", "recv");
@@ -218,8 +218,7 @@ public:
     }
 };
 
-// System.halt proc
-// Halt process proc
+//## System:halt proc - halt process proc
 class Halt: public Monadic {
 public:
     MONADIC_PREAMBLE(Halt, "System", "halt");
