@@ -331,8 +331,7 @@ protected:
  * according to spec.
  **/
 
-// IO.channel
-// Values which are input/output channels
+//## IO:channel - opaque values which are input/output channels
 class ChannelValue: public Opaque {
 public:
     OPAQUE_PREAMBLE(ChannelValue, "IO", "channel");
@@ -370,8 +369,7 @@ protected:
 #define CHANNEL_VALUE(o) \
     ((std::static_pointer_cast<ChannelValue>(o))->value())
 
-// IO.cin
-// Standard input.
+//## IO:cin - standard input channel
 class Stdin: public Medadic {
 public:
     MEDADIC_PREAMBLE(Stdin, "IO", "stdin");
@@ -384,8 +382,7 @@ public:
     }
 };
 
-// IO.stdout
-// Standard output.
+//## IO:stdout - standard output channel
 class Stdout: public Medadic {
 public:
     MEDADIC_PREAMBLE(Stdout, "IO", "stdout");
@@ -398,8 +395,7 @@ public:
     }
 };
 
-// IO.stderr
-// Standard error.
+//## IO:stderr - standard error channel
 class Stderr: public Medadic {
 public:
     MEDADIC_PREAMBLE(Stderr, "IO", "stderr");
@@ -413,43 +409,9 @@ public:
 };
 
 
-// IO.print o0 .. on
-// Print objects on standard output; don't escape characters or 
-// strings when they are the argument. May recursively print large
-// objects leading to stack explosion.
-class Print: public Variadic {
-public:
-    VARIADIC_PREAMBLE(Print, "IO", "print");
-
-    VMObjectPtr apply(const VMObjectPtrs& args) const override {
-
-        icu::UnicodeString s;
-        for (auto& arg:args) {
-            if (arg->tag() == VM_OBJECT_INTEGER) {
-                s += arg->to_text();
-            } else if (arg->tag() == VM_OBJECT_FLOAT) {
-                s += arg->to_text();
-            } else if (arg->tag() == VM_OBJECT_CHAR) {
-                s += VM_OBJECT_CHAR_VALUE(arg);
-            } else if (arg->tag() == VM_OBJECT_TEXT) {
-                s += VM_OBJECT_TEXT_VALUE(arg);
-            } else {
-                s += arg->to_text();
-            }
-        }
-        std::cout << s;
-
-        return create_nop();
-    }
-};
-
 /* Input functions on standard input */
 
-// IO.getline
-// Read characters from standard input
-// until a newline character is encountered. Return the string of all
-// characters read, without the newline character at the end.
-
+//## IO:getline - read a line from standard input
 class Getline: public Medadic {
 public:
     MEDADIC_PREAMBLE(Getline, "IO", "getline");
@@ -464,7 +426,7 @@ public:
 
 
 /*
-// IO.getint
+//## IO:getint
 // Read one line from standard input and convert it to an integer. 
 
 class Getint: public Medadic {
@@ -478,7 +440,7 @@ public:
     }
 };
 
-// IO.getfloat
+//## IO:getfloat
 // Read one line from standard input and convert it to a 
 // floating-point number. The result is unspecified if the line read 
 // is not a valid representation of a floating-point number.
@@ -497,12 +459,7 @@ public:
 
 /* File channel creation and destruction */
 
-// IO.open s
-// Open the named file, and return a new channel on
-// that file, positionned at the beginning of the file. The file is
-// truncated to zero length if it already exists. It is created if it
-// does not already exists. 
-
+//## IO:open fn - create a channel from filename 
 class Open: public Monadic {
 public:
     MONADIC_PREAMBLE(Open, "IO", "open");
@@ -520,10 +477,7 @@ public:
     }
 };
 
-// IO.close channel
-// Close the given channel. Anything can happen if any of the
-// functions above is called on a closed channel.
-
+//## IO:close c - close a channel
 class Close: public Monadic {
 public:
     MONADIC_PREAMBLE(Close, "IO", "close");
@@ -542,9 +496,7 @@ public:
     }
 };
 
-// IO.read channel
-// Read a string from a channel.
-
+//## IO:read c - read a string from a channel
 class Read: public Monadic {
 public:
     MONADIC_PREAMBLE(Read, "IO", "read");
@@ -563,9 +515,7 @@ public:
     }
 };
 
-// IO.read_line channel
-// Read a string from a channel.
-
+//## IO:read_line channel - read a line from a channel
 class ReadLine: public Monadic {
 public:
     MONADIC_PREAMBLE(ReadLine, "IO", "read_line");
@@ -584,9 +534,7 @@ public:
     }
 };
 
-// IO.write chan o
-// Write the string s to channel chan.
-
+//## IO:write c s - write a string s to a channel
 class Write: public Dyadic {
 public:
     DYADIC_PREAMBLE(Write, "IO", "write");
@@ -610,6 +558,7 @@ public:
     }
 };
 
+//## IO:write_line c s - write a string s to a channel
 class WriteLine: public Dyadic {
 public:
     DYADIC_PREAMBLE(WriteLine, "IO", "write_line");
@@ -633,11 +582,7 @@ public:
     }
 };
 
-// IO.flush channel
-// Flush the buffer associated with the given output channel, 
-// performing all pending writes on that channel. Interactive programs
-// must be careful about flushing std_out and std_err at the right time.
-
+//## IO:flush c - flush a channel
 class Flush: public Monadic {
 public:
     MONADIC_PREAMBLE(Flush, "IO", "flush");
@@ -656,9 +601,7 @@ public:
     }
 };
 
-// IO.eof channel
-// True if there is no more input, false otherwise.
-
+//## IO:eof c - tests if there is no more input
 class Eof: public Monadic {
 public:
     MONADIC_PREAMBLE(Eof, "IO", "eof");
@@ -676,11 +619,8 @@ public:
     }
 };
 
-// IO.exit n
-// Flush all pending writes on stdout and stderr, and terminate the 
-// process and return the status code to the operating system.
+//## IO:exit n - flush all channels and terminate process with exit code n
 // (0 to indicate no errors, a small positive integer for failure.)
-
 class Exit: public Monadic {
 public:
     MONADIC_PREAMBLE(Exit, "IO", "exit");
@@ -701,6 +641,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 // Highly unstable and experimental client/server code.
 
+//## IO:serverobject - an opaque objects which serves as a server
 class ServerObject: public Opaque {
 public:
     OPAQUE_PREAMBLE(ServerObject, "IO", "serverobject");
@@ -776,7 +717,7 @@ protected:
 #define SERVER_OBJECT_CAST(o) \
     (std::static_pointer_cast<ServerObject>(o))
 
-// IO.accept serverobject
+//## IO:accept serverobject - accept connections
 class Accept: public Monadic {
 public:
     MONADIC_PREAMBLE(Accept, "IO", "accept");
@@ -795,7 +736,7 @@ public:
     }
 };
 
-// IO.server port in
+//## IO:server port in - create a serverobject 
 class Server: public Dyadic {
 public:
     DYADIC_PREAMBLE(Server, "IO", "server");
@@ -815,7 +756,7 @@ public:
     }
 };
 
-// IO.client host port
+//## IO:client host port - create a client channel
 class Client: public Dyadic {
 public:
     DYADIC_PREAMBLE(Client, "IO", "client");
