@@ -68,7 +68,7 @@ VMObjectPtr nop(VM* vm) {
     return vm->get_data_string("System", "nop");
 }
 
-// FS.empty
+//## FS:empty p - checks whether the path is empty
 class Empty: public Monadic {
 public:
     MONADIC_PREAMBLE(Empty, FS_STRING, "empty");
@@ -89,7 +89,7 @@ public:
     }
 };
 
-// FS.has_root_path
+//## FS:has_root_path p - checks whether the path has a root path
 class HasRootPath: public Monadic {
 public:
     MONADIC_PREAMBLE(HasRootPath, FS_STRING, "has_root_path");
@@ -110,7 +110,7 @@ public:
     }
 };
 
-// FS.has_root_name
+//## FS:has_root_name p - checks whether path has a root name
 class HasRootName: public Monadic {
 public:
     MONADIC_PREAMBLE(HasRootName, FS_STRING, "has_root_name");
@@ -131,7 +131,7 @@ public:
     }
 };
 
-// FS.has_root_directory
+//## FS:has_root_directory p - checks whether the path has a root directory
 class HasRootDirectory: public Monadic {
 public:
     MONADIC_PREAMBLE(HasRootDirectory, FS_STRING, "has_root_directory");
@@ -152,7 +152,7 @@ public:
     }
 };
 
-// FS.has_relative_path
+//## FS:has_relative_path p - checks whether the path has a relative path
 class HasRelativePath: public Monadic {
 public:
     MONADIC_PREAMBLE(HasRelativePath, FS_STRING, "has_relative_path");
@@ -173,7 +173,7 @@ public:
     }
 };
 
-// FS.has_parent_path
+//## FS:has_parent_path p - checks whether the path has a parent path
 class HasParentPath: public Monadic {
 public:
     MONADIC_PREAMBLE(HasParentPath, FS_STRING, "has_parent_path");
@@ -194,7 +194,7 @@ public:
     }
 };
 
-// FS.has_filename
+//## FS:has_filename p - checks whether the path has a filename
 class HasFilename: public Monadic {
 public:
     MONADIC_PREAMBLE(HasFilename, FS_STRING, "has_filename");
@@ -215,7 +215,7 @@ public:
     }
 };
 
-// FS.has_stem
+//## FS:has_stem p - checks whether the path has a stem
 class HasStem: public Monadic {
 public:
     MONADIC_PREAMBLE(HasStem, FS_STRING, "has_stem");
@@ -236,7 +236,7 @@ public:
     }
 };
 
-// FS.has_extension
+//## FS:has_extension p - checks whether the path has an extension
 class HasExtension: public Monadic {
 public:
     MONADIC_PREAMBLE(HasExtension, FS_STRING, "has_extension");
@@ -258,7 +258,7 @@ public:
 };
 
 
-// FS.is_absolute
+//## FS:is_absolute p - checks whether the path is absolute
 class IsAbsolute: public Monadic {
 public:
     MONADIC_PREAMBLE(IsAbsolute, FS_STRING, "is_absolute");
@@ -280,7 +280,7 @@ public:
 };
 
 
-// FS.is_relative
+//## FS:is_relative p - checks whether the path is relative
 class IsRelative: public Monadic {
 public:
     MONADIC_PREAMBLE(IsRelative, FS_STRING, "is_relative");
@@ -301,7 +301,7 @@ public:
     }
 };
 
-// FS.root_name - returns the root-name of the path, if present
+//## FS:root_name p - returns the root-name of the path, if present
 class RootName: public Monadic {
 public:
     MONADIC_PREAMBLE(RootName, FS_STRING, "root_name");
@@ -322,7 +322,7 @@ public:
     }
 };
 
-// FS.root_directory - returns the root directory of the path, if present
+//## FS:root_directory p - returns the root directory of the path, if present
 class RootDirectory: public Monadic {
 public:
     MONADIC_PREAMBLE(RootDirectory, FS_STRING, "root_directory");
@@ -343,7 +343,7 @@ public:
     }
 };
 
-// FS.root_path - returns the root path of the path, if present
+//## FS:root_path p - returns the root path of the path, if present
 class RootPath: public Monadic {
 public:
     MONADIC_PREAMBLE(RootPath, FS_STRING, "root_path");
@@ -364,7 +364,7 @@ public:
     }
 };
 
-// FS.relative_path - returns path relative to the root path
+//## FS:relative_path p - returns path relative to the root path
 class RelativePath: public Monadic {
 public:
     MONADIC_PREAMBLE(RelativePath, FS_STRING, "relative_path");
@@ -385,7 +385,7 @@ public:
     }
 };
 
-// FS.parent_path - returns the path of the parent path
+//## FS:parent_path p - returns the path of the parent path
 class ParentPath: public Monadic {
 public:
     MONADIC_PREAMBLE(ParentPath, FS_STRING, "parent_path");
@@ -406,7 +406,7 @@ public:
     }
 };
 
-// FS.filename - returns the filename path component
+//## FS:filename p - returns the filename path component
 class Filename: public Monadic {
 public:
     MONADIC_PREAMBLE(Filename, FS_STRING, "filename");
@@ -427,7 +427,7 @@ public:
     }
 };
 
-// FS.stem - returns the stem path component
+//## FS:stem p - returns the stem path component
 class Stem: public Monadic {
 public:
     MONADIC_PREAMBLE(Stem, FS_STRING, "stem");
@@ -448,7 +448,7 @@ public:
     }
 };
 
-// FS.extension - returns the file extension path component
+//## FS:extension p - returns the file extension path component
 class Extension: public Monadic {
 public:
     MONADIC_PREAMBLE(Extension, FS_STRING, "extension");
@@ -469,7 +469,7 @@ public:
     }
 };
 
-// FS.absolute composes an absolute path
+//## FS:absolute p - composes an absolute path
 class Absolute: public Monadic {
 public:
     MONADIC_PREAMBLE(Absolute, FS_STRING, "absolute");
@@ -491,7 +491,7 @@ public:
 };
 
 /* Not in GCC yet
-// FS.canonical  - composes a canonical path
+//# FS:canonical  - composes a canonical path
 class Canonical: public Monadic {
 public:
     MONADIC_PREAMBLE(Canonical, FS_STRING, "canonical");
@@ -514,7 +514,7 @@ public:
 */
 
 /* Not in GCC yet
-// FS.weakly_canonical  - composes a weakly canonical path
+//# FS:weakly_canonical  - composes a weakly canonical path
 class WeaklyCanonical: public Monadic {
 public:
     MONADIC_PREAMBLE(WeaklyCanonical, FS_STRING, "weakly_canonical");
@@ -537,7 +537,7 @@ public:
 */
 
 /* Not in GCC yet
-// FS.relative - composes a relative path
+//# FS:relative - composes a relative path
 class Relative: public Dyadic {
 public:
     DYADIC_PREAMBLE(Relative, FS_STRING, "relative");
@@ -562,7 +562,7 @@ public:
 */
 
 /* Not in GCC yet
-// FS.proximate - composes a relative path
+//# FS:proximate - composes a relative path
 class Proximate: public Dyadic {
 public:
     DYADIC_PREAMBLE(Proximate, FS_STRING, "proximate");
@@ -586,7 +586,7 @@ public:
 };
 */
 
-// FS.copy - copies files or directories
+//## FS:copy src dst - copies files or directories
 class Copy: public Dyadic {
 public:
     DYADIC_PREAMBLE(Copy, FS_STRING, "copy");
@@ -609,7 +609,7 @@ public:
     }
 };
 
-// FS.copy_file - copies file contents
+//## FS:copy_file src dst - copies file contents
 class CopyFile: public Dyadic {
 public:
     DYADIC_PREAMBLE(CopyFile, FS_STRING, "copy_file");
@@ -633,7 +633,7 @@ public:
 };
 
 
-// FS.copy_symlink - copies a symbolic link
+//## FS:copy_symlink src trg - copies a symbolic link
 class CopySymlink: public Dyadic {
 public:
     DYADIC_PREAMBLE(CopySymlink, FS_STRING, "copy_symlink");
@@ -657,7 +657,7 @@ public:
 };
 
 
-// FS.create_directory - creates new directory
+//## FS:create_directory p - creates new directory
 class CreateDirectory: public Monadic {
 public:
     MONADIC_PREAMBLE(CreateDirectory, FS_STRING, "create_directory");
@@ -679,7 +679,7 @@ public:
     }
 };
 
-// FS.create_directories - creates new directory
+//## FS:create_directories p - creates new directories
 class CreateDirectories: public Monadic {
 public:
     MONADIC_PREAMBLE(CreateDirectories, FS_STRING, "create_directories");
@@ -702,7 +702,7 @@ public:
 };
 
 
-// FS.create_hard_link - creates a hard link
+//## FS:create_hard_link p0 p1 - creates a hard link
 class CreateHardLink: public Dyadic {
 public:
     DYADIC_PREAMBLE(CreateHardLink, FS_STRING, "create_hard_link");
@@ -725,7 +725,7 @@ public:
     }
 };
 
-// FS.create_symlink - creates a symbolic link
+//## FS:create_symlink p0 p1 - creates a symbolic link
 class CreateSymlink: public Dyadic {
 public:
     DYADIC_PREAMBLE(CreateSymlink, FS_STRING, "create_symlink");
@@ -748,7 +748,7 @@ public:
     }
 };
 
-// FS.create_directory_symlink - creates a symbolic link
+//## FS:create_directory_symlink p0 p1 - creates a symbolic link
 class CreateDirectorySymlink: public Dyadic {
 public:
     DYADIC_PREAMBLE(CreateDirectorySymlink, FS_STRING, "create_directory_symlink");
@@ -772,7 +772,7 @@ public:
 };
 
 
-// FS.current_path - returns the current working directory
+//## FS:current_path - returns the current working directory
 class CurrentPath: public Medadic {
 public:
     MEDADIC_PREAMBLE(CurrentPath, FS_STRING, "current_path");
@@ -788,7 +788,7 @@ public:
     }
 };
 
-// FS.set_current_path - sets the current working directory
+//## FS:set_current_path p - sets the current working directory
 class SetCurrentPath: public Monadic {
 public:
     MONADIC_PREAMBLE(SetCurrentPath, FS_STRING, "set_current_path");
@@ -810,7 +810,7 @@ public:
     }
 };
 
-// FS.exists - checks whether path refers to existing file system object
+//## FS:exists p - checks whether path refers to existing file system object
 class Exists: public Monadic {
 public:
     MONADIC_PREAMBLE(Exists, FS_STRING, "exists");
@@ -832,7 +832,7 @@ public:
     }
 };
 
-// FS.equivalent - checks whether two paths refer to the same file system object
+//## FS:equivalent p0 p1 - checks whether two paths refer to the same file system object
 class Equivalent: public Dyadic {
 public:
     DYADIC_PREAMBLE(Equivalent, FS_STRING, "equivalent");
@@ -856,7 +856,7 @@ public:
 };
 
 
-// FS.file_size - returns the size of a file
+//## FS:file_size p - returns the size of a file
 class FileSize: public Monadic {
 public:
     MONADIC_PREAMBLE(FileSize, FS_STRING, "file_size");
@@ -879,7 +879,7 @@ public:
 };
 
 
-// FS.hard_link_count - returns the number of hard links referring to the specific file
+//## FS:hard_link_count p - returns the number of hard links referring to the specific file
 class HardLinkCount: public Monadic {
 public:
     MONADIC_PREAMBLE(HardLinkCount, FS_STRING, "hard_link_count");
@@ -901,9 +901,9 @@ public:
     }
 };
 
-// FS.last_write_time - gets or sets the time of the last data modification XXX
+//# FS:last_write_time - gets or sets the time of the last data modification XXX
 
-// FS.permissions - get file access permissions
+//## FS:permissions p - get file access permissions
 class Permissions: public Monadic {
 public:
     MONADIC_PREAMBLE(Permissions, FS_STRING, "permissions");
@@ -925,7 +925,7 @@ public:
     }
 };
 
-// FS.replace_permissions - set file access permissions
+//## FS:replace_permissions p n - set file access permissions
 class ReplacePermissions: public Dyadic {
 public:
     DYADIC_PREAMBLE(ReplacePermissions, FS_STRING, "replace_permissions");
@@ -950,7 +950,7 @@ public:
 };
 
 /* Not in GCC yet
-// FS.add_permissions - add file access permissions
+//# FS:add_permissions - add file access permissions
 class AddPermissions: public Dyadic {
 public:
     DYADIC_PREAMBLE(AddPermissions, FS_STRING, "add_permissions");
@@ -973,7 +973,7 @@ public:
     }
 };
 
-// FS.remove_permissions - remove file access permissions
+//# FS:remove_permissions - remove file access permissions
 class RemovePermissions: public Dyadic {
 public:
     DYADIC_PREAMBLE(RemovePermissions, FS_STRING, "remove_permissions");
@@ -997,7 +997,7 @@ public:
 };
 */
 
-// FS.read_symlink - obtains the target of a symbolic link
+//## FS:read_symlink p - obtains the target of a symbolic link
 class ReadSymlink: public Monadic {
 public:
     MONADIC_PREAMBLE(ReadSymlink, FS_STRING, "read_symlink");
@@ -1019,7 +1019,7 @@ public:
     }
 };
 
-// FS.remove - removes a file or empty directory
+//## FS:remove p - removes a file or empty directory
 class Remove: public Monadic {
 public:
     MONADIC_PREAMBLE(Remove, FS_STRING, "remove");
@@ -1041,7 +1041,7 @@ public:
     }
 };
 
-// FS.remove_all - removes a file or directory and all its contents, recursively
+//## FS:remove_all p - removes a file or directory and all its contents, recursively
 class RemoveAll: public Monadic {
 public:
     MONADIC_PREAMBLE(RemoveAll, FS_STRING, "remove_all");
@@ -1064,7 +1064,7 @@ public:
 };
 
 
-// FS.rename - moves or renames a file or directory
+//## FS:rename p0 p1 - moves or renames a file or directory
 class Rename: public Dyadic {
 public:
     DYADIC_PREAMBLE(Rename, FS_STRING, "rename");
@@ -1087,7 +1087,7 @@ public:
     }
 };
 
-// FS.resize_file - changes the size of a regular file by truncation or zero-fill
+//## FS:resize_file p n - changes the size of a regular file by truncation or zero-fill
 class ResizeFile: public Dyadic {
 public:
     DYADIC_PREAMBLE(ResizeFile, FS_STRING, "resize_file");
@@ -1110,7 +1110,7 @@ public:
     }
 };
 
-// FS.space_free - determines free space on the file system
+//## FS:space_free p - determines free space on the file system
 class SpaceFree: public Monadic {
 public:
     MONADIC_PREAMBLE(SpaceFree, FS_STRING, "space_free");
@@ -1133,7 +1133,7 @@ public:
 };
 
 
-// FS.space_capacity - determines capacity space on the file system
+//## FS:space_capacity p - determines capacity space on the file system
 class SpaceCapacity: public Monadic {
 public:
     MONADIC_PREAMBLE(SpaceCapacity, FS_STRING, "space_capacity");
@@ -1155,7 +1155,7 @@ public:
     }
 };
 
-// FS.space_available - determines available space on the file system
+//## FS:space_available p - determines available space on the file system
 class SpaceAvailable: public Monadic {
 public:
     MONADIC_PREAMBLE(SpaceAvailable, FS_STRING, "space_available");
@@ -1177,10 +1177,10 @@ public:
     }
 };
 
-// FS.status - determines file attributes XXX
-// FS.symlink_status - determines file attributes, checking the symlink target XXX
+//# FS:status - determines file attributes XXX
+//# FS:symlink_status - determines file attributes, checking the symlink target XXX
 
-// FS.temp_directory_path - returns a directory suitable for temporary files
+//## FS:temp_directory_path - returns a directory suitable for temporary files
 class TempDirectoryPath: public Medadic {
 public:
     MEDADIC_PREAMBLE(TempDirectoryPath, FS_STRING, "temp_directory_path");
@@ -1196,7 +1196,7 @@ public:
     }
 };
 
-// FS.is_block_file - checks whether the given path refers to block device
+//## FS:is_block_file p - checks whether the given path refers to block device
 class IsBlockFile: public Monadic {
 public:
     MONADIC_PREAMBLE(IsBlockFile, FS_STRING, "is_block_file");
@@ -1218,7 +1218,7 @@ public:
     }
 };
 
-// FS.is_character_file - checks whether the given path refers to a character device
+//## FS:is_character_file p - checks whether the given path refers to a character device
 class IsCharacterFile: public Monadic {
 public:
     MONADIC_PREAMBLE(IsCharacterFile, FS_STRING, "is_character_file");
@@ -1241,7 +1241,7 @@ public:
 };
 
 
-// FS.is_directory - checks whether the given path refers to a directory
+//## FS:is_directory p - checks whether the given path refers to a directory
 class IsDirectory: public Monadic {
 public:
     MONADIC_PREAMBLE(IsDirectory, FS_STRING, "is_directory");
@@ -1264,7 +1264,7 @@ public:
 };
 
 
-// FS.is_empty - checks whether the given path refers to an empty file or directory
+//## FS:is_empty p - checks whether the given path refers to an empty file or directory
 class IsEmpty: public Monadic {
 public:
     MONADIC_PREAMBLE(IsEmpty, FS_STRING, "is_empty");
@@ -1287,7 +1287,7 @@ public:
 };
 
 
-// FS.is_fifo - checks whether the given path refers to a named pipe
+//## FS:is_fifo p - checks whether the given path refers to a named pipe
 class IsFifo: public Monadic {
 public:
     MONADIC_PREAMBLE(IsFifo, FS_STRING, "is_fifo");
@@ -1310,7 +1310,7 @@ public:
 };
 
 
-// FS.is_other - checks whether the argument refers to an other file
+//## FS:is_other p - checks whether the argument refers to an other file
 class IsOther: public Monadic {
 public:
     MONADIC_PREAMBLE(IsOther, FS_STRING, "is_other");
@@ -1333,7 +1333,7 @@ public:
 };
 
 
-// FS.is_regular_file - checks whether the argument refers to a regular file
+//## FS:is_regular_file p - checks whether the argument refers to a regular file
 class IsRegularFile: public Monadic {
 public:
     MONADIC_PREAMBLE(IsRegularFile, FS_STRING, "is_regular_file");
@@ -1355,7 +1355,7 @@ public:
     }
 };
 
-// FS.is_socket - checks whether the argument refers to a named IPC socket
+//## FS:is_socket p - checks whether the argument refers to a named IPC socket
 class IsSocket: public Monadic {
 public:
     MONADIC_PREAMBLE(IsSocket, FS_STRING, "is_socket");
@@ -1378,7 +1378,7 @@ public:
 };
 
 
-// FS.is_symlink - checks whether the argument refers to a symbolic link
+//## FS:is_symlink p - checks whether the argument refers to a symbolic link
 class IsSymlink: public Monadic {
 public:
     MONADIC_PREAMBLE(IsSymlink, FS_STRING, "is_symlink");
@@ -1401,7 +1401,7 @@ public:
 };
 
 
-// FS.directory - lists the content of a directory
+//## FS:directory p - lists the content of a directory
 class Directory: public Monadic {
 public:
     MONADIC_PREAMBLE(Directory, FS_STRING, "directory");
@@ -1427,7 +1427,7 @@ public:
 };
 
 
-// FS.status_known - checks whether file status is known XXX
+//## FS:status_known - checks whether file status is known XXX
 
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
