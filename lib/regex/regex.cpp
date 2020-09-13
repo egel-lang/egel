@@ -32,7 +32,7 @@ VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
 }
 
 
-// regex class holds a pattern
+//## Regex:pattern - an opaque object holding a pattern
 class Regex;
 typedef std::shared_ptr<Regex>  RegexPtr;
 
@@ -114,7 +114,7 @@ private:
     icu::RegexPattern* _pattern;
 };
 
-// Regex.compile s0
+//## Regex:compile s0 - compile text to a pattern
 class Compile: public Monadic {
 public:
     MONADIC_PREAMBLE(Compile, REGEX_STRING, "compile");
@@ -137,8 +137,7 @@ public:
     }
 };
 
-// Regex.match pat s0
-// True if pat matches the entire string
+//## Regex:match pat s0 - true if the pattern matches the entire string
 class Match: public Dyadic {
 public:
     DYADIC_PREAMBLE(Match, REGEX_STRING, "match");
@@ -162,7 +161,7 @@ public:
     }
 };
 
-// Regex.split pat s0
+//## Regex:split pat s0 - split a text according to a pattern
 class Split: public Dyadic {
 public:
     DYADIC_PREAMBLE(Split, REGEX_STRING, "split");
@@ -202,7 +201,7 @@ public:
     }
 };
 
-// Regex.matches pat s0
+//## Regex:matches pat s0 - return a list of pattern matches in a string
 class Matches: public Dyadic {
 public:
     DYADIC_PREAMBLE(Matches, REGEX_STRING, "matches");
@@ -234,7 +233,7 @@ public:
     }
 };
 
-// Regex.replace pat s0 s1
+//## Regex:replace pat s0 s1 - replace the first occurence of pattern in a string with a string
 class Replace: public Triadic {
 public:
     TRIADIC_PREAMBLE(Replace, REGEX_STRING, "replace");
@@ -263,7 +262,7 @@ public:
     }
 };
 
-// Regex.replaceAll pat s0 s1
+//## Regex:replaceAll pat s0 s1 - replace the all occurences of pattern in a string with a string
 class ReplaceAll: public Triadic {
 public:
     TRIADIC_PREAMBLE(ReplaceAll, REGEX_STRING, "replaceAll");
@@ -292,7 +291,7 @@ public:
     }
 };
 
-// Regex.group pat s0
+//## Regex:group pat s0 - return the matched groups in a string
 class Group: public Dyadic {
 public:
     DYADIC_PREAMBLE(Group, REGEX_STRING, "group");
