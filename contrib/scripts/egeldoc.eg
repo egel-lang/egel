@@ -62,7 +62,7 @@ def eg_spacify =
 
 ## combinators
 val eg_regex_combinator = 
-    Regex:compile " *(.*):(.*) (.*)- (.*)"
+    Regex:compile " *(.*):([^ ]*) (.*)- (.*)"
 
 def eg_combify =
     [ {} -> {} 
