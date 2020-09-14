@@ -25,7 +25,7 @@ def prompt =
         let _ = print TURN ". " in
         let _ = map [ X -> print X " " ] XX in
         let _ = print " : " in
-            toint getline ]
+            toint get_line ]
 
 def game =
     [ GOAL SHUFFLE TURN ->

@@ -862,6 +862,19 @@ public:
     }
 };
 
+//## System:get_line - read a line from standard input
+class Getline: public Medadic {
+public:
+    MEDADIC_PREAMBLE(Getline, "System", "get_line");
+
+    VMObjectPtr apply() const override {
+        std::string line;
+        std::getline(std::cin, line);
+        icu::UnicodeString str(line.c_str());
+        return create_text(str);
+    }
+};
+
 //## System:format fmt x ...  - create a string from formatted string fmt and objects x,..
 class Format: public Variadic {
 public:
@@ -987,8 +1000,9 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(Arg(vm).clone());
     oo.push_back(Getenv(vm).clone());
 
-    // the builtin print, override if sandboxed
+    // the builtin print & getline, override if sandboxed
     oo.push_back(Print(vm).clone());
+    oo.push_back(Getline(vm).clone());
     oo.push_back(Format(vm).clone());
 
     // references

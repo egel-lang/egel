@@ -411,20 +411,6 @@ public:
 
 /* Input functions on standard input */
 
-//## OS:getline - read a line from standard input
-class Getline: public Medadic {
-public:
-    MEDADIC_PREAMBLE(Getline, "OS", "getline");
-
-    VMObjectPtr apply() const override {
-        std::string line;
-        std::getline(std::cin, line);
-        icu::UnicodeString str(line.c_str());
-        return create_text(str);
-    }
-};
-
-
 /*
 //## OS:getint
 // Read one line from standard input and convert it to an integer. 
@@ -515,7 +501,7 @@ public:
     }
 };
 
-//## OS:read_line channel - read a line from a channel
+//## OS:read_line c - read a line from a channel
 class ReadLine: public Monadic {
 public:
     MONADIC_PREAMBLE(ReadLine, "OS", "read_line");
