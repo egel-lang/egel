@@ -14,5 +14,5 @@ using System
 val myglobal = ref 0
 
 def main = 
-    setref myglobal [ X -> X ];
-    getref myglobal "Hello"
+    set_ref myglobal [ X -> X ];
+    get_ref myglobal "Hello"

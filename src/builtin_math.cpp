@@ -13,10 +13,10 @@
 
 //## namespace Math - builtin mathematical operators
 
-//## Math:isFinite x - test whether this float is finite
+//## Math:is_finite x - test whether this float is finite
 class IsFinite: public Monadic {
 public:
-    MONADIC_PREAMBLE(IsFinite, "Math", "isFinite");
+    MONADIC_PREAMBLE(IsFinite, "Math", "is_finite");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_FLOAT) {
@@ -28,10 +28,10 @@ public:
     }
 };
 
-//## Math:isInfinite x - test whether this float is infinite
+//## Math:is_infinite x - test whether this float is infinite
 class IsInfinite: public Monadic {
 public:
-    MONADIC_PREAMBLE(IsInfinite, "Math", "isInfinite");
+    MONADIC_PREAMBLE(IsInfinite, "Math", "is_infinite");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_FLOAT) {
@@ -43,10 +43,10 @@ public:
     }
 };
 
-//## Math:isNan x - test whether this float is Not a Number
+//## Math:is_nan x - test whether this float is Not a Number
 class IsNan: public Monadic {
 public:
-    MONADIC_PREAMBLE(IsNan, "Math", "isNan");
+    MONADIC_PREAMBLE(IsNan, "Math", "is_nan");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_FLOAT) {
@@ -58,10 +58,10 @@ public:
     }
 };
 
-//## Math:isNormal x - test whether this float is normal
+//## Math:is_normal x - test whether this float is normal
 class IsNormal: public Monadic {
 public:
-    MONADIC_PREAMBLE(IsNormal, "Math", "isNormal");
+    MONADIC_PREAMBLE(IsNormal, "Math", "is_normal");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_FLOAT) {

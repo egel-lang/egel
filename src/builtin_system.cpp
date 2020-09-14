@@ -577,7 +577,7 @@ public:
     }
 
     Reference(const Reference& ref): Opaque(ref.machine(), ref.symbol()) {
-        _ref = ref.getref();
+        _ref = ref.get_ref();
     }
 
     VMObjectPtr clone() const override {
@@ -588,11 +588,11 @@ public:
         return -1; // XXX: fix this once
     }
 
-    VMObjectPtr getref() const {
+    VMObjectPtr get_ref() const {
         return _ref;
     }
 
-    void setref(const VMObjectPtr& r) {
+    void set_ref(const VMObjectPtr& r) {
         _ref = r;
     }
 
@@ -612,34 +612,34 @@ public:
     }
 };
 
-//## System:getref ref - get the stored value from ref
+//## System:get_ref ref - get the stored value from ref
 class Getref: public Unary {
 public:
-    UNARY_PREAMBLE(Getref, "System", "getref");
+    UNARY_PREAMBLE(Getref, "System", "get_ref");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         symbol_t sym = machine()->enter_symbol("System", "reference");
 
         if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == sym)) {
             auto r = std::static_pointer_cast<Reference>(arg0);
-            return r->getref();
+            return r->get_ref();
         } else {
             BADARGS;
         }
     }
 };
 
-//## System:setref ref x - set reference object ref to x
+//## System:set_ref ref x - set reference object ref to x
 class Setref: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Setref, "System", "setref");
+    DYADIC_PREAMBLE(Setref, "System", "set_ref");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         symbol_t sym = machine()->enter_symbol("System", "reference");
 
         if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == sym)) {
             auto r = std::static_pointer_cast<Reference>(arg0);
-            r->setref(arg1);
+            r->set_ref(arg1);
             return arg0;
         } else {
             BADARGS;
