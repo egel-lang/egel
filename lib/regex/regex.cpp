@@ -262,10 +262,10 @@ public:
     }
 };
 
-//## Regex:replaceAll pat s0 s1 - replace the all occurences of pattern in a string with a string
+//## Regex:replace_all pat s0 s1 - replace the all occurences of pattern in a string with a string
 class ReplaceAll: public Triadic {
 public:
-    TRIADIC_PREAMBLE(ReplaceAll, REGEX_STRING, "replaceAll");
+    TRIADIC_PREAMBLE(ReplaceAll, REGEX_STRING, "replace_all");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {

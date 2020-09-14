@@ -1,10 +1,7 @@
 #!/usr/bin/env egel
 # Documentation generator for the Egel language.
 #
-# Usage: egeldoc.eg <fn>
-#
-# Grabs documentation strings from file <fn> and
-# outputs a markdown file. 
+# A quick and dirty script to dump all builtin combinators.
 
 import "prelude.eg"
 import "regex.ego"
@@ -17,7 +14,7 @@ def fix = [ F -> F [ X -> (fix F) X ] ]
 
 ## usage
 def print_usage =
-    print  "usage: egeldoc <fn>\n"
+    print  "usage: egeldoc\n"
 
 def test_file =
     [ FN::text -> FS:exists FN
@@ -90,15 +87,34 @@ def render =
         print (format "# File: {}\n"  FN);
         render_lines LL ]
 
-## main
-def main =
-    let FN = arg 2 in
-    if not (test_file FN)  then
-        print_usage
-    else
+# process the files
+def files =
+    {
+        "src/builtin_eval.cpp",
+        "src/builtin_math.cpp",
+        "src/builtin_process.cpp",
+        "src/builtin_string.cpp",
+        "src/builtin_system.cpp",
+        "src/builtin_thread.cpp",
+        "lib/fs/fs.cpp",
+        "lib/io/io.cpp", 
+        "lib/random/random.cpp", 
+        "lib/regex/regex.cpp"
+    }
+
+def process =
+    [ FN ->
         let LINES = read_file FN in
         let LINES = cc_strip FN LINES in
         let LINES = eg_strip_comments LINES in
         let LINES = eg_spacify LINES in
         let LINES = eg_combify LINES in
-            render FN LINES
+            render FN LINES ]
+
+def process_all =
+    [ {} -> nop
+    | (cons FN FNN) -> process FN; process_all FNN ]
+
+## main
+def main =
+    process_all files
