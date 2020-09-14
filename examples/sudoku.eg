@@ -53,7 +53,7 @@ import "prelude.eg"
 import "io.ego"
 
 using System
-using IO
+using OS
 using String
 using List
 

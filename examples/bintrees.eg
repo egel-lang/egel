@@ -28,11 +28,9 @@
 #  sys	0m0.797s
 
 import "prelude.eg"
-import "io.ego"
 
 using System
 using List
-using IO
 
 data node, leaf
 

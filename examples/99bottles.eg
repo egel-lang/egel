@@ -6,7 +6,6 @@ import "prelude.eg"
 import "io.ego"
 
 using System
-using IO
 
 def print_rhyme =
     [ 0 ->

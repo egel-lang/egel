@@ -9,10 +9,8 @@
 # `halt p`      - halt process p
 
 import "prelude.eg"
-import "io.ego"
 
 using System
-using IO
 
 def sum = [ X Y -> let Z = X + Y in (Z, sum Z) ]
 

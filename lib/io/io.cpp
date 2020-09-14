@@ -331,10 +331,10 @@ protected:
  * according to spec.
  **/
 
-//## IO:channel - opaque values which are input/output channels
+//## OS:channel - opaque values which are input/output channels
 class ChannelValue: public Opaque {
 public:
-    OPAQUE_PREAMBLE(ChannelValue, "IO", "channel");
+    OPAQUE_PREAMBLE(ChannelValue, "OS", "channel");
 
     ChannelValue(const ChannelValue& chan): Opaque(chan.machine(), chan.symbol()) {
         _value = chan.value();
@@ -369,10 +369,10 @@ protected:
 #define CHANNEL_VALUE(o) \
     ((std::static_pointer_cast<ChannelValue>(o))->value())
 
-//## IO:cin - standard input channel
+//## OS:cin - standard input channel
 class Stdin: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Stdin, "IO", "stdin");
+    MEDADIC_PREAMBLE(Stdin, "OS", "stdin");
 
     VMObjectPtr apply() const override {
         auto cin = ChannelStreamIn::create();
@@ -382,10 +382,10 @@ public:
     }
 };
 
-//## IO:stdout - standard output channel
+//## OS:stdout - standard output channel
 class Stdout: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Stdout, "IO", "stdout");
+    MEDADIC_PREAMBLE(Stdout, "OS", "stdout");
 
     VMObjectPtr apply() const override {
         auto cout = ChannelStreamOut::create();
@@ -395,10 +395,10 @@ public:
     }
 };
 
-//## IO:stderr - standard error channel
+//## OS:stderr - standard error channel
 class Stderr: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Stderr, "IO", "stderr");
+    MEDADIC_PREAMBLE(Stderr, "OS", "stderr");
 
     VMObjectPtr apply() const override {
         auto cerr = ChannelStreamErr::create();
@@ -411,10 +411,10 @@ public:
 
 /* Input functions on standard input */
 
-//## IO:getline - read a line from standard input
+//## OS:getline - read a line from standard input
 class Getline: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Getline, "IO", "getline");
+    MEDADIC_PREAMBLE(Getline, "OS", "getline");
 
     VMObjectPtr apply() const override {
         std::string line;
@@ -426,12 +426,12 @@ public:
 
 
 /*
-//## IO:getint
+//## OS:getint
 // Read one line from standard input and convert it to an integer. 
 
 class Getint: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Getint, "IO", "getint");
+    MEDADIC_PREAMBLE(Getint, "OS", "getint");
 
     VMObjectPtr apply() const override {
         vm_int_t n;
@@ -440,14 +440,14 @@ public:
     }
 };
 
-//## IO:getfloat
+//## OS:getfloat
 // Read one line from standard input and convert it to a 
 // floating-point number. The result is unspecified if the line read 
 // is not a valid representation of a floating-point number.
 
 class Getfloat: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Getfloat, "IO", "getfloat");
+    MEDADIC_PREAMBLE(Getfloat, "OS", "getfloat");
 
     VMObjectPtr apply() const override {
         vm_float_t f;
@@ -459,10 +459,10 @@ public:
 
 /* File channel creation and destruction */
 
-//## IO:open fn - create a channel from filename 
+//## OS:open fn - create a channel from filename 
 class Open: public Monadic {
 public:
-    MONADIC_PREAMBLE(Open, "IO", "open");
+    MONADIC_PREAMBLE(Open, "OS", "open");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -477,14 +477,14 @@ public:
     }
 };
 
-//## IO:close c - close a channel
+//## OS:close c - close a channel
 class Close: public Monadic {
 public:
-    MONADIC_PREAMBLE(Close, "IO", "close");
+    MONADIC_PREAMBLE(Close, "OS", "close");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
@@ -496,14 +496,14 @@ public:
     }
 };
 
-//## IO:read c - read a string from a channel
+//## OS:read c - read a string from a channel
 class Read: public Monadic {
 public:
-    MONADIC_PREAMBLE(Read, "IO", "read");
+    MONADIC_PREAMBLE(Read, "OS", "read");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
@@ -515,14 +515,14 @@ public:
     }
 };
 
-//## IO:read_line channel - read a line from a channel
+//## OS:read_line channel - read a line from a channel
 class ReadLine: public Monadic {
 public:
-    MONADIC_PREAMBLE(ReadLine, "IO", "read_line");
+    MONADIC_PREAMBLE(ReadLine, "OS", "read_line");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
@@ -534,14 +534,14 @@ public:
     }
 };
 
-//## IO:write c s - write a string s to a channel
+//## OS:write c s - write a string s to a channel
 class Write: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Write, "IO", "write");
+    DYADIC_PREAMBLE(Write, "OS", "write");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
@@ -558,14 +558,14 @@ public:
     }
 };
 
-//## IO:write_line c s - write a string s to a channel
+//## OS:write_line c s - write a string s to a channel
 class WriteLine: public Dyadic {
 public:
-    DYADIC_PREAMBLE(WriteLine, "IO", "write_line");
+    DYADIC_PREAMBLE(WriteLine, "OS", "write_line");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
@@ -582,14 +582,14 @@ public:
     }
 };
 
-//## IO:flush c - flush a channel
+//## OS:flush c - flush a channel
 class Flush: public Monadic {
 public:
-    MONADIC_PREAMBLE(Flush, "IO", "flush");
+    MONADIC_PREAMBLE(Flush, "OS", "flush");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
@@ -601,14 +601,14 @@ public:
     }
 };
 
-//## IO:eof c - tests if there is no more input
+//## OS:eof c - tests if there is no more input
 class Eof: public Monadic {
 public:
-    MONADIC_PREAMBLE(Eof, "IO", "eof");
+    MONADIC_PREAMBLE(Eof, "OS", "eof");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "channel");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
@@ -619,11 +619,11 @@ public:
     }
 };
 
-//## IO:exit n - flush all channels and terminate process with exit code n
+//## OS:exit n - flush all channels and terminate process with exit code n
 // (0 to indicate no errors, a small positive integer for failure.)
 class Exit: public Monadic {
 public:
-    MONADIC_PREAMBLE(Exit, "IO", "exit");
+    MONADIC_PREAMBLE(Exit, "OS", "exit");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -641,10 +641,10 @@ public:
 //////////////////////////////////////////////////////////////////////
 // Highly unstable and experimental client/server code.
 
-//## IO:serverobject - an opaque objects which serves as a server
+//## OS:serverobject - an opaque objects which serves as a server
 class ServerObject: public Opaque {
 public:
-    OPAQUE_PREAMBLE(ServerObject, "IO", "serverobject");
+    OPAQUE_PREAMBLE(ServerObject, "OS", "serverobject");
 
     ServerObject(const ServerObject& so): Opaque(so.machine(), so.symbol()) {
         memcpy( (char*) &_server_address,  (char *) &so._server_address, sizeof(_server_address));
@@ -717,14 +717,14 @@ protected:
 #define SERVER_OBJECT_CAST(o) \
     (std::static_pointer_cast<ServerObject>(o))
 
-//## IO:accept serverobject - accept connections
+//## OS:accept serverobject - accept connections
 class Accept: public Monadic {
 public:
-    MONADIC_PREAMBLE(Accept, "IO", "accept");
+    MONADIC_PREAMBLE(Accept, "OS", "accept");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("IO", "serverobject");
+        if (sym == 0) sym = machine()->enter_symbol("OS", "serverobject");
 
         if (SERVER_OBJECT_TEST(arg0, sym)) {
             auto so = SERVER_OBJECT_CAST(arg0);
@@ -736,10 +736,10 @@ public:
     }
 };
 
-//## IO:server port in - create a serverobject 
+//## OS:server port in - create a serverobject 
 class Server: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Server, "IO", "server");
+    DYADIC_PREAMBLE(Server, "OS", "server");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) ) {
@@ -756,10 +756,10 @@ public:
     }
 };
 
-//## IO:client host port - create a client channel
+//## OS:client host port - create a client channel
 class Client: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Client, "IO", "client");
+    DYADIC_PREAMBLE(Client, "OS", "client");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) ) {
@@ -808,7 +808,7 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-//    oo.push_back(VMObjectData(vm, "IO", "channel").clone());
+//    oo.push_back(VMObjectData(vm, "OS", "channel").clone());
 
     oo.push_back(ChannelValue(vm).clone());
     oo.push_back(Stdin(vm).clone());
@@ -822,7 +822,6 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(WriteLine(vm).clone());
     oo.push_back(Flush(vm).clone());
     oo.push_back(Eof(vm).clone());
-    oo.push_back(Print(vm).clone());
     oo.push_back(Exit(vm).clone());
 
 // hacked TCP protocol

@@ -1,10 +1,8 @@
 # A prime sieve using streams.
 
 import "prelude.eg"
-import "io.ego"
 
 using System
-using IO
 
 def fix = [ F -> F [ X -> (fix F) X ] ]
 
