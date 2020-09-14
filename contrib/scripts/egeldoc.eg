@@ -17,15 +17,15 @@ def print_usage =
     print  "usage: egeldoc\n"
 
 def test_file =
-    [ FN::text -> FS:exists FN
+    [ FN::text -> OS:exists FN
     | _        -> false ]
 
 def read_file =
     [ FN ->
-        let CHAN = IO:open FN in
-        let LINES = fix [ F CHAN -> let LINE = IO:read_line CHAN in
-                      if IO:eof CHAN then {} else cons LINE (F CHAN) ] CHAN 
-        in IO:close CHAN; LINES ]
+        let CHAN = OS:open FN in
+        let LINES = fix [ F CHAN -> let LINE = OS:read_line CHAN in
+                      if OS:eof CHAN then {} else cons LINE (F CHAN) ] CHAN 
+        in OS:close CHAN; LINES ]
 
 ## .cpp/.hpp handling
 val cc_regex_comment = Regex:compile "//(.*)"
@@ -37,7 +37,7 @@ def cc_strip_lines =
 
 def cc_strip =
     [ FN LL ->
-        if (String:endsWith ".cpp" FN) || (String:endsWith ".hpp" FN)
+        if (String:ends_with ".cpp" FN) || (String:ends_with ".hpp" FN)
         then cc_strip_lines LL else LL ]
 
 ## strip comments
