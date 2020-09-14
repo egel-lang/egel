@@ -4,11 +4,9 @@
 
 import "prelude.eg"
 import "random.ego"
-import "io.ego"
 
 using System
 using List
-using OS
 using Math
 
 def swap =
