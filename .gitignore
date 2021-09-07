@@ -42,3 +42,6 @@ tests/large.eg
 # Don't follow cmake build
 _build/*
 build/*
+
+# ignore macos fs
+.DS_Store
