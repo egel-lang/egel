@@ -12,6 +12,7 @@ Installation
 
 This interpreter is being developed on Linux/MacOS and uses libicu for 
 Unicode support and fmt for formatting. 
+
 You need to have the GNU or LLVM compiler chain, the development 
 files for libicu and fmt, and cmake installed. 
 Most Linux package managers will provide that for you.
@@ -45,12 +46,21 @@ named `egel` and all files in the `include` directory for simple tasks.
 You can set the environment variable `EGEL_INCLUDE` to point 
 at the latter path.
 
-A number of example scripts are provided in the examples directory.
-If you set up your system correctly, you can run any of them
-with the command `egel example.eg`.
+Usage
+-----
+
+The command `egel` will start the interpreter in interactive mode.
+You will be greeted with a prompt. Note that the interpreter comes
+in a 'clean state' mode, your first command will probably be
+`using System` to get direct access to Egel's builtin primitives,
+like addition, printing, etcetera.
 
 The interpreter doesn't provide command line editing, you might
 want to wrap it with the command `alias egel="rlwrap egel"`.
+
+A number of example scripts are provided in the examples directory.
+If you set up your system correctly, you can run any of them
+with the command `egel example.eg`.
 
 The interpreter allocates lots of short-lived objects. If you want
 a bit of extra speed, it might pay off to switch the allocator to
