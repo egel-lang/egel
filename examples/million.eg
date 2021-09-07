@@ -2,6 +2,8 @@
 #
 # Egel isn't very fast. This takes around 16 seconds on my
 # laptop. But it works.
+#
+# now 7 seconds on MacOS arm64
 
 import "prelude.eg"
 
