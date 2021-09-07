@@ -192,7 +192,7 @@ public:
             process->in_push(arg0);
             return machine()->get_data_string("System", "nop");
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -213,7 +213,7 @@ public:
             }
             return msg;
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -231,7 +231,7 @@ public:
             process->set_state(HALTED);
             return machine()->get_data_string("System", "nop");
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };

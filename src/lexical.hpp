@@ -152,7 +152,7 @@ public:
         _tokens = v._tokens;
     }
 
-    ~TokenVector() {
+    virtual ~TokenVector() { // keep the compiler happy
     }
 
     Token   look(uint_t n = 0) {

@@ -1,7 +1,7 @@
 #include <sstream>
 #include <string.h>
+#include <filesystem>
 #include "utils.hpp"
-#include <experimental/filesystem>
 
 #define STRING_MAX_SIZE 65536
 
@@ -222,7 +222,7 @@ bool unicode_endswith(const icu::UnicodeString& s, const icu::UnicodeString& suf
 
 // basic I/O routines
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 fs::path string_to_path(const icu::UnicodeString& s) {
     char* cc = unicode_to_char(s);

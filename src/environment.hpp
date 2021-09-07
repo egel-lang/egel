@@ -60,6 +60,9 @@ public:
         _embeds(nn._embeds) {
     }
 
+    virtual ~Namespace() { // keep the compiler happy
+    }
+
     NamespacePtr clone() {
         return NamespacePtr(new Namespace(*this));
     }
@@ -114,6 +117,9 @@ typedef std::vector<NamespacePtr> Uses;
 class Range: public Scope {
 public:
     Range(RangePtr r): _embeds(r) {
+    }
+
+    virtual ~Range() { // keep the compiler happy
     }
 
     void add_namespace(const NamespacePtr& n) {

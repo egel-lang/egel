@@ -66,6 +66,9 @@ public:
     Ast(ast_tag_t t, const Position& p) : _tag(t), _position(p) {
     }
 
+    virtual ~Ast() { // keep the compiler happy
+    }
+
     Position position() const {
         return _position;
     }

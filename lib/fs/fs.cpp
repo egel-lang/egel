@@ -1,9 +1,9 @@
 #include "../../src/runtime.hpp"
 
 #include <stdlib.h>
-#include <experimental/filesystem>
+#include <filesystem>
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 /**
  * Start of a simplistic Regex library lifting most of libicu.
  */
@@ -42,7 +42,7 @@ fs::path object_to_path(const VMObjectPtr& o) {
     auto buffer = new char[len+1];
     str.extract(0, 2048, buffer, len+1);
     auto p = fs::path(buffer);
-    delete buffer;
+    delete[] buffer;
     return p;
 }
 
@@ -84,7 +84,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -105,7 +105,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -126,7 +126,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -147,7 +147,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -168,7 +168,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -189,7 +189,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -210,7 +210,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -231,7 +231,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -252,7 +252,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -274,7 +274,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -296,7 +296,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -317,7 +317,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -338,7 +338,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -359,7 +359,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -380,7 +380,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -401,7 +401,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -422,7 +422,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -443,7 +443,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -464,7 +464,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -485,7 +485,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -507,7 +507,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -530,7 +530,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -555,7 +555,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -580,7 +580,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -604,7 +604,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -627,7 +627,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -651,7 +651,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -674,7 +674,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -696,7 +696,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -720,7 +720,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -743,7 +743,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -766,7 +766,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -805,7 +805,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -827,7 +827,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -850,7 +850,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -873,7 +873,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -896,7 +896,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -920,7 +920,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -944,7 +944,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -968,7 +968,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -991,7 +991,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1014,7 +1014,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1036,7 +1036,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1058,7 +1058,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1082,7 +1082,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1105,7 +1105,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1127,7 +1127,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1150,7 +1150,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1172,7 +1172,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1213,7 +1213,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1235,7 +1235,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1258,7 +1258,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1281,7 +1281,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1304,7 +1304,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1327,7 +1327,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1350,7 +1350,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1372,7 +1372,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1395,7 +1395,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -1421,7 +1421,7 @@ public:
                 throw error_to_object(e);
             } 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };

@@ -69,6 +69,9 @@ public:
     Channel(channel_tag_t t): _tag(t) {
     }
 
+    virtual ~Channel() { // keep some C++ compilers happy
+    }
+
     channel_tag_t tag() {
         return _tag;
     }
@@ -458,7 +461,7 @@ public:
             channel.set_value(stream);
             return channel.clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -477,7 +480,7 @@ public:
             chan->close();
             return create_nop();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -496,7 +499,7 @@ public:
             UnicodeString str = chan->read();
             return create_text(str);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -515,7 +518,7 @@ public:
             UnicodeString str = chan->read_line();
             return create_text(str);
         } else {
-            INVALID;
+            THROW_INVALID;
         }
     }
 };
@@ -536,10 +539,10 @@ public:
                 chan->write(s);
                 return create_nop();
             } else {
-                INVALID;
+                THROW_INVALID;
             }
         } else {
-            INVALID;
+            THROW_INVALID;
         }
     }
 };
@@ -560,10 +563,10 @@ public:
                 chan->write_line(s);
                 return create_nop();
             } else {
-                INVALID;
+                THROW_INVALID;
             }
         } else {
-            INVALID;
+            THROW_INVALID;
         }
     }
 };
@@ -582,7 +585,7 @@ public:
             chan->flush();
             return create_nop();
         } else {
-            INVALID;
+            THROW_INVALID;
         }
     }
 };
@@ -600,7 +603,7 @@ public:
             auto chan = CHANNEL_VALUE(arg0);
             return create_bool(chan->eof());
         } else {
-            INVALID;
+            THROW_INVALID;
         }
     }
 };
@@ -619,7 +622,7 @@ public:
             // play nice
             return create_nop();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -717,7 +720,7 @@ public:
             auto chan = so->accept();
             return chan;
         } else {
-            INVALID;
+            THROW_INVALID;
         }
     }
 };
@@ -737,7 +740,7 @@ public:
 
             return so.clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -781,7 +784,7 @@ public:
             return c.clone();
 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 

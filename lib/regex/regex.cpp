@@ -86,7 +86,7 @@ public:
         UErrorCode  error_code = U_ZERO_ERROR;
         auto m = _pattern->matcher(s, error_code);
         if (U_FAILURE(error_code)) {
-            INVALID; // XXX: do I leak here?
+            THROW_INVALID; // XXX: do I leak here?
         } else {
             return m;
         }
@@ -127,12 +127,12 @@ public:
             icu::UnicodeString pat = s0;
             icu::RegexPattern* p = icu::RegexPattern::compile(pat, parse_error, error_code);
             if (U_FAILURE(error_code)) {
-                INVALID;
+                THROW_INVALID;
             } else {
                 return Regex(this->machine(), p).clone();
             }
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -148,7 +148,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) INVALID;
+            if (r == nullptr) THROW_INVALID;
 
             UErrorCode  error_code = U_ZERO_ERROR;
             auto b = r->matches(error_code);
@@ -156,7 +156,7 @@ public:
 
             return create_bool(b);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -172,7 +172,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) INVALID;
+            if (r == nullptr) THROW_INVALID;
 
             UnicodeStrings ss;
             int32_t pos = 0;
@@ -196,7 +196,7 @@ public:
 
             return strings_to_list(machine(), ss);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -212,7 +212,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) INVALID;
+            if (r == nullptr) THROW_INVALID;
 
             UnicodeStrings ss;
             while (r->find()) {
@@ -228,7 +228,7 @@ public:
 
             return strings_to_list(machine(), ss);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -245,19 +245,19 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) INVALID;
+            if (r == nullptr) THROW_INVALID;
 
             UErrorCode  error_code = U_ZERO_ERROR;
             auto s2 = r->replaceFirst(s1, error_code);
             delete r;
 
             if (U_FAILURE(error_code)) {
-                INVALID;
+                THROW_INVALID;
             } else {
                 return VMObjectText(s2).clone();
             }
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -274,19 +274,19 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) INVALID;
+            if (r == nullptr) THROW_INVALID;
 
             UErrorCode  error_code = U_ZERO_ERROR;
             auto s2 = r->replaceAll(s1, error_code);
             delete r;
 
             if (U_FAILURE(error_code)) {
-                INVALID;
+                THROW_INVALID;
             } else {
                 return VMObjectText(s2).clone();
             }
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -302,7 +302,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) INVALID;
+            if (r == nullptr) THROW_INVALID;
 
             UnicodeStrings ss;
             UErrorCode  error_code = U_ZERO_ERROR;
@@ -320,7 +320,7 @@ public:
 
             return strings_to_list(machine(), ss);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };

@@ -8,7 +8,37 @@
 #include <map>
 #include <stdlib.h>
 #include <math.h>
-#include <fmt/core.h> // std::format
+#include <fmt/core.h> 
+#include <fmt/args.h>
+
+#if __has_builtin(__builtin_smull_overflow)
+#else
+  abort();
+#endif
+
+bool add_overflow(long int a, long int b, long int* c) {
+    return __builtin_saddl_overflow(a, b, c);
+}
+
+bool add_overflow(long long int a, long long int b, long long int* c) {
+    return __builtin_saddll_overflow(a, b, c);
+}
+
+bool sub_overflow(long int a, long int b, long int* c) {
+    return __builtin_ssubl_overflow(a, b, c);
+}
+
+bool sub_overflow(long long int a, long long int b, long long int* c) {
+    return __builtin_ssubll_overflow(a, b, c);
+}
+
+bool mul_overflow(long int a, long int b, long int* c) {
+    return __builtin_smull_overflow(a, b, c);
+}
+
+bool mul_overflow(long long int a, long long int b, long long int* c) {
+    return __builtin_smulll_overflow(a, b, c);
+}
 
 // globals
 int    application_argc = 0;
@@ -49,8 +79,8 @@ public:
         if (arg0->tag() == VM_OBJECT_INTEGER) {
             auto i = VM_OBJECT_INTEGER_VALUE(arg0);
             vm_int_t res;
-            if (__builtin_smull_overflow(-1, i, &res)) {
-                OVERFLOW;
+            if (mul_overflow((vm_int_t) -1, i, &res)) {
+                THROW_OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -58,7 +88,7 @@ public:
             auto f = VM_OBJECT_FLOAT_VALUE(arg0);
             return VMObjectFloat(-f).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -74,8 +104,8 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             vm_int_t res;
-            if (__builtin_saddl_overflow(i0, i1, &res)) {
-                OVERFLOW;
+            if (add_overflow(i0, i1, &res)) {
+                THROW_OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -90,7 +120,7 @@ public:
             auto f1 = VM_OBJECT_TEXT_VALUE(arg1);
             return VMObjectText(f0+f1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -106,8 +136,9 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             vm_int_t res;
-            if (__builtin_ssubl_overflow(i0, i1, &res)) {
-                OVERFLOW;
+            if (sub_overflow(i0, i1, &res)) {
+                THROW_OVERFLOW;
+                throw VMObjectInteger(res).clone();
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -117,7 +148,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return VMObjectFloat(f0-f1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -133,8 +164,8 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             vm_int_t res;
-            if (__builtin_smull_overflow(i0, i1, &res)) {
-                OVERFLOW;
+            if (mul_overflow(i0, i1, &res)) {
+                THROW_OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
@@ -144,7 +175,7 @@ public:
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             return VMObjectFloat(f0*f1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -160,7 +191,7 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             if (i1 == 0) {
-                DIVZERO;
+                THROW_DIVZERO;
             }
             return VMObjectInteger(i0/i1).clone();
         } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
@@ -168,11 +199,11 @@ public:
             auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
             auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
             if (f1 == 0.0) {
-                DIVZERO;
+                THROW_DIVZERO;
             }
             return VMObjectFloat(f0/f1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -188,11 +219,11 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             if (i1 == 0) {
-                DIVZERO;
+                THROW_DIVZERO;
             }
             return VMObjectInteger(i0%i1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -209,7 +240,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0&i1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -226,7 +257,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0|i1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -243,7 +274,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0^i1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -258,7 +289,7 @@ public:
             auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
             return VMObjectInteger(~i0).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -275,7 +306,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0<<i1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -292,7 +323,7 @@ public:
             auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
             return VMObjectInteger(i0>>i1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -394,8 +425,8 @@ public:
             auto ff = VM_OBJECT_ARRAY_VALUE(arg1);
             auto sz = ff.size();
             // check head is an object
-            if (sz == 0) INVALID;
-            if (ff[0]->symbol() != object) INVALID;
+            if (sz == 0) THROW_INVALID;
+            if (ff[0]->symbol() != object) THROW_INVALID;
             // search for field
             CompareVMObjectPtr compare;
             unsigned int n;
@@ -406,10 +437,10 @@ public:
             if ( (n+1) < sz ) {
                 return ff[n+1];
             } else {
-                INVALID;
+                THROW_INVALID;
             }
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -427,8 +458,8 @@ public:
             auto ff = VM_OBJECT_ARRAY_VALUE(arg2);
             auto sz = ff.size();
             // check head is an object
-            if (sz == 0) INVALID;
-            if (ff[0]->symbol() != object) INVALID;
+            if (sz == 0) THROW_INVALID;
+            if (ff[0]->symbol() != object) THROW_INVALID;
             // search field
             CompareVMObjectPtr compare;
             unsigned int n;
@@ -441,10 +472,10 @@ public:
                 arr->set(n+1, arg1);
                 return arg0;
             } else {
-                INVALID;
+                THROW_INVALID;
             }
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -464,10 +495,10 @@ public:
             auto ff1 = VM_OBJECT_ARRAY_VALUE(arg1);
             auto sz1 = ff1.size();
             // check head is an object
-            if (sz0 == 0) INVALID;
-            if (ff0[0]->symbol() != object) INVALID;
-            if (sz1 == 0) INVALID;
-            if (ff1[0]->symbol() != object) INVALID;
+            if (sz0 == 0) THROW_INVALID;
+            if (ff0[0]->symbol() != object) THROW_INVALID;
+            if (sz1 == 0) THROW_INVALID;
+            if (ff1[0]->symbol() != object) THROW_INVALID;
             // create field union
             unsigned int n;
             std::map<VMObjectPtr, VMObjectPtr> fields;
@@ -489,7 +520,7 @@ public:
 
             return VMObjectArray::create(oo);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -514,7 +545,7 @@ public:
             auto i = convert_to_int(s);
             return create_integer(i);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -535,7 +566,7 @@ public:
             auto i = convert_to_float(s);
             return create_float(i);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -561,7 +592,7 @@ public:
         } else if (arg0->tag() == VM_OBJECT_TEXT) {
             return arg0;
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -624,7 +655,7 @@ public:
             auto r = std::static_pointer_cast<Reference>(arg0);
             return r->get_ref();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -642,7 +673,7 @@ public:
             r->set_ref(arg1);
             return arg0;
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -674,7 +705,7 @@ public:
             }
             return ss;
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -696,9 +727,9 @@ public:
 
         while ( (a->tag() == VM_OBJECT_ARRAY) ) {
             auto aa = VM_OBJECT_ARRAY_VALUE(a);
-            if (aa.size() != 3) INVALID;
-            if (aa[0]->symbol() != _cons) INVALID;
-            if (aa[1]->tag() != VM_OBJECT_CHAR) INVALID;
+            if (aa.size() != 3) THROW_INVALID;
+            if (aa[0]->symbol() != _cons) THROW_INVALID;
+            if (aa[1]->tag() != VM_OBJECT_CHAR) THROW_INVALID;
 
             auto c = VM_OBJECT_CHAR_VALUE(aa[1]);
 
@@ -722,7 +753,7 @@ public:
             auto s1 = o->disassemble();
             return VMObjectText(s0+ "::" + s1).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -745,7 +776,7 @@ public:
             c.assemble(s1);
             return c.clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -765,7 +796,7 @@ public:
                 return nop;
             }
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -788,7 +819,7 @@ public:
                 return nop;
             }
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -809,7 +840,7 @@ public:
             thunk.push_back(machine()->get_data_string("System", "nop"));
             return VMObjectArray(thunk).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -830,7 +861,7 @@ public:
             thunk.push_back(machine()->get_data_string("System", "nop"));
             return VMObjectArray(thunk).clone();
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -923,14 +954,14 @@ public:
                 try {
                     r = fmt::vformat(fmt, store);
                 } catch (std::runtime_error& e) {
-                    INVALID;
+                    THROW_INVALID;
                 }
                 auto u = icu::UnicodeString(r.c_str());
                 delete fmt;
 
                 return VMObjectText(u).clone();
             } else {
-                INVALID;
+                THROW_INVALID;
             }
         }
     }

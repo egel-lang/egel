@@ -205,9 +205,11 @@ public:
         _position(p), _string(s) {
     }
 
+/*
     QualifiedString(const QualifiedString& i):
         _position(i._position), _string(i._string) {
     }
+*/
 
     Position position() const {
         return _position;
@@ -233,6 +235,9 @@ class Module {
 public:
     Module(const module_tag_t t, const icu::UnicodeString& p, const icu::UnicodeString& fn, VM* m):
         _tag(t), _path(p), _filename(fn), _machine(m) {
+    }
+
+    virtual ~Module() { // keep the compiler happy
     }
 
     virtual ModulePtr clone() const = 0;

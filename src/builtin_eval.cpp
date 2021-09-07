@@ -46,7 +46,7 @@ public:
             }
 
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 

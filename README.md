@@ -10,10 +10,10 @@ tasks.
 Installation
 ------------
 
-This interpreter is being developed on Linux and uses libicu for 
+This interpreter is being developed on Linux/MacOS and uses libicu for 
 Unicode support and fmt for formatting. 
-You need to have GCC/g++, the GNU compiler chain, and the development 
-files for libicu and fmt installed. 
+You need to have the GNU or LLVM compiler chain, the development 
+files for libicu and fmt, and cmake installed. 
 Most Linux package managers will provide that for you.
 
 This interpreter is made with `cmake` in the standard manner. Run
@@ -24,6 +24,13 @@ the following commands on a Linux system.
     cd build
     cmake ..
     make
+```
+
+note: on MacOS you need to provide the location of what you want
+to link against. Since most people will be using brew, use this
+
+```
+    cmake .. -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/icu4c
 ```
 
 That should give you an interpreter named `egel`

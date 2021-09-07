@@ -21,7 +21,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s0 == s1);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -37,7 +37,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s0 != s1);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -53,7 +53,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s0 > s1);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -69,7 +69,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s0 < s1);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -85,7 +85,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s0 >= s1);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -101,7 +101,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s0 <= s1);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -117,7 +117,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_integer(s0.compare(s1));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -133,7 +133,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_integer(s0.compareCodePointOrder(s1));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -149,7 +149,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_integer(s0.caseCompare(s1, U_FOLD_CASE_DEFAULT));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -165,7 +165,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s1.startsWith(s0));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -181,7 +181,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_bool(s1.endsWith(s0));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -197,7 +197,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_integer(s1.indexOf(s0));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -213,7 +213,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
             return create_integer(s1.lastIndexOf(s0));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -229,7 +229,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg1);
             return create_char(s.char32At(n));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -247,7 +247,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg2);
             return create_integer(s.moveIndex32(n, d));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -263,7 +263,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_integer(s.countChar32());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -279,7 +279,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_bool(s.isEmpty());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -294,7 +294,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_integer(s.hashCode());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -309,7 +309,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_bool(s.isBogus());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -329,7 +329,7 @@ public:
             auto c  = VM_OBJECT_CHAR_VALUE(arg1);
             return create_text(s0.append(c));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -347,7 +347,7 @@ public:
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
             return create_text(s1.insert(n, s0));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -364,7 +364,7 @@ public:
             auto s2 = VM_OBJECT_TEXT_VALUE(arg2);
             return create_text(s2.findAndReplace(s0, s1));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -381,7 +381,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
             return create_text(s0.removeBetween(n0, n1));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -398,7 +398,7 @@ public:
             auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
             return create_text(s0.retainBetween(n0, n1));
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -413,7 +413,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_text(s.trim());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -428,7 +428,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_text(s.reverse());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -443,7 +443,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_text(s.toUpper());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -458,7 +458,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_text(s.toLower());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -473,7 +473,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_text(s.foldCase());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -488,7 +488,7 @@ public:
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
             return create_text(s.unescape());
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -503,7 +503,7 @@ public:
             auto c = VM_OBJECT_CHAR_VALUE(arg0);
             return create_integer(c);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };
@@ -518,7 +518,7 @@ public:
             auto n = VM_OBJECT_INTEGER_VALUE(arg0);
             return create_char(n);
         } else {
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };

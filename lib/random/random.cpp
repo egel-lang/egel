@@ -44,7 +44,7 @@ public:
             return VMObjectInteger(random::get().between(i0, i1)).clone();
         } else {
             // XXX: extend once with two float values
-            BADARGS;
+            THROW_BADARGS;
         }
     }
 };

@@ -594,7 +594,7 @@ public:
             _code.push_back(byte);
         }
 
-        delete buffer;
+        delete[] buffer;
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {

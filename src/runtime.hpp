@@ -21,7 +21,7 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
-using namespace icu_67; // this changes regularly
+using namespace icu_69; // this changes regularly
 
 #ifndef PANIC
 #define PANIC(s)    { std::cerr << s << std::endl; exit(1); }
@@ -30,10 +30,10 @@ using namespace icu_67; // this changes regularly
 #define EGEL_FLOAT_PRECISION 16 // XXX: dbl::maxdigit doesn't seem to be defined on my system?
 
 // handle different exceptional states within combinators
-#define OVERFLOW    throw VMObjectText(to_text() + " overflow").clone()
-#define DIVZERO     throw VMObjectText(to_text() + " divide by zero").clone()
-#define BADARGS     throw VMObjectText(to_text() + " bad arguments").clone()
-#define INVALID     throw VMObjectText(to_text() + " invalid arguments").clone()
+#define THROW_OVERFLOW    throw VMObjectText(to_text() + " overflow").clone()
+#define THROW_DIVZERO     throw VMObjectText(to_text() + " divide by zero").clone()
+#define THROW_BADARGS     throw VMObjectText(to_text() + " bad arguments").clone()
+#define THROW_INVALID     throw VMObjectText(to_text() + " invalid arguments").clone()
 
 // libicu doesn't provide escaping..
 
@@ -146,6 +146,9 @@ inline void render_cons(const VMObjectPtr& cc, std::ostream& os);
 class VMObject {
 public:
     VMObject(vm_object_tag_t t, vm_object_flag_t f) : _tag(t), _flag(f) {
+    }
+
+    virtual ~VMObject() { // FIX: give a virtual destructor to keep the compiler(-s) happy
     }
 
     vm_object_tag_t tag() const {
