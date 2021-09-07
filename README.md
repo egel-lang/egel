@@ -51,7 +51,7 @@ Usage
 
 The command `egel` will start the interpreter in interactive mode.
 You will be greeted with a prompt. Note that the interpreter comes
-in a 'clean state' mode, your first command will probably be
+in a 'clean slate' mode, your first command will probably be
 `using System` to get direct access to Egel's builtin primitives,
 like addition, printing, etcetera.
 
