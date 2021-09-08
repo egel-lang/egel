@@ -52,7 +52,7 @@ if(("${CMAKE_CXX_COMPILER_ID}" MATCHES "AppleClang"))
   message("AppleClang detected")
   set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter -Wno-return-type-c-linkage")
   set(CMAKE_CXX_FLAGS_DEBUG               "-g")
-  set(CMAKE_CXX_FLAGS_RELEASE             "-O3")
+  set(CMAKE_CXX_FLAGS_RELEASE             "-Ofast")
 
 else()
 

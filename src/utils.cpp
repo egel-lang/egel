@@ -227,7 +227,7 @@ namespace fs = std::filesystem;
 fs::path string_to_path(const icu::UnicodeString& s) {
     char* cc = unicode_to_char(s);
     fs::path p = fs::u8path(cc);
-    delete cc;
+    free(cc);
     return p;
 }
 
@@ -252,7 +252,7 @@ icu::UnicodeString path_combine(const icu::UnicodeString& s0, const icu::Unicode
 icu::UnicodeString file_read(const icu::UnicodeString &filename) {
     char* fn = unicode_to_char(filename);
     UChar* chars = read_utf8_file(fn);
-    delete[] fn;
+    free(fn);
     icu::UnicodeString str = icu::UnicodeString(chars);
     delete[] chars;
     return str;
@@ -262,14 +262,14 @@ void file_write(const icu::UnicodeString &filename, const icu::UnicodeString &st
     char* fn = unicode_to_char(filename);
     UChar* s  = unicode_to_uchar(str);
     write_utf8_file(fn, s);
-    delete[] fn;
+    free(fn);
     delete[] s;
 }
 
 bool file_exists(const icu::UnicodeString &filename) {
     char* fn = unicode_to_char(filename);
     bool b = exists_file(fn);
-    delete[] fn;
+    free(fn);
     return b;
 }
 

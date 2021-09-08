@@ -39,9 +39,11 @@ src/libegel.a
 # Don't follow generated test cases
 tests/large.eg
 
-# Don't follow cmake build
+# Don't follow cmake build/debug
 _build/*
 build/*
+_debug/*
+debug/*
 
 # ignore macos fs
 .DS_Store
