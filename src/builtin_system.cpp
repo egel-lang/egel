@@ -9,7 +9,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <fmt/core.h> 
+#if __has_include(<fmt/args.h>)
 #include <fmt/args.h>
+#endif
 
 #if __has_builtin(__builtin_smull_overflow)
 #else
