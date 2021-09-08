@@ -21,7 +21,7 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
-using namespace icu_69; // this changes regularly
+using namespace icu; // use stable namespace 
 
 #ifndef PANIC
 #define PANIC(s)    { std::cerr << s << std::endl; exit(1); }
