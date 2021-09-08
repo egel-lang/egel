@@ -93,7 +93,7 @@ icu::UnicodeString unicode_concat(const icu::UnicodeString& s0, const icu::Unico
 int64_t convert_to_int(const icu::UnicodeString& s) {
     char* buf = unicode_to_char(s);
     auto i = atol(buf);
-    delete buf;
+    delete[] buf;
     return i;
 }
 
@@ -119,7 +119,7 @@ int64_t convert_to_hexint(const icu::UnicodeString& s) {
 double convert_to_float(const icu::UnicodeString& s) {
     char* buf = unicode_to_char(s);
     auto f = atof(buf);
-    delete buf;
+    delete[] buf;
     return f;
 }
 
@@ -227,7 +227,7 @@ namespace fs = std::filesystem;
 fs::path string_to_path(const icu::UnicodeString& s) {
     char* cc = unicode_to_char(s);
     fs::path p = fs::u8path(cc);
-    free(cc);
+    delete[] cc;
     return p;
 }
 
@@ -252,7 +252,7 @@ icu::UnicodeString path_combine(const icu::UnicodeString& s0, const icu::Unicode
 icu::UnicodeString file_read(const icu::UnicodeString &filename) {
     char* fn = unicode_to_char(filename);
     UChar* chars = read_utf8_file(fn);
-    free(fn);
+    delete[] fn;
     icu::UnicodeString str = icu::UnicodeString(chars);
     delete[] chars;
     return str;
@@ -262,14 +262,14 @@ void file_write(const icu::UnicodeString &filename, const icu::UnicodeString &st
     char* fn = unicode_to_char(filename);
     UChar* s  = unicode_to_uchar(str);
     write_utf8_file(fn, s);
-    free(fn);
+    delete[] fn;
     delete[] s;
 }
 
 bool file_exists(const icu::UnicodeString &filename) {
     char* fn = unicode_to_char(filename);
     bool b = exists_file(fn);
-    free(fn);
+    delete[] fn;
     return b;
 }
 
