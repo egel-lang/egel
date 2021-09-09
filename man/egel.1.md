@@ -50,47 +50,48 @@ Egel programs consist of expression which are evaluated eagerly.
 
  * Basic primitive types are integers, floats, unicode characters, and unicode strings.
 
-   **0 1 2** , **0.0 3.14 -1.2** , **'a' '∀'** , or **"Hello World!"**
+   `0 1 2` , `0.0 3.14 -1.2` , `a' '∀'` , or `Hello World!"`
 
  * All constants compose.
 
-   **(0 1)** is just as legal as **(cons 'a' nil)**
+   `(0 1)` is just as legal as `(cons 'a' nil)`
 
  * Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables 
 
-   **\[ X -> X ]** , **\[ (cons HEAD TAIL) -> HEAD ]**,
+   `[ X -> X ]` , `[ (cons HEAD TAIL) -> HEAD ]`
 
    The abstraction consists of a number of matches, it may be variadic without penalty.
 
-   **\[ X Y -> 2 | X -> 1 | -> 0]**
+   `[ X Y -> 2 | X -> 1 | -> 0]`
 
  * Patterns may hold rudimentary type matches.
 
-   **\[ I::int -> "an int" | C::cons -> "a cons" ]**
+   `[ I::int -> "an int" | C::cons -> "a cons" ]`
 
  * Let expressions allow to assign values to intermediateries.
 
-   **let X = 1 + 2 in X * X**
+   `let X = 1 + 2 in X * X`
 
  * Exception handling is supported, any value may be thrown and caught.
 
-   **try 1 + throw "failure" catch \[ EXC -> print EXC ]**
+   `try 1 + throw "failure" catch [ EXC -> print EXC ]`
 
- * Parallell programming is achieved  through the **par** and **proc** abstractions.
-   A **par** starts two computations in parallel and returns a tuple of both values after both complete.
+ * Parallell programming is achieved  through the `par` and `proc` abstractions.
+   A `par` starts two computations in parallel and returns a tuple of both values after both complete.
 
-   **(par \[ _ -> _computation0_ ] \[ _ -> _computation1_ ])** 
+   `par [ _ -> _computation0_ ] [ _ -> _computation1_ ]` 
 
    The process abstraction is not discussed here.
- * Formatting strings is handled with the **format** combinator, see <https://fmt.dev/>.
 
-   **print (format "Hello {}" "world")**
+ * Formatting strings is handled with the `format` combinator, see <https://fmt.dev/>.
+
+   `print (format "Hello {}" "world")`
 
 ### Modules
 
 A module is a series of combinator declarations possibly encapsulated in a namespace.
 All combinators are named lowercase, there is some provisional support for unicode.
-Modules may import each other. The **main** combinator of the top module drives
+Modules may import each other. The `main` combinator of the top module drives
 all computation when present.
 
 Tying it all together:
@@ -122,7 +123,7 @@ def main = Fibonnaci:pfib (3+2)
 ```
 ## FILES
 
-The following files should be in the **EGEL_INCLUDE** directory.
+The following files should be in the `EGEL_INCLUDE` directory.
 
  * `prelude.eg`:
    The standard Egel prelude.

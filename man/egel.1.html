@@ -78,9 +78,11 @@
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p><code>egel</code> [<strong>-</strong>] [<strong>-I</strong> <em>path] [<var /></em>file<em>]
-<code>egel</code> [<strong>-I</strong> </em>path] <strong>-e</strong> <em>command</em>
-<code>egel</code> [<strong>-h</strong>|<strong>--help</strong>|<strong>-v</strong>|<strong>--version</strong>]</p>
+<p><code>egel</code> [<strong>-</strong>] [<strong>-I</strong> <var>path</var>] [<var>file</var>]</p>
+
+<p><code>egel</code> [<strong>-I</strong> <var>path</var>] <strong>-e</strong> <var>command</var></p>
+
+<p><code>egel</code> [<strong>-h</strong>|<strong>--help</strong>|<strong>-v</strong>|<strong>--version</strong>]</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
@@ -95,17 +97,13 @@ Those modules are dynamically loaded.</p>
 <h2 id="OPTIONS">OPTIONS</h2>
 
 <dl>
-<dt>-h, --help</dt>
-<dd><p>  Prints brief usage information, may list debug options.</p></dd>
-<dt>-, --interact</dt>
-<dd><p>  Enter interactive mode unconditionally.</p></dd>
-<dt>-e, --eval <em>command</em></dt>
-<dd><p>  Evaluate the given command.</p></dd>
-<dt>-v, --version</dt>
-<dd><p>  Prints the current version number.</p></dd>
-<dt>-I, --include <em>path</em></dt>
-<dd><p>  Add an include path.</p></dd>
+<dt><code>-h</code>, <code>--help</code></dt><dd><p> Prints brief usage information, may list debug options.</p></dd>
+<dt><code>-</code>, <code>--interact</code></dt><dd><p> Enter interactive mode unconditionally.</p></dd>
+<dt><code>-e</code>, <code>--eval &lt;command></code></dt><dd><p> Evaluate the given command.</p></dd>
+<dt><code>-v</code>, <code>--version</code></dt><dd><p> Prints the current version number.</p></dd>
+<dt><code>-I</code>, <code>--include &lt;path></code></dt><dd><p> Add an include path.</p></dd>
 </dl>
+
 
 <h2 id="TUTORIAL">TUTORIAL</h2>
 
@@ -113,38 +111,48 @@ Those modules are dynamically loaded.</p>
 
 <h3 id="Expressions">Expressions</h3>
 
-<dl>
-<dt>Basic primitive types are integers, floats, unicode characters, and unicode strings.</dt>
-<dd><p> <strong>0 1 2</strong> , <strong>0.0 3.14 -1.2</strong> , <strong>'a' '∀'</strong> , or <strong>"Hello World!"</strong></p></dd>
-<dt>All constants compose.</dt>
-<dd><p> <strong>(0 1)</strong> is just as legal as <strong>(cons 'a' nil)</strong></p></dd>
-<dt>Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables. </dt>
-<dd><p><strong>[ X -> X ]</strong> , <strong>[ (cons HEAD TAIL) -> HEAD ]</strong>,</p></dd>
-<dt>The abstraction consists of a number of matches, it may be variadic without penalty.</dt>
-<dd><p><strong>[ X Y -> 2 | X -> 1 | -> 0]</strong></p></dd>
-<dt>Patterns may hold rudimentary type matches.</dt>
-<dd><p><strong>[ I::int -> "an int" | C::cons -> "a cons" ]</strong></p></dd>
-<dt>Let expressions allow to assign values to intermediateries.</dt>
-<dd><p><strong>let X = 1 + 2 in X * X</strong></p></dd>
-<dt>Exception handling is supported, any value may be thrown and caught.</dt>
-<dd><p><strong>try 1 + throw "failure" catch [ EXC -> print EXC ]</strong></p></dd>
-<dt>Parallell programming is achieved  through the <strong>par</strong> and <strong>proc</strong> abstractions. </dt>
-<dt>A <strong>par</strong> starts two computations in parallel and returns a tuple of both values after both complete.</dt>
-<dd><p><strong>[ (X, Y) -> X + Y ] (par [ _ -> <em>computation0</em> ] [ _ -> <em>computation1</em> ])</strong></p></dd>
-</dl>
+<p>Egel programs consist of expression which are evaluated eagerly.</p>
 
-<p>The process abstraction is not discussed here.</p>
+<ul>
+<li><p>Basic primitive types are integers, floats, unicode characters, and unicode strings.</p>
 
-<dl>
-<dt>Formatting strings is handled with the <strong>format</strong> combinator, see <a href="https://fmt.dev/" data-bare-link="true">https://fmt.dev/</a>.</dt>
-<dd><p><strong>print (format "Hello {}" "world")</strong></p></dd>
-</dl>
+<p><code>0 1 2</code> , <code>0.0 3.14 -1.2</code> , <code>a' '∀'</code> , or <code>Hello World!"</code></p></li>
+<li><p>All constants compose.</p>
+
+<p><code>(0 1)</code> is just as legal as <code>(cons 'a' nil)</code></p></li>
+<li><p>Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables</p>
+
+<p><code>[ X -&gt; X ]</code> , <code>[ (cons HEAD TAIL) -&gt; HEAD ]</code></p>
+
+<p>The abstraction consists of a number of matches, it may be variadic without penalty.</p>
+
+<p><code>[ X Y -&gt; 2 | X -&gt; 1 | -&gt; 0]</code></p></li>
+<li><p>Patterns may hold rudimentary type matches.</p>
+
+<p><code>[ I::int -&gt; "an int" | C::cons -&gt; "a cons" ]</code></p></li>
+<li><p>Let expressions allow to assign values to intermediateries.</p>
+
+<p><code>let X = 1 + 2 in X * X</code></p></li>
+<li><p>Exception handling is supported, any value may be thrown and caught.</p>
+
+<p><code>try 1 + throw "failure" catch [ EXC -&gt; print EXC ]</code></p></li>
+<li><p>Parallell programming is achieved  through the <code>par</code> and <code>proc</code> abstractions.
+A <code>par</code> starts two computations in parallel and returns a tuple of both values after both complete.</p>
+
+<p><code>par [ _ -&gt; _computation0_ ] [ _ -&gt; _computation1_ ]</code></p>
+
+<p>The process abstraction is not discussed here.</p></li>
+<li><p>Formatting strings is handled with the <code>format</code> combinator, see <a href="https://fmt.dev/" data-bare-link="true">https://fmt.dev/</a>.</p>
+
+<p><code>print (format "Hello {}" "world")</code></p></li>
+</ul>
+
 
 <h3 id="Modules">Modules</h3>
 
 <p>A module is a series of combinator declarations possibly encapsulated in a namespace.
 All combinators are named lowercase, there is some provisional support for unicode.
-Modules may import each other. The <strong>main</strong> combinator of the top module drives
+Modules may import each other. The <code>main</code> combinator of the top module drives
 all computation when present.</p>
 
 <p>Tying it all together:</p>
@@ -176,23 +184,21 @@ def main = Fibonnaci:pfib (3+2)
 
 <h2 id="FILES">FILES</h2>
 
-<p>The following files should be in the <strong>EGEL_INCLUDE</strong> directory.</p>
+<p>The following files should be in the <code>EGEL_INCLUDE</code> directory.</p>
 
 <dl>
-<dt><em>prelude.eg</em></dt>
-<dd><p>  The standard Egel prelude.</p></dd>
-<dt><em>io.ego</em> <em>regex.ego</em></dt>
-<dd>  Standard input/output, regexes.</dd>
+<dt><code>prelude.eg</code></dt><dd><p>The standard Egel prelude.</p></dd>
+<dt><code>io.ego</code> <code>regex.ego</code></dt><dd><p>Standard input/output, regexes dynamic libraries.</p></dd>
 </dl>
+
 
 <h2 id="ENVIRONMENT">ENVIRONMENT</h2>
 
 <dl>
-<dt><strong>EGEL_INCLUDE</strong></dt>
-<dd><p>  The default dedication if none is given.</p></dd>
-<dt><strong>EGEL_PS0</strong></dt>
-<dd><p>  The prompt given by the interpreter in interactive mode.</p></dd>
+<dt><code>EGEL_INCLUDE</code></dt><dd><p> The path to the standard include directory.</p></dd>
+<dt><code>EGEL_PS0</code></dt><dd><p> The prompt given by the interpreter in interactive mode.</p></dd>
 </dl>
+
 
 <h2 id="BUGS">BUGS</h2>
 
@@ -200,7 +206,7 @@ def main = Fibonnaci:pfib (3+2)
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>M.C.A. (Marco) Devillers <a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#x6d;&#97;&#114;&#99;&#111;&#x2e;&#x64;&#101;&#x76;&#105;&#x6c;&#x6c;&#101;&#x72;&#x73;&#x40;&#103;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#x6d;" data-bare-link="true">&#109;&#97;&#x72;&#99;&#111;&#x2e;&#x64;&#101;&#118;&#x69;&#x6c;&#x6c;&#101;&#x72;&#115;&#64;&#103;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a></p>
+<p>M.C.A. (Marco) Devillers <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#x61;&#x72;&#99;&#111;&#x2e;&#x64;&#x65;&#x76;&#x69;&#108;&#x6c;&#101;&#x72;&#115;&#x40;&#x67;&#109;&#97;&#105;&#108;&#x2e;&#99;&#111;&#x6d;" data-bare-link="true">&#x6d;&#97;&#x72;&#x63;&#111;&#46;&#x64;&#101;&#x76;&#x69;&#108;&#108;&#101;&#x72;&#x73;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a></p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 

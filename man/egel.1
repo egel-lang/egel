@@ -7,7 +7,13 @@
 \fBegel\fR \- an interpreted, interactive, eager\-combinator language
 .
 .SH "SYNOPSIS"
-\fBegel\fR [\fB\-\fR] [\fB\-I\fR \fIpath] [\fI\fR\fRfile\fI] \fBegel\fR [\fB\-I\fR\fRpath] \fB\-e\fR \fIcommand\fR \fBegel\fR [\fB\-h\fR|\fB\-\-help\fR|\fB\-v\fR|\fB\-\-version\fR]
+\fBegel\fR [\fB\-\fR] [\fB\-I\fR \fIpath\fR] [\fIfile\fR]
+.
+.P
+\fBegel\fR [\fB\-I\fR \fIpath\fR] \fB\-e\fR \fIcommand\fR
+.
+.P
+\fBegel\fR [\fB\-h\fR|\fB\-\-help\fR|\fB\-v\fR|\fB\-\-version\fR]
 .
 .SH "DESCRIPTION"
 Egel is an interpreted, interactive, eager\-combinator programming language that combines remarkable power with very clear syntax\.
@@ -21,71 +27,89 @@ Egel\'s basic power can be extended with your own modules written in C++\. Those
 .SH "OPTIONS"
 .
 .TP
-\-h, \-\-help
+\fB\-h\fR, \fB\-\-help\fR
 Prints brief usage information, may list debug options\.
 .
 .TP
-\-, \-\-interact
+\fB\-\fR, \fB\-\-interact\fR
 Enter interactive mode unconditionally\.
 .
 .TP
-\-e, \-\-eval \fIcommand\fR
+\fB\-e\fR, \fB\-\-eval <command>\fR
 Evaluate the given command\.
 .
 .TP
-\-v, \-\-version
+\fB\-v\fR, \fB\-\-version\fR
 Prints the current version number\.
 .
 .TP
-\-I, \-\-include \fIpath\fR
+\fB\-I\fR, \fB\-\-include <path>\fR
 Add an include path\.
 .
 .SH "TUTORIAL"
 Below, a short introduction to the Egel language is given\.
 .
 .SS "Expressions"
+Egel programs consist of expression which are evaluated eagerly\.
 .
-.TP
+.IP "\(bu" 4
 Basic primitive types are integers, floats, unicode characters, and unicode strings\.
-\fB0 1 2\fR , \fB0\.0 3\.14 \-1\.2\fR , \fB\'a\' \'∀\'\fR , or \fB"Hello World!"\fR
 .
-.TP
+.IP
+\fB0 1 2\fR , \fB0\.0 3\.14 \-1\.2\fR , \fBa\' \'∀\'\fR , or \fBHello World!"\fR
+.
+.IP "\(bu" 4
 All constants compose\.
+.
+.IP
 \fB(0 1)\fR is just as legal as \fB(cons \'a\' nil)\fR
 .
-.TP
-Rewriting is done with the pattern\-matching abstraction, uppercase letters denote variables\.
-\fB[ X \-> X ]\fR , \fB[ (cons HEAD TAIL) \-> HEAD ]\fR,
+.IP "\(bu" 4
+Rewriting is done with the pattern\-matching abstraction, uppercase letters denote variables
 .
-.TP
+.IP
+\fB[ X \-> X ]\fR , \fB[ (cons HEAD TAIL) \-> HEAD ]\fR
+.
+.IP
 The abstraction consists of a number of matches, it may be variadic without penalty\.
+.
+.IP
 \fB[ X Y \-> 2 | X \-> 1 | \-> 0]\fR
 .
-.TP
+.IP "\(bu" 4
 Patterns may hold rudimentary type matches\.
+.
+.IP
 \fB[ I::int \-> "an int" | C::cons \-> "a cons" ]\fR
 .
-.TP
+.IP "\(bu" 4
 Let expressions allow to assign values to intermediateries\.
+.
+.IP
 \fBlet X = 1 + 2 in X * X\fR
 .
-.TP
+.IP "\(bu" 4
 Exception handling is supported, any value may be thrown and caught\.
+.
+.IP
 \fBtry 1 + throw "failure" catch [ EXC \-> print EXC ]\fR
 .
-.TP
-Parallell programming is achieved through the \fBpar\fR and \fBproc\fR abstractions\.
+.IP "\(bu" 4
+Parallell programming is achieved through the \fBpar\fR and \fBproc\fR abstractions\. A \fBpar\fR starts two computations in parallel and returns a tuple of both values after both complete\.
 .
-.TP
-A \fBpar\fR starts two computations in parallel and returns a tuple of both values after both complete\.
-\fB[ (X, Y) \-> X + Y ] (par [ _ \-> \fIcomputation0\fR ] [ _ \-> \fIcomputation1\fR ])\fR
+.IP
+\fBpar [ _ \-> _computation0_ ] [ _ \-> _computation1_ ]\fR
 .
-.P
+.IP
 The process abstraction is not discussed here\.
 .
-.TP
+.IP "\(bu" 4
 Formatting strings is handled with the \fBformat\fR combinator, see \fIhttps://fmt\.dev/\fR\.
+.
+.IP
 \fBprint (format "Hello {}" "world")\fR
+.
+.IP "" 0
 .
 .SS "Modules"
 A module is a series of combinator declarations possibly encapsulated in a namespace\. All combinators are named lowercase, there is some provisional support for unicode\. Modules may import each other\. The \fBmain\fR combinator of the top module drives all computation when present\.
@@ -129,18 +153,18 @@ def main = Fibonnaci:pfib (3+2)
 The following files should be in the \fBEGEL_INCLUDE\fR directory\.
 .
 .TP
-\fIprelude\.eg\fR
+\fBprelude\.eg\fR
 The standard Egel prelude\.
 .
 .TP
-\fIio\.ego\fR \fIregex\.ego\fR
-Standard input/output, regexes\.
+\fBio\.ego\fR \fBregex\.ego\fR
+Standard input/output, regexes dynamic libraries\.
 .
 .SH "ENVIRONMENT"
 .
 .TP
 \fBEGEL_INCLUDE\fR
-The default dedication if none is given\.
+The path to the standard include directory\.
 .
 .TP
 \fBEGEL_PS0\fR
