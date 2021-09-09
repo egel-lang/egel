@@ -1,19 +1,17 @@
-% EGEL(1) Version 0.1 | The Egel interpreter
+EGEL(1) Version 0.1 | The Egel interpreter
+==
 
-NAME
-====
+## NAME
 
-**egel** — Egel, an interpreted, interactive, eager-combinator programming language
+**egel** - an interpreted, interactive, eager-combinator language
 
-SYNOPSIS
-========
+## SYNOPSIS
 
-| **egel** \[**-**] \[**-I** _path] \[_file_]
-| **egel** \[**-I** _path] **-e** _command_
-| **egel** \[**-h**|**--help**|**-v**|**--version**]
+`egel` \[**-**] \[**-I** _path] \[<_file_>]
+`egel` \[**-I** _path] **-e** _command_
+`egel` \[**-h**|**--help**|**-v**|**--version**]
 
-DESCRIPTION
-===========
+## DESCRIPTION
 
 Egel is an interpreted, interactive, eager-combinator  programming language that
 combines remarkable power with very clear syntax.
@@ -23,12 +21,11 @@ A short tutorial as in introduction into the language is given below.
 Egel's basic power can be extended with your own modules written in C++.
 Those modules are dynamically loaded.
 
-Options
--------
+## OPTIONS
 
 -h, --help
 
-:   Prints brief usage information. May list some extra debug options.
+:   Prints brief usage information, may list debug options.
 
 -, --interact
 
@@ -46,13 +43,11 @@ Options
 
 :   Add an include path.
 
-TUTORIAL
-========
+## TUTORIAL
 
 Below, a short introduction to the Egel language is given.
 
-Expressions
------------
+### Expressions
 
 Basic primitive types are integers, floats, unicode characters, and unicode strings.
 
@@ -62,10 +57,17 @@ All constants compose.
 
 :  **(0 1)** is just as legal as **(cons 'a' nil)**
 
-Rewriting is done with the pattern-matching abstraction, uppercase letters denote
-variables. The abstraction consists of a number of matches, it may be variadic without penalty.
+Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables. 
 
-: **\[ X -> X ]** , **\[ (cons HEAD TAIL) -> HEAD ]**, **\[ X Y -> 2 | X -> 1 | -> 0]**
+: **\[ X -> X ]** , **\[ (cons HEAD TAIL) -> HEAD ]**,
+
+The abstraction consists of a number of matches, it may be variadic without penalty.
+
+: **\[ X Y -> 2 | X -> 1 | -> 0]**
+
+Patterns may hold rudimentary type matches.
+
+: **\[ I::int -> "an int" | C::cons -> "a cons" ]**
 
 Let expressions allow to assign values to intermediateries.
 
@@ -73,11 +75,10 @@ Let expressions allow to assign values to intermediateries.
 
 Exception handling is supported, any value may be thrown and caught.
 
-: **try 1 + throw "failure" catch \[ EXC -> print "aborted with: " EXC ]**
+: **try 1 + throw "failure" catch \[ EXC -> print EXC ]**
 
-Parallellism is supported through the **par** and **proc** abstractions. A **par**
-starts two computations in parallel and returns a tuple of both values after both
-complete.
+Parallell programming is achieved  through the **par** and **proc** abstractions. 
+A **par** starts two computations in parallel and returns a tuple of both values after both complete.
 
 : **\[ (X, Y) -> X + Y ] (par \[ _ -> _computation0_ ] \[ _ -> _computation1_ ])** 
 
@@ -87,8 +88,7 @@ Formatting strings is handled with the **format** combinator, see <https://fmt.d
 
 : **print (format "Hello {}" "world")**
 
-Modules
--------
+### Modules
 
 A module is a series of combinator declarations possibly encapsulated in a namespace.
 All combinators are named lowercase, there is some provisional support for unicode.
@@ -113,18 +113,17 @@ namespace Fibonnaci (
   def pfib = 
     [ 0 -> 0 
     | 1 -> 1 
-    | X -> [ (F0, F1) -> F0 + F1 ] (par [Y -> pfib (X - 1) ] [Z-> pfib (X - 2)]) ]
+    | X -> [ (F0, F1) -> F0 + F1 ]
+           (par [Y -> pfib (X - 1) ] [Z-> pfib (X - 2)]) ]
 
 )
 
-using Fibonnaci
 using System
 
-def main = pfib 10
+def main = Fibonnaci:pfib (3+2)
 ```
 
-FILES
-=====
+## FILES
 
 The following files should be in the **EGEL_INCLUDE** directory.
 
@@ -135,28 +134,24 @@ The following files should be in the **EGEL_INCLUDE** directory.
 *io.ego* *regex.ego*
 :   Standard input/output, regexes.
 
-ENVIRONMENT
-===========
+## ENVIRONMENT
 
 **EGEL_INCLUDE**
 
 :   The default dedication if none is given.
 
-**EGEL_PROMPT**
+**EGEL_PS0**
 
 :   The prompt given by the interpreter in interactive mode.
 
-BUGS
-====
+## BUGS
 
 See GitHub Issues: <https://github.com/egel-lang/egel/issues>
 
-AUTHOR
-======
+## AUTHOR
 
 M.C.A. (Marco) Devillers <marco.devillers@gmail.com>
 
-SEE ALSO
-========
+## SEE ALSO
 
 **c++(1)**
