@@ -1,0 +1,132 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "EGEL" "1" "September 2021" "" ""
+\fBegel\fR — Egel, an interpreted, interactive, eager\-combinator programming language| \fBegel\fR [\fB\-\fR] [\fB\-I\fR \fIpath] [\fRfile\fI] | \fBegel\fR [\fB\-I\fR\fRpath] \fB\-e\fR \fIcommand\fR | \fBegel\fR [\fB\-h\fR|\fB\-\-help\fR|\fB\-v\fR|\fB\-\-version\fR]Egel is an interpreted, interactive, eager\-combinator programming language that combines remarkable power with very clear syntax\.
+.
+.P
+A short tutorial as in introduction into the language is given below\.
+.
+.P
+Egel\'s basic power can be extended with your own modules written in C++\. Those modules are dynamically loaded\.
+.
+.SH "Options"
+.
+.TP
+\-h, \-\-help
+Prints brief usage information\. May list some extra debug options\.
+.
+.TP
+\-, \-\-interact
+Enter interactive mode unconditionally\.
+.
+.TP
+\-e, \-\-eval \fIcommand\fR
+Evaluate the given command\.
+.
+.TP
+\-v, \-\-version
+Prints the current version number\.
+.
+.TP
+\-I, \-\-include \fIpath\fR
+Add an include path\.
+Below, a short introduction to the Egel language is given\.
+.
+.SH "Expressions"
+.
+.TP
+Basic primitive types are integers, floats, unicode characters, and unicode strings\.
+\fB0 1 2\fR , \fB0\.0 3\.14 \-1\.2\fR , \fB\'a\' \'∀\'\fR , or \fB"Hello World!"\fR
+.
+.TP
+All constants compose\.
+\fB(0 1)\fR is just as legal as \fB(cons \'a\' nil)\fR
+.
+.TP
+Rewriting is done with the pattern\-matching abstraction, uppercase letters denote
+.
+.TP
+variables\. The abstraction consists of a number of matches, it may be variadic without penalty\.
+\fB[ X \-> X ]\fR , \fB[ (cons HEAD TAIL) \-> HEAD ]\fR, \fB[ X Y \-> 2 | X \-> 1 | \-> 0]\fR
+.
+.TP
+Let expressions allow to assign values to intermediateries\.
+\fBlet X = 1 + 2 in X * X\fR
+.
+.TP
+Exception handling is supported, any value may be thrown and caught\.
+\fBtry 1 + throw "failure" catch [ EXC \-> print "aborted with: " EXC ]\fR
+.
+.TP
+Parallellism is supported through the \fBpar\fR and \fBproc\fR abstractions\. A \fBpar\fR
+.
+.TP
+starts two computations in parallel and returns a tuple of both values after both
+.
+.TP
+complete\.
+\fB[ (X, Y) \-> X + Y ] (par [ _ \-> \fIcomputation0\fR ] [ _ \-> \fIcomputation1\fR ])\fR
+.
+.P
+The process abstraction is not discussed here\.
+.
+.TP
+Formatting strings is handled with the \fBformat\fR combinator, see \fIhttps://fmt\.dev/\fR\.
+\fBprint (format "Hello {}" "world")\fR
+.
+.SH "Modules"
+A module is a series of combinator declarations possibly encapsulated in a namespace\. All combinators are named lowercase, there is some provisional support for unicode\. Modules may import each other\. The \fBmain\fR combinator of the top module drives all computation when present\.
+.
+.P
+Tying it all together:
+.
+.IP "" 4
+.
+.nf
+
+# A parallel fibonnaci implementation\.
+
+import "prelude\.eg"
+
+namespace Fibonnaci (
+  using System
+
+  def fib =
+    [ 0 \-> 0
+    | 1 \-> 1
+    | N \-> fib (N\- 2) + fib (N\- 1) ]
+
+  def pfib =
+    [ 0 \-> 0
+    | 1 \-> 1
+    | X \-> [ (F0, F1) \-> F0 + F1 ] (par [Y \-> pfib (X \- 1) ] [Z\-> pfib (X \- 2)]) ]
+
+)
+
+using Fibonnaci
+using System
+
+def main = pfib 10
+.
+.fi
+.
+.IP "" 0
+The following files should be in the \fBEGEL_INCLUDE\fR directory\.
+.
+.TP
+\fIprelude\.eg\fR
+The standard Egel prelude\.
+.
+.TP
+\fIio\.ego\fR \fIregex\.ego\fR
+Standard input/output, regexes\.
+.
+.TP
+\fBEGEL_INCLUDE\fR
+The default dedication if none is given\.
+.
+.TP
+\fBEGEL_PROMPT\fR
+The prompt given by the interpreter in interactive mode\.
+See GitHub Issues: \fIhttps://github\.com/egel\-lang/egel/issues\fRM\.C\.A\. (Marco) Devillers \fImarco\.devillers@gmail\.com\fR\fBc++(1)\fR

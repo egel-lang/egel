@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>egel(1) - &lt;p&gt;% EGEL(1) Version 0.1 | The Egel interpreter&lt;/p&gt;
+
+NAME</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#Options">Options</a>
+    <a href="#Expressions">Expressions</a>
+    <a href="#Modules">Modules</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>egel(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>egel(1)</li>
+  </ol>
+
+  <h1><p>% <span class="man-ref">EGEL<span class="s">(1)</span></span> Version 0.1 | The Egel interpreter</p>
+
+NAME</h1>
+<p><strong>egel</strong> — Egel, an interpreted, interactive, eager-combinator programming language</p>
+
+<h1>SYNOPSIS</h1>
+
+<p>| <strong>egel</strong> [<strong>-</strong>] [<strong>-I</strong> <em>path] [</em>file<em>]
+| <strong>egel</strong> [<strong>-I</strong> </em>path] <strong>-e</strong> <em>command</em>
+| <strong>egel</strong> [<strong>-h</strong>|<strong>--help</strong>|<strong>-v</strong>|<strong>--version</strong>]</p>
+
+<h1>DESCRIPTION</h1>
+
+<p>Egel is an interpreted, interactive, eager-combinator  programming language that
+combines remarkable power with very clear syntax.</p>
+
+<p>A short tutorial as in introduction into the language is given below.</p>
+
+<p>Egel's basic power can be extended with your own modules written in C++.
+Those modules are dynamically loaded.</p>
+
+<h2 id="Options">Options</h2>
+
+<dl>
+<dt>-h, --help</dt>
+<dd><p>  Prints brief usage information. May list some extra debug options.</p></dd>
+<dt>-, --interact</dt>
+<dd><p>  Enter interactive mode unconditionally.</p></dd>
+<dt>-e, --eval <em>command</em></dt>
+<dd><p>  Evaluate the given command.</p></dd>
+<dt>-v, --version</dt>
+<dd><p>  Prints the current version number.</p></dd>
+<dt>-I, --include <em>path</em></dt>
+<dd><p>  Add an include path.</p></dd>
+</dl>
+
+<h1>TUTORIAL</h1>
+
+<p>Below, a short introduction to the Egel language is given.</p>
+
+<h2 id="Expressions">Expressions</h2>
+
+<dl>
+<dt>Basic primitive types are integers, floats, unicode characters, and unicode strings.</dt>
+<dd><p> <strong>0 1 2</strong> , <strong>0.0 3.14 -1.2</strong> , <strong>'a' '∀'</strong> , or <strong>"Hello World!"</strong></p></dd>
+<dt>All constants compose.</dt>
+<dd><p> <strong>(0 1)</strong> is just as legal as <strong>(cons 'a' nil)</strong></p></dd>
+<dt>Rewriting is done with the pattern-matching abstraction, uppercase letters denote</dt>
+<dt>variables. The abstraction consists of a number of matches, it may be variadic without penalty.</dt>
+<dd><p><strong>[ X -> X ]</strong> , <strong>[ (cons HEAD TAIL) -> HEAD ]</strong>, <strong>[ X Y -> 2 | X -> 1 | -> 0]</strong></p></dd>
+<dt>Let expressions allow to assign values to intermediateries.</dt>
+<dd><p><strong>let X = 1 + 2 in X * X</strong></p></dd>
+<dt>Exception handling is supported, any value may be thrown and caught.</dt>
+<dd><p><strong>try 1 + throw "failure" catch [ EXC -> print "aborted with: " EXC ]</strong></p></dd>
+<dt>Parallellism is supported through the <strong>par</strong> and <strong>proc</strong> abstractions. A <strong>par</strong></dt>
+<dt>starts two computations in parallel and returns a tuple of both values after both</dt>
+<dt>complete.</dt>
+<dd><p><strong>[ (X, Y) -> X + Y ] (par [ _ -> <em>computation0</em> ] [ _ -> <em>computation1</em> ])</strong></p></dd>
+</dl>
+
+<p>The process abstraction is not discussed here.</p>
+
+<dl>
+<dt>Formatting strings is handled with the <strong>format</strong> combinator, see <a href="https://fmt.dev/" data-bare-link="true">https://fmt.dev/</a>.</dt>
+<dd><p><strong>print (format "Hello {}" "world")</strong></p></dd>
+</dl>
+
+<h2 id="Modules">Modules</h2>
+
+<p>A module is a series of combinator declarations possibly encapsulated in a namespace.
+All combinators are named lowercase, there is some provisional support for unicode.
+Modules may import each other. The <strong>main</strong> combinator of the top module drives
+all computation when present.</p>
+
+<p>Tying it all together:</p>
+
+<pre><code># A parallel fibonnaci implementation.
+
+import "prelude.eg"
+
+namespace Fibonnaci (
+  using System
+
+  def fib =
+    [ 0 -&gt; 0
+    | 1 -&gt; 1
+    | N -&gt; fib (N- 2) + fib (N- 1) ]
+
+  def pfib = 
+    [ 0 -&gt; 0 
+    | 1 -&gt; 1 
+    | X -&gt; [ (F0, F1) -&gt; F0 + F1 ] (par [Y -&gt; pfib (X - 1) ] [Z-&gt; pfib (X - 2)]) ]
+
+)
+
+using Fibonnaci
+using System
+
+def main = pfib 10
+</code></pre>
+
+<h1>FILES</h1>
+
+<p>The following files should be in the <strong>EGEL_INCLUDE</strong> directory.</p>
+
+<dl>
+<dt><em>prelude.eg</em></dt>
+<dd><p>  The standard Egel prelude.</p></dd>
+<dt><em>io.ego</em> <em>regex.ego</em></dt>
+<dd>  Standard input/output, regexes.</dd>
+</dl>
+
+<h1>ENVIRONMENT</h1>
+
+<dl>
+<dt><strong>EGEL_INCLUDE</strong></dt>
+<dd><p>  The default dedication if none is given.</p></dd>
+<dt><strong>EGEL_PROMPT</strong></dt>
+<dd><p>  The prompt given by the interpreter in interactive mode.</p></dd>
+</dl>
+
+<h1>BUGS</h1>
+
+<p>See GitHub Issues: <a href="https://github.com/egel-lang/egel/issues" data-bare-link="true">https://github.com/egel-lang/egel/issues</a></p>
+
+<h1>AUTHOR</h1>
+
+<p>M.C.A. (Marco) Devillers <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#x6d;&#97;&#114;&#x63;&#111;&#x2e;&#x64;&#x65;&#118;&#x69;&#108;&#x6c;&#101;&#x72;&#115;&#x40;&#x67;&#x6d;&#x61;&#x69;&#108;&#46;&#99;&#111;&#109;" data-bare-link="true">&#x6d;&#x61;&#114;&#x63;&#x6f;&#46;&#100;&#x65;&#x76;&#x69;&#x6c;&#108;&#101;&#114;&#115;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#109;</a></p>
+
+<h1>SEE ALSO</h1>
+
+<p><strong><span class="man-ref">c++<span class="s">(1)</span></span></strong></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>September 2021</li>
+    <li class='tr'>egel(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>
