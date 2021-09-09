@@ -7,8 +7,10 @@ EGEL(1) Version 0.1 | The Egel interpreter
 
 ## SYNOPSIS
 
-`egel` \[**-**] \[**-I** _path] \[<_file_>]
-`egel` \[**-I** _path] **-e** _command_
+`egel` \[**-**] \[**-I** <path>] \[<file>]
+
+`egel` \[**-I** <path>] **-e** <command>
+
 `egel` \[**-h**|**--help**|**-v**|**--version**]
 
 ## DESCRIPTION
@@ -23,25 +25,20 @@ Those modules are dynamically loaded.
 
 ## OPTIONS
 
--h, --help
+* `-h`, `--help`:
+   Prints brief usage information, may list debug options.
 
-:   Prints brief usage information, may list debug options.
+* `-`, `--interact`:
+   Enter interactive mode unconditionally.
 
--, --interact
+* `-e`, `--eval <command>`:
+   Evaluate the given command.
 
-:   Enter interactive mode unconditionally.
+* `-v`, `--version`:
+   Prints the current version number.
 
--e, --eval _command_
-
-:   Evaluate the given command.
-
--v, --version
-
-:   Prints the current version number.
-
--I, --include _path_
-
-:   Add an include path.
+* `-I`, `--include <path>`:
+   Add an include path.
 
 ## TUTORIAL
 
@@ -49,44 +46,45 @@ Below, a short introduction to the Egel language is given.
 
 ### Expressions
 
-Basic primitive types are integers, floats, unicode characters, and unicode strings.
+Egel programs consist of expression which are evaluated eagerly.
 
-:  **0 1 2** , **0.0 3.14 -1.2** , **'a' '∀'** , or **"Hello World!"**
+ * Basic primitive types are integers, floats, unicode characters, and unicode strings.
 
-All constants compose.
+   **0 1 2** , **0.0 3.14 -1.2** , **'a' '∀'** , or **"Hello World!"**
 
-:  **(0 1)** is just as legal as **(cons 'a' nil)**
+ * All constants compose.
 
-Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables. 
+   **(0 1)** is just as legal as **(cons 'a' nil)**
 
-: **\[ X -> X ]** , **\[ (cons HEAD TAIL) -> HEAD ]**,
+ * Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables 
 
-The abstraction consists of a number of matches, it may be variadic without penalty.
+   **\[ X -> X ]** , **\[ (cons HEAD TAIL) -> HEAD ]**,
 
-: **\[ X Y -> 2 | X -> 1 | -> 0]**
+   The abstraction consists of a number of matches, it may be variadic without penalty.
 
-Patterns may hold rudimentary type matches.
+   **\[ X Y -> 2 | X -> 1 | -> 0]**
 
-: **\[ I::int -> "an int" | C::cons -> "a cons" ]**
+ * Patterns may hold rudimentary type matches.
 
-Let expressions allow to assign values to intermediateries.
+   **\[ I::int -> "an int" | C::cons -> "a cons" ]**
 
-: **let X = 1 + 2 in X * X**
+ * Let expressions allow to assign values to intermediateries.
 
-Exception handling is supported, any value may be thrown and caught.
+   **let X = 1 + 2 in X * X**
 
-: **try 1 + throw "failure" catch \[ EXC -> print EXC ]**
+ * Exception handling is supported, any value may be thrown and caught.
 
-Parallell programming is achieved  through the **par** and **proc** abstractions. 
-A **par** starts two computations in parallel and returns a tuple of both values after both complete.
+   **try 1 + throw "failure" catch \[ EXC -> print EXC ]**
 
-: **\[ (X, Y) -> X + Y ] (par \[ _ -> _computation0_ ] \[ _ -> _computation1_ ])** 
+ * Parallell programming is achieved  through the **par** and **proc** abstractions.
+   A **par** starts two computations in parallel and returns a tuple of both values after both complete.
 
-The process abstraction is not discussed here.
+   **(par \[ _ -> _computation0_ ] \[ _ -> _computation1_ ])** 
 
-Formatting strings is handled with the **format** combinator, see <https://fmt.dev/>.
+   The process abstraction is not discussed here.
+ * Formatting strings is handled with the **format** combinator, see <https://fmt.dev/>.
 
-: **print (format "Hello {}" "world")**
+   **print (format "Hello {}" "world")**
 
 ### Modules
 
@@ -122,7 +120,6 @@ using System
 
 def main = Fibonnaci:pfib (3+2)
 ```
-
 ## FILES
 
 The following files should be in the **EGEL_INCLUDE** directory.
@@ -138,7 +135,7 @@ The following files should be in the **EGEL_INCLUDE** directory.
 
 **EGEL_INCLUDE**
 
-:   The default dedication if none is given.
+:   The path to the standard include directory.
 
 **EGEL_PS0**
 
