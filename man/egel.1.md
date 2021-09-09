@@ -50,7 +50,7 @@ Egel programs consist of expression which are evaluated eagerly.
 
  * Basic primitive types are integers, floats, unicode characters, and unicode strings.
 
-   `0 1 2` , `0.0 3.14 -1.2` , `a' '∀'` , or `Hello World!"`
+   `0 1 2` , `0.0 3.14 -1.2` , `'a'` `'∀'` , or `"Hello World!"`
 
  * All constants compose.
 
