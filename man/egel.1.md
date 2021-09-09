@@ -124,22 +124,19 @@ def main = Fibonnaci:pfib (3+2)
 
 The following files should be in the **EGEL_INCLUDE** directory.
 
-*prelude.eg*
+ * `prelude.eg`:
+   The standard Egel prelude.
 
-:   The standard Egel prelude.
-
-*io.ego* *regex.ego*
-:   Standard input/output, regexes.
+ * `io.ego` `regex.ego`:
+   Standard input/output, regexes dynamic libraries.
 
 ## ENVIRONMENT
 
-**EGEL_INCLUDE**
+ * `EGEL_INCLUDE`:
+    The path to the standard include directory.
 
-:   The path to the standard include directory.
-
-**EGEL_PS0**
-
-:   The prompt given by the interpreter in interactive mode.
+ * `EGEL_PS0`:
+    The prompt given by the interpreter in interactive mode.
 
 ## BUGS
 
