@@ -1,0 +1,52 @@
+# Just a showcase how one could do dynamic dispatch in Egel over a table.
+#
+# This is of course an extremely slow implementation over a lookup table
+# represented as a list. But moving the combinators to C++ would help.
+
+import "prelude.eg"
+
+using System
+using List
+
+namespace Dispatch (
+
+    val dispatch_table = ref {}
+
+    def dispatch_register =
+        [ TAG FUNC ->
+          let TABLE = get_ref dispatch_table in
+          let TABLE = cons (TAG FUNC) TABLE in
+          set_ref dispatch_table TABLE ]
+
+    def dispatch_findrec =
+        [ TAG nil -> throw (format "dispatch for {} failed" TAG)
+        | TAG0 (cons (TAG1 FUNC) TABLE) ->
+	    if TAG0 == TAG1 then FUNC [ _ -> dispatch_findrec TAG0 TABLE ]
+	    else dispatch_findrec TAG0 TABLE ]
+
+    def dispatch_on =
+	[ TAG -> let TABLE = get_ref dispatch_table in 
+                     dispatch_findrec TAG TABLE ]
+
+)
+
+def ++ = Dispatch:dispatch_on "++"
+
+val float_plus_register =
+    let FUNC = 
+        [ K EXPR0 EXPR1 -> if [ E::float -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K nop EXPR0 EXPR1
+	| K -> K nop ]
+    in
+    Dispatch:dispatch_register "++" FUNC
+
+val float_text_register =
+    let FUNC = 
+        [ K EXPR0 EXPR1 -> if [ E::text -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K nop EXPR0 EXPR1
+	| K -> K nop ]
+    in
+    Dispatch:dispatch_register "++" FUNC
+
+def main = 
+    print (1.0 ++ 2.0) "\n";
+    print ("hello " ++ "world") "\n";
+    print (1 ++ "failure")
