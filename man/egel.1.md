@@ -18,7 +18,7 @@ EGEL(1) Version 0.1 | The Egel interpreter
 Egel is an interpreted, interactive, eager-combinator  programming language that
 combines remarkable power with very clear syntax.
 
-A short tutorial as in introduction into the language is given below.
+A short tutorial as an introduction into the language is given below.
 
 Egel's basic power can be extended with your own modules written in C++.
 Those modules are dynamically loaded.
