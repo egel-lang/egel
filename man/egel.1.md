@@ -56,7 +56,7 @@ Egel programs consist of expression which are evaluated eagerly.
 
    `(0 1)` is just as legal as `(cons 'a' nil)`
 
- * Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables 
+ * Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables.
 
    `[ X -> X ]` , `[ (cons HEAD TAIL) -> HEAD ]`
 
@@ -68,7 +68,7 @@ Egel programs consist of expression which are evaluated eagerly.
 
    `[ I::int -> "an int" | C::cons -> "a cons" ]`
 
- * Let expressions allow to assign values to intermediateries.
+ * Let expressions assign values to intermediateries.
 
    `let X = 1 + 2 in X * X`
 
