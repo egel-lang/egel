@@ -72,6 +72,10 @@ Egel programs consist of expression which are evaluated eagerly.
 
    `let X = 1 + 2 in X * X`
 
+ * A semicolon separates computations.
+
+   `print (1+2); "done"`
+
  * Exception handling is supported, any value may be thrown and caught.
 
    `try 1 + throw "failure" catch [ EXC -> print EXC ]`
