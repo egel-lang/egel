@@ -80,12 +80,12 @@ Egel programs consist of expression which are evaluated eagerly.
 
    `try 1 + throw "failure" catch [ EXC -> print EXC ]`
 
- * Parallell programming is achieved  through the `par` and `proc` abstractions.
+ * Parallell programming is achieved  through the `par` and `proc` combinators.
    A `par` starts two computations in parallel and returns a tuple of both values after both complete.
 
    `par [ _ -> _computation0_ ] [ _ -> _computation1_ ]` 
 
-   The process abstraction is not discussed here.
+   The process combinator is not discussed here.
 
  * Formatting strings is handled with the `format` combinator, see <https://fmt.dev/>.
 
