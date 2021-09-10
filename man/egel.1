@@ -155,6 +155,53 @@ def main = Fibonnaci:pfib (3+2)
 .
 .IP "" 0
 .
+.SH "EXAMPLES"
+There are three modes in which the interpreter is used: batch, interactive, or command mode\.
+.
+.P
+In batch mode, just supply the top module with a \fBmain\fR combinator\.
+.
+.IP "" 4
+.
+.nf
+
+$ egel helloworld\.eg
+Hello world!
+.
+.fi
+.
+.IP "" 0
+.
+.P
+The interpreter will start in interactive mode when invoked without a module argument\.
+.
+.IP "" 4
+.
+.nf
+
+$ egel
+> using System
+> 1 + 1
+2
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Supply a command to use \fBegel \-e\fR as a simple calculator\.
+.
+.IP "" 4
+.
+.nf
+
+$ egel \-e "1+1"
+2
+.
+.fi
+.
+.IP "" 0
+.
 .SH "FILES"
 The following files should be in the \fBEGEL_INCLUDE\fR directory\.
 .

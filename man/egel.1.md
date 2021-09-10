@@ -125,6 +125,27 @@ using System
 
 def main = Fibonnaci:pfib (3+2)
 ```
+## EXAMPLES
+
+There are three modes in which the interpreter is used: batch, interactive, or command mode.
+
+In batch mode, just supply the top module with a `main` combinator.
+
+    $ egel helloworld.eg
+    Hello world!
+
+The interpreter will start in interactive mode when invoked without a module argument.
+
+    $ egel
+    > using System
+    > 1 + 1
+    2
+
+Supply a command to use `egel -e` as a simple calculator.
+
+    $ egel -e "1+1"
+    2
+
 ## FILES
 
 The following files should be in the `EGEL_INCLUDE` directory.
