@@ -7,11 +7,11 @@ EGEL(1) Version 0.1 | The Egel interpreter
 
 ## SYNOPSIS
 
-`egel` \[**-**] \[**-I** <path>] \[<file>]
+`egel` [-|--interact] [-I <path>|--include <path>] [<file>]
 
-`egel` \[**-I** <path>] **-e** <command>
+`egel` [-I <path>|--include <path>] -e <command>
 
-`egel` \[**-h**|**--help**|**-v**|**--version**]
+`egel` [-h|--help|-v|--version]
 
 ## DESCRIPTION
 
