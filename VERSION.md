@@ -3,6 +3,11 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.1.0 -- corrupting the neighborhood
+
++ MacOS (clang, arm64) and Linux (gcc, arm64)
++ man page
+
 ## v0.0.7 -- the work of the devil
 
 + cmake
