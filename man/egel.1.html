@@ -149,6 +149,10 @@ A <code>par</code> starts two computations in parallel and returns a tuple of bo
 <li><p>Formatting strings is handled with the <code>format</code> combinator, see <a href="https://fmt.dev/" data-bare-link="true">https://fmt.dev/</a>.</p>
 
 <p><code>print (format "Hello {}" "world")</code></p></li>
+<li><p>The interpreter implements a term rewriter though has mutuable references.
+Cycles won't be garbage collected.</p>
+
+<p><code>let X = ref 0 in set_ref X 1; get_ref X</code></p></li>
 </ul>
 
 
@@ -234,7 +238,7 @@ Hello world!
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>M.C.A. (Marco) Devillers <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#111;&#x3a;&#109;&#x61;&#x72;&#x63;&#x6f;&#46;&#x64;&#x65;&#x76;&#105;&#x6c;&#108;&#101;&#x72;&#x73;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#x6d;&#97;&#114;&#99;&#111;&#46;&#100;&#x65;&#x76;&#105;&#108;&#108;&#x65;&#x72;&#x73;&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#46;&#x63;&#x6f;&#x6d;</a></p>
+<p>M.C.A. (Marco) Devillers <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#x3a;&#109;&#97;&#x72;&#x63;&#x6f;&#x2e;&#x64;&#x65;&#x76;&#x69;&#x6c;&#108;&#x65;&#x72;&#x73;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#x6d;" data-bare-link="true">&#x6d;&#97;&#x72;&#99;&#111;&#46;&#x64;&#101;&#x76;&#105;&#108;&#108;&#101;&#x72;&#x73;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;</a></p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
