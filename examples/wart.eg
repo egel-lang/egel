@@ -4,7 +4,7 @@
 # `(1 2) 3` equals `1 2 3` (without application nodes).
 #
 # This would be difficult to fix since what would 
-# `[(X Y) Z -> .. ]` than mean..
+# `[(X Y) Z -> .. ]` then mean..
 #
 # So far, my only solution to that problem is to document it.
 
