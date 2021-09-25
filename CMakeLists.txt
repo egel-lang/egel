@@ -38,6 +38,9 @@ file(STRINGS "${CMAKE_SOURCE_DIR}/src/egel.cpp"
 
 string(REGEX REPLACE ${INCLUDE_PATH_REGEX} "\\1" INCLUDE_PATH "${INCLUDE_PATH}")
 
+# add 'fallback' modules
+set(CMAKE_MODULE_PATH "contrib/cmake/modules;${CMAKE_MODULE_PATH}")
+
 # the Egel project
 project(Egel DESCRIPTION "The Egel interpreter"
         VERSION ${PVERSION} LANGUAGES CXX)
