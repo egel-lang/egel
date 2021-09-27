@@ -14,7 +14,7 @@ This interpreter is being developed on Linux/MacOS and uses libicu for
 Unicode support and fmt for formatting. 
 
 You need to have the GNU or LLVM compiler chain, the development 
-files for libicu and fmt, and cmake installed. 
+files for libicu (65.0) and fmt (8.0), and cmake (3.13) installed. 
 Most Linux package managers will provide that for you.
 
 This interpreter is made with `cmake` in the standard manner. Run
