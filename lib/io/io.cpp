@@ -636,7 +636,8 @@ public:
     OPAQUE_PREAMBLE(ServerObject, "OS", "serverobject");
 
     ServerObject(const ServerObject& so): Opaque(so.machine(), so.symbol()) {
-        memcpy( (char*) &_server_address,  (char *) &so._server_address, sizeof(_server_address));
+        // memcpy( (char*) &_server_address,  (char *) &so._server_address, sizeof(_server_address));
+	_server_address = so._server_address;
         _portno = so._portno;
         _queue = so._queue;
         _sockfd = so._sockfd;
@@ -667,7 +668,8 @@ public:
             throw VMObjectText::create("error opening socket");
         }
 
-        bzero((char *) &_server_address, sizeof(_server_address));
+        // bzero((char *) &_server_address, sizeof(_server_address));
+	_server_address = {};
         _server_address.sin_family = AF_INET;
         _server_address.sin_addr.s_addr = INADDR_ANY;
         _server_address.sin_port = htons(_portno);
@@ -694,7 +696,7 @@ public:
     }
 
 protected:
-    struct sockaddr_in _server_address;
+    struct sockaddr_in _server_address = {};
     int _portno = 0;
     int _queue = 0;
     int _sockfd = 0;
