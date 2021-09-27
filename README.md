@@ -46,6 +46,21 @@ named `egel` and all files in the `include` directory for simple tasks.
 You can set the environment variable `EGEL_INCLUDE` to point 
 at the latter path.
 
+Cmake generated makefiles allow for a local install with the command:
+
+```
+    make DESTDIR=~ install
+```
+
+In this case Egel components will be installed into `~/usr/local` directories
+and you might refer to those components by adding the following commands
+to your shell resource file.
+
+```
+    export PATH=~/usr/local/bin:$PATH
+    export EGEL_INCLUDE=~/usr/local/include
+```
+
 Usage
 -----
 
