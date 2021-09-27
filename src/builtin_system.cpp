@@ -13,11 +13,6 @@
 #include <fmt/args.h>
 #endif
 
-#if __has_builtin(__builtin_smull_overflow)
-#else
-  abort();
-#endif
-
 bool add_overflow(long int a, long int b, long int* c) {
     return __builtin_saddl_overflow(a, b, c);
 }
