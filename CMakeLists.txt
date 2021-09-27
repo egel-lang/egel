@@ -79,7 +79,7 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 # ICU components: data, i18n, io, le, lx, test, tu and uc.
 find_package(ICU REQUIRED COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
-find_package(fmt REQUIRED)
+find_package(fmt 8.0 REQUIRED)
 
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories("${CMAKE_SOURCE_DIR}/src/builtin")
