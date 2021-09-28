@@ -156,8 +156,10 @@ The following files should be in the `EGEL_INCLUDE` directory.
  * `prelude.eg`:
    The standard Egel prelude.
 
- * `io.ego` `regex.ego`:
-   Standard input/output, regexes dynamic libraries.
+The following files should be somewhere in the dynamic libraries path.
+
+ * `os.ego` `fs.ego` `regex.ego`:
+   input/output, filesystem, regexes dynamic libraries.
 
 ## ENVIRONMENT
 

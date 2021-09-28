@@ -168,7 +168,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/include/prelude.eg"
 )
 
 install(TARGETS os fs regex random
-        LIBRARY DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 install(FILES "${CMAKE_SOURCE_DIR}/man/egel.1"
