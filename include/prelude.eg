@@ -149,11 +149,11 @@ namespace List (
     def elem =
         [ X -> any ((==) X) ]
 
-    ## System:elem x l - inverse membership test
+    ## System:notelem x l - inverse membership test
     def notelem =
         [ X -> all ((/=) X) ]
 
-    ## System:elem x l - union of two lists (nˆ2 complexity)
+    ## System:union x l - union of two lists (nˆ2 complexity)
     def union =
         [ nil YY            -> YY
         | (cons X XX) YY    -> if elem X YY then union XX YY else cons X (union XX YY) ]
