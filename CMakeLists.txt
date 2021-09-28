@@ -114,11 +114,11 @@ target_link_libraries(egellib_static fmt::fmt Threads::Threads ICU::uc ICU::i18n
 #
 # the dynamic .ego Egel libraries
 
-# io.ego
-file(GLOB IO_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/io/*.cpp")
-add_library(io MODULE ${IO_LIST})
-target_link_libraries(io ICU::uc ICU::i18n ICU::io)
-set_target_properties(io PROPERTIES PREFIX "" SUFFIX ".ego")
+# os.ego
+file(GLOB OS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/os/*.cpp")
+add_library(os MODULE ${OS_LIST})
+target_link_libraries(os ICU::uc ICU::i18n ICU::io)
+set_target_properties(os PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # fs.ego
 file(GLOB FS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/fs/*.cpp")
@@ -167,7 +167,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/include/prelude.eg"
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(TARGETS io fs regex random
+install(TARGETS os fs regex random
         LIBRARY DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 

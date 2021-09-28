@@ -3,7 +3,7 @@
 # This script reads standard input and prints it sorted to standard output.
 
 import "prelude.eg"
-import "io.ego"
+import "os.ego"
 
 using System
 using OS
