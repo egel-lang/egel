@@ -77,7 +77,7 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # check for ICU, Threads, fmt
 # ICU components: data, i18n, io, le, lx, test, tu and uc.
-find_package(ICU 65.0 REQUIRED COMPONENTS data i18n io tu uc)
+find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
 find_package(fmt 7.1 REQUIRED)
 
