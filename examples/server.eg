@@ -3,7 +3,7 @@
 # The server spawns a listener for each incoming connection,
 # evaluates input from there, and sends the result back.
 
-import "io.ego"
+import "os.ego"
 using OS
 using System
 

@@ -3,7 +3,7 @@
 # The client implements an Egel REPL by connecting
 # to a server.
 
-import "io.ego"
+import "os.ego"
 using OS
 using System
 

@@ -50,7 +50,7 @@
 ######################################################################
 
 import "prelude.eg"
-import "io.ego"
+import "os.ego"
 
 using System
 using OS
