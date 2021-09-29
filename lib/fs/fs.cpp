@@ -5,7 +5,7 @@
 
 namespace fs = std::filesystem;
 /**
- * Start of a simplistic Regex library lifting most of libicu.
+ * Lift of C++ filesystem
  */
 
 #define OS_STRING    "OS"
