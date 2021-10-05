@@ -32,6 +32,8 @@ namespace Dispatch (
 
 def ++ = Dispatch:dispatch_on "++"
 
+# note that this makes use of variadic pattern matching. you either
+# match and apply on arguments, or continue with arguments undisturbed
 val plus_float_register =
     let FUNC = 
         [ K EXPR0 EXPR1 -> 
