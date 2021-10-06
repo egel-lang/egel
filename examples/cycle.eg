@@ -1,5 +1,5 @@
 # Egel supports variables though I didn't implement a nice syntax for
-# that yet.
+# that.
 #
 # Variables can create cycles. For the moment, we don't do anything
 # about that though we may copy the argument once or fail to assign
@@ -11,5 +11,5 @@ using System
 
 def main = 
     let Y = ref 0 in
-    let Y = setref Y Y in
+    let Y = set_ref Y Y in
        Y
