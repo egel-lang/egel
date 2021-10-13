@@ -20,8 +20,8 @@ def sum = [ X Y -> let Z = X + Y in (Z, sum Z) ]
 val p = proc (sum 0)
 
 def main = 
-    send 2 p;
-    send 3 p;
+    send p 2;
+    send p 3;
     print "received: " (recv p) "\n";
     print "received: " (recv p) "\n";
     halt p

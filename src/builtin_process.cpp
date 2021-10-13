@@ -179,7 +179,7 @@ public:
     }
 };
 
-//## System:send msg proc - send proc a message msg
+//## System:send proc msg - send message msg to proc
 class Send: public Dyadic {
 public:
     DYADIC_PREAMBLE(Send, "System", "send");
@@ -187,9 +187,9 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
 
-        if ((arg1->tag() == VM_OBJECT_OPAQUE) && (arg1->symbol() == pr)) {
-            auto process = std::static_pointer_cast<Process>(arg1);
-            process->in_push(arg0);
+        if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == pr)) {
+            auto process = std::static_pointer_cast<Process>(arg0);
+            process->in_push(arg1);
             return machine()->get_data_string("System", "nop");
         } else {
             THROW_BADARGS;
