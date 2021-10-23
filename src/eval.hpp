@@ -346,7 +346,7 @@ public:
         auto sr = vm->enter_symbol("Internal", "result");
         auto rr = EvalResult(vm, sr, main).clone();
         auto se = vm->enter_symbol("Internal", "exception");
-        auto e = EvalResult(vm, se, exc).clone();
+        auto e  = EvalResult(vm, se, exc).clone();
 
         // handle the commands
         if (aa->tag() == AST_WRAPPER) {

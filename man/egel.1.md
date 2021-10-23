@@ -144,10 +144,10 @@ The interpreter will start in interactive mode when invoked without a module arg
     > 1 + 1
     2
 
-Supply a command to use `egel -e` as a simple calculator.
+Supply a command to use `egel -e` as a simple calculator. Double semicolons are separators.
 
-    $ egel -e "1+1"
-    2
+    $ egel fib.eg -e "using Fibonnaci;; fib 3"
+    5
 
 ## FILES
 
