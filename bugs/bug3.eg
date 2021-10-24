@@ -1,0 +1,9 @@
+
+# There's something fishy going on with emojis on macos.
+# This is a unicode error somewhere, the expression below
+# is accepted when a space is given _after_ the closing
+# quote in interactive mode.
+# This seems to have something to do with code points
+# above 24 bits.
+
+def main = "🦔"

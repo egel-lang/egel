@@ -3,6 +3,11 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
+## v0.1.1 -- fear is the mind killer
+
++ dynamic coding combinators
++ readme/license changes
+
 ## v0.1.0 -- corrupting the neighborhood
 
 + MacOS (clang, arm64) and Linux (gcc, arm64)
