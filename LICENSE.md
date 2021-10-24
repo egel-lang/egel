@@ -21,3 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
+Contributions: Unless you explicitly state otherwise, any contribution 
+intentionally submitted for inclusion in this software or associated
+documentation shall be under the terms and conditions of this license, 
+without any additional terms or conditions.
