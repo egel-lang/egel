@@ -17,6 +17,7 @@
 #include "builtin_system.hpp"
 #include "builtin_math.hpp"
 #include "builtin_string.hpp"
+#include "builtin_runtime.hpp"
 #include "builtin_thread.hpp"
 #include "builtin_process.hpp"
 #include "builtin_eval.hpp"
@@ -664,6 +665,7 @@ public:
         auto sys = ModuleInternal("internal", vm, &builtin_system).clone();
         auto mth = ModuleInternal("internal", vm, &builtin_math).clone();
         auto str = ModuleInternal("internal", vm, &builtin_string).clone();
+        auto run = ModuleInternal("internal", vm, &builtin_runtime).clone();
         auto thd = ModuleInternal("internal", vm, &builtin_thread).clone();
         auto prc = ModuleInternal("internal", vm, &builtin_process).clone();
         auto evl = ModuleInternal("internal", vm, &builtin_eval).clone();
@@ -671,6 +673,7 @@ public:
         _loading.push_back(sys);
         _loading.push_back(mth);
         _loading.push_back(str);
+        _loading.push_back(run);
         _loading.push_back(thd);
         _loading.push_back(prc);
         _loading.push_back(evl);
