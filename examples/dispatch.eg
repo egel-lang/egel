@@ -21,13 +21,12 @@ namespace Dispatch (
     def dispatch_findrec =
         [ TAG nil -> throw (format "dispatch for {} failed" TAG)
         | TAG0 (cons (TAG1 FUNC) TABLE) ->
-	    if TAG0 == TAG1 then FUNC [ _ -> dispatch_findrec TAG0 TABLE ]
-	    else dispatch_findrec TAG0 TABLE ]
+        if TAG0 == TAG1 then FUNC [ _ -> dispatch_findrec TAG0 TABLE ]
+        else dispatch_findrec TAG0 TABLE ]
 
     def dispatch_on =
-	[ TAG -> let TABLE = get_ref dispatch_table in 
+    [ TAG -> let TABLE = get_ref dispatch_table in 
                      dispatch_findrec TAG TABLE ]
-
 )
 
 def ++ = Dispatch:dispatch_on "++"
@@ -37,15 +36,15 @@ def ++ = Dispatch:dispatch_on "++"
 val plus_float_register =
     let FUNC = 
         [ K EXPR0 EXPR1 -> 
-		if [ E::float -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K nop EXPR0 EXPR1
-	| K -> K nop ]
+            if [ E::float -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K nop EXPR0 EXPR1
+        | K -> K nop ]
     in
     Dispatch:dispatch_register "++" FUNC
 
 val plus_text_register =
     let FUNC = 
         [ K EXPR0 EXPR1 -> if [ E::text -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K nop EXPR0 EXPR1
-	| K -> K nop ]
+        | K -> K nop ]
     in
     Dispatch:dispatch_register "++" FUNC
 
