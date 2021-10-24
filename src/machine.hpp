@@ -113,6 +113,10 @@ public:
         }
     }
 
+    data_t size() {
+        return _to.size();
+    }
+
     data_t define(const VMObjectPtr& s) {
         if (_from.count(s) == 0) {
             return enter(s);
@@ -212,6 +216,17 @@ public:
     VMObjectPtr get_data(const data_t d) override {
         return _data.get(d);
     }
+
+    // querying
+    data_t query_symbols_size() override {
+	return _data.size();
+    }
+
+    icu::UnicodeString query_symbols_nth(const data_t n) override {
+	return _data.get(n)->to_text();
+    }
+
+    
 
     // reduce an expression
     void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc, reducer_state_t* run) override {

@@ -220,6 +220,10 @@ public:
     virtual data_t define_data(const VMObjectPtr& o) = 0;
     virtual VMObjectPtr get_data(const data_t d) = 0;
 
+    // querying hides the symbol/data abstraction
+    virtual data_t query_symbols_size() = 0;
+    virtual icu::UnicodeString query_symbols_nth(const data_t n) = 0;
+
     // reduce an expression
     virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc, reducer_state_t* run) = 0;
     virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc) = 0;

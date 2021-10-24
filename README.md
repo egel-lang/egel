@@ -1,11 +1,8 @@
 <img src="contrib/assets/egel-black-white.svg" height="50px"/>  The Egel Language
 =================
 
-The Egel language is a simple untyped algebraic toy language based on 
-eager combinator rewriting.
-
-The interpreter defined here is aimed at automating small 'mathematical'
-tasks.
+Egel is an eager untyped combinator scripting language which comes with
+an interpreter.
 
 Installation
 ------------
@@ -81,11 +78,3 @@ The interpreter allocates lots of short-lived objects. If you want
 a bit of extra speed, it might pay off to switch the allocator to
 `jemalloc` on Linux. I use 
 ``LD_PRELOAD=`jemalloc-config --libdir`/libjemalloc.so.`jemalloc-config --revision``.
-
-Disclaimer
-----------
-
-This is a hobby project, not the next big thing. The experiment is to
-see how far one can push an eager combinator rewriting implementation in
-idiomatic C++. Everything about the interpreter is experimental,
-and the result will likely be a very, and I mean very, slow interpreter.
