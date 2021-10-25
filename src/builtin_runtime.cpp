@@ -64,8 +64,8 @@ public:
         if (_cons == nullptr) _cons = machine()->get_data_string("System", "cons");
 
         VMObjectPtr ss = _nil;
-        auto len = machine()->query_symbols_size();
-        for (auto n = len-1; n >= 0; n--) {
+        int len = (int) machine()->query_symbols_size();
+        for (int n = len-1; n >= 0; n--) {
             auto s = machine()->query_symbols_nth(n);
             auto tt = VMObjectPtrs();
             tt.push_back(_cons);
@@ -102,9 +102,9 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            auto o = machine()->get_data_string(s);
-
-            return VMObjectText("stub").clone();
+	    auto c = VMObjectData(machine(), s).clone();
+            machine()->define_data(c);
+            return c;
         } else {
             THROW_BADARGS;
         }

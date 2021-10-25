@@ -669,7 +669,7 @@ public:
         auto thd = ModuleInternal("internal", vm, &builtin_thread).clone();
         auto prc = ModuleInternal("internal", vm, &builtin_process).clone();
         auto evl = ModuleInternal("internal", vm, &builtin_eval).clone();
-        sys->load(); mth->load(); str->load(); thd->load(); prc->load(); evl->load();
+        sys->load(); mth->load(); str->load(); run->load(); thd->load(); prc->load(); evl->load();
         _loading.push_back(sys);
         _loading.push_back(mth);
         _loading.push_back(str);

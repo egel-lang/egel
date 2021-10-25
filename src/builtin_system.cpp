@@ -739,45 +739,6 @@ public:
     }
 };
 
-//## System:dis o - disassemble a combinator object
-class Dis: public Monadic {
-public:
-    MONADIC_PREAMBLE(Dis, "System", "dis");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (auto o = std::dynamic_pointer_cast<VMObjectBytecode>(arg0)) {
-            auto s0 = o->text();
-            auto s1 = o->disassemble();
-            return VMObjectText(s0+ "::" + s1).clone();
-        } else {
-            THROW_BADARGS;
-        }
-    }
-};
-
-//## System:asm s0 s1 - assemble bytecode into a combinator
-class Asm: public Unary {
-public:
-    UNARY_PREAMBLE(Asm, "System", "asm");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            auto l = s.length();
-            auto p = s.indexOf("::");
-            icu::UnicodeString s0;
-            icu::UnicodeString s1;
-            s.extract(0, p, s0);
-            s.extract(p+2, l-(p+2), s1);
-            auto c = VMObjectBytecode(machine(), Code(), s0);
-            c.assemble(s1);
-            return c.clone();
-        } else {
-            THROW_BADARGS;
-        }
-    }
-};
-
 //## System:arg n - return the n-th application argument, otherwise return 'nop'
 class Arg: public Monadic {
 public:
@@ -1011,10 +972,6 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(Toint(vm).clone());
     oo.push_back(Tofloat(vm).clone());
     oo.push_back(Totext(vm).clone());
-
-    // disassemble and reassemble
-    oo.push_back(Dis(vm).clone());
-    oo.push_back(Asm(vm).clone());
 
     // move to string?
     oo.push_back(Unpack(vm).clone());

@@ -7,6 +7,7 @@ A list of all major changes between versions of the interpreter.
 
 + dynamic coding combinators
 + readme/license changes
++ compile on more Linux/MacOs architectures
 
 ## v0.1.0 -- corrupting the neighborhood
 
