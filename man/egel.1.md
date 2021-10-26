@@ -26,14 +26,14 @@ Those modules are dynamically loaded.
 * `-h`, `--help`:
    Prints brief usage information, may list debug options.
 
+* `-v`, `--version`:
+   Prints the current version number.
+
 * `-`, `--interact`:
    Enter interactive mode unconditionally.
 
 * `-e`, `--eval <command>`:
    Evaluate the given command.
-
-* `-v`, `--version`:
-   Prints the current version number.
 
 * `-I`, `--include <path>`:
    Add an include path.
@@ -175,7 +175,7 @@ See GitHub Issues: <https://github.com/egel-lang/egel/issues>
 
 ## AUTHOR
 
-M.C.A. (Marco) Devillers <marco.devillers@gmail.com>
+MIT License (c) 2017 M.C.A. (Marco) Devillers <marco.devillers@gmail.com>
 
 ## SEE ALSO
 
