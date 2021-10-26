@@ -66,7 +66,7 @@ Egel code consist of expression which are evaluated eagerly.
 
    `[ I::int -> "an int" | C::cons -> "a cons" ]`
 
- * Let expressions assign values to intermediateries.
+ * Let expressions assign values to intermediaries.
 
    `let X = 1 + 2 in X * X`
 
@@ -81,7 +81,7 @@ Egel code consist of expression which are evaluated eagerly.
  * Parallell programming is achieved  through the `par` and `proc` combinators.
    A `par` starts two computations in parallel and returns a tuple of both values after both complete.
 
-   `par [ _ -> _computation0_ ] [ _ -> _computation1_ ]` 
+   `par [ _ -> fib 35 ] [ _ -> ack 5 4 ]` 
 
    The process combinator is not discussed here.
 

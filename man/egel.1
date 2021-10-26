@@ -80,7 +80,7 @@ Patterns may hold rudimentary type matches\.
 \fB[ I::int \-> "an int" | C::cons \-> "a cons" ]\fR
 .
 .IP "\(bu" 4
-Let expressions assign values to intermediateries\.
+Let expressions assign values to intermediaries\.
 .
 .IP
 \fBlet X = 1 + 2 in X * X\fR
@@ -101,7 +101,7 @@ Exception handling is supported, any value may be thrown and caught\.
 Parallell programming is achieved through the \fBpar\fR and \fBproc\fR combinators\. A \fBpar\fR starts two computations in parallel and returns a tuple of both values after both complete\.
 .
 .IP
-\fBpar [ _ \-> _computation0_ ] [ _ \-> _computation1_ ]\fR
+\fBpar [ _ \-> fib 35 ] [ _ \-> ack 5 4 ]\fR
 .
 .IP
 The process combinator is not discussed here\.
