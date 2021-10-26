@@ -9,7 +9,7 @@ else()
 endif()
 
 # set the cxx compiler standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # steal the version of the interpreter
@@ -50,20 +50,32 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-if(("${CMAKE_CXX_COMPILER_ID}" MATCHES "AppleClang"))
-
-  message("AppleClang detected")
+# compilers
+message("compiler: ${CMAKE_CXX_COMPILER_ID}")
+if(("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
   set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter -Wno-return-type-c-linkage")
   set(CMAKE_CXX_FLAGS_DEBUG               "-g")
   set(CMAKE_CXX_FLAGS_RELEASE             "-Ofast")
-
-else()
-
-  message("Other compiler")
+elseif(("${CMAKE_CXX_COMPILER_ID}" MATCHES "AppleClang"))
+  set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter -Wno-return-type-c-linkage")
+  set(CMAKE_CXX_FLAGS_DEBUG               "-g")
+  set(CMAKE_CXX_FLAGS_RELEASE             "-Ofast")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter")
   set(CMAKE_CXX_FLAGS_DEBUG               "-g")
   set(CMAKE_CXX_FLAGS_RELEASE             "-O3")
-
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+  set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter")
+  set(CMAKE_CXX_FLAGS_DEBUG               "-g")
+  set(CMAKE_CXX_FLAGS_RELEASE             "-O3")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter")
+  set(CMAKE_CXX_FLAGS_DEBUG               "-g")
+  set(CMAKE_CXX_FLAGS_RELEASE             "-O3")
+else()
+  set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter")
+  set(CMAKE_CXX_FLAGS_DEBUG               "-g")
+  set(CMAKE_CXX_FLAGS_RELEASE             "-O3")
 endif()
 
 SET(CMAKE_CXX_FLAGS_PROFILE             "-O3 -pg")
@@ -93,13 +105,6 @@ target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io
 add_executable(egel $<TARGET_OBJECTS:objlib>)
 target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
 
-# compiler dependent stuff
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_link_libraries(egel stdc++fs)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-endif()
 
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
@@ -124,15 +129,6 @@ set_target_properties(os PROPERTIES PREFIX "" SUFFIX ".ego")
 file(GLOB FS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/fs/*.cpp")
 add_library(fs MODULE ${FS_LIST})
 target_link_libraries(fs ICU::uc ICU::i18n ICU::io)
-
-# compiler dependent stuff
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_link_libraries(fs stdc++fs)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-endif()
-
 set_target_properties(fs PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # regex.ego
