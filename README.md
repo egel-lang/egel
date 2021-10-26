@@ -38,10 +38,11 @@ and a number of dynamically loadable Egel object files in the
 For a system-wide install run `make install` after a build
 as root.
 
+On some systems the `EGEL_INCLUDE` environment variable needs to be set.
+See the man page for further information on that.
+
 If you don't want to do that, please note that you only need the interpreter
-named `egel` and all files in the `include` directory for simple tasks.
-You can set the environment variable `EGEL_INCLUDE` to point 
-at the latter path.
+named `egel` and the prelude in the `include` directory for simple tasks.
 
 Cmake generated makefiles allow for a local install with the command:
 
@@ -58,21 +59,8 @@ to your shell resource file.
     export EGEL_INCLUDE=~/usr/local/include
 ```
 
-Usage
------
-
-The command `egel` will start the interpreter in interactive mode.
-You will be greeted with a prompt. Note that the interpreter comes
-in a 'clean slate' mode, your first command will probably be
-`using System` to get direct access to Egel's builtin primitives,
-like addition, printing, etcetera.
-
 The interpreter doesn't provide command line editing, you might
 want to wrap it with the command `alias egel="rlwrap egel"`.
-
-A number of example scripts are provided in the examples directory.
-If you set up your system correctly, you can run any of them
-with the command `egel example.eg`.
 
 The interpreter allocates lots of short-lived objects. If you want
 a bit of extra speed, it might pay off to switch the allocator to
