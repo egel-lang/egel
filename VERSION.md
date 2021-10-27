@@ -3,11 +3,16 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
-## v0.1.1 -- fear is the mind killer
+## Pending
 
 + dynamic coding combinators
++ time and date built-ins
+
+## v0.1.1 -- fear is the mind killer
+
 + readme/license changes
 + compile on more Linux/MacOs architectures
++ fixed critical regression LL(n) quadratic behavior
 
 ## v0.1.0 -- corrupting the neighborhood
 
