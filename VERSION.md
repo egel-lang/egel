@@ -11,7 +11,7 @@ A list of all major changes between versions of the interpreter.
 ## v0.1.1 -- fear is the mind killer
 
 + readme/license changes
-+ compile on more Linux/MacOs architectures
++ compile on more Linux/MacOs/BSD architectures
 + fixed critical regression LL(n) quadratic behavior
 
 ## v0.1.0 -- corrupting the neighborhood
