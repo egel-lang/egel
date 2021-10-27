@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <iostream>
 #include <vector>
-#define U_CHARSET_IS_UTF8 1
 #include "unicode/ustdio.h"
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
