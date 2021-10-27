@@ -89,7 +89,7 @@ Egel code consist of expression which are evaluated eagerly.
 
    `print (format "Hello {}" "world")`
 
- * The interpreter implements a term rewriter though has mutuable references.
+ * The interpreter implements a term rewriter though has mutable references.
    Cycles won't be garbage collected.
 
    `let X = ref 0 in set_ref X 1; get_ref X`
