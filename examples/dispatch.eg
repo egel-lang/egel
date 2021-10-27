@@ -25,7 +25,7 @@ namespace Dispatch (
         else dispatch_findrec TAG0 TABLE ]
 
     def dispatch_on =
-    [ TAG -> let TABLE = get_ref dispatch_table in 
+        [ TAG -> let TABLE = get_ref dispatch_table in 
                      dispatch_findrec TAG TABLE ]
 )
 
