@@ -22,9 +22,10 @@ public:
     StringCharReader(const icu::UnicodeString &resource, const icu::UnicodeString &content) {
         _row = 1;
         _column = 1;
+        _index = 0;
         _resource = resource;
         _content = content;
-        _index = 0;
+	fill_buffer();
     }
 
     Position position() override {
@@ -37,17 +38,17 @@ public:
 
     UChar32 look() override {
         if (end()) return '\0';
-        return _content.char32At(_index);
+        return _buffer[_index];
     }
 
     UChar32 look(int n) override { // need LL(2) in the lexer for '-1', to be decaprecated at some point
-        return _content.char32At(_index+1);
+        return _buffer[_index+n];
     }
 
     void skip() override {
         if (end()) return;
         UChar32 c = look();
-        _index = _content.moveIndex32(_index, 1);
+	_index++;
         switch (c) {
             // XXX: handle MSDOS like newlines
             case '\n':
@@ -60,8 +61,9 @@ public:
     }
 
     bool end() override {
-        if (_content.char32At(_index) == 65535) return true; // make absolutely sure we always detect the end
-        return _index >= _content.countChar32();
+	if (_index >= _length) return true;
+	if (_buffer[_index] == 65535) return true; // make absolutely sure we always detect the end
+	return false;
     }
 
     bool eol() override {
@@ -78,13 +80,34 @@ public:
         _column = 1;
     }
 
+protected:
+
+    void fill_buffer() {
+	std::string utf8;
+       	_content.toUTF8String(utf8);
+	icu::StringPiece sp(utf8);
+        const char *s=sp.data();
+        int32_t length=sp.length();
+        int32_t n=0;
+        for(int32_t i=0; i<length;) {
+            UChar32 c;
+            U8_NEXT(s, i, length, c);
+	    _buffer.push_back(c);
+	    n++;
+        }
+	_length = n;
+    }
+
 private:
-    icu::UnicodeString _resource;
     int32_t _row;
     int32_t _column;
-
-    icu::UnicodeString _content;
     int32_t _index;
+    int32_t _length;
+
+    icu::UnicodeString   _resource;
+    icu::UnicodeString   _content;
+    std::vector<UChar32> _buffer;
+
 };
 
 #endif

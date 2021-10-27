@@ -1,6 +1,6 @@
 
 def genmod(n):
-    print("namespace Test%d" % n, " (")
+    print("namespace Test%d (" % n)
     print("     data true, false")
     print("")
     print("     namespace F:G (")
