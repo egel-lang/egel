@@ -13,8 +13,8 @@ namespace Calculate (
         [ A S -> (A, S) ]
 
     ## Calculate:nget - observe the state
-    def nret =
-        [ S -> (A, S) ]
+    def nget =
+        [ S -> (S, S) ]
 
     ## Calculate:nseq f g - first do f, then g
     def nseq =
