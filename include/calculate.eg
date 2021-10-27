@@ -1,0 +1,34 @@
+
+import "prelude.eg"
+
+# Calculations are small abstractions where
+# some computation is done modulo some state.
+
+namespace Calculate (
+
+    using System
+
+    ## Calculate:nret a - calculate further with value a
+    def nret =
+        [ A S -> (A, S) ]
+
+    ## Calculate:nseq f g - first do f, then g
+    def nseq =
+        [ F G S0 -> [(A, S1) -> G A S1] (F S0) ]
+
+    ## Calculate:nseq f g - first do f, then g
+    def napply =
+        [ F G -> nseq F [X -> nret (G X)] ]
+
+    ## Calculate:nrun f s - run calculation f on state s
+    def nrun =
+        [ F S -> [(A, S) -> A] (F S) ]
+
+    ## Calculate:<* f g - first do f, then g
+    def <* = nseq
+
+    ## Calculate:<@ f g - first do f, then g
+    def <@ = napply
+
+)
+
