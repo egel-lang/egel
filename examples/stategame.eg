@@ -8,7 +8,7 @@
 # An 'a' increases the counter, a 'b' decreases the counter, a 'c'
 # toggles whether the game is being played.
 #
-# E.g 
+# E.g., 
 # 'ab'    = 0
 # 'ca'    = 1
 # 'cabca' = 0
