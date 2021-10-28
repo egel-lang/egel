@@ -3,7 +3,7 @@ EGEL(1) Version 0.1 | The Egel interpreter
 
 ## NAME
 
-**egel** - an interpreted, untyped, functional language
+**egel** - an untyped functional scripting language
 
 ## SYNOPSIS
 
