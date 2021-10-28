@@ -3,7 +3,7 @@ EGEL(1) Version 0.1 | The Egel interpreter
 
 ## NAME
 
-**egel** - an interpreted, interactive, eager-combinator language
+**egel** - an interpreted, untyped, functional language
 
 ## SYNOPSIS
 
@@ -15,8 +15,9 @@ EGEL(1) Version 0.1 | The Egel interpreter
 
 ## DESCRIPTION
 
-Egel is an interpreted, interactive, eager-combinator  programming language that
-combines remarkable power with very clear syntax.
+Egel is an interpreted, untyped, functional programming language based
+on eager combinator rewriting that combines remarkable power with very
+clear syntax.
 
 Egel's basic functionality can be extended with your own modules written in C++.
 Those modules are dynamically loaded.
