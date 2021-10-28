@@ -15,9 +15,8 @@ EGEL(1) Version 0.1 | The Egel interpreter
 
 ## DESCRIPTION
 
-Egel is an interpreted, untyped, functional programming language based
-on eager combinator rewriting that combines remarkable power with very
-clear syntax.
+Egel is an untyped concurrent functional scripting language based on eager combinator
+rewriting with a concise but remarkably powerful syntax.
 
 Egel's basic functionality can be extended with your own modules written in C++.
 Those modules are dynamically loaded.
