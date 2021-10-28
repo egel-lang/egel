@@ -1,15 +1,12 @@
 # A simple stategame showcasing calculations.
 #
-# The game is to produce a number from a string
-# of {'a','b','c'}*.
-# The game state is a counter and whether the
-# game is being played.
+# The game is to produce a number from a string of {'a','b','c'}*.
+# The game state is a counter and whether the game is being played.
 #
 # Initially the game is off and the counter is 0.
 #
-# An 'a' increases the counter, a 'b' decreases
-# the counter, a 'c' toggles whether the game is
-# played.
+# An 'a' increases the counter, a 'b' decreases the counter, a 'c'
+# toggles whether the game is being played.
 #
 # E.g 
 # 'ab'    = 0

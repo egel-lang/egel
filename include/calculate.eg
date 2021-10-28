@@ -1,9 +1,9 @@
 # Calculations are small abstractions where some computation is done
 # modulo some state.
-
-# All calculations are chained actions. An action is a function 
-# which gets as an arguments a state and returns
-# a tuple of a result and a state.
+#
+# All calculations are chained actions. An action is a function which 
+# gets as an arguments a state and returns a tuple of a result and a
+# state.
 
 namespace Calculate (
 
