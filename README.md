@@ -52,7 +52,7 @@ Cmake generated makefiles allow for a local install with the command:
 
 In this case Egel components will be installed into `~/usr/local` directories
 and you might refer to those components by adding the following commands
-to your shell resource file.
+to your shell resource file, though the specific syntax may differ.
 
 ```
     export PATH=~/usr/local/bin:$PATH

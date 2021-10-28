@@ -1,0 +1,65 @@
+# A simple stategame showcasing calculations.
+#
+# The game is to produce a number from a string
+# of {'a','b','c'}*.
+# The game state is a counter and whether the
+# game is being played.
+#
+# Initially the game is off and the counter is 0.
+#
+# An 'a' increases the counter, a 'b' decreases
+# the counter, a 'c' toggles whether the game is
+# played.
+#
+# E.g 
+# 'ab'    = 0
+# 'ca'    = 1
+# 'cabca' = 0
+
+import "prelude.eg"
+import "calculate.eg"
+
+using System
+using List
+using Calculate
+
+
+# the state the game manipulates
+
+val game_state_start = (false, 0)
+
+def game_state_toggle =
+    [ (ON, SCORE) -> (not ON, SCORE) ]
+
+def game_state_increase =
+    [ (ON, SCORE) -> (ON, SCORE + 1) ]
+
+def game_state_decrease =
+    [ (ON, SCORE) -> (ON, SCORE - 1) ]
+
+# state observers
+
+def get_score =
+    [ (ON, SCORE) -> return SCORE (ON, SCORE) ]
+
+def get_on =
+    [ (ON, SCORE) -> return ON (ON, SCORE) ]
+
+# the game
+
+def game_loop =
+    [ nil ->
+        get_score <* \SCORE -> return SCORE
+    | (cons C CC) ->
+        get_on <* \ON ->
+           ([ 'a' -> if ON then skip <+ game_state_increase else skip
+            | 'b' -> if ON then skip <+ game_state_decrease else skip
+            | 'c' -> skip <+ game_state_toggle ] C) <* \_ -> game_loop CC ]
+
+
+def play_game =
+    [ S ->
+        let CC = unpack S in
+        run (game_loop CC) game_state_start ]
+
+def main = print (play_game "abcaabcbba")
