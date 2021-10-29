@@ -161,10 +161,10 @@ public:
     }
 };
 
-//## Regex:looking_at pat s0 - true if the pattern matches the start of string
-class LookingAt: public Dyadic {
+//## Regex:look_at pat s0 - true if the pattern matches the start of string
+class LookAt: public Dyadic {
 public:
-    DYADIC_PREAMBLE(LookingAt, REGEX_STRING, "looking_at");
+    DYADIC_PREAMBLE(LookAt, REGEX_STRING, "look_at");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -179,6 +179,35 @@ public:
             delete r;
 
             return create_bool(b);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Regex:look_match pat s0 - returns the initial matched part of the string, or nop
+class LookMatch: public Dyadic {
+public:
+    DYADIC_PREAMBLE(LookMatch, REGEX_STRING, "look_match");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+
+            auto r = pat->matcher(s0);
+            if (r == nullptr) THROW_INVALID;
+
+            UErrorCode  error_code = U_ZERO_ERROR;
+            auto b = r->lookingAt(error_code);
+            auto s = r->group(error_code);
+            delete r;
+
+	    if (b) {
+            	return create_text(s);
+	    } else {
+		return create_nop();
+	    }
         } else {
             THROW_BADARGS;
         }
@@ -358,7 +387,8 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
 
     oo.push_back(Compile(vm).clone());
     oo.push_back(Match(vm).clone());
-    oo.push_back(LookingAt(vm).clone());
+    oo.push_back(LookAt(vm).clone());
+    oo.push_back(LookMatch(vm).clone());
     oo.push_back(Split(vm).clone());
     oo.push_back(Matches(vm).clone());
     oo.push_back(Replace(vm).clone());
