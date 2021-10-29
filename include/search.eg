@@ -1,0 +1,112 @@
+import "prelude.eg"
+import "calculate.eg"
+
+namespace Search (
+
+    using System
+    using Calculate
+    using List
+
+    data top, bot, exc
+
+    ## Search:success a - succeed with value a
+    def success =
+        [ S -> return (top S) ]
+
+    ## Search:fail - fail an alternative
+    def fail =
+        return (bot nop)
+
+    ## Search:raise - fail all alternatives
+    def raise =
+        return (bot exc)
+
+    def message =
+        [ P M -> P <*
+            [ (bot _) -> return (bot M)
+            | (exc _) -> return (exc M)
+            | X       -> return X ] ]
+
+    def nofail = 
+        [ P -> P <*
+            [ (bot M) -> return (exc M)
+            | X       -> return X ] ]
+
+    def parallel =
+        [ P0 P1 S0 ->
+            [ (bot R1, S1) -> P1 S0
+            | L            -> L ] (P0 S0) ]
+
+    def serial =
+        [ P0 P1 -> P0 <* 
+            [ (top X) -> nofail (P1 X)
+            | (bot M) -> return (bot M)
+            | (exc M) -> return (exc M) ] ]
+
+    def apply =
+        [ P F -> P <* 
+            [ (top X) -> return (top (F X))
+            | (bot M) -> return (bot M)
+            | (exc M) -> return (exc M) ] ]
+
+    def sequential =
+        [ P0 P1 -> P0 <* 
+            [ (top X)  -> P1 X
+            | (bot M)  -> return (bot M)
+            | (exc M)  -> return (exc M) ] ]
+
+    def opt =
+        [ P R0 S0 ->
+            [ (bot R1, S1) -> (top R0, S0)
+            | L            -> L          ] (P R0 S0) ]
+
+    def serialopt =
+        [ P0 P1 -> P0 <*  
+            [ (top M) -> opt P1 M
+            | L       -> return L ] ]
+
+    def <+> = parallel
+
+    def <-> = serial
+
+    def </> = serialopt
+
+    def <*> = sequential
+
+    def <!> = message
+
+    def <@>  = apply
+
+    def one =
+        [ P -> P <@> [A -> cons A nil ] ]
+
+    def plus =
+        [ P ->
+            one P </> \L0 ->
+            plus P <@> \L1 -> L0 ++ L1 ]
+
+    def star =
+        [ P -> plus P <+> success nil ]
+
+    def plus_sep = 
+        [ P Q ->
+            one P </> \L0 -> 
+            Q <-> \U ->
+            plus_sep P Q <@> \L1 -> 
+            L0 ++ L1 
+        ]
+
+    def star_sep = 
+        [ P Q -> plus_sep P Q <+> success nil ]
+
+    def run = 
+        [ P S ->
+            [ F T E ->
+                let (A,B) = P S in
+                [ (top X)  -> F X B
+                | (bot M)  -> T M B
+                | (exc M)  -> E M B ] A
+            ]
+        ]
+
+)
