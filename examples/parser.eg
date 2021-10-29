@@ -87,11 +87,13 @@ def parse =
            [ F LL -> throw (format "parse failed with {} at {}" F LL) ]
            [ E LL -> throw (format "parse error {} at {}" E LL) ] ]
 
-def eval =
+# evaluate
+
+def evaluate =
     [ S ->
        let LL = lexify lexeme_table S in
        let LL = filter [ white -> false | _ -> true ] LL in
        let P  = parse parse_expression LL in
            P ]
 
-def main = eval "(1 + 7) * 3"
+def main = evaluate "(1 + 7) * 3"
