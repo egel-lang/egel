@@ -161,6 +161,30 @@ public:
     }
 };
 
+//## Regex:looking_at pat s0 - true if the pattern matches the start of string
+class LookingAt: public Dyadic {
+public:
+    DYADIC_PREAMBLE(LookingAt, REGEX_STRING, "looking_at");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
+            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+
+            auto r = pat->matcher(s0);
+            if (r == nullptr) THROW_INVALID;
+
+            UErrorCode  error_code = U_ZERO_ERROR;
+            auto b = r->lookingAt(error_code);
+            delete r;
+
+            return create_bool(b);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 //## Regex:split pat s0 - split a text according to a pattern
 class Split: public Dyadic {
 public:
@@ -334,6 +358,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
 
     oo.push_back(Compile(vm).clone());
     oo.push_back(Match(vm).clone());
+    oo.push_back(LookingAt(vm).clone());
     oo.push_back(Split(vm).clone());
     oo.push_back(Matches(vm).clone());
     oo.push_back(Replace(vm).clone());
