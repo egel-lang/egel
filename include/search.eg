@@ -7,6 +7,8 @@ namespace Search (
     using Calculate
     using List
 
+    # searching is calculation over a state, minimalist theory
+
     data top, bot, cut
 
     ## Search:success a - succeed with value a
@@ -21,73 +23,94 @@ namespace Search (
     def raise =
         return (bot cut)
 
+    ## Search:message m - fail or raise with message m
     def message =
         [ P M -> P <*
             [ (bot _) -> return (bot M)
             | (cut _) -> return (cut M)
             | X       -> return X ] ]
 
+    ## Search:nofail p - this search may not fail
     def nofail = 
         [ P -> P <*
             [ (bot M) -> return (cut M)
             | X       -> return X ] ]
 
+    ## Search:parallel p q - try alternatives p or q
     def parallel =
         [ P0 P1 S0 ->
             [ (bot R1, S1) -> P1 S0
             | L            -> L ] (P0 S0) ]
 
-    def serial =
-        [ P0 P1 -> P0 <* 
-            [ (top X) -> nofail (P1 X)
-            | (bot M) -> return (bot M)
-            | (cut M) -> return (cut M) ] ]
-
-    def apply =
-        [ P F -> P <* 
-            [ (top X) -> return (top (F X))
-            | (bot M) -> return (bot M)
-            | (cut M) -> return (cut M) ] ]
-
+    ## Search:sequential - try alternative p then q
     def sequential =
         [ P0 P1 -> P0 <* 
             [ (top X)  -> P1 X
             | (bot M)  -> return (bot M)
             | (cut M)  -> return (cut M) ] ]
 
+    ## Search:serial p q - try alternative p then force q
+    def serial =
+        [ P0 P1 -> P0 <* 
+            [ (top X) -> nofail (P1 X)
+            | (bot M) -> return (bot M)
+            | (cut M) -> return (cut M) ] ]
+
+    ## Search:apply p f - apply f to the argument being calculated
+    def apply =
+        [ P F -> P <* 
+            [ (top X) -> return (top (F X))
+            | (bot M) -> return (bot M)
+            | (cut M) -> return (cut M) ] ]
+
+    ## Search: opt p v - optionally succeed p with value v
     def opt =
         [ P R0 S0 ->
             [ (bot R1, S1) -> (top R0, S0)
             | L            -> L          ] (P R0 S0) ]
 
+    ## Search: serialopt p q - optionally succeed p with value v
     def serialopt =
         [ P0 P1 -> P0 <*  
             [ (top M) -> opt P1 M
             | L       -> return L ] ]
 
+    ## Search:<+> p q - try alternatives p or q
     def <+> = parallel
 
+    ## Search:<+> p q - try alternatives p then q
     def <-> = serial
 
+    ## Search:</> p q - try alternatives p optionally then q
     def </> = serialopt
 
+    ## Search:<*> p q - try alternatives p then force q
     def <*> = sequential
 
-    def <!> = message
-
+    ## Search:<@> p f - apply f to the result of p
     def <@>  = apply
 
+    ## Search:<!> p m - set the failure message to m
+    def <!> = message
+
+    # convenience routines
+
+    
+    ## Search:one p - one time p and return a singleton result
     def one =
         [ P -> P <@> [A -> cons A nil ] ]
 
+    ## Search:plus p - one or more p and return a list result
     def plus =
         [ P ->
             one P </> \L0 ->
             plus P <@> \L1 -> L0 ++ L1 ]
 
+    ## Search:star p - zero or more p and return a list result
     def star =
         [ P -> plus P <+> success nil ]
 
+    ## Search:star p s - one or more p separated by s
     def plus_sep = 
         [ P Q ->
             one P </> \L0 -> 
@@ -96,10 +119,12 @@ namespace Search (
             L0 ++ L1 
         ]
 
+    ## Search:star p s - zero or more p separated by s
     def star_sep = 
         [ P Q -> plus_sep P Q <+> success nil ]
 
-    def run = 
+    ## Search:search p s - search with p on state s 
+    def search = 
         [ P S ->
             [ F T E ->
                 let (A,B) = P S in
