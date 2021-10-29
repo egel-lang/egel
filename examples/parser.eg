@@ -78,7 +78,7 @@ def parse_expression =
         (parse_plus <*> \_ -> parse_expression <@> \N1 -> N0 + N1)
       <+>
         (parse_mul <*> \_ -> parse_expression <@> \N1 -> N0 * N1)
-   )
+    )
 
 def parse =
     [ P LL ->
