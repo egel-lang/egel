@@ -1,0 +1,97 @@
+# Searching is calculating and parsing is searching.
+#
+# A recursive descent parser example for a trivial language which 
+# makes use of search combinators.
+#
+
+import "prelude.eg"
+import "search.eg"
+import "regex.ego"
+
+using System
+using List
+using Search
+using Regex
+
+data number, plus, mul
+data lparen, rparen, white
+
+# lexing with regular expessions
+
+val regex_number = compile "[0-9]+"
+val regex_plus   = compile "\\+"
+val regex_mul    = compile "\\*"
+val regex_lparen = compile "\\("
+val regex_rparen = compile "\\)"
+val regex_white  = compile "[ \\n\\t]+"
+
+def lexeme_table =
+    { (regex_number, [ S -> number (toint S)] ),
+      (regex_plus,   [ S -> plus ]),
+      (regex_mul,    [ S -> mul ]),
+      (regex_lparen, [ S -> lparen ]),
+      (regex_rparen, [ S -> rparen ]),
+      (regex_white,  [ S -> white ]) }
+
+def lexify_front =
+    [ nil                S -> throw (format "lexer error at: {}" S)
+    | (cons (PAT, A) AA) S ->
+        if look_at PAT S then
+            let L = look_match PAT S in
+            let S = replace PAT S "" in (A L, S)
+        else lexify_front AA S ]
+
+def lexify = 
+    [ TABLE "" -> nil
+    | TABLE S  ->
+        let (L, S) = lexify_front TABLE S in
+        let LL = lexify TABLE S in
+            cons L LL ]
+
+# parsing
+
+def parse_lexeme =
+    [ P nil         -> fail nil
+    | P (cons L LL) -> if P L then success L LL else fail LL ]
+
+def parse_number =
+    parse_lexeme [ (number N) -> true | _ -> false ] <@> \(number N) -> N
+
+def parse_plus =
+    parse_lexeme [ plus -> true | _ -> false ]
+
+def parse_mul =
+    parse_lexeme [ mul -> true | _ -> false ]
+
+def parse_lparen =
+    parse_lexeme [ lparen -> true | _ -> false ]
+
+def parse_rparen =
+    parse_lexeme [ rparen -> true | _ -> false ]
+
+def parse_primary =
+    parse_number <+>
+      (parse_lparen <*> \_ -> parse_expression <*> \N -> parse_rparen <@> \_ -> N)
+
+def parse_expression =
+    parse_primary </> \N0 -> (
+        (parse_plus <*> \_ -> parse_expression <@> \N1 -> N0 + N1)
+      <+>
+        (parse_mul <*> \_ -> parse_expression <@> \N1 -> N0 * N1)
+   )
+
+def parse =
+    [ P LL ->
+        search P LL
+           [ T LL -> T ]
+           [ F LL -> throw (format "parse failed with {} at {}" F LL) ]
+           [ E LL -> throw (format "parse error {} at {}" E LL) ] ]
+
+def eval =
+    [ S ->
+       let LL = lexify lexeme_table S in
+       let LL = filter [ white -> false | _ -> true ] LL in
+       let P  = parse parse_expression LL in
+           P ]
+
+def main = eval "(1 + 7) * 3"
