@@ -1,8 +1,8 @@
 <img src="contrib/assets/egel-black-white.svg" height="50px"/>  The Egel Language
 =================
 
-Egel is an eager untyped combinator scripting language which comes with
-an interpreter.
+Egel is an untyped concurrent functional scripting language based on eager
+combinator rewriting with a concise but remarkably powerful syntax
 
 Installation
 ------------
