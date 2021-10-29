@@ -7,7 +7,7 @@ namespace Search (
     using Calculate
     using List
 
-    data top, bot, exc
+    data top, bot, cut
 
     ## Search:success a - succeed with value a
     def success =
@@ -19,17 +19,17 @@ namespace Search (
 
     ## Search:raise - fail all alternatives
     def raise =
-        return (bot exc)
+        return (bot cut)
 
     def message =
         [ P M -> P <*
             [ (bot _) -> return (bot M)
-            | (exc _) -> return (exc M)
+            | (cut _) -> return (cut M)
             | X       -> return X ] ]
 
     def nofail = 
         [ P -> P <*
-            [ (bot M) -> return (exc M)
+            [ (bot M) -> return (cut M)
             | X       -> return X ] ]
 
     def parallel =
@@ -41,19 +41,19 @@ namespace Search (
         [ P0 P1 -> P0 <* 
             [ (top X) -> nofail (P1 X)
             | (bot M) -> return (bot M)
-            | (exc M) -> return (exc M) ] ]
+            | (cut M) -> return (cut M) ] ]
 
     def apply =
         [ P F -> P <* 
             [ (top X) -> return (top (F X))
             | (bot M) -> return (bot M)
-            | (exc M) -> return (exc M) ] ]
+            | (cut M) -> return (cut M) ] ]
 
     def sequential =
         [ P0 P1 -> P0 <* 
             [ (top X)  -> P1 X
             | (bot M)  -> return (bot M)
-            | (exc M)  -> return (exc M) ] ]
+            | (cut M)  -> return (cut M) ] ]
 
     def opt =
         [ P R0 S0 ->
@@ -105,7 +105,7 @@ namespace Search (
                 let (A,B) = P S in
                 [ (top X)  -> F X B
                 | (bot M)  -> T M B
-                | (exc M)  -> E M B ] A
+                | (cut M)  -> E M B ] A
             ]
         ]
 
