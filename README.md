@@ -38,7 +38,7 @@ and a number of dynamically loadable Egel object files in the
 For a system-wide install run `make install` after a build
 as root.
 
-On some systems the `EGEL_INCLUDE` environment variable needs to be set.
+On some systems the `EGEL_PATH` environment variable needs to be set.
 See the man page for further information on that.
 
 If you don't want to do that, please note that you only need the interpreter
