@@ -8,12 +8,15 @@ A list of all major changes between versions of the interpreter.
 + dynamic coding combinators
 + time and date built-ins
 
+## v0.1.2 -- smaller is better
+
++ calculate and search theories
+
 ## v0.1.1 -- fear is the mind killer
 
 + readme/license changes
 + compile on more Linux/MacOs/BSD architectures
 + fixed critical regression LL(n) quadratic behavior
-+ calculate and search theories
 
 ## v0.1.0 -- corrupting the neighborhood
 
