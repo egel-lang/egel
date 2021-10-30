@@ -942,7 +942,7 @@ public:
     }
 
     bool data_end() const {
-	return ( (unsigned int) _data_index <= (unsigned int) _data.size());
+	return ( (unsigned int) _data_index >= (unsigned int) _data.size());
     }
 
     void data_skip() {
@@ -1023,16 +1023,17 @@ public:
             }
         }
 
-	while(!data_end()) {
-            write_separator(os);
-	    write_i32(os, data_index());
-	    write_text(os, data_object()->to_text());
-	    data_skip();
-	}
-
         os.flags(old_flags);
         os.precision(old_prec);
         os.fill(old_fill);
+
+	while(!data_end()) {
+            write_separator(os);
+	    write_i32(os, data_index());
+            write_separator(os);
+	    write_text(os, data_object()->to_text());
+	    data_skip();
+	}
     }
 
     void disassemble(std::ostream& os) {
