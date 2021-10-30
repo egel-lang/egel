@@ -55,20 +55,20 @@ namespace NQueens (
                           then B ++ ({SOLUTION ++ {ICOL}})
                           else B]
                     nil
-                    (fromto 1 NCOLS)) ]
+                    (from_to 1 NCOLS)) ]
             nil
             (nqueens (NROWS - 1) NCOLS) ]
 
     def safe =
         [ IROW ICOL SOLUTION ->
-            notelem true
-             (zipwith
+            not_elem true
+             (zip_with
                 [SC SR ->
                    or (ICOL == SC) 
                   (or (SC + SR == ICOL + IROW) 
                       (SC - SR == ICOL - IROW))]
                 SOLUTION
-                (fromto 0 (IROW - 1))) ]
+                (from_to 0 (IROW - 1))) ]
 )
 
 using List

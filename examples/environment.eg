@@ -9,7 +9,7 @@ def arglist =
     [ N -> [ nop -> nil | A -> cons A (arglist (N + 1)) ] (arg N) ]
 
 def prompt =
-    getenv "EGEL_PS0"
+    get_env "EGEL_PS0"
 
 def main =
     (arglist 0, prompt)

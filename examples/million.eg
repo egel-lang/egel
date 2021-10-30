@@ -10,4 +10,4 @@ import "prelude.eg"
 using System
 using List
 
-def main = foldl (+) 0 (fromto 0 1000000)
+def main = foldl (+) 0 (from_to 0 1000000)

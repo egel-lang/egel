@@ -107,10 +107,10 @@ namespace List (
         [ 0 XX -> XX
         | N (cons X XX) -> drop (N - 1) XX ]
 
-    ## System:fromto min max - list of numbers for min to max (exclusive)
-    def fromto =
+    ## System:from_to min max - list of numbers for min to max (exclusive)
+    def from_to =
         [ X Y -> 
-            if X <= Y then cons X (fromto (X+1) Y)
+            if X <= Y then cons X (from_to (X+1) Y)
             else nil ]
 
     ## System:filter p l - filter all members from a list which satisfy a predicate
@@ -130,9 +130,9 @@ namespace List (
         [ (cons X XX) (cons Y YY)  -> cons (X,Y) (zip XX YY)
         | XX YY                    -> nil ]
 
-    ## System:zipwith f l0 l1 - apply a function pairwise to members of two lists
-    def zipwith =
-        [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) (zipwith Z XX YY)
+    ## System:zip_with f l0 l1 - apply a function pairwise to members of two lists
+    def zip_with =
+        [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) (zip_with Z XX YY)
         | Z XX YY               -> nil ]
 
     ## System:any p l - checks whether any element of a list satisfies a predicate
@@ -149,8 +149,8 @@ namespace List (
     def elem =
         [ X -> any ((==) X) ]
 
-    ## System:notelem x l - inverse membership test
-    def notelem =
+    ## System:not_elem x l - inverse membership test
+    def not_elem =
         [ X -> all ((/=) X) ]
 
     ## System:union x l - union of two lists (nˆ2 complexity)
@@ -158,16 +158,16 @@ namespace List (
         [ nil YY            -> YY
         | (cons X XX) YY    -> if elem X YY then union XX YY else cons X (union XX YY) ]
 
-    ## System:insertEverywhere x l - insert a member in every position of a list
-    def insertEverywhere =
+    ## System:insert_everywhere x l - insert a member in every position of a list
+    def insert_everywhere =
         [ X nil -> {{X}}
-        | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insertEverywhere X YY)) ]
+        | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insert_everywhere X YY)) ]
 
-    ## System:concatMap f l - concat map
-    def concatMap =
+    ## System:concat_map f l - concat map
+    def concat_map =
         [ F -> foldr ((++) . F) nil ]
 
     ## System:permutations l - all permutations of a list
     def permutations =
-        foldr (concatMap . insertEverywhere) {{}}
+        foldr (concat_map . insert_everywhere) {{}}
 )

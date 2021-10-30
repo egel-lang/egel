@@ -73,7 +73,7 @@ def print_trees =
     | _ -> nop ]
 
 def main =
-    let N = [ X::text -> toint X | X -> throw "bintrees <arg>" ] (arg 2) in
+    let N = [ X::text -> to_int X | X -> throw "bintrees <arg>" ] (arg 2) in
     let MAXN     = max (minN + 2) N in
     let _ = make_stretch MAXN in
     let TT = make_trees minN MAXN in

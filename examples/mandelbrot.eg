@@ -7,5 +7,5 @@ using Math
 using System
 
 def main =
-    [H->H (-0.9);H (-0.7);H (-0.5);H (-0.3);H (-0.1);H 0.1;H 0.3;H 0.5;H 0.7;H 0.9][Y->[P->[H->H H""5][H B X->[true->H H(B+P X)(X- 1)|_->print B "\n"](-20<X)]][X->[P->[0 0->" "|0 1->"."|1 0->"'"|1 1->":"](P Y)(P(Y+ 0.1))]([P X Y->P P 0 X Y 0.0 0.0][P S X Y U V->[true->P P(S+1)X Y(X+U*U-V*V)(Y+2.0*U*V)|_->[true->1|_->0]((abs U)+(abs V)<2.0)](S<11)](0.1*tofloat X))]]
+    [H->H (-0.9);H (-0.7);H (-0.5);H (-0.3);H (-0.1);H 0.1;H 0.3;H 0.5;H 0.7;H 0.9][Y->[P->[H->H H""5][H B X->[true->H H(B+P X)(X- 1)|_->print B "\n"](-20<X)]][X->[P->[0 0->" "|0 1->"."|1 0->"'"|1 1->":"](P Y)(P(Y+ 0.1))]([P X Y->P P 0 X Y 0.0 0.0][P S X Y U V->[true->P P(S+1)X Y(X+U*U-V*V)(Y+2.0*U*V)|_->[true->1|_->0]((abs U)+(abs V)<2.0)](S<11)](0.1*to_float X))]]
 

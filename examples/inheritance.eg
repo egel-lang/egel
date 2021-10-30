@@ -35,7 +35,7 @@ class box W H extends place W 3 with (
             ((get SELF width) * (get SELF height)) ]
 )
 
-// make a placeable box.
+# make a placeable box.
 def main =
     let B = box 4 5 in
     let U = (B @@ move) 2 3 in

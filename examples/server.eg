@@ -15,7 +15,7 @@ def listener =
             print "received: " IN "\n";
             let OUT = eval IN in
             print "sending: " OUT;
-            write_line CHAN (blip OUT); 
+            write_line CHAN (format "{}" OUT); 
             listener CHAN ]
 
 def spawn =

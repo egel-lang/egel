@@ -26,7 +26,7 @@ val regex_rparen = compile "\\)"
 val regex_white  = compile "[ \\n\\t]+"
 
 def lexeme_table =
-    { (regex_number, [ S -> number (toint S)] ),
+    { (regex_number, [ S -> number (to_int S)] ),
       (regex_plus,   [ S -> plus ]),
       (regex_mul,    [ S -> mul ]),
       (regex_lparen, [ S -> lparen ]),

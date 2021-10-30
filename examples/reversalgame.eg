@@ -14,7 +14,7 @@ def swap =
 
 def shuffle =
     [ XX ->
-        let INDICES = reverse (fromto 0 ((length XX) - 1)) in
+        let INDICES = reverse (from_to 0 ((length XX) - 1)) in
         let SWAPS = map [ I -> I (between 0 I) ] INDICES in
             foldr [I J -> swap I J] XX SWAPS ]
 
@@ -23,7 +23,7 @@ def prompt =
         let _ = print TURN ". " in
         let _ = map [ X -> print X " " ] XX in
         let _ = print " : " in
-            toint get_line ]
+            to_int get_line ]
 
 def game =
     [ GOAL SHUFFLE TURN ->
@@ -37,4 +37,4 @@ def game =
                 game GOAL YY (TURN + 1) ]
 
 def main = 
-    let XX = fromto 1 9 in game XX (shuffle XX) 0
+    let XX = from_to 1 9 in game XX (shuffle XX) 0

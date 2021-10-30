@@ -14,8 +14,8 @@ def swap =
 
 def shuffle =
     [ XX ->
-        let INDICES = reverse (fromto 0 ((length XX) - 1)) in
+        let INDICES = reverse (from_to 0 ((length XX) - 1)) in
         let SWAPS = map [ I -> I (between 0 I) ] INDICES in
             foldr [I J -> swap I J] XX SWAPS ]
 
-def main = shuffle (fromto 1 9)
+def main = shuffle (from_to 1 9)

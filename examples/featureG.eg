@@ -19,4 +19,4 @@ using System
 using List
 using Test
 
-def main = map combine_fac (fromto 1 5)
+def main = map combine_fac (from_to 1 5)

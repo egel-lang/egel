@@ -17,7 +17,7 @@ def insert =
                    else BOARD X0 Y0 ] ]
 
 def coords =
-    let R = fromto 0 (boardsize - 1) in
+    let R = from_to 0 (boardsize - 1) in
         [ XX YY -> map (\X -> map (\Y -> X Y) YY) XX ] R R
 
 def printcell =

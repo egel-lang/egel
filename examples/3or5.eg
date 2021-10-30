@@ -15,7 +15,7 @@ namespace ThreeOrFive (
     def three_or_five = [X -> or ((X%3) == 0) ((X%5) == 0) ]
 
     def euler1 =
-        [ N -> (sum . (filter three_or_five)) (fromto 1 N) ]
+        [ N -> (sum . (filter three_or_five)) (from_to 1 N) ]
 
 )
 

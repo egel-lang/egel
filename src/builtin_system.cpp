@@ -523,10 +523,10 @@ public:
 };
 
 
-//## System:toint x - Try and convert an object to int
+//## System:to_int x - Try and convert an object to int
 class Toint: public Monadic {
 public:
-    MONADIC_PREAMBLE(Toint, "System", "toint");
+    MONADIC_PREAMBLE(Toint, "System", "to_int");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -547,10 +547,10 @@ public:
     }
 };
 
-//## System:tofloat x - try and convert an object to float
+//## System:to_float x - try and convert an object to float
 class Tofloat: public Monadic {
 public:
-    MONADIC_PREAMBLE(Tofloat, "System", "tofloat");
+    MONADIC_PREAMBLE(Tofloat, "System", "to_float");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -568,10 +568,10 @@ public:
     }
 };
 
-//## System:totext x - try and convert an object to text
+//## System:to_text x - try and convert an object to text
 class Totext: public Monadic {
 public:
-    MONADIC_PREAMBLE(Totext, "System", "totext");
+    MONADIC_PREAMBLE(Totext, "System", "to_text");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -759,10 +759,10 @@ public:
     }
 };
 
-//## System:getenv s - return the value of environment variable s, otherwise return 'nop'
+//## System:get_env s - return the value of environment variable s, otherwise return 'nop'
 class Getenv: public Monadic {
 public:
-    MONADIC_PREAMBLE(Getenv, "System", "getenv");
+    MONADIC_PREAMBLE(Getenv, "System", "get_env");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {

@@ -78,7 +78,7 @@ def text_to_board =
 
 def board_to_text =
     [ II ->
-        let C = [ 0 -> ". " | X -> append (totext X) " " ] in
+        let C = [ 0 -> ". " | X -> append (to_text X) " " ] in
         fix [ F nil _         -> ""
             | F (cons I II) 9 -> append (append (C I) "\n")
                                         (F II 1)
@@ -97,7 +97,7 @@ def print_prop =
     | (peq P Q)  -> print_prop P; print " = "; print_prop Q
     | (pneq P Q) -> print_prop P; print " != "; print_prop Q
     | (psum P Q) -> print_prop P; print " + "; print_prop Q
-    | XXX        -> print "XXX: " (blip XXX) ]
+    | XXX        -> print (format "XXX: {}" XXX) ]
 
 def print_props =
     [ nil -> print "\n"
@@ -148,10 +148,10 @@ def prop_column =
     [ N -> List:map [(I,J) -> pneq (pvar I N) (pvar J N)] xxx ]
 
 def prop_rows =
-    List:flatten (List:map [ N -> prop_row N ] (List:fromto 1 9))
+    List:flatten (List:map [ N -> prop_row N ] (List:from_to 1 9))
 
 def prop_columns =
-    List:flatten (List:map [ N -> prop_column N ] (List:fromto 1 9))
+    List:flatten (List:map [ N -> prop_column N ] (List:from_to 1 9))
 
 def yyy =
      {
