@@ -12,6 +12,10 @@ A list of all major changes between versions of the interpreter.
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc
 
+## The bleeding, cutting edge
+
++ added multiline strings
+
 ## v0.1.2 -- smaller is better
 
 + calculate and search theories
