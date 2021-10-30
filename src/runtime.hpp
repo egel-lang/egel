@@ -148,7 +148,10 @@ inline void render_cons(const VMObjectPtr& cc, std::ostream& os);
 
 class VMObject {
 public:
-    VMObject(vm_tag_t t) : _tag(t), _subtag(0) {
+    VMObject(const vm_tag_t t) : _tag(t), _subtag(0) {
+    }
+
+    VMObject(const vm_tag_t t, const vm_subtag_t st) : _tag(t), _subtag(st) {
     }
 
     virtual ~VMObject() { // FIX: give a virtual destructor to keep the compiler(-s) happy
@@ -680,20 +683,20 @@ inline VMObjectPtr VMObjectArray::reduce(const VMObjectPtr& thunk) const {
 
 class VMObjectOpaque : public VMObject {
 public:
-    VMObjectOpaque(VM* m, const symbol_t s)
-        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(s) {
+    VMObjectOpaque(const vm_subtag_t t, VM* m, const symbol_t s)
+        : VMObject(VM_OBJECT_OPAQUE, t), _machine(m), _symbol(s) {
     };
 
-    VMObjectOpaque(VM* m, const icu::UnicodeString& n)
-        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n)) {
+    VMObjectOpaque(const vm_subtag_t t, VM* m, const icu::UnicodeString& n)
+        : VMObject(VM_OBJECT_OPAQUE, t), _machine(m), _symbol(m->enter_symbol(n)) {
     };
 
-    VMObjectOpaque(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
-        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
+    VMObjectOpaque(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
+        : VMObject(VM_OBJECT_OPAQUE, t), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
     };
 
-    VMObjectOpaque(VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
-        : VMObject(VM_OBJECT_OPAQUE, VM_OBJECT_FLAG_INTERNAL), _machine(m), _symbol(m->enter_symbol(nn, n)) {
+    VMObjectOpaque(const vm_subtag_t t, VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
+        : VMObject(VM_OBJECT_OPAQUE, t), _machine(m), _symbol(m->enter_symbol(nn, n)) {
     };
 
     VM* machine() const {
@@ -1063,7 +1066,7 @@ inline VMObjectPtr VM::get_data_string(const std::vector<icu::UnicodeString>& nn
 class VMThrow: public VMObjectCombinator {
 public:
     VMThrow(VM* m): 
-         VMObjectCombinator(VM_SUB_INTERNAL, m, "System", "throw") {
+         VMObjectCombinator(VM_SUB_BUILTIN, m, "System", "throw") {
     }
 
     VMThrow(const VMThrow& t)
