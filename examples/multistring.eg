@@ -1,0 +1,18 @@
+######################################################################
+# strings can be defined over multiple lines.
+#
+# A multiline string starts with '"""\n' and ends with '"""', all
+# codepoints in between are the content of the string.
+
+def empty = """
+"""
+
+def multi = """
+this is a 
+string
+  over
+multiple
+lines
+"""
+
+def main = (empty, multi)
