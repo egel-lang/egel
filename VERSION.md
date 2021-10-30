@@ -3,11 +3,12 @@ VERSION
 
 A list of all major changes between versions of the interpreter.
 
-## Pending
+## Pending goals
 
 + generate C++ from .eg file
 + time and date
 + dynamic coding combinators
++ target MSVC
 + complex numbers
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc
