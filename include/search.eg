@@ -30,8 +30,8 @@ namespace Search (
             | (cut _) -> return (cut M)
             | X       -> return X ] ]
 
-    ## Search:nofail p - this search may not fail
-    def nofail = 
+    ## Search:no_fail p - this search may not fail
+    def no_fail = 
         [ P -> P <*
             [ (bot M) -> return (cut M)
             | X       -> return X ] ]
@@ -52,7 +52,7 @@ namespace Search (
     ## Search:serial p q - try alternative p then force q
     def serial =
         [ P0 P1 -> P0 <* 
-            [ (top X) -> nofail (P1 X)
+            [ (top X) -> no_fail (P1 X)
             | (bot M) -> return (bot M)
             | (cut M) -> return (cut M) ] ]
 
@@ -63,14 +63,14 @@ namespace Search (
             | (bot M) -> return (bot M)
             | (cut M) -> return (cut M) ] ]
 
-    ## Search: opt p v - optionally succeed p with value v
+    ## Search:opt p v - optionally succeed p with value v
     def opt =
         [ P R0 S0 ->
             [ (bot R1, S1) -> (top R0, S0)
             | L            -> L          ] (P R0 S0) ]
 
-    ## Search: serialopt p q - optionally succeed p with value v
-    def serialopt =
+    ## Search:serial_opt p q - optionally succeed p with value v
+    def serial_opt =
         [ P0 P1 -> P0 <*  
             [ (top M) -> opt P1 M
             | L       -> return L ] ]
@@ -81,8 +81,8 @@ namespace Search (
     ## Search:<+> p q - try alternatives p then q
     def <-> = serial
 
-    ## Search:</> p q - try alternatives p optionally then q
-    def </> = serialopt
+    ## Search:</> p q - try alternatives p then q optionally
+    def </> = serial_opt
 
     ## Search:<*> p q - try alternatives p then force q
     def <*> = sequential
