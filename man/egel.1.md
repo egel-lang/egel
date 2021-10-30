@@ -62,6 +62,10 @@ Egel code consist of expression which are evaluated eagerly.
 
    `[ X Y -> 2 | X -> 1 | -> 0]`
 
+   A backslash `\` starts a lambda abstraction.
+
+   `\(cons X XX) -> X`
+
  * Patterns may hold rudimentary type matches.
 
    `[ I::int -> "an int" | C::cons -> "a cons" ]`
@@ -151,7 +155,7 @@ Supply a command to use `egel -e` as a simple calculator. Double semicolons are 
 
 ## FILES
 
-The following files should be in the `EGEL_INCLUDE` directory.
+The following files should be in the `EGEL_PATH` directory.
 
  * `prelude.eg` `calculate.eg` `search.eg`:
    The standard Egel prelude and additional theories.
@@ -161,7 +165,7 @@ The following files should be in the `EGEL_INCLUDE` directory.
 
 ## ENVIRONMENT
 
- * `EGEL_INCLUDE`:
+ * `EGEL_PATH`:
     The path to the standard include directory.
 
  * `EGEL_PS0`:

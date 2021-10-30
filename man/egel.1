@@ -73,6 +73,12 @@ The abstraction consists of a number of matches, it may be variadic without pena
 .IP
 \fB[ X Y \-> 2 | X \-> 1 | \-> 0]\fR
 .
+.IP
+A backslash \fB\e\fR starts a lambda abstraction\.
+.
+.IP
+\fB\e(cons X XX) \-> X\fR
+.
 .IP "\(bu" 4
 Patterns may hold rudimentary type matches\.
 .
@@ -206,7 +212,7 @@ $ egel fib\.eg \-e "using Fibonnaci;; fib 3"
 .IP "" 0
 .
 .SH "FILES"
-The following files should be in the \fBEGEL_INCLUDE\fR directory\.
+The following files should be in the \fBEGEL_PATH\fR directory\.
 .
 .TP
 \fBprelude\.eg\fR \fBcalculate\.eg\fR \fBsearch\.eg\fR
@@ -219,7 +225,7 @@ input/output, filesystem, regexes dynamic libraries\.
 .SH "ENVIRONMENT"
 .
 .TP
-\fBEGEL_INCLUDE\fR
+\fBEGEL_PATH\fR
 The path to the standard include directory\.
 .
 .TP

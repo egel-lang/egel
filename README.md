@@ -56,7 +56,7 @@ to your shell resource file, though the specific syntax may differ.
 
 ```
     export PATH=~/usr/local/bin:$PATH
-    export EGEL_INCLUDE=~/usr/local/include
+    export EGEL_PATH=~/usr/local/include
 ```
 
 Usage

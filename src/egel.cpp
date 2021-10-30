@@ -27,7 +27,7 @@
 #define EXECUTABLE_AUTHORS \
     "M.C.A. (Marco) Devillers"
 
-#define INCLUDE_PATH "/usr/local/lib64/egel"
+#define EGEL_PATH "/usr/local/lib64/egel"
 
 typedef enum {
     OPTION_NONE,
@@ -182,11 +182,11 @@ int main(int argc, char *argv[]) {
     if (!hasI) oo->add_include_path(icu::UnicodeString("./"));
 
     // add include path from environment
-    auto istr = getenv("EGEL_INCLUDE");
+    auto istr = getenv("EGEL_PATH");
     if (istr != nullptr) {
         oo->add_include_path(icu::UnicodeString(istr, -1, US_INV));
     } else {
-        oo->add_include_path(INCLUDE_PATH);
+        oo->add_include_path(EGEL_PATH);
     }
 
     // check for flags
