@@ -117,7 +117,7 @@ private:
 //## Regex:compile s0 - compile text to a pattern
 class Compile: public Monadic {
 public:
-    MONADIC_PREAMBLE(Compile, REGEX_STRING, "compile");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Compile, REGEX_STRING, "compile");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -140,7 +140,7 @@ public:
 //## Regex:match pat s0 - true if the pattern matches the entire string
 class Match: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Match, REGEX_STRING, "match");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Match, REGEX_STRING, "match");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -164,7 +164,7 @@ public:
 //## Regex:look_at pat s0 - true if the pattern matches the start of string
 class LookAt: public Dyadic {
 public:
-    DYADIC_PREAMBLE(LookAt, REGEX_STRING, "look_at");
+    DYADIC_PREAMBLE(VM_SUB_EGO, LookAt, REGEX_STRING, "look_at");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -188,7 +188,7 @@ public:
 //## Regex:look_match pat s0 - returns the initial matched part of the string, or nop
 class LookMatch: public Dyadic {
 public:
-    DYADIC_PREAMBLE(LookMatch, REGEX_STRING, "look_match");
+    DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -217,7 +217,7 @@ public:
 //## Regex:split pat s0 - split a text according to a pattern
 class Split: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Split, REGEX_STRING, "split");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Split, REGEX_STRING, "split");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -257,7 +257,7 @@ public:
 //## Regex:matches pat s0 - return a list of pattern matches in a string
 class Matches: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Matches, REGEX_STRING, "matches");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Matches, REGEX_STRING, "matches");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -289,7 +289,7 @@ public:
 //## Regex:replace pat s0 s1 - replace the first occurence of pattern in a string with a string
 class Replace: public Triadic {
 public:
-    TRIADIC_PREAMBLE(Replace, REGEX_STRING, "replace");
+    TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
@@ -318,7 +318,7 @@ public:
 //## Regex:replace_all pat s0 s1 - replace the all occurences of pattern in a string with a string
 class ReplaceAll: public Triadic {
 public:
-    TRIADIC_PREAMBLE(ReplaceAll, REGEX_STRING, "replace_all");
+    TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
@@ -347,7 +347,7 @@ public:
 //## Regex:group pat s0 - return the matched groups in a string
 class Group: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Group, REGEX_STRING, "group");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Group, REGEX_STRING, "group");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {

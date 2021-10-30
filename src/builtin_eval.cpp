@@ -16,7 +16,7 @@
 //## System:eval text - evaluatate the expression in `text`
 class Evaluate: public Unary {
 public:
-    UNARY_PREAMBLE(Evaluate, "System", "eval");
+    UNARY_PREAMBLE(VM_SUB_BUILTIN, Evaluate, "System", "eval");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -55,23 +55,10 @@ public:
     }
 };
 
-// deprecated
-// System:blip expr - 
-class Blip: public Monadic {
-public:
-    MONADIC_PREAMBLE(Blip, "System", "blip");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        UnicodeString t = arg0->to_text();
-        return VMObjectText::create(t);
-    }
-};
-
 std::vector<VMObjectPtr> builtin_eval(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Evaluate(vm).clone());
-//    oo.push_back(Blip(vm).clone());
 
     return oo;
 }

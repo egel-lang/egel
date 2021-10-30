@@ -50,7 +50,7 @@ char** application_argv = nullptr;
 //## System:k x y - k combinator
 class K: public Binary {
 public:
-    BINARY_PREAMBLE(K, "System", "k");
+    BINARY_PREAMBLE(VM_SUB_BUILTIN, K, "System", "k");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         return arg0;
@@ -60,7 +60,7 @@ public:
 //## System:id x - identity combinator
 class Id: public Unary {
 public:
-    UNARY_PREAMBLE(Id, "System", "id");
+    UNARY_PREAMBLE(VM_SUB_BUILTIN, Id, "System", "id");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         return arg0;
@@ -70,7 +70,7 @@ public:
 //## System:!- x - monadic minus
 class MonMin: public Monadic {
 public:
-    MONADIC_PREAMBLE(MonMin, "System", "!-");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, MonMin, "System", "!-");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -93,7 +93,7 @@ public:
 //## System:+ x y - addition
 class Add: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Add, "System", "+");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Add, "System", "+");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -125,7 +125,7 @@ public:
 //## System:+ x y - substraction
 class Min: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Min, "System", "-");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Min, "System", "-");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -153,7 +153,7 @@ public:
 //## System:* x y - multiplication
 class Mul: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Mul, "System", "*");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mul, "System", "*");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -180,7 +180,7 @@ public:
 //## System:/ x y - division
 class Div: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Div, "System", "/");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Div, "System", "/");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -208,7 +208,7 @@ public:
 //## System:% x y - modulo
 class Mod: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Mod, "System", "%");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mod, "System", "%");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -228,7 +228,7 @@ public:
 //## System:& x y - bitwise and
 class BinAnd: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinAnd, "System", "&");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinAnd, "System", "&");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -245,7 +245,7 @@ public:
 //## System:$ x y - bitwise or
 class BinOr: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinOr, "System", "$");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinOr, "System", "$");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -262,7 +262,7 @@ public:
 //## System:^ x y - bitwise xor
 class BinXOr: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinXOr, "System", "^");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinXOr, "System", "^");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -279,7 +279,7 @@ public:
 //## System:!~ x - bitwise complement
 class BinComplement: public Monadic {
 public:
-    MONADIC_PREAMBLE(BinComplement, "System", "!~");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, BinComplement, "System", "!~");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) ) {
@@ -294,7 +294,7 @@ public:
 //## System:<< x y - bitwise left shift
 class BinLeftShift: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinLeftShift, "System", "<<");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinLeftShift, "System", "<<");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -311,7 +311,7 @@ public:
 //## System:>> x y - bitwise right shift
 class BinRightShift: public Dyadic {
 public:
-    DYADIC_PREAMBLE(BinRightShift, "System", ">>");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinRightShift, "System", ">>");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
@@ -328,7 +328,7 @@ public:
 //## System:< x y - builtin less
 class Less: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Less, "System", "<");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Less, "System", "<");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static VMObjectPtr _false = 0;
@@ -349,7 +349,7 @@ public:
 //## System:<= x y - builtin less or equals
 class LessEq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(LessEq, "System", "<=");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, LessEq, "System", "<=");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static VMObjectPtr _false = 0;
@@ -370,7 +370,7 @@ public:
 //## System:== x y - builtin equality
 class Eq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Eq, "System", "==");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Eq, "System", "==");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static VMObjectPtr _false = 0;
@@ -391,7 +391,7 @@ public:
 //## System:/= x y - builtin inequality
 class NegEq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(NegEq, "System", "/=");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, NegEq, "System", "/=");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static VMObjectPtr _false = 0;
@@ -412,7 +412,7 @@ public:
 //## System:get field obj - retrieve an object field
 class GetField: public Binary {
 public:
-    BINARY_PREAMBLE(GetField, "System", "get");
+    BINARY_PREAMBLE(VM_SUB_BUILTIN, GetField, "System", "get");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t object = 0;
@@ -445,7 +445,7 @@ public:
 //## System:set field val obj - set an object field
 class SetField: public Triadic {
 public:
-    TRIADIC_PREAMBLE(SetField, "System", "set");
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, SetField, "System", "set");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         static symbol_t object = 0;
@@ -480,7 +480,7 @@ public:
 //## System:extend obj0 obj1 - extend object obj0 with every field from obj1
 class ExtendField: public Dyadic {
 public:
-    DYADIC_PREAMBLE(ExtendField, "System", "extend");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, ExtendField, "System", "extend");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t object = 0;
@@ -526,7 +526,7 @@ public:
 //## System:to_int x - Try and convert an object to int
 class Toint: public Monadic {
 public:
-    MONADIC_PREAMBLE(Toint, "System", "to_int");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Toint, "System", "to_int");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -550,7 +550,7 @@ public:
 //## System:to_float x - try and convert an object to float
 class Tofloat: public Monadic {
 public:
-    MONADIC_PREAMBLE(Tofloat, "System", "to_float");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tofloat, "System", "to_float");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -571,7 +571,7 @@ public:
 //## System:to_text x - try and convert an object to text
 class Totext: public Monadic {
 public:
-    MONADIC_PREAMBLE(Totext, "System", "to_text");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Totext, "System", "to_text");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -597,7 +597,7 @@ public:
 //## System:reference - an opaque reference object
 class Reference : public Opaque {
 public:
-    OPAQUE_PREAMBLE(Reference, "System", "reference");
+    OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Reference, "System", "reference");
 
     Reference(VM* vm, const VMObjectPtr& r)
         : Opaque(vm, "System", "reference") {
@@ -631,7 +631,7 @@ protected:
 //## System:ref x - create a reference object from x
 class Ref: public Monadic {
 public:
-    MONADIC_PREAMBLE(Ref, "System", "ref");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ref, "System", "ref");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto vm = machine();
@@ -643,7 +643,7 @@ public:
 //## System:get_ref ref - get the stored value from ref
 class Getref: public Unary {
 public:
-    UNARY_PREAMBLE(Getref, "System", "get_ref");
+    UNARY_PREAMBLE(VM_SUB_BUILTIN, Getref, "System", "get_ref");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         symbol_t sym = machine()->enter_symbol("System", "reference");
@@ -660,7 +660,7 @@ public:
 //## System:set_ref ref x - set reference object ref to x
 class Setref: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Setref, "System", "set_ref");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Setref, "System", "set_ref");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         symbol_t sym = machine()->enter_symbol("System", "reference");
@@ -678,7 +678,7 @@ public:
 //## System:unpack s - create a list of chars from a string
 class Unpack: public Monadic {
 public:
-    MONADIC_PREAMBLE(Unpack, "System", "unpack");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unpack, "System", "unpack");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static VMObjectPtr _nil = nullptr;
@@ -710,7 +710,7 @@ public:
 //## System:pack s - create a string from a list of code points
 class Pack: public Monadic {
 public:
-    MONADIC_PREAMBLE(Pack, "System", "pack");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Pack, "System", "pack");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t _nil = 0;
@@ -742,7 +742,7 @@ public:
 //## System:arg n - return the n-th application argument, otherwise return 'nop'
 class Arg: public Monadic {
 public:
-    MONADIC_PREAMBLE(Arg, "System", "arg");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Arg, "System", "arg");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -762,7 +762,7 @@ public:
 //## System:get_env s - return the value of environment variable s, otherwise return 'nop'
 class Getenv: public Monadic {
 public:
-    MONADIC_PREAMBLE(Getenv, "System", "get_env");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Getenv, "System", "get_env");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -785,7 +785,7 @@ public:
 //## System:&& - short-circuited and
 class LazyAnd: public Binary {
 public:
-    BINARY_PREAMBLE(LazyAnd, "System", "&&");
+    BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyAnd, "System", "&&");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
@@ -806,7 +806,7 @@ public:
 //## System:|| - short-circuited or
 class LazyOr: public Binary {
 public:
-    BINARY_PREAMBLE(LazyOr, "System", "||");
+    BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyOr, "System", "||");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
@@ -827,7 +827,7 @@ public:
 //## System:print o0 .. on - print terms, don't escape characters or texts 
 class Print: public Variadic {
 public:
-    VARIADIC_PREAMBLE(Print, "System", "print");
+    VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Print, "System", "print");
 
     VMObjectPtr apply(const VMObjectPtrs& args) const override {
 
@@ -854,7 +854,7 @@ public:
 //## System:get_line - read a line from standard input
 class Getline: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Getline, "System", "get_line");
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Getline, "System", "get_line");
 
     VMObjectPtr apply() const override {
         std::string line;
@@ -867,7 +867,7 @@ public:
 //## System:format fmt x ...  - create a string from formatted string fmt and objects x,..
 class Format: public Variadic {
 public:
-    VARIADIC_PREAMBLE(Format, "System", "format");
+    VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Format, "System", "format");
 
     VMObjectPtr apply(const VMObjectPtrs& args) const override {
 

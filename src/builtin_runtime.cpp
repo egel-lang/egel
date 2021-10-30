@@ -14,7 +14,7 @@
 //## System:dis o - disassemble a combinator object
 class Dis: public Monadic {
 public:
-    MONADIC_PREAMBLE(Dis, "System", "dis");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dis, "System", "dis");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
 	Disassembler d(arg0);
@@ -25,7 +25,7 @@ public:
 //## System:asm s - assemble bytecode into a combinator
 class Asm: public Unary {
 public:
-    UNARY_PREAMBLE(Asm, "System", "asm");
+    UNARY_PREAMBLE(VM_SUB_BUILTIN, Asm, "System", "asm");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -48,7 +48,7 @@ public:
 //## System:symbols - list all symbols in the runtime
 class Symbols: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Symbols, "System", "symbols");
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Symbols, "System", "symbols");
 
     VMObjectPtr apply() const override {
 
@@ -75,7 +75,7 @@ public:
 //## System:get_type s - get the type of symbol s
 class GetType: public Monadic {
 public:
-    MONADIC_PREAMBLE(GetType, "System", "get_type");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetType, "System", "get_type");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -92,7 +92,7 @@ public:
 //## System:set_data s - define symbol s as data
 class SetData: public Monadic {
 public:
-    MONADIC_PREAMBLE(SetData, "System", "set_data");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, SetData, "System", "set_data");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -109,7 +109,7 @@ public:
 //## System:set_def s e - define symbol s as expression e
 class SetDef: public Dyadic {
 public:
-    DYADIC_PREAMBLE(SetDef, "System", "set_def");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, SetDef, "System", "set_def");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {

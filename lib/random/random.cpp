@@ -35,7 +35,7 @@ private:
 //## Math:between min max - return a random number between min and max
 class Random: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Random, "Math", "between");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Random, "Math", "between");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER)) {

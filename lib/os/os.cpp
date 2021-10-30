@@ -337,7 +337,7 @@ protected:
 //## OS:channel - opaque values which are input/output channels
 class ChannelValue: public Opaque {
 public:
-    OPAQUE_PREAMBLE(ChannelValue, "OS", "channel");
+    OPAQUE_PREAMBLE(VM_SUB_EGO, ChannelValue, "OS", "channel");
 
     ChannelValue(const ChannelValue& chan): Opaque(chan.machine(), chan.symbol()) {
         _value = chan.value();
@@ -375,7 +375,7 @@ protected:
 //## OS:cin - standard input channel
 class Stdin: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Stdin, "OS", "stdin");
+    MEDADIC_PREAMBLE(VM_SUB_EGO, Stdin, "OS", "stdin");
 
     VMObjectPtr apply() const override {
         auto cin = ChannelStreamIn::create();
@@ -388,7 +388,7 @@ public:
 //## OS:stdout - standard output channel
 class Stdout: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Stdout, "OS", "stdout");
+    MEDADIC_PREAMBLE(VM_SUB_EGO, Stdout, "OS", "stdout");
 
     VMObjectPtr apply() const override {
         auto cout = ChannelStreamOut::create();
@@ -401,7 +401,7 @@ public:
 //## OS:stderr - standard error channel
 class Stderr: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Stderr, "OS", "stderr");
+    MEDADIC_PREAMBLE(VM_SUB_EGO, Stderr, "OS", "stderr");
 
     VMObjectPtr apply() const override {
         auto cerr = ChannelStreamErr::create();
@@ -420,7 +420,7 @@ public:
 
 class Getint: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Getint, "OS", "getint");
+    MEDADIC_PREAMBLE(VM_SUB_EGO, Getint, "OS", "getint");
 
     VMObjectPtr apply() const override {
         vm_int_t n;
@@ -436,7 +436,7 @@ public:
 
 class Getfloat: public Medadic {
 public:
-    MEDADIC_PREAMBLE(Getfloat, "OS", "getfloat");
+    MEDADIC_PREAMBLE(VM_SUB_EGO, Getfloat, "OS", "getfloat");
 
     VMObjectPtr apply() const override {
         vm_float_t f;
@@ -451,7 +451,7 @@ public:
 //## OS:open fn - create a channel from filename 
 class Open: public Monadic {
 public:
-    MONADIC_PREAMBLE(Open, "OS", "open");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Open, "OS", "open");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -469,7 +469,7 @@ public:
 //## OS:close c - close a channel
 class Close: public Monadic {
 public:
-    MONADIC_PREAMBLE(Close, "OS", "close");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Close, "OS", "close");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
@@ -488,7 +488,7 @@ public:
 //## OS:read c - read a string from a channel
 class Read: public Monadic {
 public:
-    MONADIC_PREAMBLE(Read, "OS", "read");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Read, "OS", "read");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
@@ -507,7 +507,7 @@ public:
 //## OS:read_line c - read a line from a channel
 class ReadLine: public Monadic {
 public:
-    MONADIC_PREAMBLE(ReadLine, "OS", "read_line");
+    MONADIC_PREAMBLE(VM_SUB_EGO, ReadLine, "OS", "read_line");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
@@ -526,7 +526,7 @@ public:
 //## OS:write c s - write a string s to a channel
 class Write: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Write, "OS", "write");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Write, "OS", "write");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t sym = 0;
@@ -550,7 +550,7 @@ public:
 //## OS:write_line c s - write a string s to a channel
 class WriteLine: public Dyadic {
 public:
-    DYADIC_PREAMBLE(WriteLine, "OS", "write_line");
+    DYADIC_PREAMBLE(VM_SUB_EGO, WriteLine, "OS", "write_line");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static symbol_t sym = 0;
@@ -574,7 +574,7 @@ public:
 //## OS:flush c - flush a channel
 class Flush: public Monadic {
 public:
-    MONADIC_PREAMBLE(Flush, "OS", "flush");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Flush, "OS", "flush");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
@@ -593,7 +593,7 @@ public:
 //## OS:eof c - tests if there is no more input
 class Eof: public Monadic {
 public:
-    MONADIC_PREAMBLE(Eof, "OS", "eof");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Eof, "OS", "eof");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
@@ -612,7 +612,7 @@ public:
 // (0 to indicate no errors, a small positive integer for failure.)
 class Exit: public Monadic {
 public:
-    MONADIC_PREAMBLE(Exit, "OS", "exit");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Exit, "OS", "exit");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {
@@ -633,7 +633,7 @@ public:
 //## OS:serverobject - an opaque objects which serves as a server
 class ServerObject: public Opaque {
 public:
-    OPAQUE_PREAMBLE(ServerObject, "OS", "serverobject");
+    OPAQUE_PREAMBLE(VM_SUB_EGO, ServerObject, "OS", "serverobject");
 
     ServerObject(const ServerObject& so): Opaque(so.machine(), so.symbol()) {
         // memcpy( (char*) &_server_address,  (char *) &so._server_address, sizeof(_server_address));
@@ -711,7 +711,7 @@ protected:
 //## OS:accept serverobject - accept connections
 class Accept: public Monadic {
 public:
-    MONADIC_PREAMBLE(Accept, "OS", "accept");
+    MONADIC_PREAMBLE(VM_SUB_EGO, Accept, "OS", "accept");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         static symbol_t sym = 0;
@@ -730,7 +730,7 @@ public:
 //## OS:server port in - create a serverobject 
 class Server: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Server, "OS", "server");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Server, "OS", "server");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) ) {
@@ -750,7 +750,7 @@ public:
 //## OS:client host port - create a client channel
 class Client: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Client, "OS", "client");
+    DYADIC_PREAMBLE(VM_SUB_EGO, Client, "OS", "client");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) ) {

@@ -13,7 +13,7 @@
 //## String:eq s0 s1 - string equality operator
 class StringEq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(StringEq, "String", "eq");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringEq, "String", "eq");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -29,7 +29,7 @@ public:
 //## String:neq s0 s1 - inequality operator
 class StringNeq: public Dyadic {
 public:
-    DYADIC_PREAMBLE(StringNeq, "String", "neq");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringNeq, "String", "neq");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -45,7 +45,7 @@ public:
 //## String:gt s0 s1 - greater than operator
 class StringGt: public Dyadic {
 public:
-    DYADIC_PREAMBLE(StringGt, "String", "gt");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringGt, "String", "gt");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -61,7 +61,7 @@ public:
 //## String:ls s0 s1 - string less than operator
 class StringLs: public Dyadic {
 public:
-    DYADIC_PREAMBLE(StringLs, "String", "ls");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringLs, "String", "ls");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -77,7 +77,7 @@ public:
 //## String:ge s0 s1 - greater than or equal operator
 class StringGe: public Dyadic {
 public:
-    DYADIC_PREAMBLE(StringGe, "String", "ge");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringGe, "String", "ge");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -93,7 +93,7 @@ public:
 //## String:le s0 s1 - stringLess than or equal operator
 class StringLe: public Dyadic {
 public:
-    DYADIC_PREAMBLE(StringLe, "String", "le");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringLe, "String", "le");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -109,7 +109,7 @@ public:
 //## String:compare s0 s1 - compare the characters bitwise in this icu::UnicodeString to the characters in text
 class Compare: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Compare, "String", "compare");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Compare, "String", "compare");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -125,7 +125,7 @@ public:
 //## String:compare_order s0 s1 - compare two Unicode strings in code point order
 class CompareCodePointOrder: public Dyadic {
 public:
-    DYADIC_PREAMBLE(CompareCodePointOrder, "String", "compare_order");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, CompareCodePointOrder, "String", "compare_order");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -141,7 +141,7 @@ public:
 //## String:case_compare s0 s1 - compare two strings case-insensitively using full case folding
 class CaseCompare: public Dyadic {
 public:
-    DYADIC_PREAMBLE(CaseCompare, "String", "case_compare");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, CaseCompare, "String", "case_compare");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -157,7 +157,7 @@ public:
 //## String:starts_with s0 s1 - determine if this starts with the characters in text 
 class StartsWith: public Dyadic {
 public:
-    DYADIC_PREAMBLE(StartsWith, "String", "starts_with");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, StartsWith, "String", "starts_with");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -173,7 +173,7 @@ public:
 //## String:ends_with s0 s1 - determine if this ends with the characters in text 
 class EndsWith: public Dyadic {
 public:
-    DYADIC_PREAMBLE(EndsWith, "String", "ends_with");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, EndsWith, "String", "ends_with");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -189,7 +189,7 @@ public:
 //## String:index_of s0 s1 - locate in this the first occurrence of the characters in text, using bitwise comparison
 class IndexOf: public Dyadic {
 public:
-    DYADIC_PREAMBLE(IndexOf, "String", "index_of");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, IndexOf, "String", "index_of");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -205,7 +205,7 @@ public:
 //## String:last_index_of s0 s1 - locate in this the last occurrence of the characters in text, using bitwise comparison
 class LastIndexOf: public Dyadic {
 public:
-    DYADIC_PREAMBLE(LastIndexOf, "String", "last_index_of");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, LastIndexOf, "String", "last_index_of");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -221,7 +221,7 @@ public:
 //## String:char_at n s - return the code point that contains the code unit at offset offset
 class CharAt: public Dyadic {
 public:
-    DYADIC_PREAMBLE(CharAt, "String", "char_at");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, CharAt, "String", "char_at");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -238,7 +238,7 @@ public:
 //## String:move_index index delta s - move the code unit index along the string by delta code points
 class MoveIndex: public Triadic {
 public:
-    TRIADIC_PREAMBLE(MoveIndex, "String", "move_index");
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, MoveIndex, "String", "move_index");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
@@ -256,7 +256,7 @@ public:
 //## String:count_char s - count Unicode code points in the string
 class CountChar: public Monadic {
 public:
-    MONADIC_PREAMBLE(CountChar, "String", "count_char");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, CountChar, "String", "count_char");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -272,7 +272,7 @@ public:
 //## String:is_empty s - test whether the string is empty
 class IsEmpty: public Monadic {
 public:
-    MONADIC_PREAMBLE(IsEmpty, "String", "is_empty");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsEmpty, "String", "is_empty");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -287,7 +287,7 @@ public:
 //## String:hash_code s - generate a hash code for this object
 class HashCode: public Monadic {
 public:
-    MONADIC_PREAMBLE(HashCode, "String", "hash_code");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, HashCode, "String", "hash_code");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -302,7 +302,7 @@ public:
 //## String:is_bogus s - determine if this object contains a valid string
 class IsBogus: public Monadic {
 public:
-    MONADIC_PREAMBLE(IsBogus, "String", "is_bogus");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsBogus, "String", "is_bogus");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -317,7 +317,7 @@ public:
 //## String:append s0 s1 - append the two strings
 class Append: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Append, "String", "append");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Append, "String", "append");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
@@ -338,7 +338,7 @@ public:
 //## String:insert s0 n s1 - insert the characters in s0 into the s1 at offset n
 class Insert: public Triadic {
 public:
-    TRIADIC_PREAMBLE(Insert, "String", "insert");
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Insert, "String", "insert");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
@@ -355,7 +355,7 @@ public:
 //## String:replace s0 s1 s2 - replace all occurrences of characters s0 with the characters s2 in s0
 class FindAndReplace: public Triadic {
 public:
-    TRIADIC_PREAMBLE(FindAndReplace, "String", "replace");
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, FindAndReplace, "String", "replace");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
@@ -372,7 +372,7 @@ public:
 //## String:remove n0 n1 s - remove the characters in the range [n0, n1) from s
 class Remove: public Triadic {
 public:
-    TRIADIC_PREAMBLE(Remove, "String", "remove");
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Remove, "String", "remove");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
@@ -389,7 +389,7 @@ public:
 //## String:retain n0 n1 s - retain the characters in the range [n0, n1) from s
 class Retain: public Triadic {
 public:
-    TRIADIC_PREAMBLE(Retain, "String", "retain");
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Retain, "String", "retain");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
@@ -406,7 +406,7 @@ public:
 //## String:trim s - trims leading and trailing whitespace from this s 
 class Trim: public Monadic {
 public:
-    MONADIC_PREAMBLE(Trim, "String", "trim");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Trim, "String", "trim");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -421,7 +421,7 @@ public:
 //## String:reverse s - reverse s
 class Reverse: public Monadic {
 public:
-    MONADIC_PREAMBLE(Reverse, "String", "reverse");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Reverse, "String", "reverse");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -436,7 +436,7 @@ public:
 //## String:to_upper s - convert the characters in this to upper case following the conventions of the default locale
 class ToUpper: public Monadic {
 public:
-    MONADIC_PREAMBLE(ToUpper, "String", "to_upper");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUpper, "String", "to_upper");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -451,7 +451,7 @@ public:
 //## String:to_lower s - convert the characters in this to lower case following the conventions of the default locale
 class ToLower: public Monadic {
 public:
-    MONADIC_PREAMBLE(ToLower, "String", "to_lower");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToLower, "String", "to_lower");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -466,7 +466,7 @@ public:
 //## String:fold_case s - case-folds the characters in this string
 class FoldCase: public Monadic {
 public:
-    MONADIC_PREAMBLE(FoldCase, "String", "fold_case");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, FoldCase, "String", "fold_case");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -481,7 +481,7 @@ public:
 //## String:unescape s - unescape a string of characters and return a string containing the result
 class Unescape: public Monadic {
 public:
-    MONADIC_PREAMBLE(Unescape, "String", "unescape");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unescape, "String", "unescape");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
@@ -496,7 +496,7 @@ public:
 //## String:ord c - integer value of unicode point/character
 class Ord: public Monadic {
 public:
-    MONADIC_PREAMBLE(Ord, "String", "ord");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ord, "String", "ord");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_CHAR) {
@@ -511,7 +511,7 @@ public:
 //## String:chr n - unicode point of integer value
 class Chr: public Monadic {
 public:
-    MONADIC_PREAMBLE(Chr, "String", "chr");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Chr, "String", "chr");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_INTEGER) {

@@ -22,7 +22,7 @@ void runthread(VM* vm, const VMObjectPtr& e, const VMObjectPtr& ret, const VMObj
 class VMObjectThreadResult : public VMObjectCombinator {
 public:
     VMObjectThreadResult(VM* m, const symbol_t s, const VMObjectPtr& tuple, int pos)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _tuple(tuple), _pos(pos) {
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos) {
     };
 
     VMObjectThreadResult(const VMObjectThreadResult& d)
@@ -50,7 +50,7 @@ protected:
 class VMObjectThreadException : public VMObjectCombinator {
 public:
     VMObjectThreadException(VM* m, const symbol_t s, const VMObjectPtr& tuple, int pos)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _tuple(tuple), _pos(pos) {
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos) {
     };
 
     VMObjectThreadException(const VMObjectThreadException& d)
@@ -79,7 +79,7 @@ protected:
 //## System:par f g - concurrently evaluate 'f nop' and 'g nop'
 class Par: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Par, "System", "par");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Par, "System", "par");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         static VMObjectPtr _tuple = nullptr;

@@ -16,7 +16,7 @@
 //## System:process - opaque process object
 class Process : public Opaque {
 public:
-    OPAQUE_PREAMBLE(Process, "System", "process");
+    OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Process, "System", "process");
 
     Process(VM* vm, const VMObjectPtr& f)
         : Opaque(vm, "System", "process") {
@@ -164,7 +164,7 @@ void run_process(const VMObjectPtr& o) {
 //## System:proc f - create a process object from f
 class Proc: public Monadic {
 public:
-    MONADIC_PREAMBLE(Proc, "System", "proc");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Proc, "System", "proc");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto vm = machine();
@@ -182,7 +182,7 @@ public:
 //## System:send proc msg - send message msg to proc
 class Send: public Dyadic {
 public:
-    DYADIC_PREAMBLE(Send, "System", "send");
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Send, "System", "send");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
@@ -200,7 +200,7 @@ public:
 //## System:recv proc - receive a message from process proc
 class Recv: public Monadic {
 public:
-    MONADIC_PREAMBLE(Recv, "System", "recv");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Recv, "System", "recv");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
@@ -221,7 +221,7 @@ public:
 //## System:halt proc - halt process proc
 class Halt: public Monadic {
 public:
-    MONADIC_PREAMBLE(Halt, "System", "halt");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Halt, "System", "halt");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
