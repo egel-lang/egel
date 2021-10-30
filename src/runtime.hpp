@@ -100,8 +100,7 @@ typedef enum {
 } vm_tag_t;
 
 /**
- * objects can have subtypes which are 'magic' numbers, the combination
- * of a tag and subtag should uniquely identify an object.
+ * VM objects can have subtypes which are _unique_ 'magic' numbers.
  */
 typedef unsigned int vm_subtag_t;
 
