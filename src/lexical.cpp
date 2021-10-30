@@ -366,27 +366,44 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             reader.skip();
             token_writer.push(Token(TOKEN_CHAR, p, str));
         } else if (is_dquote(c)) {
-            icu::UnicodeString str = icu::UnicodeString("");
-            str += c;
-            reader.skip();
-            if (reader.end() || is_eol(reader.look())) goto handle_string_error;
-            c = reader.look();
-            while (!is_dquote(c)) {
-                if (is_backslash(c)) {
+            if (is_dquote(reader.look(1)) && is_dquote(reader.look(2)) && is_eol(reader.look(3))) {
+                icu::UnicodeString str = icu::UnicodeString("");
+                str += c;
+                reader.skip(); reader.skip(); reader.skip(); reader.skip();
+                while (!(is_dquote(reader.look(0)) 
+                             && is_dquote(reader.look(1)) && is_dquote(reader.look(2)))) {
+                    if (reader.end()) goto handle_string_error;
+                    c = reader.look();
                     str += c;
                     reader.skip();
-                    if (reader.end() || is_eol(reader.look())) goto handle_string_error;
-                    c = reader.look();
-                    if (!is_escaped(c)) goto handle_string_error;
-                };
+		}
+                c = reader.look();
+                str += c;
+                reader.skip(); reader.skip(); reader.skip(); reader.skip();
+                token_writer.push(Token(TOKEN_TEXT, p, str));
+	    } else {
+                icu::UnicodeString str = icu::UnicodeString("");
                 str += c;
                 reader.skip();
                 if (reader.end() || is_eol(reader.look())) goto handle_string_error;
                 c = reader.look();
-            };
-            str += c;
-            reader.skip();
-            token_writer.push(Token(TOKEN_TEXT, p, str));
+                while (!is_dquote(c)) {
+                    if (is_backslash(c)) {
+                        str += c;
+                        reader.skip();
+                        if (reader.end() || is_eol(reader.look())) goto handle_string_error;
+                        c = reader.look();
+                        if (!is_escaped(c)) goto handle_string_error;
+                    };
+                    str += c;
+                    reader.skip();
+                    if (reader.end() || is_eol(reader.look())) goto handle_string_error;
+                    c = reader.look();
+                };
+                str += c;
+                reader.skip();
+                token_writer.push(Token(TOKEN_TEXT, p, str));
+	    }
 //        } else if (is_digit(c) || (is_minus(c) && is_digit(reader.look(1)))) { // no longer lex a leading minus
         } else if (is_digit(c) ) { // XXX: LL(2), to be solved by swapping skip/look
             /* This code handles numbers which are integers and floats. Integer and float
