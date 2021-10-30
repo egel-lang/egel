@@ -110,7 +110,7 @@ namespace Search (
     def star =
         [ P -> plus P <+> success nil ]
 
-    ## Search:star p s - one or more p separated by s
+    ## Search:plus_sep p s - one or more p separated by s
     def plus_sep = 
         [ P Q ->
             one P </> \L0 -> 
@@ -119,7 +119,7 @@ namespace Search (
             L0 ++ L1 
         ]
 
-    ## Search:star p s - zero or more p separated by s
+    ## Search:star_sep p s - zero or more p separated by s
     def star_sep = 
         [ P Q -> plus_sep P Q <+> success nil ]
 
