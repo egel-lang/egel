@@ -62,13 +62,13 @@ to your shell resource file, though the specific syntax may differ.
 Usage
 -----
 
-There's a (manual)[]https://egel-lang.github.io/egel.1.html page you can
+There's a [manual](https://egel-lang.github.io/egel.1.html) page you can
 consult, it should be installed, or read the following short 
-(introduction)[http://egel.readthedocs.io/] to the interpreter on
+[introduction](http://egel.readthedocs.io/) to the interpreter on
 the internet.
 
 For a list of builtin combinators look 
-(here)[https://github.com/egel-lang/egel-gen/blob/main/combs.md].
+[here](https://github.com/egel-lang/egel-gen/blob/main/combs.md).
 
 Also
 ----
