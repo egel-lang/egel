@@ -887,16 +887,30 @@ public:
         return fetch_i32();
     }
 
+    void switch_hex(std::ostream& os) {
+        os << std::hex << std::noshowbase << std::setfill('0') << std::nouppercase;
+    }
+
+    void switch_dec(std::ostream& os) {
+	os << std::dec;
+    }
+
     void write_i8(std::ostream& os, const uint32_t n) {
-        os << std::hex << std::setw(2) << n << std::dec;
+	switch_hex(os);
+        os << std::setw(2) << (0xff & n);
+        switch_dec(os);
     }
 
     void write_i16(std::ostream& os, const uint32_t n) {
-        os << std::hex << std::setw(4) << n << std::dec;
+	switch_hex(os);
+        os << std::setw(4) << (0xffff & n);
+        switch_dec(os);
     }
 
     void write_i32(std::ostream& os, const uint32_t n) {
-        os << std::hex << std::setw(4) << n << std::dec;
+	switch_hex(os);
+        os << std::setw(8) << n;
+        switch_dec(os);
     }
 
     void write_op(std::ostream& os, const opcode_t n) {
@@ -953,9 +967,7 @@ public:
         std::streamsize         old_prec  = os.precision();
         char                    old_fill  = os.fill();
 
-        os  << std::showbase
-            << std::internal
-            << std::setfill('0');
+        os  << std::showbase << std::internal << std::setfill('0');
 
         reset();
         while (!is_end()) {
@@ -1056,7 +1068,7 @@ public:
 	         case VM_SUB_DATA:
                      write_i8(os, VM_OBJECT_COMBINATOR);
 		     write_separator(os);
-                     write_i8(os, VM_SUB_DATA);
+                     write_i16(os, VM_SUB_DATA);
 		     write_separator(os);
 		     write_text(os, c->to_text());
 	             return;
@@ -1065,7 +1077,7 @@ public:
 		     auto b = VM_OBJECT_BYTECODE_CAST(c);
                      write_i8(os, VM_OBJECT_COMBINATOR);
 		     write_separator(os);
-                     write_i8(os, VM_SUB_BYTECODE);
+                     write_i16(os, VM_SUB_BYTECODE);
 		     write_separator(os);
 		     write_text(os, b->to_text());
 		     write_separator(os);
