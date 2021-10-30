@@ -17,13 +17,8 @@ public:
     MONADIC_PREAMBLE(Dis, "System", "dis");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (auto o = std::dynamic_pointer_cast<VMObjectBytecode>(arg0)) {
-            auto s0 = o->text();
-            auto s1 = o->disassemble();
-            return VMObjectText(s0+ "::" + s1).clone();
-        } else {
-            THROW_BADARGS;
-        }
+	Disassembler d(arg0);
+	return d->dissassemble();
     }
 };
 

@@ -97,14 +97,27 @@ typedef enum {
     VM_OBJECT_OPAQUE,
     VM_OBJECT_COMBINATOR,
     VM_OBJECT_ARRAY,
-} vm_object_tag_t;
+} vm_tag_t;
 
-typedef bool            vm_bool_t;
-typedef int64_t         vm_int_t;
-typedef double          vm_float_t;
-typedef UChar32         vm_char_t;
+/**
+ * objects can have subtypes which are 'magic' numbers, the combination
+ * of a tag and subtag should uniquely identify an object.
+ */
+typedef unsigned int vm_subtag_t;
+
+const vm_subtag_t VM_SUB_DATA     = 0; // a combinator data object
+const vm_subtag_t VM_SUB_BUILTIN  = 1; // a combinator internally defined
+const vm_subtag_t VM_SUB_BYTECODE = 2; // a bytecode combinator
+const vm_subtag_t VM_SUB_COMPILED = 3; // a compiled bytecode combinator
+const vm_subtag_t VM_SUB_EGO      = 4; // a combinator from a .ego
+const vm_subtag_t VM_SUB_STUB     = 5; // a stub combinator
+
+typedef bool                 vm_bool_t;
+typedef int64_t              vm_int_t;
+typedef double               vm_float_t;
+typedef UChar32              vm_char_t;
 typedef icu::UnicodeString   vm_text_t;
-typedef void*           vm_ptr_t;
+typedef void*                vm_ptr_t;
 
 // predefined symbols
 #define SYMBOL_INT     	0
@@ -124,16 +137,6 @@ typedef void*           vm_ptr_t;
 typedef uint32_t    symbol_t;
 typedef uint32_t    data_t;
 
-typedef enum {
-    VM_OBJECT_FLAG_LITERAL    = (1 << 0),
-    VM_OBJECT_FLAG_DATA       = (1 << 1),
-    VM_OBJECT_FLAG_COMBINATOR = (1 << 2),
-    VM_OBJECT_FLAG_INTERNAL   = (1 << 3),
-    VM_OBJECT_FLAG_DYNAMIC    = (1 << 4),
-    VM_OBJECT_FLAG_OPERATOR   = (1 << 5),
-    VM_OBJECT_FLAG_STUB       = (1 << 6),
-} vm_object_flag_t;
-
 class VMObject;
 typedef std::shared_ptr<VMObject> VMObjectPtr;
 typedef std::weak_ptr<VMObject>   VMWeakObjectPtr;
@@ -145,18 +148,18 @@ inline void render_cons(const VMObjectPtr& cc, std::ostream& os);
 
 class VMObject {
 public:
-    VMObject(vm_object_tag_t t, vm_object_flag_t f) : _tag(t), _flag(f) {
+    VMObject(vm_tag_t t) : _tag(t), _subtag(0) {
     }
 
     virtual ~VMObject() { // FIX: give a virtual destructor to keep the compiler(-s) happy
     }
 
-    vm_object_tag_t tag() const {
+    vm_tag_t tag() const {
         return _tag;
     }
 
-    vm_object_flag_t flag() const {
-        return _flag;
+    vm_subtag_t subtag() const {
+        return _subtag;
     }
 
     virtual VMObjectPtr clone() const = 0;
@@ -182,8 +185,8 @@ public:
     }
 
 private:
-    vm_object_tag_t       _tag;
-    vm_object_flag_t      _flag;
+    vm_tag_t       _tag;
+    vm_subtag_t    _subtag;
 };
 
 typedef std::vector<VMObjectPtr> VMObjectPtrs;
@@ -252,8 +255,8 @@ public:
 
 class VMObjectLiteral : public VMObject {
 public:
-    VMObjectLiteral(const vm_object_tag_t &t)
-        : VMObject(t, VM_OBJECT_FLAG_LITERAL) {
+    VMObjectLiteral(const vm_tag_t &t)
+        : VMObject(t) {
     }
 
     void debug(std::ostream& os) const override {
@@ -506,11 +509,11 @@ typedef std::shared_ptr<VMObjectPointer> VMObjectPointerPtr;
 class VMObjectArray : public VMObject {
 public:
     VMObjectArray()
-        : VMObject(VM_OBJECT_ARRAY, VM_OBJECT_FLAG_INTERNAL), _value(VMObjectPtrs()) {
+        : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs()) {
     };
 
     VMObjectArray(const VMObjectPtrs &v)
-        : VMObject(VM_OBJECT_ARRAY, VM_OBJECT_FLAG_INTERNAL), _value(v) {
+        : VMObject(VM_OBJECT_ARRAY), _value(v) {
     };
 
     VMObjectArray(const VMObjectArray& l)
@@ -518,7 +521,7 @@ public:
     }
 
     VMObjectArray(const int size)
-        : VMObject(VM_OBJECT_ARRAY, VM_OBJECT_FLAG_INTERNAL), _value(VMObjectPtrs(size)) {
+        : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs(size)) {
     }
 
     VMObjectPtr clone() const override {
@@ -758,20 +761,20 @@ typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
 
 class VMObjectCombinator: public VMObject {
 public:
-    VMObjectCombinator(const vm_object_flag_t f, VM* m, const symbol_t s)
-        : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(s) {
+    VMObjectCombinator(const vm_subtag_t t, VM* m, const symbol_t s)
+        : VMObject(VM_OBJECT_COMBINATOR, t), _machine(m), _symbol(s) {
     };
 
-    VMObjectCombinator(const vm_object_flag_t f, VM* m, const icu::UnicodeString& n)
-        : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(m->enter_symbol(n)) {
+    VMObjectCombinator(const vm_subtag_t t, VM* m, const icu::UnicodeString& n)
+        : VMObject(VM_OBJECT_COMBINATOR, t), _machine(m), _symbol(m->enter_symbol(n)) {
     };
 
-    VMObjectCombinator(const vm_object_flag_t f, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
-        : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
+    VMObjectCombinator(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
+        : VMObject(VM_OBJECT_COMBINATOR, t), _machine(m), _symbol(m->enter_symbol(n0, n1)) {
     };
 
-    VMObjectCombinator(const vm_object_flag_t f, VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
-        : VMObject(VM_OBJECT_COMBINATOR, f), _machine(m), _symbol(m->enter_symbol(nn, n)) {
+    VMObjectCombinator(const vm_subtag_t t, VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
+        : VMObject(VM_OBJECT_COMBINATOR, t), _machine(m), _symbol(m->enter_symbol(nn, n)) {
     };
 
     VM* machine() const {
@@ -796,9 +799,6 @@ public:
 
     void render(std::ostream& os) const override {
         os << text();
-#ifdef DEBUG
-        os << " (" << flag() << ") " ;
-#endif
     }
 
     // convenience routines
@@ -849,19 +849,19 @@ private:
 class VMObjectData : public VMObjectCombinator {
 public:
     VMObjectData(VM* m, const symbol_t s)
-        : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, s) {
+        : VMObjectCombinator(VM_SUB_DATA, m, s) {
     };
 
     VMObjectData(VM* m, const icu::UnicodeString& n)
-        : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, n) {
+        : VMObjectCombinator(VM_SUB_DATA, m, n) {
     };
 
     VMObjectData(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
-        : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, n0, n1) {
+        : VMObjectCombinator(VM_SUB_DATA, m, n0, n1) {
     };
 
     VMObjectData(VM* m, const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n)
-        : VMObjectCombinator(VM_OBJECT_FLAG_DATA, m, nn, n) {
+        : VMObjectCombinator(VM_SUB_DATA, m, nn, n) {
     };
 
     VMObjectData(const VMObjectData& d)
@@ -899,6 +899,7 @@ public:
         return k;
     }
 };
+typedef std::shared_ptr<VMObjectData> VMObjectDataPtr;
 
 typedef std::shared_ptr<VMObjectCombinator> VMObjectCombinatorPtr;
 #define VM_OBJECT_COMBINATOR_CAST(a) \
@@ -1018,7 +1019,7 @@ typedef std::set<VMObjectPtr, LessVMObjectPtr> VMObjectPtrSet;
 class VMObjectStub: public VMObjectCombinator {
 public:
     VMObjectStub(VM* vm, const symbol_t s)
-        : VMObjectCombinator(VM_OBJECT_FLAG_STUB, vm, s) {
+        : VMObjectCombinator(VM_SUB_STUB, vm, s) {
      }
 
      VMObjectStub(const VMObjectStub& d)
@@ -1062,7 +1063,7 @@ inline VMObjectPtr VM::get_data_string(const std::vector<icu::UnicodeString>& nn
 class VMThrow: public VMObjectCombinator {
 public:
     VMThrow(VM* m): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, "System", "throw") {
+         VMObjectCombinator(VM_SUB_INTERNAL, m, "System", "throw") {
     }
 
     VMThrow(const VMThrow& t)
@@ -1071,7 +1072,7 @@ public:
 
     VMObjectPtr clone() const override {
          return VMObjectPtr(new VMThrow(*this));
-     }
+    }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
         // when throw is reduced, it takes the exception, inserts it argument, 
@@ -1096,31 +1097,31 @@ public:
 
 class Opaque: public VMObjectOpaque {
 public:
-    Opaque(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectOpaque(m, n0, n1) {
+    Opaque(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectOpaque(t, m, n0, n1) {
     }
 
-    Opaque(VM* m, const symbol_t s): 
-         VMObjectOpaque(m, s) {
+    Opaque(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectOpaque(t, m, s) {
     }
 };
 
-#define OPAQUE_PREAMBLE(c, n0, n1) \
-    c(VM* m): Opaque(m, n0, n1) { \
+#define OPAQUE_PREAMBLE(c, t, n0, n1) \
+    c(VM* m): Opaque(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Opaque(m, s) { \
+    c(VM* m, const symbol_t s): Opaque(t, m, s) { \
     }
 
 // convenience classes for combinators which take and return constants
 
 class Medadic: public VMObjectCombinator {
 public:
-    Medadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Medadic(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Medadic(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Medadic(const vm_subtag_t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply() const = 0;
@@ -1182,8 +1183,8 @@ public:
     }
 };
 
-#define MEDADIC_PREAMBLE(c, n0, n1) \
-    c(VM* m): Medadic(m, n0, n1) { \
+#define MEDADIC_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Medadic(t, m, n0, n1) { \
     } \
     c(VM* m, const symbol_t s): Medadic(m, s) { \
     } \
@@ -1195,12 +1196,12 @@ public:
 
 class Monadic: public VMObjectCombinator {
 public:
-    Monadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Monadic(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Monadic(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Monadic(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply(const VMObjectPtr& arg0) const = 0;
@@ -1264,10 +1265,10 @@ public:
     }
 };
 
-#define MONADIC_PREAMBLE(c, n0, n1) \
-    c(VM* m): Monadic(m, n0, n1) { \
+#define MONADIC_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Monadic(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Monadic(m, s) { \
+    c(VM* m, const symbol_t s): Monadic(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
@@ -1277,12 +1278,12 @@ public:
 
 class Dyadic: public VMObjectCombinator {
 public:
-    Dyadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Dyadic(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Dyadic(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Dyadic(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const = 0;
@@ -1347,10 +1348,10 @@ public:
     }
 };
 
-#define DYADIC_PREAMBLE(c, n0, n1) \
-    c(VM* m): Dyadic(m, n0, n1) { \
+#define DYADIC_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Dyadic(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Dyadic(m, s) { \
+    c(VM* m, const symbol_t s): Dyadic(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
@@ -1360,12 +1361,12 @@ public:
 
 class Triadic: public VMObjectCombinator {
 public:
-    Triadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Triadic(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Triadic(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Triadic(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const = 0;
@@ -1431,10 +1432,10 @@ public:
     }
 };
 
-#define TRIADIC_PREAMBLE(c, n0, n1) \
-    c(VM* m): Triadic(m, n0, n1) { \
+#define TRIADIC_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Triadic(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Triadic(m, s) { \
+    c(VM* m, const symbol_t s): Triadic(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
@@ -1444,12 +1445,12 @@ public:
 
 class Variadic: public VMObjectCombinator {
 public:
-    Variadic(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Variadic(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Variadic(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Variadic(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply(const VMObjectPtrs& args) const = 0;
@@ -1506,10 +1507,10 @@ public:
     }
 };
 
-#define VARIADIC_PREAMBLE(c, n0, n1) \
-    c(VM* m): Variadic(m, n0, n1) { \
+#define VARIADIC_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Variadic(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Variadic(m, s) { \
+    c(VM* m, const symbol_t s): Variadic(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
@@ -1521,12 +1522,12 @@ public:
 
 class Unary: public VMObjectCombinator {
 public:
-    Unary(VM* m, const UnicodeString& n0, const UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Unary(const vm_subtag_t t, VM* m, const UnicodeString& n0, const UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Unary(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Unary(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply(const VMObjectPtr& arg0) const = 0;
@@ -1599,10 +1600,10 @@ public:
     }
 };
 
-#define UNARY_PREAMBLE(c, n0, n1) \
-    c(VM* m): Unary(m, n0, n1) { \
+#define UNARY_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Unary(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Unary(m, s) { \
+    c(VM* m, const symbol_t s): Unary(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
@@ -1612,12 +1613,12 @@ public:
 
 class Binary: public VMObjectCombinator {
 public:
-    Binary(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Binary(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Binary(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Binary(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const = 0;
@@ -1685,10 +1686,10 @@ public:
     }
 };
 
-#define BINARY_PREAMBLE(c, n0, n1) \
-    c(VM* m): Binary(m, n0, n1) { \
+#define BINARY_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Binary(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Binary(m, s) { \
+    c(VM* m, const symbol_t s): Binary(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
@@ -1698,12 +1699,12 @@ public:
 
 class Ternary: public VMObjectCombinator {
 public:
-    Ternary(VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, n0, n1) {
+    Ternary(const vm_subtag_t t, VM* m, const icu::UnicodeString& n0, const icu::UnicodeString& n1): 
+         VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Ternary(VM* m, const symbol_t s): 
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s) {
+    Ternary(const vm_subtag_t t, VM* m, const symbol_t s): 
+         VMObjectCombinator(t, m, s) {
     }
 
     virtual VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const = 0;
@@ -1772,10 +1773,10 @@ public:
     }
 };
 
-#define TERNARY_PREAMBLE(c, n0, n1) \
-    c(VM* m): Ternary(m, n0, n1) { \
+#define TERNARY_PREAMBLE(t, c, n0, n1) \
+    c(VM* m): Ternary(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Ternary(m, s) { \
+    c(VM* m, const symbol_t s): Ternary(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \
