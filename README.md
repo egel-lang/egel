@@ -59,10 +59,25 @@ to your shell resource file, though the specific syntax may differ.
     export EGEL_INCLUDE=~/usr/local/include
 ```
 
+Usage
+-----
+
+There's a (manual)[]https://egel-lang.github.io/egel.1.html page you can
+consult, it should be installed, or read the following short 
+(introduction)[http://egel.readthedocs.io/] to the interpreter on
+the internet.
+
+For a list of builtin combinators look 
+(here)[https://github.com/egel-lang/egel-gen/blob/main/combs.md].
+
+Also
+----
+
 The interpreter doesn't provide command line editing, you might
 want to wrap it with the command `alias egel="rlwrap egel"`.
 
 The interpreter allocates lots of short-lived objects. If you want
-a bit of extra speed, it might pay off to switch the allocator to
-`jemalloc` on Linux. I use 
+a bit of extra speed, it might pay off to switch the allocator.
+
+I use `jemalloc` on Linux by setting
 ``LD_PRELOAD=`jemalloc-config --libdir`/libjemalloc.so.`jemalloc-config --revision``.
