@@ -23,7 +23,7 @@
     EXECUTABLE_VERSION_PATCH
 
 #define EXECUTABLE_COPYRIGHT \
-    "Copyright (C) 2016"
+    "Copyright (C) 2017"
 #define EXECUTABLE_AUTHORS \
     "M.C.A. (Marco) Devillers"
 
