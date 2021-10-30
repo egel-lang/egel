@@ -13,6 +13,7 @@ A list of all major changes between versions of the interpreter.
 + readme/license changes
 + compile on more Linux/MacOs/BSD architectures
 + fixed critical regression LL(n) quadratic behavior
++ calculate and search theories
 
 ## v0.1.0 -- corrupting the neighborhood
 
