@@ -181,7 +181,7 @@ public:
 
         std::ios_base::fmtflags old_flags = os.flags();
         std::streamsize         old_prec  = os.precision();
-        char               old_fill  = os.fill();
+        char                    old_fill  = os.fill();
 
         os  << std::showbase
             << std::internal

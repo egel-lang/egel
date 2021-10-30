@@ -5,8 +5,12 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending
 
++ generate C++ from .eg file
++ time and date
 + dynamic coding combinators
-+ time and date built-ins
++ complex numbers
++ move to C++20 (modules, egel namespace, modern syntax)
+  when libfmt makes it into llvm and gcc
 
 ## v0.1.2 -- smaller is better
 
