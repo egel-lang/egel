@@ -18,7 +18,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
 	Disassembler d(arg0);
-	return d->dissassemble();
+	return VMObjectText(d.disassemble()).clone();
     }
 };
 

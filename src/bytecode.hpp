@@ -9,6 +9,8 @@
 #include <tuple>
 #include "runtime.hpp"
 
+class VMObjectBytecode;
+
 typedef uint16_t    reg_t;
 typedef uint16_t    index_t;
 typedef uint32_t    label_t;
@@ -57,6 +59,8 @@ typedef struct {
 #define  STRING_OP_TAG      "tag"
 #define  STRING_OP_FAIL     "fail"
 #define  STRING_OP_RETURN   "return"
+
+#define VM_OBJECT_BYTECODE_CAST(o) std::static_pointer_cast<VMObjectBytecode>(o)
 
 class CodePrinter {
 public:
@@ -269,269 +273,6 @@ private:
 
 typedef std::tuple<uint16_t, VMObjectPtr>  data_tuple_t;
 typedef std::vector<data_tuple_t>	   data_vector_t;
-
-class Disassembler {
-public:
-    Disassembler(const VMObjectPtr& o)
-        : _object(o), _pc(0) {
-    }
-
-    void reset() {
-        _pc = 0;
-    }
-
-    uint32_t pc() const {
-        return _pc;
-    }
-
-    bool is_end() const {
-        return _pc >= _code.size();
-    }
-
-    opcode_t look() const {
-        return (opcode_t) _code[_pc];
-    }
-
-    uint8_t fetch_i8() {
-        uint8_t n = _code[_pc];
-        _pc += 1;
-        return n;
-    }
-
-    uint16_t fetch_i16() {
-        uint16_t n = ( (_code[_pc] << 8) | _code[_pc+1] );
-        _pc += 2;
-        return n;
-    }
-
-    uint32_t fetch_i32() { // XXX: depends on size of machine register?
-        uint32_t n = ( (_code[_pc] << 24) | (_code[_pc+1] << 16) | (_code[_pc+2] << 8) |  _code[_pc+3] );
-        _pc += 4;
-        return n;
-    }
-
-    opcode_t fetch_op() {
-        return (opcode_t) fetch_i8();
-    }
-
-    reg_t fetch_index() {
-        return fetch_i16();
-    }
-
-    reg_t fetch_register() {
-        return fetch_i16();
-    }
-
-    label_t fetch_label() {
-        return fetch_i32();
-    }
-
-    void write_i8(std::ostream& os, const uint32_t n) {
-        os << std::hex << std::setw(2) << n << std::dec;
-    }
-
-    void write_i16(std::ostream& os, const uint32_t n) {
-        os << std::hex << std::setw(4) << n << std::dec;
-    }
-
-    void write_i32(std::ostream& os, const uint32_t n) {
-        os << std::hex << std::setw(4) << n << std::dec;
-    }
-
-    void write_op(std::ostream& os, const opcode_t n) {
-	write_i8(os, n);
-    }
-
-    void write_index(std::ostream& os, const reg_t n) {
-	write_i16(os, n);
-    }
-
-    void write_register(std::ostream& os, const reg_t n) {
-	write_i16(os, n);
-    }
-
-    void write_label(std::ostream& os, const label_t n) {
-	write_i32(os, n);
-    }
-
-    void write_text(std::ostream& os, const icu::UnicodeString& s) {
-	os << s;
-    }
-
-    void write_separator(std::ostream& os) {
-	os << "#";
-    }
-
-    void data_push(const reg_t i, const VMObjectPtr& o) {
-	_data.push_back(data_tuple_t(i, o));
-    }
-
-    bool data_end() const {
-	return ( (unsigned int) _data_index <= (unsigned int) _data.size());
-    }
-
-    void data_skip() {
-	_data_index++;
-    }
-
-    reg_t data_index() const {
-	return std::get<0>(_data[_data_index]);
-    }
-
-    VMObjectPtr data_object() const {
-	return std::get<1>(_data[_data_index]);
-    }
-
-    void write_code(std::ostream& os, const Code& code, VM* vm) {
-	_code       = code;
-	_data       = data_vector_t();
-        _data_index = 0;	
-	_pc         = 0;
-
-        std::ios_base::fmtflags old_flags = os.flags();
-        std::streamsize         old_prec  = os.precision();
-        char                    old_fill  = os.fill();
-
-        os  << std::showbase
-            << std::internal
-            << std::setfill('0');
-
-        reset();
-        while (!is_end()) {
-            switch (look()) {
-            case OP_NIL:
-                write_op(os, fetch_op());
-                write_register(os, fetch_register());
-                break;
-            case OP_MOV:
-                write_op(os, fetch_op());
-                write_register(os, fetch_register());
-                write_register(os, fetch_register());
-                break;
-            case OP_DATA:
-                write_op(os, fetch_op());
-                write_register(os, fetch_register());
-                {
-                    auto i = fetch_i32();
-                    write_i32(os, i);
-                    data_push(i, vm->get_data(i));
-                }
-                break;
-            case OP_SET:
-            case OP_SPLIT:
-            case OP_ARRAY:
-                write_op(os, fetch_op());
-                write_register(os, fetch_register());
-                write_register(os, fetch_register());
-                write_register(os, fetch_register());
-                break;
-            case OP_TAKEX:
-            case OP_CONCATX:
-                write_op(os, fetch_op());
-                write_register(os, fetch_register());
-                write_register(os, fetch_register());
-                write_register(os, fetch_register());
-                write_index(os, fetch_index());
-                break;
-            case OP_TEST:
-            case OP_TAG:
-                write_op(os, fetch_op());
-                write_register(os, fetch_register());
-                write_register(os, fetch_register());
-                break;
-            case OP_FAIL:
-                write_op(os, fetch_op());
-                write_label(os, fetch_label());
-                break;
-            case OP_RETURN:
-                write_op(os, fetch_op());
-                write_register(os, fetch_register());
-                break;
-            }
-        }
-
-	while(!data_end()) {
-            write_separator(os);
-	    write_i32(os, data_index());
-	    write_text(os, data_object()->to_text());
-	    data_skip();
-	}
-
-        os.flags(old_flags);
-        os.precision(old_prec);
-        os.fill(old_fill);
-    }
-
-    void disassemble(std::ostream& os) {
-	auto o = _object;
-	switch (_object->tag()) {
-            case VM_OBJECT_INTEGER:
-                 write_i8(os, VM_OBJECT_INTEGER);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_FLOAT:
-                 write_i8(os, VM_OBJECT_FLOAT);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_CHAR:
-                 write_i8(os, VM_OBJECT_CHAR);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_TEXT:
-                 write_i8(os, VM_OBJECT_TEXT);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_POINTER:
-		 break;
-            case VM_OBJECT_OPAQUE:
-		 break;
-            case VM_OBJECT_COMBINATOR:
-		 auto o0 = dynamic_cast<VMObjectDataPtr>(o);
-		 if (t != nullptr) {
-                     write_i8(os, VM_OBJECT_COMBINATOR);
-		     write_separator(os);
-                     write_i8(os, 0);
-		     write_separator(os);
-		     write_text(os, o0->to_text());
-	             return;
-		 }
-
-		 auto o1 = dynamic_cast<VMObjectBytecodePtr>(o);
-		 if (o1 != nullptr) {
-                     write_i8(os, VM_OBJECT_COMBINATOR);
-		     write_separator(os);
-                     write_i8(os, 0);
-		     write_separator(os);
-		     write_text(os, o1->to_text());
-		     write_separator(os);
-		     write_code(os, o1->code(), o1->machine());
-	             return;
-		 }
-		 break;
-            case VM_OBJECT_ARRAY:
-		 break;
-	}
-    }
-
-    icu::UnicodeString disassemble() {
-        std::stringstream ss;
-	disassemble(ss);
-        icu::UnicodeString u(ss.str().c_str());
-        return u;
-    }
-
-private:
-    VMObjectPtr   _object;
-    Code          _code;
-    uint32_t      _pc;
-    data_vector_t _data;
-    int		  _data_index;
-};
-
 
 class Coder {
 public:
@@ -803,19 +544,19 @@ class VMObjectBytecode: public VMObjectCombinator {
 public:
 
     VMObjectBytecode(VM* m, const Code& c, const symbol_t s)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _code(c) {
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, s), _code(c) {
     };
     
     VMObjectBytecode(VM* m, const Code& c, const icu::UnicodeString& n)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, n), _code(c) {
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, n), _code(c) {
     };
     
     VMObjectBytecode(VM* m, const Code& c, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, n0, n1), _code(c) {
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, n0, n1), _code(c) {
     };
     
     VMObjectBytecode(VM* m, const Code& c, const UnicodeStrings& nn, const icu::UnicodeString& n)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, nn, n), _code(c) {
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, nn, n), _code(c) {
     };
     
     VMObjectBytecode(const VMObjectBytecode& d)
@@ -827,7 +568,7 @@ public:
     }
 
     void debug(std::ostream& os) const override {
-        os << text() << " (" << flag() << ")" << std::endl << "begin" << std::endl;
+        os << text() << " (" << tag() << ", " << subtag() << ")" << std::endl << "begin" << std::endl;
         CodePrinter cp(_code);
         cp.write(os, machine());
         os << "end" << std::endl;
@@ -1089,5 +830,275 @@ public:
 private:
     Code  _code;
 };
+
+class Disassembler {
+public:
+    Disassembler(const VMObjectPtr& o)
+        : _object(o), _pc(0) {
+    }
+
+    void reset() {
+        _pc = 0;
+    }
+
+    uint32_t pc() const {
+        return _pc;
+    }
+
+    bool is_end() const {
+        return _pc >= _code.size();
+    }
+
+    opcode_t look() const {
+        return (opcode_t) _code[_pc];
+    }
+
+    uint8_t fetch_i8() {
+        uint8_t n = _code[_pc];
+        _pc += 1;
+        return n;
+    }
+
+    uint16_t fetch_i16() {
+        uint16_t n = ( (_code[_pc] << 8) | _code[_pc+1] );
+        _pc += 2;
+        return n;
+    }
+
+    uint32_t fetch_i32() { // XXX: depends on size of machine register?
+        uint32_t n = ( (_code[_pc] << 24) | (_code[_pc+1] << 16) | (_code[_pc+2] << 8) |  _code[_pc+3] );
+        _pc += 4;
+        return n;
+    }
+
+    opcode_t fetch_op() {
+        return (opcode_t) fetch_i8();
+    }
+
+    reg_t fetch_index() {
+        return fetch_i16();
+    }
+
+    reg_t fetch_register() {
+        return fetch_i16();
+    }
+
+    label_t fetch_label() {
+        return fetch_i32();
+    }
+
+    void write_i8(std::ostream& os, const uint32_t n) {
+        os << std::hex << std::setw(2) << n << std::dec;
+    }
+
+    void write_i16(std::ostream& os, const uint32_t n) {
+        os << std::hex << std::setw(4) << n << std::dec;
+    }
+
+    void write_i32(std::ostream& os, const uint32_t n) {
+        os << std::hex << std::setw(4) << n << std::dec;
+    }
+
+    void write_op(std::ostream& os, const opcode_t n) {
+	write_i8(os, n);
+    }
+
+    void write_index(std::ostream& os, const reg_t n) {
+	write_i16(os, n);
+    }
+
+    void write_register(std::ostream& os, const reg_t n) {
+	write_i16(os, n);
+    }
+
+    void write_label(std::ostream& os, const label_t n) {
+	write_i32(os, n);
+    }
+
+    void write_text(std::ostream& os, const icu::UnicodeString& s) {
+	os << s;
+    }
+
+    void write_separator(std::ostream& os) {
+	os << "#";
+    }
+
+    void data_push(const reg_t i, const VMObjectPtr& o) {
+	_data.push_back(data_tuple_t(i, o));
+    }
+
+    bool data_end() const {
+	return ( (unsigned int) _data_index <= (unsigned int) _data.size());
+    }
+
+    void data_skip() {
+	_data_index++;
+    }
+
+    reg_t data_index() const {
+	return std::get<0>(_data[_data_index]);
+    }
+
+    VMObjectPtr data_object() const {
+	return std::get<1>(_data[_data_index]);
+    }
+
+    void write_code(std::ostream& os, const Code& code, VM* vm) {
+	_code       = code;
+	_data       = data_vector_t();
+        _data_index = 0;	
+	_pc         = 0;
+
+        std::ios_base::fmtflags old_flags = os.flags();
+        std::streamsize         old_prec  = os.precision();
+        char                    old_fill  = os.fill();
+
+        os  << std::showbase
+            << std::internal
+            << std::setfill('0');
+
+        reset();
+        while (!is_end()) {
+            switch (look()) {
+            case OP_NIL:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                break;
+            case OP_MOV:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                break;
+            case OP_DATA:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                {
+                    auto i = fetch_i32();
+                    write_i32(os, i);
+                    data_push(i, vm->get_data(i));
+                }
+                break;
+            case OP_SET:
+            case OP_SPLIT:
+            case OP_ARRAY:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                break;
+            case OP_TAKEX:
+            case OP_CONCATX:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                write_index(os, fetch_index());
+                break;
+            case OP_TEST:
+            case OP_TAG:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                break;
+            case OP_FAIL:
+                write_op(os, fetch_op());
+                write_label(os, fetch_label());
+                break;
+            case OP_RETURN:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                break;
+            }
+        }
+
+	while(!data_end()) {
+            write_separator(os);
+	    write_i32(os, data_index());
+	    write_text(os, data_object()->to_text());
+	    data_skip();
+	}
+
+        os.flags(old_flags);
+        os.precision(old_prec);
+        os.fill(old_fill);
+    }
+
+    void disassemble(std::ostream& os) {
+	auto o = _object;
+	switch (_object->tag()) {
+            case VM_OBJECT_INTEGER:
+                 write_i8(os, VM_OBJECT_INTEGER);
+		 write_separator(os);
+		 write_text(os, o->to_text());
+		 break;
+            case VM_OBJECT_FLOAT:
+                 write_i8(os, VM_OBJECT_FLOAT);
+		 write_separator(os);
+		 write_text(os, o->to_text());
+		 break;
+            case VM_OBJECT_CHAR:
+                 write_i8(os, VM_OBJECT_CHAR);
+		 write_separator(os);
+		 write_text(os, o->to_text());
+		 break;
+            case VM_OBJECT_TEXT:
+                 write_i8(os, VM_OBJECT_TEXT);
+		 write_separator(os);
+		 write_text(os, o->to_text());
+		 break;
+            case VM_OBJECT_POINTER:
+		 break;
+            case VM_OBJECT_OPAQUE:
+		 break;
+            case VM_OBJECT_COMBINATOR: {
+		 auto c = VM_OBJECT_COMBINATOR_CAST(o);
+		 switch (c->subtag()) {
+	         case VM_SUB_DATA:
+                     write_i8(os, VM_OBJECT_COMBINATOR);
+		     write_separator(os);
+                     write_i8(os, VM_SUB_DATA);
+		     write_separator(os);
+		     write_text(os, c->to_text());
+	             return;
+		     break;
+	         case VM_SUB_BYTECODE: {
+		     auto b = VM_OBJECT_BYTECODE_CAST(c);
+                     write_i8(os, VM_OBJECT_COMBINATOR);
+		     write_separator(os);
+                     write_i8(os, VM_SUB_BYTECODE);
+		     write_separator(os);
+		     write_text(os, b->to_text());
+		     write_separator(os);
+		     write_code(os, b->code(), b->machine());
+                     }
+	             return;
+		     break;
+		 default:
+		     return; // do nothing, return ""
+		     break;
+		 }
+		 return;
+		 break;
+                 }
+            case VM_OBJECT_ARRAY:
+		 break;
+	}
+    }
+
+    icu::UnicodeString disassemble() {
+        std::stringstream ss;
+	disassemble(ss);
+        icu::UnicodeString u(ss.str().c_str());
+        return u;
+    }
+
+private:
+    VMObjectPtr   _object;
+    Code          _code;
+    uint32_t      _pc;
+    data_vector_t _data;
+    int		  _data_index;
+};
+
 
 #endif

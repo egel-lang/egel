@@ -19,13 +19,13 @@ public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Process, "System", "process");
 
     Process(VM* vm, const VMObjectPtr& f)
-        : Opaque(vm, "System", "process") {
+        : Opaque(VM_SUB_BUILTIN, vm, "System", "process") {
         _program = f;
         _exception = nullptr;
         _state = RUNNING;
     }
 
-    Process(const Process& proc): Opaque(proc.machine(), proc.symbol()) {
+    Process(const Process& proc): Opaque(VM_SUB_BUILTIN, proc.machine(), proc.symbol()) {
         _program = proc.program();
         _exception = nullptr;
         _state = RUNNING;

@@ -147,7 +147,7 @@ private:
 class VMObjectResult : public VMObjectCombinator {
 public:
     VMObjectResult(VM* m, const symbol_t s, VMReduceResult* r, const bool exc)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _result(r), _exception(exc) {
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _result(r), _exception(exc) {
     };
 
     VMObjectResult(const VMObjectResult& d)

@@ -11,7 +11,7 @@ typedef std::function<void(VM* vm, const VMObjectPtr&)> callback_t;
 class EvalResult : public VMObjectCombinator {
 public:
     EvalResult(VM* m, const symbol_t s, const callback_t call)
-        : VMObjectCombinator(VM_OBJECT_FLAG_COMBINATOR, m, s), _callback(call) {
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _callback(call) {
     };
 
     EvalResult(const EvalResult& d)
@@ -53,7 +53,7 @@ inline void default_exception_callback(VM* vm, const VMObjectPtr& e) {
 class VarCombinator: public VMObjectCombinator {
 public:
     VarCombinator(VM* m, const symbol_t s, const VMReduceResult& r):
-         VMObjectCombinator(VM_OBJECT_FLAG_INTERNAL, m, s), _result(r)  {
+         VMObjectCombinator(VM_SUB_BUILTIN, m, s), _result(r)  {
     }
 
     VarCombinator(const VarCombinator& c):
@@ -119,7 +119,7 @@ public:
         auto vm = get_machine();
         auto c = vm->get_data_string("main");
 
-        if (c->flag() != VM_OBJECT_FLAG_STUB) {
+        if (c->subtag() != VM_SUB_STUB) {
             eval_command(icu::UnicodeString("main"));
         }
     }
@@ -288,7 +288,7 @@ public:
 
         // reduce
         auto c = vm->get_data_string(fv);
-        if (c->flag() != VM_OBJECT_FLAG_STUB) {
+        if (c->subtag() != VM_SUB_STUB) {
             vm->reduce(c, r, exc);
         }
     }
@@ -307,7 +307,7 @@ public:
                 auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
                 auto c   = vm->get_data_string(c1->to_text());
                 auto sym = c->symbol();
-                if (c->flag() != VM_OBJECT_FLAG_STUB) {
+                if (c->subtag() != VM_SUB_STUB) {
                     // XXX: handle exceptions properly once
                     auto r = vm->reduce(c);
                     auto v = VarCombinator(vm, sym, r).clone();

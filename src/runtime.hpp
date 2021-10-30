@@ -1097,6 +1097,7 @@ public:
 };
 
 // convenience classes for defining built-in combinators
+// XXX: deceprate this
 
 class Opaque: public VMObjectOpaque {
 public:
@@ -1109,7 +1110,7 @@ public:
     }
 };
 
-#define OPAQUE_PREAMBLE(c, t, n0, n1) \
+#define OPAQUE_PREAMBLE(t, c, n0, n1) \
     c(VM* m): Opaque(t, m, n0, n1) { \
     } \
     c(VM* m, const symbol_t s): Opaque(t, m, s) { \
@@ -1123,7 +1124,7 @@ public:
          VMObjectCombinator(t, m, n0, n1) {
     }
 
-    Medadic(const vm_subtag_t, VM* m, const symbol_t s): 
+    Medadic(const vm_subtag_t t, VM* m, const symbol_t s): 
          VMObjectCombinator(t, m, s) {
     }
 
@@ -1189,7 +1190,7 @@ public:
 #define MEDADIC_PREAMBLE(t, c, n0, n1) \
     c(VM* m): Medadic(t, m, n0, n1) { \
     } \
-    c(VM* m, const symbol_t s): Medadic(m, s) { \
+    c(VM* m, const symbol_t s): Medadic(t, m, s) { \
     } \
     c(const c& o) : c(o.machine(), o.symbol()) { \
     } \

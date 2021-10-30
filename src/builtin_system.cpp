@@ -600,11 +600,12 @@ public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Reference, "System", "reference");
 
     Reference(VM* vm, const VMObjectPtr& r)
-        : Opaque(vm, "System", "reference") {
+        : Opaque(VM_SUB_BUILTIN, vm, "System", "reference") {
         _ref = r;
     }
 
-    Reference(const Reference& ref): Opaque(ref.machine(), ref.symbol()) {
+    Reference(const Reference& ref)
+	: Opaque(VM_SUB_BUILTIN, ref.machine(), ref.symbol()) {
         _ref = ref.get_ref();
     }
 

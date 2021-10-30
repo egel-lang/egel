@@ -39,7 +39,7 @@ typedef std::shared_ptr<Regex>  RegexPtr;
 class Regex: public Opaque {
 public:
     Regex(VM* vm, icu::RegexPattern* p)
-        : Opaque(vm, REGEX_STRING, "pattern"), _pattern(p) {
+        : Opaque(VM_SUB_EGO, vm, REGEX_STRING, "pattern"), _pattern(p) {
     }
 
     Regex(const Regex& r): Regex(r.machine(), r.pattern()) {

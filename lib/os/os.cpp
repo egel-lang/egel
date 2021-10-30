@@ -339,7 +339,7 @@ class ChannelValue: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ChannelValue, "OS", "channel");
 
-    ChannelValue(const ChannelValue& chan): Opaque(chan.machine(), chan.symbol()) {
+    ChannelValue(const ChannelValue& chan): Opaque(VM_SUB_EGO, chan.machine(), chan.symbol()) {
         _value = chan.value();
     }
 
@@ -635,7 +635,7 @@ class ServerObject: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ServerObject, "OS", "serverobject");
 
-    ServerObject(const ServerObject& so): Opaque(so.machine(), so.symbol()) {
+    ServerObject(const ServerObject& so): Opaque(VM_SUB_EGO, so.machine(), so.symbol()) {
         // memcpy( (char*) &_server_address,  (char *) &so._server_address, sizeof(_server_address));
 	_server_address = so._server_address;
         _portno = so._portno;
