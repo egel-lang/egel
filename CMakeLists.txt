@@ -104,6 +104,7 @@ target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
 target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
+# target_link_libraries(egel stdc++fs) # for old gcc
 
 
 # shared Egel library

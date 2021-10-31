@@ -31,6 +31,9 @@ to link against. Since most people will be using brew, use this
     cmake .. -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/icu4c
 ```
 
+note: for older GCC you sometimes need to uncomment the
+`stdc++fs` rule.
+
 That should give you an interpreter named `egel`
 and a number of dynamically loadable Egel object files in the
 `build` directory.
