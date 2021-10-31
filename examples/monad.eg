@@ -6,9 +6,11 @@ namespace Calculate (
 
     def return = [ A S -> (A,S) ]
 
-    def >>== = [ F G S0 -> [(A,S1) -> G A S1] (F S0) ]
+    def >>== = [ F G S -> [(A,S) -> G A S] (F S) ]
 
     def put = [ X S -> (System:nop, X) ]
+
+    def get = [ S -> (S, S) ]
 
     def run = [ F S -> [(A,S) -> S] (F S) ]
 
@@ -18,4 +20,4 @@ using Calculate
 using System
 
 def main = 
-    run (return 1 >>== \A -> put (A+3)) 0
+    run (return 1 >>== \A -> put (A+3) >>== \_ -> get ) 0

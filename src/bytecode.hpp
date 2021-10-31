@@ -1060,8 +1060,14 @@ public:
 		 write_text(os, o->to_text());
 		 break;
             case VM_OBJECT_POINTER:
+                 write_i8(os, VM_OBJECT_POINTER);
+		 write_separator(os);
+		 write_text(os, "<pointer>"); // XXX
 		 break;
             case VM_OBJECT_OPAQUE:
+                 write_i8(os, VM_OBJECT_OPAQUE);
+		 write_separator(os);
+		 write_text(os, "<opaque>"); // XXX
 		 break;
             case VM_OBJECT_COMBINATOR: {
 		 auto c = VM_OBJECT_COMBINATOR_CAST(o);
@@ -1072,7 +1078,6 @@ public:
                      write_i16(os, VM_SUB_DATA);
 		     write_separator(os);
 		     write_text(os, c->to_text());
-	             return;
 		     break;
 	         case VM_SUB_BYTECODE: {
 		     auto b = VM_OBJECT_BYTECODE_CAST(c);
@@ -1084,18 +1089,25 @@ public:
 		     write_separator(os);
 		     write_code(os, b->code(), b->machine());
                      }
-	             return;
 		     break;
 		 default:
-		     return; // do nothing, return ""
 		     break;
 		 }
 		 return;
 		 break;
                  }
-            case VM_OBJECT_ARRAY:
+            case VM_OBJECT_ARRAY: {
+                 write_i8(os, VM_OBJECT_ARRAY);
+		 auto aa = VM_OBJECT_ARRAY_CAST(o);
+		 for (int n = 0; n < aa->size(); n++) {
+		     write_separator(os);
+		     write_text(os, aa->get(n)->to_text());
+		 }
 		 break;
-	}
+	    }
+            default:
+		 break;
+        }
     }
 
     icu::UnicodeString disassemble() {

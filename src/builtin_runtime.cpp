@@ -17,8 +17,14 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dis, "System", "dis");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-	Disassembler d(arg0);
-	return VMObjectText(d.disassemble()).clone();
+        if (arg0->tag() == VM_OBJECT_TEXT) {
+            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+	    auto o = machine()->get_data_string(s);
+	    Disassembler d(o);
+	    return VMObjectText(d.disassemble()).clone();
+        } else {
+            THROW_BADARGS;
+        }
     }
 };
 
@@ -127,7 +133,7 @@ std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Dis(vm).clone());
-    oo.push_back(Asm(vm).clone());
+//    oo.push_back(Asm(vm).clone()); // XXX: not working at the moment
     oo.push_back(Symbols(vm).clone());
     oo.push_back(GetType(vm).clone());
     oo.push_back(SetData(vm).clone());
