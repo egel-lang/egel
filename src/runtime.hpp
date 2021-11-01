@@ -34,6 +34,7 @@ using namespace icu; // use stable namespace
 #define THROW_DIVZERO     throw VMObjectText(to_text() + " divide by zero").clone()
 #define THROW_BADARGS     throw VMObjectText(to_text() + " bad arguments").clone()
 #define THROW_INVALID     throw VMObjectText(to_text() + " invalid arguments").clone()
+#define THROW_STUB        throw VMObjectText(to_text() + " not yet implemented").clone()
 
 // libicu doesn't provide escaping..
 
@@ -104,12 +105,15 @@ typedef enum {
  */
 typedef unsigned int vm_subtag_t;
 
-const vm_subtag_t VM_SUB_DATA     = 0; // a combinator data object
-const vm_subtag_t VM_SUB_BUILTIN  = 1; // a combinator internally defined
-const vm_subtag_t VM_SUB_BYTECODE = 2; // a bytecode combinator
-const vm_subtag_t VM_SUB_COMPILED = 3; // a compiled bytecode combinator
-const vm_subtag_t VM_SUB_EGO      = 4; // a combinator from a .ego
-const vm_subtag_t VM_SUB_STUB     = 5; // a stub combinator
+const vm_subtag_t VM_SUB_DATA     = 0x00; // a combinator data object
+const vm_subtag_t VM_SUB_BUILTIN  = 0x01; // a combinator internally defined
+const vm_subtag_t VM_SUB_BYTECODE = 0x02; // a bytecode combinator
+const vm_subtag_t VM_SUB_COMPILED = 0x03; // a compiled bytecode combinator
+const vm_subtag_t VM_SUB_EGO      = 0x04; // a combinator from a .ego
+const vm_subtag_t VM_SUB_STUB     = 0x05; // a stub combinator
+
+const vm_subtag_t VM_SUB_PYTHON_OBJECT       = 0xfe; // Python values
+const vm_subtag_t VM_SUB_PYTHON_COMBINATOR   = 0xff; // Python combinators
 
 typedef bool                 vm_bool_t;
 typedef int64_t              vm_int_t;
@@ -307,6 +311,8 @@ private:
 typedef std::shared_ptr<VMObjectInteger> VMObjectIntegerPtr;
 #define VM_OBJECT_IS_INTEGER(a) \
     (a-tag() == VM_OBJECT_INTEGER)
+#define VM_OBJECT_INTEGER_TEST(a) \
+    (a-tag() == VM_OBJECT_INTEGER)
 #define VM_OBJECT_INTEGER_CAST(a) \
     std::static_pointer_cast<VMObjectInteger>(a)
 #define VM_OBJECT_INTEGER_VALUE(a) \
@@ -395,6 +401,8 @@ private:
 };
 
 typedef std::shared_ptr<VMObjectChar> VMObjectCharPtr;
+#define VM_OBJECT_CHAR_TEST(a) \
+    (a->tag() == VM_OBJECT_CHAR)
 #define VM_OBJECT_CHAR_CAST(a) \
     std::static_pointer_cast<VMObjectChar>(a)
 #define VM_OBJECT_CHAR_SPLIT(a, v) \
@@ -457,6 +465,8 @@ private:
 };
 
 typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
+#define VM_OBJECT_TEXT_TEST(a) \
+    (a->tag() == VM_OBJECT_TEXT)
 #define VM_OBJECT_TEXT_CAST(a) \
     std::static_pointer_cast<VMObjectText>(a)
 #define VM_OBJECT_TEXT_SPLIT(a, v) \

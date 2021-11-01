@@ -5,13 +5,15 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-+ generate C++ from .eg file
++ add a Python bridge
++ add a literate scripting mode
++ static coding combinators (runtime inspection)
++ generate C++ from .eg file (module compilation)
++ move to C++20 (modules, egel namespace, modern syntax)
+  when libfmt makes it into llvm and gcc?
 + time and date
-+ dynamic coding combinators
 + target MSVC
 + complex numbers
-+ move to C++20 (modules, egel namespace, modern syntax)
-  when libfmt makes it into llvm and gcc
 
 ## The bleeding, cutting edge
 
