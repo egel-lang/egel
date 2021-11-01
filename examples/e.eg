@@ -16,26 +16,44 @@ import "prelude.eg"
 
 using System
 
-def repeat =
-    [ N Z -> (N, repeat N) ]
+# primitive 'lazy' lists operations
 
-def map =
-    [ F XX Z -> let (Y, YY) = XX Z in (F Y, map F YY) ]
+def head = [ XX -> let (Y, YY) = XX nop in Y ]
+
+def tail = [ XX -> let (Y, YY) = XX nop in YY ]
+
+def prepend = [ X XX Z -> (X, XX) ]
+
+def repeat = [ N Z -> (N, repeat N) ]
+
+def map = [ F XX Z -> let (Y, YY) = XX Z in (F Y, map F YY) ]
 
 def take =
     [ 0 XX Z -> nil 
     | N XX Z -> let (Y, YY) = XX Z in cons Y (take (N - 1) YY Z) ]
 
+# the algorithm
+
 def mkdigit =
     [ N -> String:chr ((String:ord '0') + N) ]
 
-def prepend =
-    [ X XX Z -> (X, XX) ]
+def norm = 
+    [ C YY Z ->
+        let D = head YY in let E = head (tail YY) in let XX = tail (tail YY) in
+        print (format "d {} e {}" D E);
+        let (EP, XP) = norm (C+1) (prepend E XX) Z in
+        if ((E % C + 9)) < C
+        then prepend ((D+E) /C) (prepend (EP%C) XP) Z
+        else prepend ((D+EP)/C) (prepend (EP%C) XP) Z ]
 
-def convert = map [X -> mkdigit X]
+def convert = 
+    [ XX Z ->
+        let YY = norm 2 (prepend 0 (map ((*) 10) XX)) in
+        prepend (mkdigit (head YY)) (convert (tail YY)) Z ]
 
 def edigits = 
     prepend '2' (prepend '.' (convert (repeat 1)))
 
 def main = 
-    pack (take 10 edigits nop)
+   # pack 
+    (take 10 edigits nop)
