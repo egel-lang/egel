@@ -44,6 +44,10 @@ _build/*
 build/*
 _debug/*
 debug/*
+python/_build/*
+python/build/*
+python/_debug/*
+python/debug/*
 
 # ignore macos fs
 .DS_Store
