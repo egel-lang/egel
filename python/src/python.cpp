@@ -18,7 +18,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-
 #include <egel/runtime.hpp> // build against an installed egel
 #include "utils.hpp"        // same as egel's but only the runtime should be included
 
@@ -45,7 +44,7 @@ public:
  */
 class CPyObject {
 public:
-    CPyObject() : p(nullptr) {
+    CPyObject() : _object(nullptr) {
     }
 
     CPyObject(PyObject* o) : _object(o) {
@@ -68,7 +67,7 @@ public:
     PyObject* inc_ref()
     {
         if(_object) Py_XINCREF(_object);
-        return p;
+        return _object;
     }
 
     void dec_ref() {

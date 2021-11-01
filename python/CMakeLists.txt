@@ -1,8 +1,6 @@
 # minimal cmake version
 cmake_minimum_required(VERSION 3.13)
 
-message("python bridge for egel")
-
 # fallback for other versions 
 if(${CMAKE_VERSION} VERSION_LESS 3.18)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
@@ -14,25 +12,26 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# steal the version of the bridge
-set(VERSION_MAJOR_REGEX "#define LIBRARY_VERSION_MAJOR[ \t]+\"(.+)\"")
-set(VERSION_MINOR_REGEX "#define LIBRARY_VERSION_MINOR[ \t]+\"(.+)\"")
-set(VERSION_PATCH_REGEX "#define LIBRARY_VERSION_PATCH[ \t]+\"(.+)\"")
+# steal the version of the bridge XXX: why the hell did this stop working?
+set(EGEL_MAJOR_REGEX "#define LIBRARY_EGEL_MAJOR[ \t]+\"(.+)\"")
+set(EGEL_MINOR_REGEX "#define LIBRARY_EGEL_MINOR[ \t]+\"(.+)\"")
+set(EGEL_PATCH_REGEX "#define LIBRARY_EGEL_PATCH[ \t]+\"(.+)\"")
 
 file(STRINGS "${CMAKE_SOURCE_DIR}/src/python.cpp"
-    VERSION_MAJOR REGEX ${VERSION_MAJOR_REGEX})
+    EGEL_MAJOR REGEX ${EGEL_MAJOR_REGEX})
 file(STRINGS "${CMAKE_SOURCE_DIR}/src/python.cpp"
-    VERSION_MINOR REGEX ${VERSION_MINOR_REGEX})
+    EGEL_MINOR REGEX ${EGEL_MINOR_REGEX})
 file(STRINGS "${CMAKE_SOURCE_DIR}/src/python.cpp"
-    VERSION_PATCH REGEX ${VERSION_PATCH_REGEX})
+    EGEL_PATCH REGEX ${EGEL_PATCH_REGEX})
 
-string(REGEX REPLACE ${VERSION_MAJOR_REGEX} "\\1" VERSION_MAJOR "${VERSION_MAJOR}")
-string(REGEX REPLACE ${VERSION_MINOR_REGEX} "\\1" VERSION_MINOR "${VERSION_MINOR}")
-string(REGEX REPLACE ${VERSION_PATCH_REGEX} "\\1" VERSION_PATCH "${VERSION_PATCH}")
+string(REGEX REPLACE ${EGEL_MAJOR_REGEX} "\\1" EGEL_MAJOR "${EGEL_MAJOR}")
+string(REGEX REPLACE ${EGEL_MINOR_REGEX} "\\1" EGEL_MINOR "${EGEL_MINOR}")
+string(REGEX REPLACE ${EGEL_PATCH_REGEX} "\\1" EGEL_PATCH "${EGEL_PATCH}")
 
-set(PVERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+#set(PVERSION ${EGEL_MAJOR}.${EGEL_MINOR}.${EGEL_PATCH})
+set(PVERSION 0.0.1)
 
-message("version: {$PVERSION}")
+message("python bridge for egel ${PVERSION}")
 
 # add 'fallback' modules
 set(CMAKE_MODULE_PATH "contrib/cmake/modules;${CMAKE_MODULE_PATH}")
@@ -88,13 +87,18 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
 find_package(fmt 7.1 REQUIRED)
+find_package(PythonLibs REQUIRED)
 
+
+include_directories(${PYTHON_INCLUDE_DIRS})
 include_directories("${CMAKE_SOURCE_DIR}/src")
+include_directories(/usr/local/include)
 
 # python.ego
-file(GLOB PYTHON_EGO_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/source/python.cpp")
+file(GLOB PYTHON_EGO_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 add_library(python_ego MODULE ${PYTHON_EGO_LIST})
 target_link_libraries(python_ego ICU::uc ICU::i18n ICU::io)
+target_link_libraries(python_ego ${PYTHON_LIBRARIES})
 set_target_properties(python_ego PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # installation
