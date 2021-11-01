@@ -217,13 +217,13 @@ public:
         return _data.get(d);
     }
 
-    // querying
+    // querying: XXX: not even wrong version. the machine should expose modules and those should be queried
     data_t query_symbols_size() override {
-	return _data.size();
+	    return _data.size();
     }
 
     icu::UnicodeString query_symbols_nth(const data_t n) override {
-	return _data.get(n)->to_text();
+	    return _data.get(n)->to_text();
     }
 
     
