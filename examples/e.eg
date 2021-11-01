@@ -1,0 +1,30 @@
+# Translation of a miranda program to compute 4096 digits of e.
+#
+# taken as a microbenchmark. time to beat is roughly 6 seconds.
+
+# edigits = "2." ++ convert (repeat 1)
+# convert x = mkdigit (hd x'):convert (tl x')
+#             where x' = norm 2 (0:map (10*) x)
+# mkdigit n = decode(n + code '0'), if n<10
+# norm c (d:e:x) = d + e div c: e' mod c : x', if e mod c + 9 < c
+#                = d + e' div c : e' mod c : x', otherwise
+#                  where
+#                  (e':x') = norm (c+1) (e:x)
+# main = take 4096 edigits
+
+import "prelude.eg"
+
+using System
+
+def repeat =
+    [ N Z -> (N, repeat N) ]
+
+def map =
+    [ F XX Z -> let (Y, YY) = XX Z in (F Y, map F YY) ]
+
+def take =
+    [ 0 XX Z -> nil 
+    | N XX Z -> let (Y, YY) = XX Z in cons Y (take (N - 1) YY Z) ]
+
+def main = 
+    take 10 (repeat 1) nop
