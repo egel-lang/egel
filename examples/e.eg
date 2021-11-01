@@ -26,5 +26,16 @@ def take =
     [ 0 XX Z -> nil 
     | N XX Z -> let (Y, YY) = XX Z in cons Y (take (N - 1) YY Z) ]
 
+def mkdigit =
+    [ N -> String:chr ((String:ord '0') + N) ]
+
+def prepend =
+    [ X XX Z -> (X, XX) ]
+
+def convert = map [X -> mkdigit X]
+
+def edigits = 
+    prepend '2' (prepend '.' (convert (repeat 1)))
+
 def main = 
-    take 10 (repeat 1) nop
+    pack (take 10 edigits nop)
