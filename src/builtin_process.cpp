@@ -190,7 +190,7 @@ public:
         if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == pr)) {
             auto process = std::static_pointer_cast<Process>(arg0);
             process->in_push(arg1);
-            return machine()->get_data_string("System", "nop");
+            return machine()->create_nop();
         } else {
             THROW_BADARGS;
         }
@@ -229,7 +229,7 @@ public:
         if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == pr)) {
             auto process = std::static_pointer_cast<Process>(arg0);
             process->set_state(HALTED);
-            return machine()->get_data_string("System", "nop");
+            return machine()->create_nop();
         } else {
             THROW_BADARGS;
         }

@@ -352,7 +352,7 @@ public:
         for (auto& o:_exports) {
             if (o->tag() == VM_OBJECT_COMBINATOR) {
                 auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-                auto s   = machine()->get_symbol(sym);
+                auto s   = machine()->get_symbol_string(sym);
 
                 UnicodeStrings nn;
                 nn.push_back(first(s));
@@ -470,7 +470,7 @@ public:
         for (auto& o:_exports) {
             if (o->tag() == VM_OBJECT_COMBINATOR) {
                 auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-                auto s   = machine()->get_symbol(sym);
+                auto s   = machine()->get_symbol_string(sym);
 
                 UnicodeStrings nn;
                 nn.push_back(first(s));

@@ -331,17 +331,11 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Less, "System", "<");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static VMObjectPtr _false = 0;
-        static VMObjectPtr _true = 0;
-        
-        if (_false == 0) _false = machine()->get_data_string("System", "false");
-        if (_true == 0)  _true = machine()->get_data_string("System", "true");
-
         CompareVMObjectPtr compare;
         if (compare(arg0, arg1) < 0) {
-            return _true;
+            return machine()->create_true();
         } else {
-            return _false;
+            return machine()->create_false();
         }
     }
 };
@@ -352,17 +346,11 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, LessEq, "System", "<=");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static VMObjectPtr _false = 0;
-        static VMObjectPtr _true = 0;
-        
-        if (_false == 0) _false = machine()->get_data_string("System", "false");
-        if (_true == 0)  _true = machine()->get_data_string("System", "true");
-
         CompareVMObjectPtr compare;
         if (compare(arg0, arg1) <= 0) {
-            return _true;
+            return machine()->create_true();
         } else {
-            return _false;
+            return machine()->create_false();
         }
     }
 };
@@ -373,17 +361,11 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Eq, "System", "==");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static VMObjectPtr _false = 0;
-        static VMObjectPtr _true = 0;
-        
-        if (_false == 0) _false = machine()->get_data_string("System", "false");
-        if (_true == 0)  _true = machine()->get_data_string("System", "true");
-
         CompareVMObjectPtr compare;
         if (compare(arg0, arg1) == 0) {
-            return _true;
+            return machine()->create_true();
         } else {
-            return _false;
+            return machine()->create_false();
         }
     }
 };
@@ -394,17 +376,11 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, NegEq, "System", "/=");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static VMObjectPtr _false = 0;
-        static VMObjectPtr _true = 0;
-        
-        if (_false == 0) _false = machine()->get_data_string("System", "false");
-        if (_true == 0)  _true = machine()->get_data_string("System", "true");
-
         CompareVMObjectPtr compare;
         if (compare(arg0, arg1) != 0) {
-            return _true;
+            return machine()->create_true();
         } else {
-            return _false;
+            return machine()->create_false();
         }
     }
 };
@@ -483,19 +459,19 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, ExtendField, "System", "extend");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static symbol_t object = 0;
-        if (object == 0) object = machine()->enter_symbol("System", "object");
-
         if ( (arg0->tag() == VM_OBJECT_ARRAY) && (arg1->tag() == VM_OBJECT_ARRAY) ) {
             auto ff0 = VM_OBJECT_ARRAY_VALUE(arg0);
             auto sz0 = ff0.size();
             auto ff1 = VM_OBJECT_ARRAY_VALUE(arg1);
             auto sz1 = ff1.size();
+
+            auto object = machine()->get_symbol("System", "object");
+
             // check head is an object
             if (sz0 == 0) THROW_INVALID;
-            if (ff0[0]->symbol() != object) THROW_INVALID;
+            if (ff0[0] != object) THROW_INVALID;
             if (sz1 == 0) THROW_INVALID;
-            if (ff1[0]->symbol() != object) THROW_INVALID;
+            if (ff1[0] != object) THROW_INVALID;
             // create field union
             unsigned int n;
             std::map<VMObjectPtr, VMObjectPtr> fields;
@@ -508,14 +484,14 @@ public:
                 fields[ff1[n]] = ff1[n+1];
             }
             // return object
-            VMObjectPtrs oo;
-            oo.push_back(machine()->get_data_symbol(object));
+            auto oo = machine()->create_array();
+            machine()->append(oo, object);
             for (const auto& f:fields) {
-                oo.push_back(f.first);
-                oo.push_back(f.second);
+                machine()->append(oo, f.first);
+                machine()->append(oo, f.second);
             }
 
-            return VMObjectArray::create(oo);
+            return oo;
         } else {
             THROW_BADARGS;
         }
@@ -682,24 +658,21 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unpack, "System", "unpack");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static VMObjectPtr _nil = nullptr;
-        if (_nil == nullptr) _nil = machine()->get_data_string("System", "nil");
-
-        static VMObjectPtr _cons = nullptr;
-        if (_cons == nullptr) _cons = machine()->get_data_string("System", "cons");
+        auto nil  = machine()->create_nil();
+        auto cons = machine()->create_cons();
 
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto str = VM_OBJECT_TEXT_VALUE(arg0);
 
-            VMObjectPtr ss = _nil;
+            VMObjectPtr ss = nil;
             int len = str.length();
             for (int n = len-1; n >= 0; n--) {
-                auto c = str.char32At(n);
-                auto tt = VMObjectPtrs();
-                tt.push_back(_cons);
-                tt.push_back(VMObjectChar(c).clone());
-                tt.push_back(ss);
-                ss = VMObjectArray(tt).clone();
+                auto c  = machine()->create_char(str.char32At(n));
+                auto tt = machine()->create_array();
+                machine()->append(tt, cons);
+                machine()->append(tt, c);
+                machine()->append(tt, ss);
+                ss = tt;
             }
             return ss;
         } else {
@@ -751,7 +724,7 @@ public:
             if (i < application_argc) {
                 return VMObjectText(application_argv[i]).clone();
             } else {
-                auto nop = machine()->get_data_string("System", "nop");
+                auto nop = machine()->create_nop();
                 return nop;
             }
         } else {
@@ -774,7 +747,7 @@ public:
             if (r != nullptr) {
                 return VMObjectText(r).clone(); // NOTE: don't call delete on r
             } else {
-                auto nop = machine()->get_data_string("System", "nop");
+                auto nop = machine()->create_nop();
                 return nop;
             }
         } else {
@@ -796,7 +769,7 @@ public:
              (arg0->symbol() == SYMBOL_TRUE) ) {
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
-            thunk.push_back(machine()->get_data_string("System", "nop"));
+            thunk.push_back(machine()->create_nop());
             return VMObjectArray(thunk).clone();
         } else {
             THROW_BADARGS;
@@ -817,7 +790,7 @@ public:
              (arg0->symbol() == SYMBOL_FALSE) ) {
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
-            thunk.push_back(machine()->get_data_string("System", "nop"));
+            thunk.push_back(machine()->create_nop());
             return VMObjectArray(thunk).clone();
         } else {
             THROW_BADARGS;

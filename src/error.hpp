@@ -12,6 +12,7 @@ typedef enum {
     ERROR_SYNTACTICAL,
     ERROR_IDENTIFICATION,
     ERROR_SEMANTICAL,
+    ERROR_INTERNAL,
 } error_tag_t;
 
 class Error : public std::exception {
@@ -54,6 +55,9 @@ public:
             break;
         case ERROR_SEMANTICAL:
             s += STRING_SEMANTICAL;
+            break;
+        case ERROR_INTERNAL:
+            s += STRING_INTERNAL;
             break;
         }
         s += ":" + message();
@@ -105,6 +109,12 @@ public:
 
     ErrorSemantical(const icu::UnicodeString& m)
         : Error(ERROR_SEMANTICAL, Position(), m) { }
+};
+
+class ErrorInternal: public Error {
+public:
+    ErrorInternal(const icu::UnicodeString& m)
+        : Error(ERROR_INTERNAL, Position(), m) { }
 };
 
 #endif

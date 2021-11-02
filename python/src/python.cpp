@@ -48,7 +48,7 @@ public:
     }
 
     CPyObject(PyObject* o) : _object(o) {
-        inc_ref(o);
+        inc_ref();
     }
 
     ~CPyObject() {

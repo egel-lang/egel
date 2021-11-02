@@ -51,3 +51,6 @@ python/debug/*
 
 # ignore macos fs
 .DS_Store
+
+# ignore vscode
+.vscode/*

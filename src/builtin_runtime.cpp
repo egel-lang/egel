@@ -19,7 +19,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
-	    auto o = machine()->get_data_string(s);
+	    auto o = machine()->get_symbol(s);
 	    Disassembler d(o);
 	    return VMObjectText(d.disassemble()).clone();
         } else {
@@ -51,6 +51,7 @@ public:
     }
 };
 
+/*
 //## System:symbols - list all symbols in the runtime
 class Symbols: public Medadic {
 public:
@@ -58,23 +59,21 @@ public:
 
     VMObjectPtr apply() const override {
 
-        static VMObjectPtr _nil = nullptr;
-        if (_nil == nullptr) _nil = machine()->get_data_string("System", "nil");
+        auto nil = machine()->create_nil();
+        auto cons = machine()->create_cons();
 
-        static VMObjectPtr _cons = nullptr;
-        if (_cons == nullptr) _cons = machine()->get_data_string("System", "cons");
-
-        VMObjectPtr ss = _nil;
+        VMObjectPtr ss = nil;
         int len = (int) machine()->query_symbols_size();
         for (int n = len-1; n >= 0; n--) {
             auto s = machine()->query_symbols_nth(n);
-            auto tt = VMObjectPtrs();
-            tt.push_back(_cons);
-            tt.push_back(VMObjectText(s).clone());
-            tt.push_back(ss);
-            ss = VMObjectArray(tt).clone();
+            auto aa = machine()->create_array();
+            auto t = machine()->create_text(s);
+            machine()->push_array(cons);
+            aa.push_back(VMObjectText(s).clone());
+            aa.push_back(ss);
+            aa = VMObjectArray(tt).clone();
        };
-       return ss;
+       return aa;
     }
 };
 
@@ -128,16 +127,17 @@ public:
         }
     }
 };
+*/
 
 std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Dis(vm).clone());
 //    oo.push_back(Asm(vm).clone()); // XXX: not working at the moment
-    oo.push_back(Symbols(vm).clone());
-    oo.push_back(GetType(vm).clone());
-    oo.push_back(SetData(vm).clone());
-    oo.push_back(SetDef(vm).clone());
+//    oo.push_back(Symbols(vm).clone());
+//    oo.push_back(GetType(vm).clone());
+//    oo.push_back(SetData(vm).clone());
+//    oo.push_back(SetDef(vm).clone());
 
     return oo;
 }

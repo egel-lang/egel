@@ -73,6 +73,10 @@ public:
         return enter(s);
     }
 
+    int size() const {
+        return _to.size();
+    }
+
     icu::UnicodeString get(const symbol_t& s) {
         return _to[s];
     }
@@ -129,6 +133,10 @@ public:
 
     VMObjectPtr get(const data_t& s) {
         return _to[s];
+    }
+
+    data_t get(const VMObjectPtr& o) {
+        return _from[o];
     }
 
     void render(std::ostream& os) {
@@ -199,10 +207,13 @@ public:
         return _symbols.enter(nn, n);
     }
 
-    icu::UnicodeString get_symbol(symbol_t s) override {
-        return _symbols.get(s);
+    virtual int get_symbols_size() override {
+        return _symbols.size();
     }
 
+    icu::UnicodeString get_symbol_string(symbol_t s) override {
+        return _symbols.get(s);
+    }
 
     // data table manipulation
     data_t enter_data(const VMObjectPtr& o) override {
@@ -213,20 +224,35 @@ public:
         return _data.define(o);
     }
 
+    data_t get_data(const VMObjectPtr& o) override {
+        return _data.get(o);
+    }
+
     VMObjectPtr get_data(const data_t d) override {
         return _data.get(d);
     }
 
-    // querying: XXX: not even wrong version. the machine should expose modules and those should be queried
-    data_t query_symbols_size() override {
-	    return _data.size();
+    // convenience
+    VMObjectPtr get_symbol(const symbol_t s) override {
+        auto o = VMObjectStub(this, s).clone();
+        auto d = enter_data(o);
+        return get_data(d);
     }
 
-    icu::UnicodeString query_symbols_nth(const data_t n) override {
-	    return _data.get(n)->to_text();
+    VMObjectPtr get_symbol(const icu::UnicodeString& n) override {
+        auto i = enter_symbol(n);
+        return get_symbol(i);
     }
 
-    
+    VMObjectPtr get_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) override {
+        auto i = enter_symbol(n0, n1);
+        return get_symbol(i);
+    }
+
+    VMObjectPtr get_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) override {
+        auto i = enter_symbol(nn, n);
+        return get_symbol(i);
+    }
 
     // reduce an expression
     void reduce(const VMObjectPtr& f, const VMObjectPtr& ret, const VMObjectPtr& exc, reducer_state_t* run) override {
@@ -318,6 +344,80 @@ public:
 
     void set_context(void* m) override {
         _context = m;
+    }
+
+    VMObjectPtr create_nop() override {
+        return get_data(SYMBOL_NOP);
+    }
+
+    VMObjectPtr create_true() override {
+        return get_data(SYMBOL_TRUE);
+    }
+
+    VMObjectPtr create_false() override {
+        return get_data(SYMBOL_FALSE);
+    }
+
+    VMObjectPtr create_bool(const bool b) override {
+        if (b) {
+            return create_true();
+        } else {
+            return create_false();
+        }
+    }
+
+    VMObjectPtr create_nil() override {
+        return get_data(SYMBOL_NIL);
+    }
+
+    VMObjectPtr create_cons() override {
+        return get_data(SYMBOL_CONS);
+    }
+
+    VMObjectPtr create_tuple() override {
+        return get_data(SYMBOL_TUPLE);
+    }
+
+    VMObjectPtr create_integer(const vm_int_t n) override {
+        return VMObjectInteger::create(n);
+    }
+
+    VMObjectPtr create_char(const vm_char_t c) override {
+        return VMObjectChar::create(c);
+    }
+
+    VMObjectPtr create_text(const vm_text_t s) override {
+        return VMObjectText::create(s);
+    }
+
+    VMObjectPtr create_float(const vm_float_t f) override {
+        return VMObjectFloat::create(f);
+    }
+
+    VMObjectPtr create_array() override {
+        return VMObjectArray::create();
+    }
+
+    void append(VMObjectPtr aa, const VMObjectPtr a) override {
+        if (VM_OBJECT_ARRAY_TEST(aa)) {
+            auto aa0 = VM_OBJECT_ARRAY_CAST(aa);
+            aa0->push_back(a);
+        } else {
+            throw ErrorInternal("push to array failed");
+        }
+    }
+
+    VMObjectPtr create_data(const icu::UnicodeString& n) {
+        return get_symbol(n);
+        
+    }
+
+    VMObjectPtr create_data(const icu::UnicodeString& n0, const icu::UnicodeString& n1) {
+        return get_symbol(n0, n1);
+    }
+
+    VMObjectPtr create_data(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) {
+        return get_symbol(nn, n);
     }
 
 private:

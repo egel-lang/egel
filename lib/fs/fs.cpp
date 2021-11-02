@@ -18,19 +18,18 @@ VMObjectPtr path_to_object(const fs::path& p) {
 }
 
 VMObjectPtr paths_to_list(VM* vm, std::vector<fs::path> ss) {
-    auto _nil = vm->get_data_string("System", "nil");
+    auto nil  = vm->create_nil();
+    auto cons = vm->create_cons();
 
-    auto _cons = vm->get_data_string("System", "cons");
-
-    VMObjectPtr result = _nil;
+    VMObjectPtr result = nil;
 
     for (int n = ss.size() - 1; n >= 0; n--) {
-        VMObjectPtrs vv;
-        vv.push_back(_cons);
-        vv.push_back(path_to_object(ss[n]));
-        vv.push_back(result);
+        VMObjectPtr aa = vm->create_array();
+        vm->append(aa, cons);
+        vm->append(aa, path_to_object(ss[n]));
+        vm->append(aa, result);
 
-        result = VMObjectArray(vv).clone();
+        result = aa;
     }
 
     return result;
@@ -51,23 +50,6 @@ VMObjectPtr error_to_object(const fs::filesystem_error& e) {
     return VMObjectText(s).clone();
 }
 
-// XXX: move this to the VM once
-VMObjectPtr bool_to_object(VM* vm, const bool& b) {
-    if (b) {
-        return vm->get_data_string("System", "true");
-    } else {
-        return vm->get_data_string("System", "false");
-    }
-}
-
-VMObjectPtr int_to_object(const vm_int_t& n) {
-    return VMObjectInteger(n).clone();
-}
-
-VMObjectPtr nop(VM* vm) {
-    return vm->get_data_string("System", "nop");
-}
-
 //## OS:empty p - checks whether the path is empty
 class Empty: public Monadic {
 public:
@@ -79,7 +61,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.empty();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -100,7 +82,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_root_path();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -121,7 +103,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_root_name();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -142,7 +124,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_root_directory();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -163,7 +145,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_relative_path();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -184,7 +166,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_parent_path();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -205,7 +187,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_filename();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -226,7 +208,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_stem();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -247,7 +229,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_extension();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -269,7 +251,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.is_absolute();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -291,7 +273,7 @@ public:
                 auto p0 = object_to_path(arg0);
                 auto b = p0.is_relative();
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -599,7 +581,7 @@ public:
 
                 fs::copy(p0,p1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -622,7 +604,7 @@ public:
 
                 fs::copy_file(p0,p1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -646,7 +628,7 @@ public:
 
                 fs::copy_symlink(p0,p1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -669,7 +651,7 @@ public:
 
                 fs::create_directory(p0);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -691,7 +673,7 @@ public:
 
                 fs::create_directories(p0);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -715,7 +697,7 @@ public:
 
                 fs::create_hard_link(p0,p1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -738,7 +720,7 @@ public:
 
                 fs::create_symlink(p0,p1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -761,7 +743,7 @@ public:
 
                 fs::create_directory_symlink(p0,p1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -800,7 +782,7 @@ public:
 
                 fs::current_path(p0);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -822,7 +804,7 @@ public:
 
                 auto b = fs::exists(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -845,7 +827,7 @@ public:
 
                 auto b = fs::equivalent(p0,p1);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -868,7 +850,7 @@ public:
 
                 auto n = fs::file_size(p0);
 
-                return int_to_object(n);
+                return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -891,7 +873,7 @@ public:
 
                 auto n = fs::hard_link_count(p0);
 
-                return int_to_object(n);
+                return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -915,7 +897,7 @@ public:
 
                 auto n = (vm_int_t) fs::status(p0).permissions();
 
-                return int_to_object(n);
+                return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -939,7 +921,7 @@ public:
                 //fs::permissions(p0,(fs::perms) n1, fs::perm_options::replace);
                 fs::permissions(p0,(fs::perms) n1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -963,7 +945,7 @@ public:
 
                 fs::permissions(p0,(fs::perms) n1, fs::perm_options::add);
 
-                return nop(machine());
+                return machine->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -986,7 +968,7 @@ public:
 
                 fs::permissions(p0,(fs::perms) n1, fs::perm_options::remove);
 
-                return nop(machine());
+                return machine->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1031,7 +1013,7 @@ public:
 
                 fs::remove(p0);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1053,7 +1035,7 @@ public:
 
                 fs::remove_all(p0);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1077,7 +1059,7 @@ public:
 
                 fs::rename(p0,p1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1100,7 +1082,7 @@ public:
 
                 fs::resize_file(p0,n1);
 
-                return nop(machine());
+                return machine()->create_nop();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1122,7 +1104,7 @@ public:
 
                 auto n = fs::space(p0).free;
 
-                return int_to_object(n);
+                return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1145,7 +1127,7 @@ public:
 
                 auto n = fs::space(p0).capacity;
 
-                return int_to_object(n);
+                return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1167,7 +1149,7 @@ public:
 
                 auto n = fs::space(p0).available;
 
-                return int_to_object(n);
+                return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1208,7 +1190,7 @@ public:
 
                 auto b = fs::is_block_file(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1230,7 +1212,7 @@ public:
 
                 auto b = fs::is_character_file(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1253,7 +1235,7 @@ public:
 
                 auto b = fs::is_directory(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1276,7 +1258,7 @@ public:
 
                 auto b = fs::is_empty(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1299,7 +1281,7 @@ public:
 
                 auto b = fs::is_fifo(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1322,7 +1304,7 @@ public:
 
                 auto b = fs::is_other(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1345,7 +1327,7 @@ public:
 
                 auto b = fs::is_regular_file(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1367,7 +1349,7 @@ public:
 
                 auto b = fs::is_socket(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1390,7 +1372,7 @@ public:
 
                 auto b = fs::is_symlink(p0);
 
-                return bool_to_object(machine(), b);
+                return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 

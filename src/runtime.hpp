@@ -222,16 +222,15 @@ public:
     virtual symbol_t enter_symbol(const icu::UnicodeString& n) = 0;
     virtual symbol_t enter_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) = 0;
     virtual symbol_t enter_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) = 0;
-    virtual icu::UnicodeString get_symbol(symbol_t s) = 0;
+
+    virtual int get_symbols_size() = 0;
+    virtual icu::UnicodeString get_symbol_string(symbol_t s) = 0;
 
     // data table manipulation
-    virtual data_t enter_data(const VMObjectPtr& o) = 0;
-    virtual data_t define_data(const VMObjectPtr& o) = 0;
+    virtual data_t      enter_data(const VMObjectPtr& o) = 0;
+    virtual data_t      define_data(const VMObjectPtr& o) = 0;
     virtual VMObjectPtr get_data(const data_t d) = 0;
-
-    // querying hides the symbol/data abstraction
-    virtual data_t query_symbols_size() = 0;
-    virtual icu::UnicodeString query_symbols_nth(const data_t n) = 0;
+    virtual data_t      get_data(const VMObjectPtr& d) = 0;
 
     // reduce an expression
     virtual void reduce(const VMObjectPtr& e, const VMObjectPtr& ret, const VMObjectPtr& exc, reducer_state_t* run) = 0;
@@ -250,10 +249,33 @@ public:
     virtual void* get_context() const = 0;
 
     // convenience routines
-    VMObjectPtr get_data_symbol(const symbol_t t);
-    VMObjectPtr get_data_string(const icu::UnicodeString& n);
-    VMObjectPtr get_data_string(const icu::UnicodeString& n0, const icu::UnicodeString& n1);
-    VMObjectPtr get_data_string(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n);
+    virtual VMObjectPtr get_symbol(const symbol_t t) = 0;
+    virtual VMObjectPtr get_symbol(const icu::UnicodeString& n) = 0;
+    virtual VMObjectPtr get_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) = 0;
+    virtual VMObjectPtr get_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) = 0;
+
+    virtual VMObjectPtr create_integer(const vm_int_t b) = 0;
+    virtual VMObjectPtr create_char(const vm_char_t b) = 0;
+    virtual VMObjectPtr create_text(const vm_text_t b) = 0;
+    virtual VMObjectPtr create_float(const vm_float_t b) = 0;
+
+    virtual VMObjectPtr create_nop() = 0;
+    virtual VMObjectPtr create_true() = 0;
+    virtual VMObjectPtr create_false() = 0;
+    virtual VMObjectPtr create_bool(const bool b) = 0;
+    virtual VMObjectPtr create_nil() = 0;
+    virtual VMObjectPtr create_cons() = 0;
+    virtual VMObjectPtr create_tuple() = 0;
+
+    virtual VMObjectPtr create_array() = 0;
+    virtual void append(VMObjectPtr aa, const VMObjectPtr a) = 0;
+    /*
+    virtual VMObjectPtr create_data(const icu::UnicodeString& n) = 0;
+    virtual VMObjectPtr create_data(const icu::UnicodeString& n0, const icu::UnicodeString& n1) = 0;
+    virtual VMObjectPtr create_data(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) = 0;
+    */
+
+    //VMObjectPtr import_module(const icu::UnicodeString& s);
 
 };
 
@@ -620,6 +642,8 @@ private:
 };
 
 typedef std::shared_ptr<VMObjectArray> VMObjectArrayPtr;
+#define VM_OBJECT_ARRAY_TEST(a) \
+    (a->tag() == VM_OBJECT_ARRAY)
 #define VM_OBJECT_ARRAY_CAST(a) \
     std::static_pointer_cast<VMObjectArray>(a)
 #define VM_OBJECT_ARRAY_SPLIT(a, v) \
@@ -717,7 +741,7 @@ public:
     }
 
     icu::UnicodeString text() const {
-        return _machine->get_symbol(_symbol);
+        return _machine->get_symbol_string(_symbol);
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -801,7 +825,7 @@ public:
         if (_symbol == SYMBOL_NIL) {
             return "{}";
         } else {
-            return _machine->get_symbol(_symbol);
+            return _machine->get_symbol_string(_symbol);
         }
     }
 
@@ -814,6 +838,22 @@ public:
     }
 
     // convenience routines
+    VMObjectPtr create_nop() const {
+        return _machine->create_nop();
+    }
+
+    VMObjectPtr create_true() const {
+        return _machine->create_bool(true);
+    }
+
+    VMObjectPtr create_false() const {
+        return _machine->create_bool(false);
+    }
+
+    VMObjectPtr create_bool(const bool b) const {
+        return _machine->create_bool(b);
+    }
+
     VMObjectPtr create_integer(const vm_int_t v) const {
         return VMObjectInteger::create(v);
     }
@@ -834,25 +874,6 @@ public:
         return VMObjectText::create(v);
     }
 
-    VMObjectPtr create_nop() const {
-        return _machine->get_data_symbol(SYMBOL_NOP);
-    }
-
-    VMObjectPtr create_true() const {
-        return _machine->get_data_symbol(SYMBOL_TRUE);
-    }
-
-    VMObjectPtr create_false() const {
-        return _machine->get_data_symbol(SYMBOL_FALSE);
-    }
-
-    VMObjectPtr create_bool(const bool b) const {
-        if (b) {
-            return create_true();
-        } else {
-            return create_false();
-        }
-    }
 private:
     VM*         _machine;
     symbol_t    _symbol;
@@ -1048,27 +1069,6 @@ public:
          return nullptr;
      }
 };
-
-inline VMObjectPtr VM::get_data_symbol(const symbol_t s) {
-    auto o = VMObjectStub(this, s).clone();
-    auto d = enter_data(o);
-    return get_data(d);
-}
-
-inline VMObjectPtr VM::get_data_string(const icu::UnicodeString& n) {
-    auto i = enter_symbol(n);
-    return get_data_symbol(i);
-}
-
-inline VMObjectPtr VM::get_data_string(const icu::UnicodeString& n0, const icu::UnicodeString& n1) {
-    auto i = enter_symbol(n0, n1);
-    return get_data_symbol(i);
-}
-
-inline VMObjectPtr VM::get_data_string(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) {
-    auto i = enter_symbol(nn, n);
-    return get_data_symbol(i);
-}
 
 // the throw combinator, used in the runtime
 

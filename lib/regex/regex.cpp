@@ -13,19 +13,20 @@ typedef std::vector<icu::UnicodeString> UnicodeStrings;
 
 // convenience function
 VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
-    auto _nil = vm->get_data_string("System", "nil");
+    auto nil  = vm->create_nil();
+    auto cons = vm->create_cons();
 
-    auto _cons = vm->get_data_string("System", "cons");
-
-    VMObjectPtr result = _nil;
+    VMObjectPtr result = nil;
 
     for (int n = ss.size() - 1; n >= 0; n--) {
-        VMObjectPtrs vv;
-        vv.push_back(_cons);
-        vv.push_back(VMObjectText(ss[n]).clone());
-        vv.push_back(result);
+        auto aa = vm->create_array();
+        auto t  = vm->create_text(ss[n]);
 
-        result = VMObjectArray(vv).clone();
+        vm->append(aa, cons);
+        vm->append(aa, t);
+        vm->append(aa, result);
+
+        result = aa;
     }
 
     return result;

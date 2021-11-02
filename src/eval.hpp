@@ -117,7 +117,7 @@ public:
      */
     void eval_main() {
         auto vm = get_machine();
-        auto c = vm->get_data_string("main");
+        auto c = vm->get_symbol("main");
 
         if (c->subtag() != VM_SUB_STUB) {
             eval_command(icu::UnicodeString("main"));
@@ -137,7 +137,7 @@ public:
         auto vv = mm->values();
         for (auto& v: vv) {
             // std::cerr << "evaluating: " << v.string() << std::endl;
-            auto c = vm->get_data_string(v.string());
+            auto c = vm->get_symbol(v.string());
             auto sym = c->symbol();
             auto r = vm->reduce(c);
             auto d = VarCombinator(vm, sym, r).clone();
@@ -287,7 +287,7 @@ public:
         handle_definition(d);
 
         // reduce
-        auto c = vm->get_data_string(fv);
+        auto c = vm->get_symbol(fv);
         if (c->subtag() != VM_SUB_STUB) {
             vm->reduce(c, r, exc);
         }
@@ -305,22 +305,19 @@ public:
             handle_definition(AstDeclDefinition(p, c0, e0).clone());
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
-                auto c   = vm->get_data_string(c1->to_text());
-                auto sym = c->symbol();
-                if (c->subtag() != VM_SUB_STUB) {
+                auto o = vm->get_symbol(c1->to_text());
+                if (o->subtag() != VM_SUB_STUB) {
                     // XXX: handle exceptions properly once
-                    auto r = vm->reduce(c);
-                    auto v = VarCombinator(vm, sym, r).clone();
-                    vm->define_data(v);
+                    auto r = vm->reduce(o);
+                    vm->define_data(r.result);
                 }
             }
         }
     }
 
     void return_nop(const callback_t& callback) {
-        auto vm = get_machine();
-        auto nop = vm->get_data_string("System", "nop");
-
+        auto vm  = get_machine();
+        auto nop = vm->create_nop();
         (callback)(vm, nop);
     }
 

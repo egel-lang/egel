@@ -82,30 +82,26 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Par, "System", "par");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        static VMObjectPtr _tuple = nullptr;
-        if (_tuple == nullptr) _tuple = machine()->get_data_string("System", "tuple");
-
-        static VMObjectPtr _nop = nullptr;
-        if (_nop == nullptr) _nop = machine()->get_data_string("System", "nop");
-
         static symbol_t sym = 0;
         if (sym == 0) sym = machine()->enter_symbol("System", "thread");
 
+        auto tuple = machine()->create_tuple();
+        auto nop   = machine()->create_nop();
 
         VMObjectPtrs tt;
-        tt.push_back(_tuple);
+        tt.push_back(tuple);
         tt.push_back(nullptr);
         tt.push_back(nullptr);
         auto result = VMObjectArray(tt).clone();
 
         VMObjectPtrs ll;
         ll.push_back(arg0);
-        ll.push_back(_nop);
+        ll.push_back(nop);
         auto left = VMObjectArray(ll).clone();
 
         VMObjectPtrs rr;
         rr.push_back(arg1);
-        rr.push_back(_nop);
+        rr.push_back(nop);
         auto right = VMObjectArray(rr).clone();
 
         auto vm = machine();

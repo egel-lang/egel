@@ -6,6 +6,7 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + add a Python bridge
++ refactor code to have most (external) calls work over machine
 + add a literate scripting mode
 + static coding combinators (runtime inspection)
 + generate C++ from .eg file (module compilation)
