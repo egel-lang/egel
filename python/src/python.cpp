@@ -21,9 +21,9 @@
 #include <egel/runtime.hpp> // build against an installed egel
 #include "utils.hpp"        // same as egel's but only the runtime should be included
 
-#define LIBRARY_VERSION_MAJOR 0
-#define LIBRARY_VERSION_MINOR 0
-#define LIBRARY_VERSION_PATCH 1
+#define LIBRARY_VERSION_MAJOR "0"
+#define LIBRARY_VERSION_MINOR "0"
+#define LIBRARY_VERSION_PATCH "1"
 
 class CPythonMachine {
 public:

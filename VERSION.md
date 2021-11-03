@@ -6,7 +6,6 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + add a Python bridge
-+ swap ':' and '::', rename 'nop' to 'none'
 + refactor code to have most (external) calls work over machine
 + add a literate scripting mode
 + static coding combinators (runtime inspection)
@@ -19,6 +18,9 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+## v0.1.3 -- roads half built
+
++ swap ':' and '::', rename 'nop' to 'none'
 + added multiline strings
 
 ## v0.1.2 -- smaller is better
