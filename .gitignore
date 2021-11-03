@@ -54,3 +54,4 @@ python/debug/*
 
 # ignore vscode
 .vscode/*
+python/.vscode/*
