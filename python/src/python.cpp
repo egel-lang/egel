@@ -42,16 +42,16 @@ public:
  *
  * You _can_ copy a CPyObject around.
  */
-class CPyObject {
+class CPythonObject {
 public:
-    CPyObject() : _object(nullptr) {
+    CPythonObject() : _object(nullptr) {
     }
 
-    CPyObject(PyObject* o) : _object(o) {
+    CPythonObject(PyObject* o) : _object(o) {
         inc_ref();
     }
 
-    ~CPyObject() {
+    ~CPythonObject() {
         dec_ref();
         _object= nullptr;
     }
@@ -116,32 +116,32 @@ private:
  */
 
 
-static VMObjectPtr python_to_egel(VM* m, CPythonObject object) {
+static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
     auto o = CPythonObject();
-    if (Py_IsNone(o)) {
-         return m->create_nop();
-    } else if (Py_IsFalse(o)) {
-         return m->create_false();
-    } else if (Py_IsTrue(o)) {
-         return m->create_true();
-    } else if (Py_IS_TYPE(o, PyLong_Type) {
+    if (Py_Is(o, Py_None)) {
+         return vm->create_nop();
+    } else if (Py_Is(o, Py_False)) {
+         return vm->create_false();
+    } else if (Py_Is(o, Py_True)) {
+         return vm->create_true();
+    } else if (Py_IS_TYPE(o, PyLong_Type)) {
          vm_int_t n0;
          PyArg_Parse(s1, "l", &n0);
          auto n1 = m->create_float(n0);
          return n1;
-    } else if (Py_IS_TYPE(o, PyFloat_Type) {
+    } else if (Py_IS_TYPE(o, PyFloat_Type)) {
          float f0;
          PyArg_Parse(s1, "f", &f0);
          auto f1 = m->create_float(f0);
          return f1;
-    } else if (Py_IS_TYPE(o, PyUnicode_Type) {
+    } else if (Py_IS_TYPE(o, PyUnicode_Type)) {
          char *s0;
          PyArg_Parse(o, "s", &s0);
          auto s1 = char_to_unicode(s0);
-         auto s2 = m->create_text(s1);
+         auto s2 = vm->create_text(s1);
          return s2;
     } else {
-         throw m->create_text("conversion failed"); 
+         throw vm->create_text("conversion failed"); 
     }
 };
 

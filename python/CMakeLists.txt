@@ -34,7 +34,7 @@ set(PVERSION 0.0.1)
 message("python bridge for egel ${PVERSION}")
 
 # add 'fallback' modules
-set(CMAKE_MODULE_PATH "contrib/cmake/modules;${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "../contrib/cmake/modules;${CMAKE_MODULE_PATH}")
 
 # the Python/Egel bridge
 project(Python DESCRIPTION "python bridge for egel"
@@ -87,10 +87,10 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
 find_package(fmt 7.1 REQUIRED)
-find_package(PythonLibs REQUIRED)
+#find_package(PythonLibs 3.7 REQUIRED)
+find_package (Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
 
-
-include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories(${Python3_INCLUDE_DIR})
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories(/usr/local/include)
 

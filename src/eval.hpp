@@ -69,7 +69,6 @@ public:
         if (VM_OBJECT_COMBINATOR_TEST(o)) {
             auto c = VM_OBJECT_COMBINATOR_CAST(o);
             auto v = VarCombinator(vm, c->symbol(), r).clone();
-            vm->define_data(v);
             return v;
         } else {
             throw ErrorInternal("failure to create Var");
