@@ -31,13 +31,13 @@ string(REGEX REPLACE ${EGEL_PATCH_REGEX} "\\1" EGEL_PATCH "${EGEL_PATCH}")
 #set(PVERSION ${EGEL_MAJOR}.${EGEL_MINOR}.${EGEL_PATCH})
 set(PVERSION 0.0.1)
 
-message("python bridge for egel ${PVERSION}")
+message("-- python bridge for egel ${PVERSION}")
 
 # add 'fallback' modules
 set(CMAKE_MODULE_PATH "../contrib/cmake/modules;${CMAKE_MODULE_PATH}")
 
 # the Python/Egel bridge
-project(Python DESCRIPTION "python bridge for egel"
+project(PythonBridge DESCRIPTION "python bridge for egel"
         VERSION ${PVERSION} LANGUAGES CXX)
 
 # set the cxx compiler flags
@@ -46,7 +46,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # compilers
-message("compiler: ${CMAKE_CXX_COMPILER_ID}")
+message("-- compiler: ${CMAKE_CXX_COMPILER_ID}")
 if(("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
   set(CMAKE_CXX_FLAGS                     "-Wall -Wextra -Werror -pedantic -Wno-unused-parameter -Wno-return-type-c-linkage")
   set(CMAKE_CXX_FLAGS_DEBUG               "-g")
@@ -87,10 +87,10 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
 find_package(fmt 7.1 REQUIRED)
-#find_package(PythonLibs 3.7 REQUIRED)
-find_package (Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
 
-include_directories(${Python3_INCLUDE_DIR})
+message("-- ${Python3_INCLUDE_DIRS}")
+include_directories(${Python3_INCLUDE_DIRS})
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories(/usr/local/include)
 

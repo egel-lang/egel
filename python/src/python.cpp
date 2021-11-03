@@ -1,4 +1,4 @@
-#define PY_SSIZE_T_CLEAN    // for obscure reasons this goes first
+// #define PY_SSIZE_T_CLEAN    // for obscure reasons this goes first
 #include <Python.h>
 
 #include <stdlib.h>
