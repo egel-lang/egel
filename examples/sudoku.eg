@@ -18,9 +18,9 @@
 # This solver takes a very abstract view. It implements a ''term 
 # rewriter'' in Egel, which is by itself a slow term rewriter.
 #
-# XXX: It should also never have worked, I am rewriting this.
+# XXX:: It should also never have worked, I am rewriting this.
 #
-# Example input file:
+# Example input file::
 #
 # 8 . 3 . . . . 4 .
 # . . 6 . . . . 9 .
@@ -32,7 +32,7 @@
 # . 9 7 4 . . . . .
 # . 8 . 3 2 . 9 . .
 #
-# Output:
+# Output::
 #
 # 8 5 3 9 7 2 6 4 1
 # 7 4 6 8 1 3 5 9 2
@@ -97,7 +97,7 @@ def print_prop =
     | (peq P Q)  -> print_prop P; print " = "; print_prop Q
     | (pneq P Q) -> print_prop P; print " != "; print_prop Q
     | (psum P Q) -> print_prop P; print " + "; print_prop Q
-    | XXX        -> print (format "XXX: {}" XXX) ]
+    | XXX        -> print (format "XXX:: {}" XXX) ]
 
 def print_props =
     [ nil -> print "\n"
@@ -118,7 +118,7 @@ def props_substitute =
 ######################################################################
 
 def prop_sum_to_list =
-    [ (psum XX YY) -> (List:++) (prop_sum_to_list XX) 
+    [ (psum XX YY) -> (List::++) (prop_sum_to_list XX) 
                                 (prop_sum_to_list YY) 
     | X          -> cons X nil ]
 
@@ -142,16 +142,16 @@ def xxx =
       (8,9) }
 
 def prop_row =
-    [ N -> List:map [(I,J) -> pneq (pvar N I) (pvar N J)] xxx ]
+    [ N -> List::map [(I,J) -> pneq (pvar N I) (pvar N J)] xxx ]
 
 def prop_column = 
-    [ N -> List:map [(I,J) -> pneq (pvar I N) (pvar J N)] xxx ]
+    [ N -> List::map [(I,J) -> pneq (pvar I N) (pvar J N)] xxx ]
 
 def prop_rows =
-    List:flatten (List:map [ N -> prop_row N ] (List:from_to 1 9))
+    List::flatten (List::map [ N -> prop_row N ] (List::from_to 1 9))
 
 def prop_columns =
-    List:flatten (List:map [ N -> prop_column N ] (List:from_to 1 9))
+    List::flatten (List::map [ N -> prop_column N ] (List::from_to 1 9))
 
 def yyy =
      {
@@ -181,15 +181,15 @@ def yyy =
 
 def prop_block =
     [ (X, Y) ->
-         List:map [((I,J),(P,Q)) ->
+         List::map [((I,J),(P,Q)) ->
                    pneq (pvar (I+X) (J+Y)) (pvar (P+X) (Q+Y))] yyy ]
  
 def prop_blocks =
-    List:flatten (List:map [ P -> prop_block P ]
+    List::flatten (List::map [ P -> prop_block P ]
          { (0,0),(0,3),(0,6),(3,0),(3,3),(3,6),(6,0),(6,3),(6,6) })
  
 def prop_constraints =
-    List:flatten {prop_rows, prop_columns, prop_blocks}
+    List::flatten {prop_rows, prop_columns, prop_blocks}
 
 ######################################################################
 
@@ -274,7 +274,7 @@ def prop_reduce_constraints =
             (prop_eval_constraint C) ]
 
 def prop_verify_constraints =
-    [ CC -> not (List:any [ false -> true | _ -> false ] CC) ]
+    [ CC -> not (List::any [ false -> true | _ -> false ] CC) ]
 
 def prop_simplify_constraints =
     [ EQ CC ->
@@ -291,8 +291,8 @@ def prop_neq_extract =
     | _ -> none ]
 
 def prop_neqs_extract =
-    [ CC -> List:filter [ none -> false | _ -> true ] 
-                    (List:map prop_neq_extract CC)  ]
+    [ CC -> List::filter [ none -> false | _ -> true ] 
+                    (List::map prop_neq_extract CC)  ]
 
 def prop_neq_eval =
     [ (pneq (pvar I J) (pconst C)) (peq (pvar K L) (pconst D))->
@@ -302,26 +302,26 @@ def prop_neq_eval =
 def prop_propagate_neq =
     [ C P -> 
         prop_sum_from_list
-        (List:filter [ P -> prop_neq_eval C P ] (prop_sum_to_list P))
+        (List::filter [ P -> prop_neq_eval C P ] (prop_sum_to_list P))
     ]
 
 def prop_propagate_neqs =
     [ nil PP -> PP
     | (cons C CC) PP -> prop_propagate_neqs CC
-                            (List:map (prop_propagate_neq C) PP) ]
+                            (List::map (prop_propagate_neq C) PP) ]
 
 def prop_sums_valid =
-    [ PP -> List:all [ none -> false | _ -> true ] PP ]
+    [ PP -> List::all [ none -> false | _ -> true ] PP ]
 
 ######################################################################
 
 def track_solver_state =
     [ (EE, CC, PP) ->
-        print "equalities:\n";
+        print "equalities::\n";
         print_props EE;
-        print "constraints:\n";
+        print "constraints::\n";
         print_props CC;
-        print "solutions:\n";
+        print "solutions::\n";
         print_props PP ]
     
 def prop_try_choices =
