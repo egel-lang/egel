@@ -100,7 +100,7 @@ enum vm_tag_t {
     VM_OBJECT_ARRAY,
 };
 
-// predefined symbols (indices in data and symbol table)
+// predefined symbols (indices in symbol table)
 const int SYMBOL_INT      = 0;
 const int SYMBOL_FLOAT    = 1;
 const int SYMBOL_CHAR     = 2;
@@ -114,6 +114,13 @@ const int SYMBOL_FALSE    = 7;
 const int SYMBOL_TUPLE    = 8;
 const int SYMBOL_NIL      = 9;
 const int SYMBOL_CONS     = 10;
+
+#define VM_OBJECT_NOP_TEST(o)   (o->symbol() == SYMBOL_NOP)
+#define VM_OBJECT_FALSE_TEST(o) (o->symbol() == SYMBOL_FALSE)
+#define VM_OBJECT_TRUE_TEST(o)  (o->symbol() == SYMBOL_TRUE)
+#define VM_OBJECT_TUPLE_TEST(o) (o->symbol() == SYMBOL_TUPLE)
+#define VM_OBJECT_NIL_TEST(o)   (o->symbol() == SYMBOL_NIL)
+#define VM_OBJECT_CONS_TEST(o)  (o->symbol() == SYMBOL_CONS)
 
 /**
  * VM objects can have subtypes which are _unique_ 'magic' numbers.

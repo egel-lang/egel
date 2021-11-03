@@ -23,31 +23,6 @@ public:
         _to(other._to), _from(other._from) {
     }
 
-    void initialize() {
-        auto i = enter(STRING_SYSTEM, STRING_INT);
-        auto f = enter(STRING_SYSTEM, STRING_FLOAT);
-        auto c = enter(STRING_SYSTEM, STRING_CHAR);
-        auto t = enter(STRING_SYSTEM, STRING_TEXT);
-        auto p = enter(STRING_SYSTEM, STRING_PTR);
-        ASSERT(i == SYMBOL_INT);
-        ASSERT(f == SYMBOL_FLOAT);
-        ASSERT(c == SYMBOL_CHAR);
-        ASSERT(t == SYMBOL_TEXT);
-        ASSERT(p == SYMBOL_POINTER);
-        auto _nop   = enter(STRING_SYSTEM, STRING_NOP);
-        auto _true  = enter(STRING_SYSTEM, STRING_TRUE);
-        auto _false = enter(STRING_SYSTEM, STRING_FALSE);
-        ASSERT(_nop   == SYMBOL_NOP);
-        ASSERT(_true  == SYMBOL_TRUE);
-        ASSERT(_false == SYMBOL_FALSE);
-        auto _tuple = enter(STRING_SYSTEM, STRING_TUPLE);
-        auto _nil   = enter(STRING_SYSTEM, STRING_NIL);
-        auto _cons  = enter(STRING_SYSTEM, STRING_CONS);
-        ASSERT(_tuple  == SYMBOL_TUPLE);
-        ASSERT(_nil    == SYMBOL_NIL);
-        ASSERT(_cons   == SYMBOL_CONS);
-    }
-
     symbol_t enter(const icu::UnicodeString& s) {
         if (_from.count(s) == 0) {
             symbol_t n = _to.size();
@@ -220,18 +195,26 @@ public:
         _data.enter(_nop);
         _data.enter(_true);
         _data.enter(_false);
-        auto _tuple0 = _symbols.enter(STRING_SYSTEM, STRING_TUPLE);
-        auto _nil0   = _symbols.enter(STRING_SYSTEM, STRING_NIL);
-        auto _cons0  = _symbols.enter(STRING_SYSTEM, STRING_CONS);
-        ASSERT(_tuple0  == SYMBOL_TUPLE);
-        ASSERT(_nil0    == SYMBOL_NIL);
-        ASSERT(_cons0   == SYMBOL_CONS);
-        _tuple = VMObjectData::create(this, nop0);
-        _nil   = VMObjectData::create(this, true0);
-        _cons  = VMObjectData::create(this, false0);
+        auto tuple0 = _symbols.enter(STRING_SYSTEM, STRING_TUPLE);
+        auto nil0   = _symbols.enter(STRING_SYSTEM, STRING_NIL);
+        auto cons0  = _symbols.enter(STRING_SYSTEM, STRING_CONS);
+        ASSERT(tuple0  == SYMBOL_TUPLE);
+        ASSERT(nil0    == SYMBOL_NIL);
+        ASSERT(cons0   == SYMBOL_CONS);
+
+        _tuple = VMObjectData::create(this, tuple0);
+        _nil   = VMObjectData::create(this, nil0);
+        _cons  = VMObjectData::create(this, cons0);
         _data.enter(_tuple);
         _data.enter(_nil);
         _data.enter(_cons);
+
+        ASSERT(VM_OBJECT_NOP_TEST(_nop));
+        ASSERT(VM_OBJECT_TRUE_TEST(_true));
+        ASSERT(VM_OBJECT_FALSE_TEST(_false));
+        ASSERT(VM_OBJECT_TUPLE_TEST(_tuple));
+        ASSERT(VM_OBJECT_NIL_TEST(_nil));
+        ASSERT(VM_OBJECT_CONS_TEST(_cons));
     }
     // import table manipulation
     bool has_import(const icu::UnicodeString& i) override {

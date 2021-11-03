@@ -115,6 +115,7 @@ private:
  * Anything more complex is handled from the Egel/Python side.
  */
 
+#define PYTHON_HAS_TYPE(a,b) (a->ob_type == &b)
 
 static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
     auto o = CPythonObject();
@@ -124,20 +125,20 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
          return vm->create_false();
     } else if (Py_Is(o, Py_True)) {
          return vm->create_true();
-    } else if (Py_IS_TYPE(o, PyLong_Type)) {
+    } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
          vm_int_t n0;
-         PyArg_Parse(s1, "l", &n0);
-         auto n1 = m->create_float(n0);
+         PyArg_Parse(o, "l", &n0);
+         auto n1 = vm->create_float(n0);
          return n1;
-    } else if (Py_IS_TYPE(o, PyFloat_Type)) {
+    } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
          float f0;
-         PyArg_Parse(s1, "f", &f0);
-         auto f1 = m->create_float(f0);
+         PyArg_Parse(o, "f", &f0);
+         auto f1 = vm->create_float(f0);
          return f1;
-    } else if (Py_IS_TYPE(o, PyUnicode_Type)) {
+    } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
          char *s0;
          PyArg_Parse(o, "s", &s0);
-         auto s1 = char_to_unicode(s0);
+         auto s1 = icu::UnicodeString(s0);
          auto s2 = vm->create_text(s1);
          return s2;
     } else {
