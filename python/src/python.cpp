@@ -181,19 +181,21 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
  * A Python machine.
  **/
 
-//## Python:machine - opaque values which are input/output channels
+//## Python:machine - create a python machine
 class PythonMachine: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonMachine, "Python", "machine");
 
-    /*
     PythonMachine(const PythonMachine& m): Opaque(VM_SUB_PYTHON_OBJECT, m.machine(), m.symbol()) {
-        _value = m.value();
+        _value = m._value;
     }
-    */
 
     VMObjectPtr clone() const override {
         return VMObjectPtr(new PythonMachine(*this)); // XXX: closes and creates?
+    }
+
+    ~PythonMachine() {
+        if (_value) delete _value;
     }
 
     int compare(const VMObjectPtr& o) override {
@@ -206,17 +208,23 @@ public:
         */
     }
 
-    void set_value(CPythonMachine cp) {
-        _value = cp;
+    void run() {
+        _value = new CPythonMachine();
     }
 
-    CPythonMachine value() const {
+    CPythonMachine* value() const {
         return _value;
     }
 
 protected:
-    CPythonMachine _value;
+    CPythonMachine* _value = nullptr; // pass raw references around cause funny stuff
 };
+
+#define PYTHON_MACHINE_TEST(o) \
+    ((o->subtag() == VM_SUB_PYTHON_OBJECT) && \
+     (o->to_text() == "Python:machine"))
+#define PYTHON_MACHINE_CAST(o) \
+    std::static_pointer_cast<PythonMachine>(o) 
 
 /**
  * A Python object.
@@ -313,14 +321,20 @@ public:
     }
 };
 
-//## Python:init nop - create a Python machine
-class PythonInit: public Monadic {
+//## Python:init m - initialize a Python machine
+class PythonRun: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonInit, "Python", "init");
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonRun, "Python", "run");
 
     // XXX: TODO: add extra initialization options once
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        return PythonMachine(machine()).clone();
+        if (PYTHON_MACHINE_TEST(arg0)) {
+            auto m = PYTHON_MACHINE_CAST(arg0);
+            m->run();
+            return create_nop();
+        } else {
+            THROW_BADARGS;
+        }
     }
 };
 
@@ -590,14 +604,11 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-//    oo.push_back(VMObjectData(vm, "Python", "channel").clone());
-
-
     oo.push_back(PythonMachine(vm).clone());
     oo.push_back(PythonObject(vm).clone());
     oo.push_back(PythonToObject(vm).clone());
     oo.push_back(PythonFromObject(vm).clone());
-    oo.push_back(PythonInit(vm).clone());
+    oo.push_back(PythonRun(vm).clone());
     oo.push_back(PythonModuleImport(vm).clone());
     //oo.push_back(PythonModuleRun(vm).clone());
     oo.push_back(PythonFunction(vm).clone());
