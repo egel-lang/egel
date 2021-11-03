@@ -11,7 +11,7 @@ namespace OO (
     )
 
     def + =
-        [ X::object Y -> (get plus X) X Y
+        [ X:object Y -> (get plus X) X Y
         | X Y        -> X System:+ Y ]
 
 )

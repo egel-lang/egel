@@ -17,18 +17,18 @@ def print_usage =
     print  "usage: egeldoc\n"
 
 def test_file =
-    [ FN::text -> OS:exists FN
-    | _        -> false ]
+    [ FN:text -> OS::exists FN
+    | _       -> false ]
 
 def read_file =
     [ FN ->
-        let CHAN = OS:open FN in
-        let LINES = fix [ F CHAN -> let LINE = OS:read_line CHAN in
-                      if OS:eof CHAN then {} else cons LINE (F CHAN) ] CHAN 
-        in OS:close CHAN; LINES ]
+        let CHAN = OS::open FN in
+        let LINES = fix [ F CHAN -> let LINE = OS::read_line CHAN in
+                      if OS::eof CHAN then {} else cons LINE (F CHAN) ] CHAN 
+        in OS::close CHAN; LINES ]
 
 ## .cpp/.hpp handling
-val cc_regex_comment = Regex:compile "//(.*)"
+val cc_regex_comment = Regex::compile "//(.*)"
 
 def cc_strip_lines =
     [ {} -> {} | (cons L LL) -> 
@@ -41,7 +41,7 @@ def cc_strip =
         then cc_strip_lines LL else LL ]
 
 ## strip comments
-val eg_regex_comment = Regex:compile "##(.*)"
+val eg_regex_comment = Regex::compile "##(.*)"
 
 def eg_strip_comments =
     [ {} -> {} | (cons L LL) -> 
@@ -52,7 +52,7 @@ data file, space, comb
 
 ## spaces
 val eg_regex_space = 
-    Regex:compile " *namespace (.*) - (.*)"
+    Regex::compile " *namespace (.*) - (.*)"
 
 def eg_spacify =
     [ {} -> {} | (cons L LL) ->
@@ -62,14 +62,14 @@ def eg_spacify =
 
 ## combinators
 val eg_regex_combinator = 
-    Regex:compile " *(.*):([^ ]*) (.*)- (.*)"
+    Regex:compile " *(.*)::([^ ]*) (.*)- (.*)"
 
 def eg_combify =
     [ {} -> {} 
     | (cons (L::text) LL) ->
         [ {N, C, AA, T} -> cons (comb N C AA T) (eg_combify LL) 
         | E -> cons L (eg_combify LL) ]
-            (Regex:group eg_regex_combinator L)
+            (Regex::group eg_regex_combinator L)
     | (cons L LL) -> cons L (eg_combify LL) ]
 
 # rendering

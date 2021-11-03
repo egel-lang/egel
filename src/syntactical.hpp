@@ -89,7 +89,7 @@ public:
 
     bool is_combinator() {
         uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         return look(i).tag() == TOKEN_LOWERCASE;
@@ -97,7 +97,7 @@ public:
 
     bool is_operator() {
         uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         return look(i).tag() == TOKEN_OPERATOR;
@@ -110,7 +110,7 @@ public:
     icu::UnicodeString peek_operator() {
         // (uppercase '.')* operator
         uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         if (look(i).tag() == TOKEN_OPERATOR) {
@@ -121,11 +121,11 @@ public:
     }
 
     bool is_enclosed_operator() {
-        // '(' (uppercase '.')* operator ')'
+        // '(' (uppercase '::')* operator ')'
         uint_t i = 0;
         if (tag(i) != TOKEN_LPAREN) return false;
         i++;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_COLON)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         if (tag(i) != TOKEN_OPERATOR) return false;
@@ -154,7 +154,7 @@ public:
         Position p = position();
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_COLON) ) {
+                (tag(1) == TOKEN_DCOLON) ) {
             icu::UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
@@ -169,7 +169,7 @@ public:
         Position p = position();
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_COLON) ) {
+                (tag(1) == TOKEN_DCOLON) ) {
             icu::UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
@@ -184,7 +184,7 @@ public:
         Position p = position();
         UnicodeStrings nn;
         while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_COLON) ) {
+                (tag(1) == TOKEN_DCOLON) ) {
             icu::UnicodeString n = look().text();
             skip(); skip();
             nn.push_back(n);
@@ -208,7 +208,7 @@ public:
         icu::UnicodeString s = look().text();
         ss.push_back(s);
         skip();
-        while ( (tag(0) == TOKEN_COLON) &&
+        while ( (tag(0) == TOKEN_DCOLON) &&
                 (tag(1) == TOKEN_UPPERCASE) ) {
             skip();
             icu::UnicodeString s = look().text();
@@ -271,7 +271,7 @@ public:
             } else {
                 throw ErrorSyntactical(position(), "pattern expected");
             }
-            if (tag() == TOKEN_DCOLON) {
+            if (tag() == TOKEN_COLON) {
                 Position p = position();
                 skip();
                 auto c = parse_combinator();

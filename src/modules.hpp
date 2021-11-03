@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "constants.hpp"
+
 #include "error.hpp"
 #include "ast.hpp"
 #include "environment.hpp"
@@ -22,19 +24,20 @@
 #include "builtin_process.hpp"
 #include "builtin_eval.hpp"
 
+
 extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward declaration
 
 // convenience
 inline icu::UnicodeString first(const icu::UnicodeString& s) {
     auto d = s;
-    auto i = d.indexOf(':');
+    auto i = d.indexOf(STRING_DCOLON);
     return d.remove(i, d.length());
 }
 
 inline icu::UnicodeString second(const icu::UnicodeString& s) {
     auto d = s;
-    auto i = d.indexOf(':');
-    return d.remove(0, i+1);
+    auto i = d.indexOf(STRING_DCOLON);
+    return d.remove(0, i+2);
 }
 
 class Options;

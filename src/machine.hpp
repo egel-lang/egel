@@ -35,14 +35,14 @@ public:
     }
 
     symbol_t enter(const icu::UnicodeString& n0, const icu::UnicodeString& n1) {
-        icu::UnicodeString n = n0 + STRING_COLON + n1;
+        icu::UnicodeString n = n0 + STRING_DCOLON + n1;
         return enter(n);
     }
 
     symbol_t enter(const UnicodeStrings& nn, const icu::UnicodeString& n) {
         icu::UnicodeString s;
         for (auto& n0: nn) {
-            s += n0 + STRING_COLON;
+            s += n0 + STRING_DCOLON;
         }
         s += n;
         return enter(s);
@@ -183,13 +183,13 @@ public:
         _data.enter(_char);
         _data.enter(_text);
         _data.enter(_ptr);
-        auto none0   = _symbols.enter(STRING_SYSTEM, STRING_NONE);
+        auto none0  = _symbols.enter(STRING_SYSTEM, STRING_NONE);
         auto true0  = _symbols.enter(STRING_SYSTEM, STRING_TRUE);
         auto false0 = _symbols.enter(STRING_SYSTEM, STRING_FALSE);
-        ASSERT(none0   == SYMBOL_NONE);
+        ASSERT(none0  == SYMBOL_NONE);
         ASSERT(true0  == SYMBOL_TRUE);
         ASSERT(false0 == SYMBOL_FALSE);
-        _none   = VMObjectData::create(this, none0);
+        _none  = VMObjectData::create(this, none0);
         _true  = VMObjectData::create(this, true0);
         _false = VMObjectData::create(this, false0);
         _data.enter(_none);

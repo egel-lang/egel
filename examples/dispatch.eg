@@ -29,24 +29,24 @@ namespace Dispatch (
                      dispatch_findrec TAG TABLE ]
 )
 
-def ++ = Dispatch:dispatch_on "++"
+def ++ = Dispatch::dispatch_on "++"
 
 # note that this makes use of variadic pattern matching. you either
 # match and apply on arguments, or continue with arguments undisturbed
 val plus_float_register =
     let FUNC = 
         [ K EXPR0 EXPR1 -> 
-            if [ E::float -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K none EXPR0 EXPR1
+            if [ E:float -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K none EXPR0 EXPR1
         | K -> K none ]
     in
-    Dispatch:dispatch_register "++" FUNC
+    Dispatch::dispatch_register "++" FUNC
 
 val plus_text_register =
     let FUNC = 
-        [ K EXPR0 EXPR1 -> if [ E::text -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K none EXPR0 EXPR1
+        [ K EXPR0 EXPR1 -> if [ E:text -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K none EXPR0 EXPR1
         | K -> K none ]
     in
-    Dispatch:dispatch_register "++" FUNC
+    Dispatch::dispatch_register "++" FUNC
 
 def main = 
     print (1.0 ++ 2.0) "\n";

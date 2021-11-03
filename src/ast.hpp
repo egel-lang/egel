@@ -384,12 +384,12 @@ public:
 
     void render(std::ostream& os, uint_t indent) const {
         if (approximate_length(indent) <= line_length) {
-            os << "(" << expression() << STRING_DCOLON << tag() << ")";
+            os << "(" << expression() << STRING_COLON << tag() << ")";
         } else {
             os << "(";
             expression()->render(os, indent+1);
             skip_line(os, indent+1);
-            os << STRING_DCOLON;
+            os << STRING_COLON;
             tag()->render(os, indent+1);
             os << ")";
             skip_line(os, indent);
@@ -449,7 +449,7 @@ public:
         icu::UnicodeString str = ""; // XXX: change to some other datatype
         for (auto& p:_path) {
             str += p;
-            str += STRING_COLON;
+            str += STRING_DCOLON;
         }
         str += _combinator;
         return str;
@@ -518,7 +518,7 @@ public:
         icu::UnicodeString str = "";
         for (auto& p:_path) {
             str += p;
-            str += STRING_COLON;
+            str += STRING_DCOLON;
         }
         str += _combinator;
         return str;
@@ -1388,7 +1388,7 @@ public:
         os << "namespace ";
         bool first = true;
         for (auto& n : name()) {
-            if (!first) os << STRING_COLON;
+            if (!first) os << STRING_DCOLON;
             first = false;
             os << n;
         }
@@ -1827,7 +1827,7 @@ public:
         os << "using ";
         bool first = true;
         for (auto& u:using0()) {
-            if (!first) os << STRING_COLON;
+            if (!first) os << STRING_DCOLON;
             first = false;
             os << u;
         }

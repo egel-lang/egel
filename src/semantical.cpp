@@ -59,7 +59,7 @@ public:
     icu::UnicodeString qualified(const UnicodeStrings& nn, const icu::UnicodeString n) {
         icu::UnicodeString s;
         for (auto& n: nn) {
-            s += n + STRING_COLON;
+            s += n + STRING_DCOLON;
         }
         s += n;
         return s;
