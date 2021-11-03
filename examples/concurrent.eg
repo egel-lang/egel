@@ -9,4 +9,4 @@ using System
 def main = 
     let _ = par (par [_ -> print "enjoy\n"] 
                     [_ -> print "rosetta\n"]) 
-                [_ -> print "code\n"] in nop
+                [_ -> print "code\n"] in none

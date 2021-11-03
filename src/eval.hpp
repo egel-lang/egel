@@ -39,8 +39,8 @@ private:
 };
 
 inline void default_main_callback(VM* vm, const VMObjectPtr& o) {
-    symbol_t nop = vm->enter_symbol("System", "nop");
-    if (!((o->symbol() == nop) && (o->tag() == VM_OBJECT_COMBINATOR))) {
+    symbol_t none = vm->enter_symbol("System", "none");
+    if (!((o->symbol() == none) && (o->tag() == VM_OBJECT_COMBINATOR))) {
         std::cout << o << std::endl;
     }
 }
@@ -305,7 +305,7 @@ public:
     }
 
     // XXX: very much wrong probably. A val declaration should not call the callbacks
-    // handlers but either throw a parse error or return nop.
+    // handlers but either throw a parse error or return none.
     void handle_value(const AstPtr& d) {
         auto vm = get_machine();
         auto mm = get_manager();
@@ -327,10 +327,10 @@ public:
         }
     }
 
-    void return_nop(const callback_t& callback) {
+    void return_none(const callback_t& callback) {
         auto vm  = get_machine();
-        auto nop = vm->create_nop();
-        (callback)(vm, nop);
+        auto none = vm->create_none();
+        (callback)(vm, none);
     }
 
     /** 'eval_line' is the work horse of the REPL, the IRC bot, and the 'System:eval' command.
@@ -364,22 +364,22 @@ public:
                 if (a != nullptr) {
                     if (a->tag() == AST_DIRECT_IMPORT) {
                         handle_import(a);
-                        return_nop(main);
+                        return_none(main);
                     } else if (a->tag() == AST_DIRECT_USING) {
                         handle_using(a);
-                        return_nop(main);
+                        return_none(main);
                     } else if (a->tag() == AST_DECL_DEFINITION) {
                         handle_definition(a);
-                        return_nop(main);
+                        return_none(main);
                     } else if (a->tag() == AST_DECL_OPERATOR) {
                         handle_definition(a);
-                        return_nop(main);
+                        return_none(main);
                     } else if (a->tag() == AST_DECL_DATA) {
                         handle_data(a);
-                        return_nop(main);
+                        return_none(main);
                     } else if (a->tag() == AST_DECL_VALUE) {
                         handle_value(a);
-                        return_nop(main);
+                        return_none(main);
                     } else {
                         handle_expression(a, rr, e);
                     }

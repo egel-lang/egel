@@ -26,7 +26,7 @@ def printcell =
 
 def printboard =
     [ BOARD ->
-        foldl [_ XX -> map [(X Y) -> printcell (BOARD X Y)] XX; print "\n" ] nop coords ]
+        foldl [_ XX -> map [(X Y) -> printcell (BOARD X Y)] XX; print "\n" ] none coords ]
 
 def count =
     [ BOARD X Y ->
@@ -51,4 +51,4 @@ def main =
     let GEN0 = blinker empty in
     let GEN1 = updateboard GEN0 in
     let GEN2 = updateboard GEN1 in
-        foldl [_ G -> print "generation:\n"; printboard G ] nop {GEN0, GEN1, GEN2}
+        foldl [_ G -> print "generation:\n"; printboard G ] none {GEN0, GEN1, GEN2}

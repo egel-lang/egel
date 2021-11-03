@@ -713,7 +713,7 @@ public:
     }
 };
 
-//## System:arg n - return the n-th application argument, otherwise return 'nop'
+//## System:arg n - return the n-th application argument, otherwise return 'none'
 class Arg: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Arg, "System", "arg");
@@ -724,8 +724,8 @@ public:
             if (i < application_argc) {
                 return VMObjectText(application_argv[i]).clone();
             } else {
-                auto nop = machine()->create_nop();
-                return nop;
+                auto none = machine()->create_none();
+                return none;
             }
         } else {
             THROW_BADARGS;
@@ -733,7 +733,7 @@ public:
     }
 };
 
-//## System:get_env s - return the value of environment variable s, otherwise return 'nop'
+//## System:get_env s - return the value of environment variable s, otherwise return 'none'
 class Getenv: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Getenv, "System", "get_env");
@@ -747,8 +747,8 @@ public:
             if (r != nullptr) {
                 return VMObjectText(r).clone(); // NOTE: don't call delete on r
             } else {
-                auto nop = machine()->create_nop();
-                return nop;
+                auto none = machine()->create_none();
+                return none;
             }
         } else {
             THROW_BADARGS;
@@ -769,7 +769,7 @@ public:
              (arg0->symbol() == SYMBOL_TRUE) ) {
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
-            thunk.push_back(machine()->create_nop());
+            thunk.push_back(machine()->create_none());
             return VMObjectArray(thunk).clone();
         } else {
             THROW_BADARGS;
@@ -790,7 +790,7 @@ public:
              (arg0->symbol() == SYMBOL_FALSE) ) {
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
-            thunk.push_back(machine()->create_nop());
+            thunk.push_back(machine()->create_none());
             return VMObjectArray(thunk).clone();
         } else {
             THROW_BADARGS;
@@ -821,7 +821,7 @@ public:
         }
         std::cout << s;
 
-        return create_nop();
+        return create_none();
     }
 };
 
@@ -917,7 +917,7 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(VMObjectData(vm, "System", "text").clone());
     oo.push_back(VMObjectData(vm, "System", "nil").clone());
     oo.push_back(VMObjectData(vm, "System", "cons").clone());
-    oo.push_back(VMObjectData(vm, "System", "nop").clone());
+    oo.push_back(VMObjectData(vm, "System", "none").clone());
     oo.push_back(VMObjectData(vm, "System", "true").clone());
     oo.push_back(VMObjectData(vm, "System", "false").clone());
     oo.push_back(VMObjectData(vm, "System", "tuple").clone());

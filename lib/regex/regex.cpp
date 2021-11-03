@@ -186,7 +186,7 @@ public:
     }
 };
 
-//## Regex:look_match pat s0 - returns the initial matched part of the string, or nop
+//## Regex:look_match pat s0 - returns the initial matched part of the string, or none
 class LookMatch: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
@@ -207,7 +207,7 @@ public:
 	    if (b) {
             	return create_text(s);
 	    } else {
-		return create_nop();
+		return create_none();
 	    }
         } else {
             THROW_BADARGS;

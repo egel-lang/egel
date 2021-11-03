@@ -107,7 +107,7 @@ private:
  *
  * Python     | Egel
  * ---------------------
- * None       | nop
+ * None       | none
  * False      | false
  * True       | true
  * Long       | integer
@@ -124,7 +124,7 @@ private:
 static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
     auto o = CPythonObject();
     if (Py_Is(o, Py_None)) {
-         return vm->create_nop();
+         return vm->create_none();
     } else if (Py_Is(o, Py_False)) {
          return vm->create_false();
     } else if (Py_Is(o, Py_True)) {
@@ -152,7 +152,7 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
 
 static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
     std::cout << (o->tag() == VM_OBJECT_INTEGER);
-    if (VM_OBJECT_NOP_TEST(o)) {
+    if (VM_OBJECT_NONE_TEST(o)) {
          return Py_None;
     } else if (VM_OBJECT_FALSE_TEST(o)) {
          return Py_False;
@@ -331,7 +331,7 @@ public:
         if (PYTHON_MACHINE_TEST(arg0)) {
             auto m = PYTHON_MACHINE_CAST(arg0);
             m->run();
-            return create_nop();
+            return create_none();
         } else {
             THROW_BADARGS;
         }
@@ -356,7 +356,7 @@ public:
             }
             PyRun_SimpleFile(fp, fn1);
             delete fn1;
-            return create_nop();
+            return create_none();
         } else {
             THROW_INVALID;
         }
@@ -452,7 +452,7 @@ public:
 
             PyObject_SetAttrString(mod, n, a);
             delete n;
-            return machine()->create_nop();
+            return machine()->create_none();
         } else {
             THROW_INVALID;
         }
@@ -489,7 +489,7 @@ public:
             auto key = PYTHON_OBJECT_VALUE(arg1);
             auto a   = PYTHON_OBJECT_VALUE(arg2);
             PyObject_SetItem(o, key, a);
-            return create_nop();
+            return create_none();
         } else {
             THROW_INVALID;
         }

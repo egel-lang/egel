@@ -74,7 +74,7 @@ def eg_combify =
 
 # rendering
 def render_lines =
-    [ {} -> nop
+    [ {} -> none
     | (cons (space S C) LL) ->
         print (format "## namespace {} - {}\n" S C); render_lines LL
     | (cons (comb N C AA T) LL) ->
@@ -112,7 +112,7 @@ def process =
             render FN LINES ]
 
 def process_all =
-    [ {} -> nop
+    [ {} -> none
     | (cons FN FNN) -> process FN; process_all FNN ]
 
 ## main

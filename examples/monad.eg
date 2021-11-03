@@ -8,7 +8,7 @@ namespace Calculate (
 
     def >>== = [ F G S -> [(A,S) -> G A S] (F S) ]
 
-    def put = [ X S -> (System:nop, X) ]
+    def put = [ X S -> (System:none, X) ]
 
     def get = [ S -> (S, S) ]
 

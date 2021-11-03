@@ -17,7 +17,7 @@ namespace Search (
 
     ## Search:fail - fail an alternative
     def fail =
-        return (bot nop)
+        return (bot none)
 
     ## Search:raise - fail all alternatives
     def raise =

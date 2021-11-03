@@ -23,7 +23,7 @@ def spawn =
         let CHAN = accept SERVER in
         print "spawned a listener\n";
         let _ = par (spawn SERVER) (listener CHAN) in
-            nop ]
+            none ]
         
 def main =
     let SERVER = server 5000 5 in spawn SERVER

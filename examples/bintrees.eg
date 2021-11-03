@@ -70,7 +70,7 @@ def print_trees =
     [ (cons (N, D, CHECK) TT) ->
         print N "\ttrees of depth " D "\t check: " CHECK "\n";
         print_trees TT
-    | _ -> nop ]
+    | _ -> none ]
 
 def main =
     let N = [ X::text -> to_int X | X -> throw "bintrees <arg>" ] (arg 2) in

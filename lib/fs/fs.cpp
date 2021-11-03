@@ -581,7 +581,7 @@ public:
 
                 fs::copy(p0,p1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -604,7 +604,7 @@ public:
 
                 fs::copy_file(p0,p1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -628,7 +628,7 @@ public:
 
                 fs::copy_symlink(p0,p1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -651,7 +651,7 @@ public:
 
                 fs::create_directory(p0);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -673,7 +673,7 @@ public:
 
                 fs::create_directories(p0);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -697,7 +697,7 @@ public:
 
                 fs::create_hard_link(p0,p1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -720,7 +720,7 @@ public:
 
                 fs::create_symlink(p0,p1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -743,7 +743,7 @@ public:
 
                 fs::create_directory_symlink(p0,p1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -782,7 +782,7 @@ public:
 
                 fs::current_path(p0);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -921,7 +921,7 @@ public:
                 //fs::permissions(p0,(fs::perms) n1, fs::perm_options::replace);
                 fs::permissions(p0,(fs::perms) n1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -945,7 +945,7 @@ public:
 
                 fs::permissions(p0,(fs::perms) n1, fs::perm_options::add);
 
-                return machine->create_nop();
+                return machine->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -968,7 +968,7 @@ public:
 
                 fs::permissions(p0,(fs::perms) n1, fs::perm_options::remove);
 
-                return machine->create_nop();
+                return machine->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1013,7 +1013,7 @@ public:
 
                 fs::remove(p0);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1035,7 +1035,7 @@ public:
 
                 fs::remove_all(p0);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1059,7 +1059,7 @@ public:
 
                 fs::rename(p0,p1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 
@@ -1082,7 +1082,7 @@ public:
 
                 fs::resize_file(p0,n1);
 
-                return machine()->create_nop();
+                return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
             } 

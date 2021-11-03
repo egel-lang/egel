@@ -76,7 +76,7 @@ protected:
 };
 
 
-//## System:par f g - concurrently evaluate 'f nop' and 'g nop'
+//## System:par f g - concurrently evaluate 'f none' and 'g none'
 class Par: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Par, "System", "par");
@@ -86,7 +86,7 @@ public:
         if (sym == 0) sym = machine()->enter_symbol("System", "thread");
 
         auto tuple = machine()->create_tuple();
-        auto nop   = machine()->create_nop();
+        auto none   = machine()->create_none();
 
         VMObjectPtrs tt;
         tt.push_back(tuple);
@@ -96,12 +96,12 @@ public:
 
         VMObjectPtrs ll;
         ll.push_back(arg0);
-        ll.push_back(nop);
+        ll.push_back(none);
         auto left = VMObjectArray(ll).clone();
 
         VMObjectPtrs rr;
         rr.push_back(arg1);
-        rr.push_back(nop);
+        rr.push_back(none);
         auto right = VMObjectArray(rr).clone();
 
         auto vm = machine();

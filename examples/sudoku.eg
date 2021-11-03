@@ -126,7 +126,7 @@ def reduce =
     [ F (cons X nil) -> X | F (cons X XX)  -> F X (reduce F XX) ]
 
 def prop_sum_from_list =
-    [ nil   -> nop
+    [ nil   -> none
     | PP    -> reduce (++) PP ]
 
 ######################################################################
@@ -226,8 +226,8 @@ def prop_find_unit =
     [ (cons P PP) ->
         if prop_unit_test P then (P,PP)
         else [ (Q,PP) -> (Q, cons P PP)
-             | NOP    -> NOP ] (prop_find_unit PP)
-    | _  -> nop ]
+             | NONE    -> NONE ] (prop_find_unit PP)
+    | _  -> none ]
  
 def prop_eq_to_substitution =
     [ (peq (pvar I J) (pconst C)) -> (pvar I J, pconst C)
@@ -246,9 +246,9 @@ def prop_clause_length =
 
 def prop_find_clause =
     [ (cons P PP) ->
-        [ (nop, PP) ->
+        [ (none, PP) ->
             if prop_clause_test P then (P,PP)
-            else (nop, cons P PP)
+            else (none, cons P PP)
         | (Q, PP)   ->
             if prop_clause_test P then 
                 if prop_clause_length P < prop_clause_length Q
@@ -256,21 +256,21 @@ def prop_find_clause =
                 else (Q, cons P PP)
             else
                 (Q, cons P PP) ] (prop_find_clause PP) 
-    | _ -> (nop, nil) ]
+    | _ -> (none, nil) ]
 
 ######################################################################
 
 def prop_eval_constraint =
     [ (pneq (pconst I) (pconst J)) ->
         if I == J then false else true
-    | _ -> nop ]
+    | _ -> none ]
 
 def prop_reduce_constraints =
     [ nil -> nil
     | (cons C CC) ->
         [ true  -> prop_reduce_constraints CC
         | false -> cons false nil
-        | nop   -> cons C (prop_reduce_constraints CC) ]
+        | none   -> cons C (prop_reduce_constraints CC) ]
             (prop_eval_constraint C) ]
 
 def prop_verify_constraints =
@@ -281,17 +281,17 @@ def prop_simplify_constraints =
         let (S0,S1) = prop_eq_to_substitution EQ in
         let CC = props_substitute CC S0 S1 in
         let CC = prop_reduce_constraints CC in
-        if prop_verify_constraints CC then CC else nop ]
+        if prop_verify_constraints CC then CC else none ]
 
 ######################################################################
 
 def prop_neq_extract =
     [ (pneq (pvar I J) (pconst C)) -> (pneq (pvar I J) (pconst C))
     | (pneq (pconst C) (pvar I J)) -> (pneq (pvar I J) (pconst C))
-    | _ -> nop ]
+    | _ -> none ]
 
 def prop_neqs_extract =
-    [ CC -> List:filter [ nop -> false | _ -> true ] 
+    [ CC -> List:filter [ none -> false | _ -> true ] 
                     (List:map prop_neq_extract CC)  ]
 
 def prop_neq_eval =
@@ -311,7 +311,7 @@ def prop_propagate_neqs =
                             (List:map (prop_propagate_neq C) PP) ]
 
 def prop_sums_valid =
-    [ PP -> List:all [ nop -> false | _ -> true ] PP ]
+    [ PP -> List:all [ none -> false | _ -> true ] PP ]
 
 ######################################################################
 
@@ -325,11 +325,11 @@ def track_solver_state =
         print_props PP ]
     
 def prop_try_choices =
-    [ nil (EE, CC, PP) -> nop
+    [ nil (EE, CC, PP) -> none
     | (cons EQ EQS) (EE, CC, PP) ->
-        [ nop -> prop_try_choices EQS (EE, CC, PP)
+        [ none -> prop_try_choices EQS (EE, CC, PP)
         | CC  -> 
-            [ nop -> prop_try_choices EQS (EE, CC, PP) | X -> X ]
+            [ none -> prop_try_choices EQS (EE, CC, PP) | X -> X ]
                 (prop_solve (cons EQ EE, CC, PP))
         ] (prop_simplify_constraints EQ CC) ]
 
@@ -338,11 +338,11 @@ def prop_solve =
         track_solver_state (EE, CC, PP);
         let PP = prop_propagate_neqs (prop_neqs_extract CC) PP in
         if prop_sums_valid PP then
-            [ (nop, PP) -> (EE, CC, PP)
+            [ (none, PP) -> (EE, CC, PP)
             | (P,   PP) -> prop_try_choices (prop_sum_to_list P) 
                                             (EE, CC, PP) ]
                 (prop_find_clause PP) 
-        else nop ]
+        else none ]
 
 ######################################################################
 

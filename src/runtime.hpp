@@ -107,7 +107,7 @@ const int SYMBOL_CHAR     = 2;
 const int SYMBOL_TEXT     = 3;
 const int SYMBOL_POINTER  = 4;
 
-const int SYMBOL_NOP      = 5;
+const int SYMBOL_NONE      = 5;
 const int SYMBOL_TRUE     = 6;
 const int SYMBOL_FALSE    = 7;
 
@@ -115,7 +115,7 @@ const int SYMBOL_TUPLE    = 8;
 const int SYMBOL_NIL      = 9;
 const int SYMBOL_CONS     = 10;
 
-#define VM_OBJECT_NOP_TEST(o)   (o->symbol() == SYMBOL_NOP)
+#define VM_OBJECT_NONE_TEST(o)   (o->symbol() == SYMBOL_NONE)
 #define VM_OBJECT_FALSE_TEST(o) (o->symbol() == SYMBOL_FALSE)
 #define VM_OBJECT_TRUE_TEST(o)  (o->symbol() == SYMBOL_TRUE)
 #define VM_OBJECT_TUPLE_TEST(o) (o->symbol() == SYMBOL_TUPLE)
@@ -266,7 +266,7 @@ public:
     virtual VMObjectPtr create_text(const vm_text_t b) = 0;
     virtual VMObjectPtr create_float(const vm_float_t b) = 0;
 
-    virtual VMObjectPtr create_nop() = 0;
+    virtual VMObjectPtr create_none() = 0;
     virtual VMObjectPtr create_true() = 0;
     virtual VMObjectPtr create_false() = 0;
     virtual VMObjectPtr create_bool(const bool b) = 0;
@@ -847,8 +847,8 @@ public:
     }
 
     // convenience routines
-    VMObjectPtr create_nop() const {
-        return _machine->create_nop();
+    VMObjectPtr create_none() const {
+        return _machine->create_none();
     }
 
     VMObjectPtr create_true() const {

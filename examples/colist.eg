@@ -8,11 +8,11 @@ using List
 
 def ones = [ _ -> cons 1 ones ]
 
-def cohead = [ LL -> [ (cons H TT) -> H ] (LL nop) ]
+def cohead = [ LL -> [ (cons H TT) -> H ] (LL none) ]
 
-def cotail = [ LL -> [ (cons H TT) -> TT ] (LL nop) ]
+def cotail = [ LL -> [ (cons H TT) -> TT ] (LL none) ]
 
-def comap = [ F LL _ -> [ nil -> nil | (cons H TT) -> cons (F H) (comap F TT) ] (LL nop) ]
+def comap = [ F LL _ -> [ nil -> nil | (cons H TT) -> cons (F H) (comap F TT) ] (LL none) ]
 
 def main = 
     let TWOS = comap [ X -> X + 1 ] ones in (cohead (cotail (cotail TWOS)))

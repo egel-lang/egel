@@ -14,7 +14,7 @@ def input =
     if eof stdin then nil else cons L input
 
 def output =
-    [ nil -> nop
+    [ nil -> none
     | (cons L LL) -> let _  = print L "\n" in output LL ]
 
 def split =

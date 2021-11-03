@@ -28,9 +28,9 @@ namespace Calculate (
 
     # convenience functions
 
-    ## Calculate:skip - return a nop
+    ## Calculate:skip - return a none
     def skip =
-        return nop
+        return none
 
     ## Calculate:apply f g - first do f, then modify argument with g
     def apply =

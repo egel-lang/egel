@@ -478,7 +478,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             chan->close();
-            return create_nop();
+            return create_none();
         } else {
             THROW_BADARGS;
         }
@@ -537,7 +537,7 @@ public:
             if (arg1->tag() == VM_OBJECT_TEXT) {
                 auto s = VM_OBJECT_TEXT_VALUE(arg1);
                 chan->write(s);
-                return create_nop();
+                return create_none();
             } else {
                 THROW_INVALID;
             }
@@ -561,7 +561,7 @@ public:
             if (arg1->tag() == VM_OBJECT_TEXT) {
                 auto s = VM_OBJECT_TEXT_VALUE(arg1);
                 chan->write_line(s);
-                return create_nop();
+                return create_none();
             } else {
                 THROW_INVALID;
             }
@@ -583,7 +583,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             chan->flush();
-            return create_nop();
+            return create_none();
         } else {
             THROW_INVALID;
         }
@@ -620,7 +620,7 @@ public:
             // XXX: uh.. flushall, or something?
             exit(i);
             // play nice
-            return create_nop();
+            return create_none();
         } else {
             THROW_BADARGS;
         }

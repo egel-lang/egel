@@ -20,7 +20,7 @@ def sieve =
         (N, sieve (filter [ X -> not ((X % N) == 0) ] NN)) ]
 
 def print_all =
-    [ S -> let (X, S) = S nop in print X "\n"; print_all S ]
+    [ S -> let (X, S) = S none in print X "\n"; print_all S ]
 
 def main =
     print_all (sieve nums)

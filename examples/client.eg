@@ -13,7 +13,7 @@ def repl =
         let O = read_line stdin in
         write_line CHAN O;
         let I = read_line CHAN in
-        if eof CHAN then nop
+        if eof CHAN then none
         else
             print I "\n";
             repl CHAN ]

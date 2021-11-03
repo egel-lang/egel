@@ -183,16 +183,16 @@ public:
         _data.enter(_char);
         _data.enter(_text);
         _data.enter(_ptr);
-        auto nop0   = _symbols.enter(STRING_SYSTEM, STRING_NOP);
+        auto none0   = _symbols.enter(STRING_SYSTEM, STRING_NONE);
         auto true0  = _symbols.enter(STRING_SYSTEM, STRING_TRUE);
         auto false0 = _symbols.enter(STRING_SYSTEM, STRING_FALSE);
-        ASSERT(nop0   == SYMBOL_NOP);
+        ASSERT(none0   == SYMBOL_NONE);
         ASSERT(true0  == SYMBOL_TRUE);
         ASSERT(false0 == SYMBOL_FALSE);
-        _nop   = VMObjectData::create(this, nop0);
+        _none   = VMObjectData::create(this, none0);
         _true  = VMObjectData::create(this, true0);
         _false = VMObjectData::create(this, false0);
-        _data.enter(_nop);
+        _data.enter(_none);
         _data.enter(_true);
         _data.enter(_false);
         auto tuple0 = _symbols.enter(STRING_SYSTEM, STRING_TUPLE);
@@ -209,7 +209,7 @@ public:
         _data.enter(_nil);
         _data.enter(_cons);
 
-        ASSERT(VM_OBJECT_NOP_TEST(_nop));
+        ASSERT(VM_OBJECT_NONE_TEST(_none));
         ASSERT(VM_OBJECT_TRUE_TEST(_true));
         ASSERT(VM_OBJECT_FALSE_TEST(_false));
         ASSERT(VM_OBJECT_TUPLE_TEST(_tuple));
@@ -376,8 +376,8 @@ public:
         _context = m;
     }
 
-    VMObjectPtr create_nop() override {
-        return get_data(SYMBOL_NOP);
+    VMObjectPtr create_none() override {
+        return get_data(SYMBOL_NONE);
     }
 
     VMObjectPtr create_true() override {
@@ -462,7 +462,7 @@ private:
     VMObjectPtr     _text;
     VMObjectPtr     _ptr;
 
-    VMObjectPtr     _nop;
+    VMObjectPtr     _none;
     VMObjectPtr     _true;
     VMObjectPtr     _false;
 

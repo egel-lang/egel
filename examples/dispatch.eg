@@ -36,15 +36,15 @@ def ++ = Dispatch:dispatch_on "++"
 val plus_float_register =
     let FUNC = 
         [ K EXPR0 EXPR1 -> 
-            if [ E::float -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K nop EXPR0 EXPR1
-        | K -> K nop ]
+            if [ E::float -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K none EXPR0 EXPR1
+        | K -> K none ]
     in
     Dispatch:dispatch_register "++" FUNC
 
 val plus_text_register =
     let FUNC = 
-        [ K EXPR0 EXPR1 -> if [ E::text -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K nop EXPR0 EXPR1
-        | K -> K nop ]
+        [ K EXPR0 EXPR1 -> if [ E::text -> true | E -> false ] EXPR0 then (+) EXPR0 EXPR1 else K none EXPR0 EXPR1
+        | K -> K none ]
     in
     Dispatch:dispatch_register "++" FUNC
 
