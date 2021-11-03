@@ -339,9 +339,9 @@ private:
 
 typedef std::shared_ptr<VMObjectInteger> VMObjectIntegerPtr;
 #define VM_OBJECT_IS_INTEGER(a) \
-    (a-tag() == VM_OBJECT_INTEGER)
+    (a->tag() == VM_OBJECT_INTEGER)
 #define VM_OBJECT_INTEGER_TEST(a) \
-    (a-tag() == VM_OBJECT_INTEGER)
+    (a->tag() == VM_OBJECT_INTEGER)
 #define VM_OBJECT_INTEGER_CAST(a) \
     std::static_pointer_cast<VMObjectInteger>(a)
 #define VM_OBJECT_INTEGER_VALUE(a) \
@@ -385,6 +385,8 @@ private:
 };
 
 typedef std::shared_ptr<VMObjectFloat> VMObjectFloatPtr;
+#define VM_OBJECT_FLOAT_TEST(a) \
+    (a->tag() == VM_OBJECT_FLOAT)
 #define VM_OBJECT_FLOAT_CAST(a) \
     std::static_pointer_cast<VMObjectFloat>(a)
 #define VM_OBJECT_FLOAT_SPLIT(a, v) \

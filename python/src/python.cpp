@@ -147,13 +147,14 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
 };
 
 static CPythonObject egel_to_python(VM* machine, const VMObjectPtr& o) {
-    if (VM_OBJECT_NOP_TEST(o) {
+    std::cout << (o->tag() == VM_OBJECT_INTEGER);
+    if (VM_OBJECT_NOP_TEST(o)) {
          return Py_None;
-    } else if (VM_OBJECT_FALSE_TEST(o) {
+    } else if (VM_OBJECT_FALSE_TEST(o)) {
          return Py_False;
-    } else if (VM_OBJECT_TRUE_TEST(o) {
+    } else if (VM_OBJECT_TRUE_TEST(o)) {
          return Py_True;
-    } else if (VM_OBJECT_INTEGER_TEST(o) {
+    } else if ((o->tag() == VM_OBJECT_INTEGER)) {
         auto n0 = VM_OBJECT_INTEGER_VALUE(o);
         PyObject* n1 = Py_BuildValue("l", n0); // XXX: l = long int; L = long long
         return CPythonObject(n1);
@@ -163,7 +164,7 @@ static CPythonObject egel_to_python(VM* machine, const VMObjectPtr& o) {
         return CPythonObject(f1);
     } else if (VM_OBJECT_TEXT_TEST(o)) {
         auto s0 = VM_OBJECT_TEXT_VALUE(o);
-        auto s1 = unicode_to_char(s1);
+        char s1[] = unicode_to_char(s0);
         PyObject* s2 = Py_BuildValue("s", s1);
         delete[] s1;
         return CPythonObject(s2);
@@ -198,11 +199,11 @@ public:
         else return 0;
     }
 
-    void set_value(ChannelPtr cp) {
+    void set_value(CPythonMachine cp) {
         _value = cp;
     }
 
-    CPython value() const {
+    CPythonMachine value() const {
         return _value;
     }
 
