@@ -89,7 +89,8 @@ find_package(Threads REQUIRED)
 find_package(fmt 7.1 REQUIRED)
 find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
 
-message("-- ${Python3_INCLUDE_DIRS}")
+message("-- Python3 include: ${Python3_INCLUDE_DIRS}")
+message("-- Python3 libraries: ${Python3_LIBRARIES}")
 include_directories(${Python3_INCLUDE_DIRS})
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories(/usr/local/include)
@@ -98,7 +99,7 @@ include_directories(/usr/local/include)
 file(GLOB PYTHON_EGO_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 add_library(python_ego MODULE ${PYTHON_EGO_LIST})
 target_link_libraries(python_ego ICU::uc ICU::i18n ICU::io)
-target_link_libraries(python_ego ${PYTHON_LIBRARIES})
+target_link_libraries(python_ego ${Python3_LIBRARIES})
 set_target_properties(python_ego PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # installation

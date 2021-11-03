@@ -474,7 +474,7 @@ public:
             auto o   = PYTHON_OBJECT_VALUE(arg0);
             auto key = PYTHON_OBJECT_VALUE(arg1);
             auto a   = PYTHON_OBJECT_VALUE(arg2);
-            auto obj0 = PyObject_SetItem(o, key, a);
+            PyObject_SetItem(o, key, a);
             return create_nop();
         } else {
             THROW_INVALID;
