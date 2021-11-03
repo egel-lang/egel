@@ -68,7 +68,7 @@ Egel code consist of expression which are evaluated eagerly.
 
  * Patterns may hold rudimentary type matches.
 
-   `[ I::int -> "an int" | C::cons -> "a cons" ]`
+   `[ I:int -> "an int" | C:cons -> "a cons" ]`
 
  * Let expressions assign values to intermediaries.
 
@@ -130,7 +130,7 @@ namespace Fibonnaci (
 
 using System
 
-def main = Fibonnaci:pfib (3+2)
+def main = Fibonnaci::pfib (3+2)
 ```
 ## EXAMPLES
 
