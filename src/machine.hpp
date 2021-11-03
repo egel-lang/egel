@@ -183,9 +183,56 @@ private:
 class Machine: public VM {
 public:
     Machine() {
-        _symbols.initialize();
+        initialize();
     }
 
+    void initialize() {
+        auto i = _symbols.enter(STRING_SYSTEM, STRING_INT);
+        auto f = _symbols.enter(STRING_SYSTEM, STRING_FLOAT);
+        auto c = _symbols.enter(STRING_SYSTEM, STRING_CHAR);
+        auto t = _symbols.enter(STRING_SYSTEM, STRING_TEXT);
+        auto p = _symbols.enter(STRING_SYSTEM, STRING_PTR);
+        ASSERT(i == SYMBOL_INT);
+        ASSERT(f == SYMBOL_FLOAT);
+        ASSERT(c == SYMBOL_CHAR);
+        ASSERT(t == SYMBOL_TEXT);
+        ASSERT(p == SYMBOL_POINTER);
+        // necessary 'type' definitions
+        _int   = VMObjectData::create(this, i);
+        _float = VMObjectData::create(this, f);
+        _char  = VMObjectData::create(this, c);
+        _text  = VMObjectData::create(this, t);
+        _ptr   = VMObjectData::create(this, p);
+        _data.enter(_int);
+        _data.enter(_float);
+        _data.enter(_char);
+        _data.enter(_text);
+        _data.enter(_ptr);
+        auto nop0   = _symbols.enter(STRING_SYSTEM, STRING_NOP);
+        auto true0  = _symbols.enter(STRING_SYSTEM, STRING_TRUE);
+        auto false0 = _symbols.enter(STRING_SYSTEM, STRING_FALSE);
+        ASSERT(nop0   == SYMBOL_NOP);
+        ASSERT(true0  == SYMBOL_TRUE);
+        ASSERT(false0 == SYMBOL_FALSE);
+        _nop   = VMObjectData::create(this, nop0);
+        _true  = VMObjectData::create(this, true0);
+        _false = VMObjectData::create(this, false0);
+        _data.enter(_nop);
+        _data.enter(_true);
+        _data.enter(_false);
+        auto _tuple0 = _symbols.enter(STRING_SYSTEM, STRING_TUPLE);
+        auto _nil0   = _symbols.enter(STRING_SYSTEM, STRING_NIL);
+        auto _cons0  = _symbols.enter(STRING_SYSTEM, STRING_CONS);
+        ASSERT(_tuple0  == SYMBOL_TUPLE);
+        ASSERT(_nil0    == SYMBOL_NIL);
+        ASSERT(_cons0   == SYMBOL_CONS);
+        _tuple = VMObjectData::create(this, nop0);
+        _nil   = VMObjectData::create(this, true0);
+        _cons  = VMObjectData::create(this, false0);
+        _data.enter(_tuple);
+        _data.enter(_nil);
+        _data.enter(_cons);
+    }
     // import table manipulation
     bool has_import(const icu::UnicodeString& i) override {
         return false;
@@ -367,15 +414,15 @@ public:
     }
 
     VMObjectPtr create_nil() override {
-        return get_data(SYMBOL_NIL);
+        return _nil;
     }
 
     VMObjectPtr create_cons() override {
-        return get_data(SYMBOL_CONS);
+        return _cons;
     }
 
     VMObjectPtr create_tuple() override {
-        return get_data(SYMBOL_TUPLE);
+        return _tuple;
     }
 
     VMObjectPtr create_integer(const vm_int_t n) override {
@@ -425,6 +472,20 @@ private:
     DataTable       _data;
     void*           _context;
     std::mutex      _mutex;
+
+    VMObjectPtr     _int;
+    VMObjectPtr     _float;
+    VMObjectPtr     _char;
+    VMObjectPtr     _text;
+    VMObjectPtr     _ptr;
+
+    VMObjectPtr     _nop;
+    VMObjectPtr     _true;
+    VMObjectPtr     _false;
+
+    VMObjectPtr     _nil;
+    VMObjectPtr     _cons;
+    VMObjectPtr     _tuple;
 };
 
 #endif

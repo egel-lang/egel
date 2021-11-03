@@ -50,6 +50,7 @@ inline void default_exception_callback(VM* vm, const VMObjectPtr& e) {
     std::cout << "exception(" << e << ")" << std::endl;
 }
 
+// XXX: get rid of this once. simply shouldn't be necessary
 class VarCombinator: public VMObjectCombinator {
 public:
     VarCombinator(VM* m, const symbol_t s, const VMReduceResult& r):
@@ -62,6 +63,17 @@ public:
 
     VMObjectPtr clone() const override {
         return VMObjectPtr(new VarCombinator(*this));
+    }
+
+    static VMObjectPtr create(VM* vm, const VMObjectPtr& o, const VMReduceResult& r) {
+        if (VM_OBJECT_COMBINATOR_TEST(o)) {
+            auto c = VM_OBJECT_COMBINATOR_CAST(o);
+            auto v = VarCombinator(vm, c->symbol(), r).clone();
+            vm->define_data(v);
+            return v;
+        } else {
+            throw ErrorInternal("failure to create Var");
+        }
     }
 
     VMReduceResult result() const {
@@ -309,7 +321,8 @@ public:
                 if (o->subtag() != VM_SUB_STUB) {
                     // XXX: handle exceptions properly once
                     auto r = vm->reduce(o);
-                    vm->define_data(r.result);
+                    auto v = VarCombinator::create(vm, o, r);
+                    vm->define_data(v);
                 }
             }
         }

@@ -89,7 +89,7 @@ inline icu::UnicodeString uescape(const icu::UnicodeString& s) {
  * + opaque objects -which may hold file handles, pointers, etc.-,
  * + combinators, and arrays.
  **/
-typedef enum {
+enum vm_tag_t {
     VM_OBJECT_INTEGER,
     VM_OBJECT_FLOAT,
     VM_OBJECT_CHAR,
@@ -98,7 +98,22 @@ typedef enum {
     VM_OBJECT_OPAQUE,
     VM_OBJECT_COMBINATOR,
     VM_OBJECT_ARRAY,
-} vm_tag_t;
+};
+
+// predefined symbols (indices in data and symbol table)
+const int SYMBOL_INT      = 0;
+const int SYMBOL_FLOAT    = 1;
+const int SYMBOL_CHAR     = 2;
+const int SYMBOL_TEXT     = 3;
+const int SYMBOL_POINTER  = 4;
+
+const int SYMBOL_NOP      = 5;
+const int SYMBOL_TRUE     = 6;
+const int SYMBOL_FALSE    = 7;
+
+const int SYMBOL_TUPLE    = 8;
+const int SYMBOL_NIL      = 9;
+const int SYMBOL_CONS     = 10;
 
 /**
  * VM objects can have subtypes which are _unique_ 'magic' numbers.
@@ -121,21 +136,6 @@ typedef double               vm_float_t;
 typedef UChar32              vm_char_t;
 typedef icu::UnicodeString   vm_text_t;
 typedef void*                vm_ptr_t;
-
-// predefined symbols
-#define SYMBOL_INT     	0
-#define SYMBOL_FLOAT    1
-#define SYMBOL_CHAR     2
-#define SYMBOL_TEXT     3
-#define SYMBOL_POINTER  4
-
-#define SYMBOL_NOP      5
-#define SYMBOL_TRUE     6
-#define SYMBOL_FALSE    7
-
-#define SYMBOL_TUPLE    8
-#define SYMBOL_NIL      9
-#define SYMBOL_CONS     10
 
 typedef uint32_t    symbol_t;
 typedef uint32_t    data_t;
@@ -905,6 +905,10 @@ public:
         return VMObjectPtr(new VMObjectData(*this));
     }
 
+    static VMObjectPtr create(VM* vm, const symbol_t s) {
+        return VMObjectData(vm, s).clone();
+    }
+
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
         auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt  = tt[0];
@@ -935,6 +939,8 @@ public:
 typedef std::shared_ptr<VMObjectData> VMObjectDataPtr;
 
 typedef std::shared_ptr<VMObjectCombinator> VMObjectCombinatorPtr;
+#define VM_OBJECT_COMBINATOR_TEST(a) \
+    (a->tag() == VM_OBJECT_COMBINATOR)
 #define VM_OBJECT_COMBINATOR_CAST(a) \
     std::static_pointer_cast<VMObjectCombinator>(a)
 #define VM_OBJECT_COMBINATOR_SYMBOL(a) \
