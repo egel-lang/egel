@@ -51,6 +51,10 @@ public:
         inc_ref();
     }
 
+    CPythonObject(const PyObject* o) : _object((PyObject*) o) { // XXX: figure out how to handle const later
+        inc_ref();
+    }
+
     ~CPythonObject() {
         dec_ref();
         _object= nullptr;
@@ -146,7 +150,7 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
     }
 };
 
-static CPythonObject egel_to_python(VM* machine, const VMObjectPtr& o) {
+static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
     std::cout << (o->tag() == VM_OBJECT_INTEGER);
     if (VM_OBJECT_NOP_TEST(o)) {
          return Py_None;
@@ -154,22 +158,22 @@ static CPythonObject egel_to_python(VM* machine, const VMObjectPtr& o) {
          return Py_False;
     } else if (VM_OBJECT_TRUE_TEST(o)) {
          return Py_True;
-    } else if ((o->tag() == VM_OBJECT_INTEGER)) {
+    } else if (VM_OBJECT_INTEGER_TEST(o)) {
         auto n0 = VM_OBJECT_INTEGER_VALUE(o);
         PyObject* n1 = Py_BuildValue("l", n0); // XXX: l = long int; L = long long
-        return CPythonObject(n1);
+        return n1;
     } else if (VM_OBJECT_FLOAT_TEST(o)) {
         auto f0 = VM_OBJECT_FLOAT_VALUE(o);
         PyObject* f1 = Py_BuildValue("f", f0);
-        return CPythonObject(f1);
+        return f1;
     } else if (VM_OBJECT_TEXT_TEST(o)) {
         auto s0 = VM_OBJECT_TEXT_VALUE(o);
-        char s1[] = unicode_to_char(s0);
+        char* s1 = unicode_to_char(s0);
         PyObject* s2 = Py_BuildValue("s", s1);
-        delete[] s1;
-        return CPythonObject(s2);
+        delete s1;
+        return s2;
     } else {
-        return CPythonObject(nullptr);
+        return nullptr;
     }
 };
 
@@ -193,10 +197,13 @@ public:
     }
 
     int compare(const VMObjectPtr& o) override {
+        return false;
+        /* XXX: for later
         auto v = (std::static_pointer_cast<PythonMachine>(o))->value();
         if (_value < v) return -1;
         else if (v < _value) return 1;
         else return 0;
+        */
     }
 
     void set_value(CPythonMachine cp) {
@@ -220,31 +227,42 @@ class PythonObject: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonObject, "Python", "object");
 
-    PythonObject(const PythonObject& o): Opaque(VM_SUB_PYTHON_OBJECT, chan.machine(), chan.symbol()) {
+    PythonObject(const PythonObject& o): Opaque(o.subtag(), o.machine(), o.symbol()) {
         _value = o.value();
+    }
+
+    PythonObject(VM* vm, const PyObject* o): Opaque(VM_SUB_PYTHON_OBJECT, vm, "Python", "object") {
+        _value = CPythonObject(o); // looks like overkill to me
     }
 
     VMObjectPtr clone() const override {
         return VMObjectPtr(new PythonObject(*this));
     }
 
-    int compare(const VMObjectPtr& o) override {
-        auto v = (std::static_pointer_cast<PyObject>(o))->value();
-        if (_value < v) return -1;
-        else if (v < _value) return 1;
-        else return 0;
+    static VMObjectPtr create(VM* vm, PyObject* o) {
+        return PythonObject(vm, o).clone();
     }
 
-    void set_value(CPyObject& v) {
+    static VMObjectPtr create(VM* vm, const PyObject* o) {
+        return create(vm , (PyObject*) o);
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        auto v = (std::static_pointer_cast<PythonObject>(o))->value();
+        // XXX: use python compare
+        return false;
+    }
+
+    void set_value(CPythonObject& v) {
         _value = v;
     }
 
     void inc_ref() {
-        _value->inc_ref();
+        _value.inc_ref();
     }
 
     void dec_ref() {
-    _value->dec_ref();
+    _value.dec_ref();
     }
 
     CPythonObject value() const {
@@ -255,10 +273,10 @@ protected:
     CPythonObject _value;
 };
 
-#define PYTHON_OBJECT_TEST(o, sym) \
-    ((o->subtag() == VM_SUB_PYTHON_OBJECT) 
+#define PYTHON_OBJECT_TEST(o) \
+    (o->subtag() == VM_SUB_PYTHON_OBJECT) 
 #define PYTHON_OBJECT_VALUE(o) \
-    ((std::static_pointer_cast<PyObject>(o))->value())
+    ((std::static_pointer_cast<PythonObject>(o))->value())
 
 //## Python:from_object - convert a primitive Python object to an Egel object
 class PythonFromObject: public Monadic {
@@ -266,35 +284,34 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromObject, "Python", "from_object");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->subtag() == VM_OBJECT_TEXT) {
-            auto s = SERVER_OBJECT_CAST(arg0);
-        char fn0[] = unicode_to_char(s);
-        PyObject* fn1 = PyUnicode_DecodeFSDefault(fn0);
-            PyObject* mod = PyImport_Import(fn1);;
-        Py_XDECREF(fn1);
-        if (mod == nullptr) {
-                throw create_text("cannot open module: " + s);
-        }
-        auto m = PythonObject(mod).clone();
-        Py_XDECREF(mod);
-        return m;
-        } else {
-            THROW_INVALID;
+        try {
+            if (PYTHON_OBJECT_TEST(arg0)) {
+                auto o = PYTHON_OBJECT_VALUE(arg0);
+                auto e = python_to_egel(machine(), o);
+                return e;
+            } else {
+                THROW_BADARGS;
+            }
+        } catch (std::exception e) {
+            THROW_BADARGS;
         }
     }
-}
+};
 
 //## Python:to_object - convert a primitive Egel object to a Python object
-class PythonFromObject: public Monadic {
+class PythonToObject: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromObject, "Python", "from_object");
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToObject, "Python", "to_object");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         try {
-            auto p0 = egel_to_python(arg0);
-            return PythonObject(
+            auto p0 = egel_to_python(machine(), arg0);
+            return PythonObject::create(machine(), p0);
+        } catch (std::exception e) {
+            THROW_BADARGS;
+        }
     }
-}
+};
 
 //## Python:init nop - create a Python machine
 class PythonInit: public Monadic {
@@ -341,21 +358,22 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto fn0   = VM_OBJECT_TEXT_VALUE(arg0);
-            char fn1[] = unicode_to_char(fn0);
+            char* fn1  = unicode_to_char(fn0);
             PyObject* fn2 = PyUnicode_DecodeFSDefault(fn1);
             PyObject* mod = PyImport_Import(fn2);;
-            Py_XDECREF(fn1);
+            delete fn1;
+            Py_XDECREF(fn2);
             if (mod == nullptr) {
-                throw create_text("cannot open module: " + s);
+                throw create_text("cannot open module: " + fn0);
             }
-            auto m = PythonObject(mod).clone();
+            auto m = PythonObject(machine(), mod).clone();
             Py_XDECREF(mod);
             return m;
         } else {
             THROW_INVALID;
         }
     }
-}
+};
 // implement: PyModule_GetDict
 
 //## Python:get_function mod f - retrieve function from module
@@ -367,12 +385,12 @@ public:
     if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
             auto s   = VM_OBJECT_TEXT_VALUE(arg1);
-            auto cc  = unicode_to_char(arg1);
+            char* cc  = unicode_to_char(s);
 
             auto func0 = PyObject_GetAttrString(mod, cc);
             delete cc;
             if (func0 && PyCallable_Check(func0)) {
-                return PythonObject(func0).clone();
+                return PythonObject::create(machine(), func0);
             } else {
                 throw create_text("no function: " + s);
             }
@@ -389,14 +407,14 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
-            auto mod = PYTHON_OBJECT_VALUE(arg0);
-            auto s   = VM_OBJECT_TEXT_VALUE(arg1);
-            auto cc  = unicode_to_char(arg1);
+            auto mod  = PYTHON_OBJECT_VALUE(arg0);
+            auto s    = VM_OBJECT_TEXT_VALUE(arg1);
+            char* cc  = unicode_to_char(s);
 
-            auto obj0 = PyObject_GetAttrString(mod, cc);
+            auto attr = PyObject_GetAttrString(mod, cc);
             delete cc;
-            if (obj0 {
-                return PythonObject(obj0).clone();
+            if (attr) {
+                return PythonObject(machine(), attr).clone();
             } else {
                 throw create_text("no attribute: " + s);
             }
@@ -406,7 +424,7 @@ public:
     }
 };
 
-//## Python:set_attribute o n a - set attribute from object by name
+//## Python:set_attribute mod n a - set attribute from object by name
 class PythonSetAttribute: public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonSetAttribute, "Python", "set_attribute");
@@ -415,16 +433,12 @@ public:
         if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1) && PYTHON_OBJECT_TEST(arg2)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
             auto s   = VM_OBJECT_TEXT_VALUE(arg1);
-            auto a   = VM_OBJECT_TEXT_VALUE(arg2);
-            auto cc  = unicode_to_char(arg1);
+            char* n  = unicode_to_char(s);
+            auto a   = PYTHON_OBJECT_VALUE(arg2);
 
-            auto obj0 = PyObject_SetAttrString(mod, cc, a);
-            delete cc;
-            if (obj0 {
-                return PythonObject(obj0).clone();
-            } else {
-                throw create_text("no attribute: " + s);
-            }
+            PyObject_SetAttrString(mod, n, a);
+            delete n;
+            return machine()->create_nop();
         } else {
             THROW_INVALID;
         }
@@ -437,43 +451,31 @@ public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonGetItem, "Python", "get_item");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
-            auto mod = PYTHON_OBJECT_VALUE(arg0);
-            auto s   = VM_OBJECT_TEXT_VALUE(arg1);
-            auto cc  = unicode_to_char(arg1);
+        if (PYTHON_OBJECT_TEST(arg0) && PYTHON_OBJECT_TEST(arg1)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            auto n = PYTHON_OBJECT_VALUE(arg0);
 
-            auto obj0 = PyObject_GetItemString(mod, cc);
-            delete cc;
-            if (obj0 {
-                return PythonObject(obj0).clone();
-            } else {
-                throw create_text("no attribute: " + s);
-            }
+            auto obj0 = PyObject_GetItem(o, n);
+
+            return PythonObject::create(machine(), obj0);
         } else {
             THROW_INVALID;
         }
     }
 };
 
-//## Python:set_item o n a - set item from object by item
+//## Python:set_item o key a - set item from object by item
 class PythonSetItem: public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonSetItem, "Python", "set_item");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1) && PYTHON_OBJECT_TEST(arg2)) {
-            auto mod = PYTHON_OBJECT_VALUE(arg0);
-            auto s   = VM_OBJECT_TEXT_VALUE(arg1);
-            auto a   = VM_OBJECT_TEXT_VALUE(arg2);
-            auto cc  = unicode_to_char(arg1);
-
-            auto obj0 = PyObject_SetItemString(mod, cc, a);
-            delete cc;
-            if (obj0 {
-                return PythonObject(obj0).clone();
-            } else {
-                throw create_text("no attribute: " + s);
-            }
+        if (PYTHON_OBJECT_TEST(arg0) && PYTHON_OBJECT_TEST(arg1) && PYTHON_OBJECT_TEST(arg2)) {
+            auto o   = PYTHON_OBJECT_VALUE(arg0);
+            auto key = PYTHON_OBJECT_VALUE(arg1);
+            auto a   = PYTHON_OBJECT_VALUE(arg2);
+            auto obj0 = PyObject_SetItem(o, key, a);
+            return create_nop();
         } else {
             THROW_INVALID;
         }
@@ -490,7 +492,6 @@ public:
  * Set        | list
  */
 
-#define THROW_STUB throw machine()->create_text("stub")
 
 //## Python:to_tuple l - from egel tuple to a python tuple
 class PythonToTuple: public Monadic {
@@ -500,7 +501,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
 //## Python:from_tuple l - from python tuple to egel tuple
 class PythonFromTuple: public Monadic {
@@ -510,7 +511,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
 //## Python:to_list l - from egel list to a python list
 class PythonToList: public Monadic {
@@ -520,7 +521,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
 //## Python:from_list l - from python list to egel list
 class PythonFromList: public Monadic {
@@ -530,7 +531,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
 //## Python:to_dictionary l - from egel list of tuples to a python dictionary
 class PythonToDictionary: public Monadic {
@@ -540,7 +541,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
 //## Python:from_dictionary l - from python dictionary to egel list of tuples
 class PythonFromDictionary: public Monadic {
@@ -550,7 +551,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
 //## Python:to_set l - from egel list to a python set
 class PythonToSet: public Monadic {
@@ -560,7 +561,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
 //## Python:from_set l - from python set to egel list
 class PythonFromSet: public Monadic {
@@ -570,17 +571,17 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
     }
-}
+};
 
-//## Python:call f (x0, ..) - call a python function
+//## Python:call f (x0, ..) - call a python function (the 2nd arg is a tuple)
 class PythonCall: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonCall, "Python", "call");
 
-    VMObjectPtr apply(const VMObjectPtrs& args) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         THROW_STUB;
     }
-}
+};
 
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
@@ -592,8 +593,27 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
 //    oo.push_back(VMObjectData(vm, "Python", "channel").clone());
 
 
-// hacked TCP protocol
-    oo.push_back(Client(vm).clone());
+    oo.push_back(PythonMachine(vm).clone());
+    oo.push_back(PythonObject(vm).clone());
+    oo.push_back(PythonToObject(vm).clone());
+    oo.push_back(PythonFromObject(vm).clone());
+    oo.push_back(PythonInit(vm).clone());
+    oo.push_back(PythonModuleImport(vm).clone());
+    //oo.push_back(PythonModuleRun(vm).clone());
+    oo.push_back(PythonFunction(vm).clone());
+    oo.push_back(PythonGetAttribute(vm).clone());
+    oo.push_back(PythonSetAttribute(vm).clone());
+    oo.push_back(PythonGetItem(vm).clone());
+    oo.push_back(PythonSetItem(vm).clone());
+    oo.push_back(PythonToTuple(vm).clone());
+    oo.push_back(PythonFromTuple(vm).clone());
+    oo.push_back(PythonToList(vm).clone());
+    oo.push_back(PythonFromList(vm).clone());
+    oo.push_back(PythonToDictionary(vm).clone());
+    oo.push_back(PythonFromDictionary(vm).clone());
+    oo.push_back(PythonToSet(vm).clone());
+    oo.push_back(PythonFromSet(vm).clone());
+    oo.push_back(PythonCall(vm).clone());
 
     return oo;
 }
