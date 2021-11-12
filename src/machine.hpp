@@ -614,16 +614,49 @@ public:
     }
 
     // convenience (for internal usage)
-    bool         is_list(const VMObjectPtr& o) override {
-        return false;
+    bool         is_list(const VMObjectPtr& o) override { // XXX: tail-recursive version
+        if (is_nil(o)) {
+            return true;
+        } else if (is_array(o)) {
+            auto n = array_size(o);
+            if ( (n == 3) && is_cons(array_get(o, 0)) ) {
+                return is_list(array_get(o,2));
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     VMObjectPtr  to_list(const VMObjectPtrs& oo) override {
-        throw create_text("stub");
+        auto nil  = create_nil();
+        auto cons = create_cons();
+
+        VMObjectPtr result = nil;
+
+        for (int n = oo.size() - 1; n >= 0; n--) {
+            VMObjectPtr aa = create_array();
+            append(aa, cons);
+            append(aa, oo[n]);
+            append(aa, result);
+
+            result = aa;
+        }
+
+        return result;
     }
 
-    VMObjectPtrs from_list(const VMObjectPtr& o) override {
-        throw create_text("stub");
+    VMObjectPtrs from_list(const VMObjectPtr& o) override { // 'type'-unsafe list conversion
+        VMObjectPtrs oo;
+
+        auto l = o;
+        while (!is_nil(l)) {
+            oo.push_back(array_get(l, 1));
+            l = array_get(l,2);
+        }
+
+        return oo;
     }
 
     // modules
