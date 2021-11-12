@@ -11,7 +11,7 @@
  * Egel's runtime querying and modification implementation.
  **/
 
-//## System:dis o - disassemble a combinator object
+//## System::dis o - disassemble a combinator object
 class Dis: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dis, "System", "dis");
@@ -28,7 +28,7 @@ public:
     }
 };
 
-//## System:asm s - assemble bytecode into a combinator
+//## System::asm s - assemble bytecode into a combinator
 class Asm: public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Asm, "System", "asm");
@@ -52,7 +52,7 @@ public:
 };
 
 /*
-//## System:symbols - list all symbols in the runtime
+//## System::symbols - list all symbols in the runtime
 class Symbols: public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Symbols, "System", "symbols");
@@ -77,7 +77,7 @@ public:
     }
 };
 
-//## System:get_type s - get the type of symbol s
+//## System::get_type s - get the type of symbol s
 class GetType: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetType, "System", "get_type");
@@ -94,7 +94,7 @@ public:
     }
 };
 
-//## System:set_data s - define symbol s as data
+//## System::set_data s - define symbol s as data
 class SetData: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, SetData, "System", "set_data");
@@ -111,7 +111,7 @@ public:
     }
 };
 
-//## System:set_def s e - define symbol s as expression e
+//## System::set_def s e - define symbol s as expression e
 class SetDef: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, SetDef, "System", "set_def");

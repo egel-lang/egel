@@ -11,39 +11,39 @@ namespace Calculate (
 
     # calculations, minimalist
 
-    ## Calculate:return a - calculate further with value a
+    ## Calculate::return a - calculate further with value a
     def return =
         [ A S -> (A, S) ]
 
-    ## Calculate:chain f g - first do f, then g
+    ## Calculate::chain f g - first do f, then g
     def chain =
         [ F G S0 -> [(A, S1) -> G A S1] (F S0) ]
 
-    ## Calculate:run f s - run calculation f on state s
+    ## Calculate::run f s - run calculation f on state s
     def run =
         [ F S -> [(A, S) -> A] (F S) ]
 
-    ## Calculate:<* f g - first do f, then g
+    ## Calculate::<* f g - first do f, then g
     def <* = chain
 
     # convenience functions
 
-    ## Calculate:skip - return a none
+    ## Calculate::skip - return a none
     def skip =
         return none
 
-    ## Calculate:apply f g - first do f, then modify argument with g
+    ## Calculate::apply f g - first do f, then modify argument with g
     def apply =
         [ F G -> chain F [A S -> (G A, S)] ]
 
-    ## Calculate:modify f g - first do f, then modify state with g
+    ## Calculate::modify f g - first do f, then modify state with g
     def modify =
         [ F G -> chain F [A S -> (A, G S)] ]
 
-    ## Calculate:<@ f g - first do f, then apply g to argument
+    ## Calculate::<@ f g - first do f, then apply g to argument
     def <@ = apply
 
-    ## Calculate:<+ f g - first do f, then modify state with g
+    ## Calculate::<+ f g - first do f, then modify state with g
     def <+ = modify
 
 )

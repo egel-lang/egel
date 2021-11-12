@@ -32,7 +32,7 @@ private:
     std::mt19937    _generator;
 };
 
-//## Math:between min max - return a random number between min and max
+//## Math::between min max - return a random number between min and max
 class Random: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Random, "Math", "between");
