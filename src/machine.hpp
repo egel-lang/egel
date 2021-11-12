@@ -138,12 +138,12 @@ public:
     }
 
     VMObjectPtr clone() const override {
-        return VMObjectPtr(new VMObjectResult(*this));
+        return VMObjectPtr( (VMObject*) new VMObjectResult(*this));
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
-        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
-        auto arg0   = tt[5];
+        auto tt   = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto arg0 = tt[5];
 
         _result->result    = arg0;
         _result->exception = _exception;
@@ -216,13 +216,6 @@ public:
         ASSERT(VM_OBJECT_NIL_TEST(_nil));
         ASSERT(VM_OBJECT_CONS_TEST(_cons));
     }
-    // import table manipulation
-    bool has_import(const icu::UnicodeString& i) override {
-        return false;
-    }
-
-    void add_import(const icu::UnicodeString& i) override {
-    }
 
     // symbol table manipulation
     symbol_t enter_symbol(const icu::UnicodeString& n) override {
@@ -282,6 +275,19 @@ public:
     VMObjectPtr get_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) override {
         auto i = enter_symbol(nn, n);
         return get_symbol(i);
+    }
+
+    void define(const VMObjectPtr& o) override {
+        // define an undefined symbol
+    }
+
+    void overwrite(const VMObjectPtr& o) override {
+        // define or overwrite a symbol
+    }
+
+    VMObjectPtr get(const VMObjectPtr& o) override {
+        // get a defined symbol
+        throw create_text("stub");
     }
 
     // reduce an expression
@@ -376,6 +382,55 @@ public:
         _context = m;
     }
 
+    // primitive values
+    VMObjectPtr create_integer(const vm_int_t n) override {
+        return VMObjectInteger::create(n);
+    }
+
+    VMObjectPtr create_char(const vm_char_t c) override {
+        return VMObjectChar::create(c);
+    }
+
+    VMObjectPtr create_text(const vm_text_t s) override {
+        return VMObjectText::create(s);
+    }
+
+    VMObjectPtr create_float(const vm_float_t f) override {
+        return VMObjectFloat::create(f);
+    }
+
+    bool is_integer(const VMObjectPtr& o) override {
+        return o->tag() == VM_OBJECT_INTEGER;
+    }
+
+    bool is_float(const VMObjectPtr& o) override {
+        return o->tag() == VM_OBJECT_FLOAT;
+    }
+
+    bool is_char(const VMObjectPtr& o) override {
+        return o->tag() == VM_OBJECT_CHAR;
+    }
+
+    bool is_text(const VMObjectPtr& o) override {
+        return o->tag() == VM_OBJECT_TEXT;
+    }
+
+    vm_int_t value_integer(const VMObjectPtr& o) override {
+        return VM_OBJECT_INTEGER_VALUE(o);
+    }
+
+    vm_float_t value_float(const VMObjectPtr& o) override {
+        return VM_OBJECT_FLOAT_VALUE(o);
+    }
+
+    vm_char_t value_char(const VMObjectPtr& o) override {
+        return VM_OBJECT_CHAR_VALUE(o);
+    }
+
+    vm_text_t value_text(const VMObjectPtr& o) override {
+        return VM_OBJECT_TEXT_VALUE(o);
+    }
+
     VMObjectPtr create_none() override {
         return get_data(SYMBOL_NONE);
     }
@@ -388,6 +443,7 @@ public:
         return get_data(SYMBOL_FALSE);
     }
 
+    // predefined constants
     VMObjectPtr create_bool(const bool b) override {
         if (b) {
             return create_true();
@@ -408,20 +464,33 @@ public:
         return _tuple;
     }
 
-    VMObjectPtr create_integer(const vm_int_t n) override {
-        return VMObjectInteger::create(n);
+    bool is_none(const VMObjectPtr& o) override {
+        return (VM_OBJECT_NONE_TEST(_none));
     }
 
-    VMObjectPtr create_char(const vm_char_t c) override {
-        return VMObjectChar::create(c);
+    bool is_true(const VMObjectPtr& o) override {
+        return (VM_OBJECT_TRUE_TEST(_true));
+
     }
 
-    VMObjectPtr create_text(const vm_text_t s) override {
-        return VMObjectText::create(s);
+    bool is_false(const VMObjectPtr& o) override {
+        return (VM_OBJECT_FALSE_TEST(_false));
     }
 
-    VMObjectPtr create_float(const vm_float_t f) override {
-        return VMObjectFloat::create(f);
+    bool is_bool(const VMObjectPtr& o) override {
+        return is_false(o) || is_true(o);
+    }
+
+    bool is_nil(const VMObjectPtr& o) override {
+        return (VM_OBJECT_NIL_TEST(_nil));
+    }
+
+    bool is_cons(const VMObjectPtr& o) override {
+        return (VM_OBJECT_CONS_TEST(_cons));
+    }
+
+    bool is_tuple(const VMObjectPtr& o) override {
+        return (VM_OBJECT_TUPLE_TEST(_tuple));
     }
 
     VMObjectPtr create_array() override {
@@ -437,17 +506,177 @@ public:
         }
     }
 
-    VMObjectPtr create_data(const icu::UnicodeString& n) {
-        return get_symbol(n);
-        
+    bool is_array(const VMObjectPtr& o) override {
+        return VM_OBJECT_ARRAY_TEST(o);
     }
 
-    VMObjectPtr create_data(const icu::UnicodeString& n0, const icu::UnicodeString& n1) {
-        return get_symbol(n0, n1);
+    int array_size(const VMObjectPtr& o) override {
+        return VM_OBJECT_ARRAY_CAST(o)->size();
     }
 
-    VMObjectPtr create_data(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) {
-        return get_symbol(nn, n);
+    VMObjectPtr array_get(const VMObjectPtr& o, int n) override {
+        return VM_OBJECT_ARRAY_CAST(o)->get(n);
+    }
+
+    void array_set(VMObjectPtr& o, int n, const VMObjectPtr& e) override {
+        VM_OBJECT_ARRAY_CAST(o)->set(n, e);
+    }
+
+    VMObjectPtrs array_vector(const VMObjectPtr& o) override {
+        return VM_OBJECT_ARRAY_VALUE(o);
+    }
+
+    VMObjectPtr create_data(const icu::UnicodeString& n) override {
+        return VMObjectData::create(this, n);
+    }
+
+    VMObjectPtr create_data(const icu::UnicodeString& n0, const icu::UnicodeString& n1) override {
+        return VMObjectData::create(this, n0, n1);
+    }
+
+    VMObjectPtr create_data(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) override {
+        return VMObjectData::create(this, nn, n);
+    }
+
+    VMObjectPtr create_medadic(const icu::UnicodeString& s, 
+                               std::function<VMObjectPtr()> f) override {
+        return MedadicCallback::create(this, s, f);
+    }
+
+    VMObjectPtr create_medadic(const icu::UnicodeString& s0, const icu::UnicodeString& s1,
+                               std::function<VMObjectPtr()> f) override {
+        return MedadicCallback::create(this, s0, s1, f);
+    }
+
+    VMObjectPtr create_medadic(const std::vector<icu::UnicodeString>& ss, const icu::UnicodeString& s,
+                               std::function<VMObjectPtr()> f) override {
+        return MedadicCallback::create(this, ss, s, f);
+    }
+
+    VMObjectPtr create_monadic(const icu::UnicodeString& s, 
+                               std::function<VMObjectPtr(const VMObjectPtr& a0)> f) override {
+        return MonadicCallback::create(this, s, f);
+    }
+
+    VMObjectPtr create_monadic(const icu::UnicodeString& s0, const icu::UnicodeString& s1,
+                               std::function<VMObjectPtr(const VMObjectPtr& a0)> f) override {
+        return MonadicCallback::create(this, s0, s1, f);
+    }
+
+    VMObjectPtr create_monadic(const std::vector<icu::UnicodeString>& ss, const icu::UnicodeString& s,
+                               std::function<VMObjectPtr(const VMObjectPtr& a0)> f) override {
+        return MonadicCallback::create(this, ss, s, f);
+    }
+
+    VMObjectPtr create_dyadic(const icu::UnicodeString& s, 
+                              std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1)> f) override {
+        return DyadicCallback::create(this, s, f);
+    }
+
+    VMObjectPtr create_dyadic(const icu::UnicodeString& s0, const icu::UnicodeString& s1,
+                              std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1)> f) override {
+        return DyadicCallback::create(this, s0, s1, f);
+    }
+
+    VMObjectPtr create_dyadic(const std::vector<icu::UnicodeString>& ss, const icu::UnicodeString& s,
+                              std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1)> f) override {
+        return DyadicCallback::create(this, ss, s, f);
+    }
+
+    VMObjectPtr create_triadic(const icu::UnicodeString& s, 
+                               std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override {
+        return TriadicCallback::create(this, s, f);
+    }
+
+    VMObjectPtr create_triadic(const icu::UnicodeString& s0, const icu::UnicodeString& s1,
+                               std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override {
+        return TriadicCallback::create(this, s0, s1, f);
+    }
+
+    VMObjectPtr create_triadic(const std::vector<icu::UnicodeString>& ss, const icu::UnicodeString& s,
+                               std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override {
+        return TriadicCallback::create(this, ss, s, f);
+    }
+
+    VMObjectPtr create_variadic(const icu::UnicodeString& s, 
+                                std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) override {
+        return VariadicCallback::create(this, s, f);
+    }
+
+    VMObjectPtr create_variadic(const icu::UnicodeString& s0, const icu::UnicodeString& s1,
+                                std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) override {
+        return VariadicCallback::create(this, s0, s1, f);
+    }
+
+    VMObjectPtr create_variadic(const std::vector<icu::UnicodeString>& ss, const icu::UnicodeString& s,
+                                std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) override {
+        return VariadicCallback::create(this, ss, s, f);
+    }
+
+    // convenience (for internal usage)
+    bool         is_list(const VMObjectPtr& o) override {
+        return false;
+    }
+
+    VMObjectPtr  to_list(const VMObjectPtrs& oo) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtrs from_list(const VMObjectPtr& o) override {
+        throw create_text("stub");
+    }
+
+    // modules
+    VMObjectPtr module_load(const icu::UnicodeString& fn) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr module_run(const VMObjectPtr& m) override {
+        throw create_text("stub");
+    }
+
+/*
+    VMObjectPtr module_create(const VMObjectPtr& name, const VMObjectPtr& path,
+                const VMObjectPtrs& imports,  const VMObjectPtrs& declares, const VMObjectPtrs& values) override {
+        throw create_text("stub");
+    }
+*/
+
+    bool is_module(const VMObjectPtr& m) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr query_module_name(const VMObjectPtr& m) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr query_module_path(const VMObjectPtr& m) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr query_module_imports(const VMObjectPtr& m) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr query_module_declares(const VMObjectPtr& m) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr query_module_values(const VMObjectPtr& m) override {
+        throw create_text("stub");
+    }
+
+    // machine state
+    VMObjectPtr query_modules() override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr query_symbols() override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr query_data()    override {
+        throw create_text("stub");
     }
 
 private:

@@ -305,11 +305,11 @@ public:
     virtual void codegen(VM* m) {};
 
 private:
-    module_tag_t    _tag;
-    OptionsPtr      _options;
-    icu::UnicodeString   _path;
-    icu::UnicodeString   _filename;
-    VM*             _machine;
+    module_tag_t        _tag;
+    OptionsPtr          _options;
+    icu::UnicodeString  _path;
+    icu::UnicodeString  _filename;
+    VM*                 _machine;
 };
 
 typedef std::vector<VMObjectPtr> (*exports_t)(VM*);

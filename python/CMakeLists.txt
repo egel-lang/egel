@@ -12,7 +12,6 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# steal the version of the bridge XXX: why the hell did this stop working?
 set(VERSION_MAJOR_REGEX "#define LIBRARY_VERSION_MAJOR[ \t]+\"(.+)\"")
 set(VERSION_MINOR_REGEX "#define LIBRARY_VERSION_MINOR[ \t]+\"(.+)\"")
 set(VERSION_PATCH_REGEX "#define LIBRARY_VERSION_PATCH[ \t]+\"(.+)\"")
@@ -29,7 +28,6 @@ string(REGEX REPLACE ${VERSION_MINOR_REGEX} "\\1" VERSION_MINOR "${VERSION_MINOR
 string(REGEX REPLACE ${VERSION_PATCH_REGEX} "\\1" VERSION_PATCH "${VERSION_PATCH}")
 
 set(PVERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
-#set(PVERSION 0.0.1)
 
 message("-- python bridge for egel ${PVERSION}")
 
@@ -97,15 +95,15 @@ include_directories(/usr/local/include)
 
 # python.ego
 file(GLOB PYTHON_EGO_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
-add_library(python_ego MODULE ${PYTHON_EGO_LIST})
-target_link_libraries(python_ego ICU::uc ICU::i18n ICU::io)
-target_link_libraries(python_ego ${Python3_LIBRARIES})
-set_target_properties(python_ego PROPERTIES PREFIX "" SUFFIX ".ego")
+add_library(python3 MODULE ${PYTHON_EGO_LIST})
+target_link_libraries(python3 ICU::uc ICU::i18n ICU::io)
+target_link_libraries(python3 ${Python3_LIBRARIES})
+set_target_properties(python3 PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # installation
 include(GNUInstallDirs)
 
-install(TARGETS python_ego
+install(TARGETS python3
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 
