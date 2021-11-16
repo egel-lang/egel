@@ -361,6 +361,43 @@ public:
         return std::static_pointer_cast<VMModule>(o);
     }
 
+    VMObjectPtr name() {
+        auto s = value()->get_filename();
+        return machine()->create_text(s);
+    }
+
+    VMObjectPtr path() {
+        auto s = value()->get_path();
+        return machine()->create_text(s);
+    }
+
+    VMObjectPtr imports() {
+        auto ii = value()->imports();
+        VMObjectPtrs pp;
+        for (auto& i: ii) {
+            auto s = i.string();
+            auto p = machine()->create_text(s);
+            pp.push_back(p);
+        }
+        return machine()->to_list(pp);
+    }
+
+    VMObjectPtr exports() {
+        auto ee = value()->exports();
+        return machine()->to_list(ee);
+    }
+
+    VMObjectPtr values() {
+        auto vv = value()->values();
+        VMObjectPtrs pp;
+        for (auto& v: vv) {
+            auto s = v.string();
+            auto p = machine()->create_text(s);
+            pp.push_back(p);
+        }
+        return machine()->to_list(pp);
+    }
+
 private:
     ModulePtr _value;
 };

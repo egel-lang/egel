@@ -681,23 +681,43 @@ public:
     }
 
     VMObjectPtr query_module_name(const VMObjectPtr& m) override {
-        throw create_text("stub");
+        if (is_module(m)) {
+            return VMModule::module_cast(m)->name();
+        } else {
+            throw create_text("not a module");
+        }
     }
 
     VMObjectPtr query_module_path(const VMObjectPtr& m) override {
-        throw create_text("stub");
+        if (is_module(m)) {
+            return VMModule::module_cast(m)->path();
+        } else {
+            throw create_text("not a module");
+        }
     }
 
     VMObjectPtr query_module_imports(const VMObjectPtr& m) override {
-        throw create_text("stub");
+        if (is_module(m)) {
+            return VMModule::module_cast(m)->imports();
+        } else {
+            throw create_text("not a module");
+        }
     }
 
-    VMObjectPtr query_module_declares(const VMObjectPtr& m) override {
-        throw create_text("stub");
+    VMObjectPtr query_module_exports(const VMObjectPtr& m) override {
+        if (is_module(m)) {
+            return VMModule::module_cast(m)->exports();
+        } else {
+            throw create_text("not a module");
+        }
     }
 
     VMObjectPtr query_module_values(const VMObjectPtr& m) override {
-        throw create_text("stub");
+        if (is_module(m)) {
+            return VMModule::module_cast(m)->values();
+        } else {
+            throw create_text("not a module");
+        }
     }
 
     // machine state

@@ -364,7 +364,7 @@ public:
     virtual VMObjectPtr query_module_name(const VMObjectPtr& m) = 0;
     virtual VMObjectPtr query_module_path(const VMObjectPtr& m) = 0;
     virtual VMObjectPtr query_module_imports(const VMObjectPtr& m) = 0;
-    virtual VMObjectPtr query_module_declares(const VMObjectPtr& m) = 0;
+    virtual VMObjectPtr query_module_exports(const VMObjectPtr& m) = 0;
     virtual VMObjectPtr query_module_values(const VMObjectPtr& m) = 0;
 
     // machine state
