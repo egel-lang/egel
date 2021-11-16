@@ -11,6 +11,7 @@
 #include <mutex>
 
 #include "runtime.hpp"
+#include "modules.hpp"
 
 class SymbolTable {
 public:
@@ -676,7 +677,7 @@ public:
 */
 
     bool is_module(const VMObjectPtr& m) override {
-        throw create_text("stub");
+        return VMModule::is_module(m);
     }
 
     VMObjectPtr query_module_name(const VMObjectPtr& m) override {

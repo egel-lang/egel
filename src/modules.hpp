@@ -312,6 +312,59 @@ private:
     VM*                 _machine;
 };
 
+class VMModule;
+typedef std::shared_ptr<VMModule>  VMModulePtr;
+
+class VMModule: public Opaque {
+public:
+    VMModule(VM* vm, ModulePtr p)
+        : Opaque(VM_SUB_MODULE, vm, STRING_SYSTEM, "module"), _value(p) {
+    }
+
+    VMModule(const VMModule& m)
+        : VMModule(m.machine(), m.value()) {
+    }
+
+    ~VMModule() {
+    }
+
+    VMObjectPtr clone() const override {
+        return VMObjectPtr(new VMModule(*this));
+    }
+
+    ModulePtr value() const {
+        return _value;
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        if (is_module(o)) {
+            auto m = module_cast(o);
+            auto n0 = value()->get_filename();
+            auto n1 = m->value()->get_filename();
+            if (n0 < n1) {
+                return -1;
+            } else if (n1 < n0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } else {
+            return -1;
+        }
+    }
+    
+    static bool is_module(const VMObjectPtr& o) {
+        return ((o->tag() == VM_OBJECT_OPAQUE) && (o->subtag() == VM_SUB_MODULE));
+    }
+
+    static VMModulePtr module_cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMModule>(o);
+    }
+
+private:
+    ModulePtr _value;
+};
+
 typedef std::vector<VMObjectPtr> (*exports_t)(VM*);
 
 class ModuleInternal: public Module {

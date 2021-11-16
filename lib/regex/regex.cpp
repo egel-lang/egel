@@ -37,7 +37,7 @@ VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
 class Regex;
 typedef std::shared_ptr<Regex>  RegexPtr;
 
-class Regex:: public Opaque {
+class Regex: public Opaque {
 public:
     Regex(VM* vm, icu::RegexPattern* p)
         : Opaque(VM_SUB_EGO, vm, REGEX_STRING, "pattern"), _pattern(p) {
@@ -144,8 +144,8 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Match, REGEX_STRING, "match");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
@@ -168,8 +168,8 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookAt, REGEX_STRING, "look_at");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
@@ -192,8 +192,8 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
@@ -221,8 +221,8 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Split, REGEX_STRING, "split");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
@@ -261,8 +261,8 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Matches, REGEX_STRING, "matches");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);
@@ -293,8 +293,8 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
 
@@ -322,8 +322,8 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
 
@@ -351,8 +351,8 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Group, REGEX_STRING, "group");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex:::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto pat = Regex:::regex_pattern_cast(arg0);
+        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
 
             auto r = pat->matcher(s0);

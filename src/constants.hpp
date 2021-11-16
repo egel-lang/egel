@@ -106,7 +106,7 @@
     // basic types
 
 #define STRING_UNIT              "unit"
-#define STRING_NONE               "none"
+#define STRING_NONE              "none"
 
 #define STRING_BOOL              "bool"
 #define STRING_TRUE              "true"

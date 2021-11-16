@@ -351,7 +351,7 @@ public:
     virtual VMObjectPtr  to_list(const VMObjectPtrs& oo) = 0;
     virtual VMObjectPtrs from_list(const VMObjectPtr& o) = 0;
 
-    // modules
+    // modules (move to a lib?)
     virtual VMObjectPtr module_load(const icu::UnicodeString& fn) = 0;
     virtual VMObjectPtr module_run(const VMObjectPtr& m) = 0;
 
