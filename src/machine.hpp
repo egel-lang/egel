@@ -12,6 +12,7 @@
 
 #include "runtime.hpp"
 #include "modules.hpp"
+#include "eval.hpp"
 
 class SymbolTable {
 public:
@@ -159,10 +160,18 @@ private:
 class Machine: public VM {
 public:
     Machine() {
-        initialize();
+        populate();
     }
 
-    void initialize() {
+    virtual ~Machine() {
+    }
+
+    VMPtr clone() const override {
+        return VMPtr(new Machine()); // XXX: use a copy constructor once
+    }
+
+    void populate() {
+        // symbol and data table initialization
         auto i = _symbols.enter(STRING_SYSTEM, STRING_INT);
         auto f = _symbols.enter(STRING_SYSTEM, STRING_FLOAT);
         auto c = _symbols.enter(STRING_SYSTEM, STRING_CHAR);
@@ -216,6 +225,17 @@ public:
         ASSERT(VM_OBJECT_TUPLE_TEST(_tuple));
         ASSERT(VM_OBJECT_NIL_TEST(_nil));
         ASSERT(VM_OBJECT_CONS_TEST(_cons));
+    }
+
+    // initialize
+    void initialize(OptionsPtr oo) override {
+        NamespacePtr env = Namespace().clone();
+
+        _options = oo;
+        _manager = ModuleManager().clone();
+        _manager->init(oo, this);
+        _eval = Eval().clone();
+        _eval->init(_manager);
     }
 
     // symbol table manipulation
@@ -661,12 +681,25 @@ public:
     }
 
     // modules
-    VMObjectPtr module_load(const icu::UnicodeString& fn) override {
-        throw create_text("stub");
+    void eval_line(const icu::UnicodeString& in, const callback_t& main, const callback_t& exc) override {
+        _eval->eval_line(in, main, exc);
     }
 
-    VMObjectPtr module_run(const VMObjectPtr& m) override {
-        throw create_text("stub");
+    void eval_module(const icu::UnicodeString& fn) override {
+        _eval->eval_load(fn);
+        _eval->eval_values();
+    }
+
+    void eval_command(const icu::UnicodeString& l) override {
+        _eval->eval_command(l);
+    }
+
+    void eval_main() override {
+        _eval->eval_main();
+    }
+
+    void eval_interactive() override {
+        _eval->eval_interactive();
     }
 
 /*
@@ -752,6 +785,10 @@ private:
     VMObjectPtr     _nil;
     VMObjectPtr     _cons;
     VMObjectPtr     _tuple;
+
+    OptionsPtr       _options;
+    ModuleManagerPtr _manager;
+    EvalPtr          _eval;
 };
 
 #endif

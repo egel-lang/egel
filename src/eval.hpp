@@ -6,9 +6,7 @@
 #include "runtime.hpp"
 #include "modules.hpp"
 
-typedef std::function<void(VM* vm, const VMObjectPtr&)> callback_t;
-
-class EvalResult : public VMObjectCombinator {
+class EvalResult: public VMObjectCombinator {
 public:
     EvalResult(VM* m, const symbol_t s, const callback_t call)
         : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _callback(call) {
@@ -103,13 +101,35 @@ private:
     VMReduceResult _result;
 };
 
+class Eval;
+typedef std::shared_ptr<Eval>   EvalPtr;
+
 class Eval {
 public:
+
+    Eval() {
+    }
 
     Eval(ModuleManagerPtr mm): _manager(mm), _usings(AstPtrs()) {
     }
 
-    ModuleManagerPtr get_manager() {
+    Eval(const Eval& e)
+        : Eval(e.get_manager()) {
+    }
+
+    ~Eval() {
+    }
+
+    EvalPtr clone() const {
+        return EvalPtr(new Eval(*this));
+    }
+
+    void init(ModuleManagerPtr mm) {
+        _manager = mm;
+        _usings = AstPtrs();
+    }
+
+    ModuleManagerPtr get_manager() const {
         return _manager;
     }
 

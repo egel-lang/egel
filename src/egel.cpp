@@ -237,54 +237,44 @@ int main(int argc, char *argv[]) {
         };
     };
 
-    // start up the module system
-    ModuleManagerPtr mm = ModuleManager().clone();
-    Machine m;
-    NamespacePtr env = Namespace().clone();
+    // create a machine
+    VMPtr m = Machine().clone();
 
     // initialize (rebinding exceptions need to be caught)
     try {
-        mm->init(oo, &m, env);
+        m->initialize(oo);
     } catch (Error &e) {
         std::cerr << e << std::endl;
         return (EXIT_FAILURE);
-    }
-
-    // fire up the evaluator
-    Eval eval(mm);
-    // make it possible for the low level machine to peek upward
-    m.set_context((void*) &eval);
-
-    // load the file
-    if (fn != "") {
-        try {
-            eval.eval_load(fn);
-        } catch (Error &e) {
-            std::cerr << e << std::endl;
-            return (EXIT_FAILURE);
-        }
     }
 
     // set the application arguments
     application_argc = argc;
     application_argv = argv;
 
-    // evaluate all values
-    eval.eval_values(); //XXX: handle exceptions once
+    // load the file
+    if (fn != "") {
+        try {
+            m->eval_module(fn);
+        } catch (Error &e) {
+            std::cerr << e << std::endl;
+            return (EXIT_FAILURE);
+        }
+    }
 
     // start either interactive or batch mode
     if (command) {
         try {
-            eval.eval_command(icu::UnicodeString("using System"));
-            eval.eval_command(e);
+            m->eval_command(icu::UnicodeString("using System"));
+            m->eval_command(e);
         } catch (Error &e) {
             std::cerr << e << std::endl;
             return (EXIT_FAILURE);
         }
     } else if ((fn == "") || oo->interactive()) {
-        eval.eval_interactive();
+        m->eval_interactive();
     } else {
-        eval.eval_main();
+        m->eval_main();
     }
 
     return EXIT_SUCCESS;

@@ -210,6 +210,157 @@ typedef std::vector<icu::UnicodeString> UnicodeStrings;
 
 // the virtual machine
 
+class Options;
+typedef std::shared_ptr<Options> OptionsPtr;
+
+class Options {
+public:
+    Options():
+        _interactive_flag(false),
+        _tokenize_flag(false), _unparse_flag(false),
+        _semantical_flag(false), _desugar_flag(false),
+        _lift_flag(false), _bytecode_flag(false) {
+        _include_path = UnicodeStrings();
+        _library_path = UnicodeStrings();
+    }
+
+    Options(bool i, bool t, bool u, bool s, bool d, bool l, bool b,
+            const UnicodeStrings& ii, const UnicodeStrings& ll):
+        _interactive_flag(i),
+        _tokenize_flag(t), _unparse_flag(u), _semantical_flag(s),
+        _desugar_flag(d), _lift_flag(l), _bytecode_flag(b),
+        _include_path(ii), _library_path(ll) {
+    }
+
+    Options(const Options& o):
+        _interactive_flag(o._interactive_flag),
+        _tokenize_flag(o._tokenize_flag), _unparse_flag(o._unparse_flag),
+        _semantical_flag(o._semantical_flag), _desugar_flag(o._desugar_flag),
+        _lift_flag(o._lift_flag), _bytecode_flag(o._bytecode_flag),
+        _include_path(o._include_path),
+        _library_path(o._library_path) {
+    }
+
+    OptionsPtr clone() {
+        return OptionsPtr(new Options(*this));
+    }
+
+    void set_include_path(const UnicodeStrings& dd) {
+        _include_path = dd;
+    }
+
+    UnicodeStrings get_include_path() const {
+        return _include_path;
+    }
+
+    void set_library_path(const UnicodeStrings& dd) {
+        _library_path = dd;
+    }
+
+    UnicodeStrings get_library_path() const {
+        return _library_path;
+    }
+
+    void add_include_path(const icu::UnicodeString& p) {
+        _include_path.push_back(p);
+    }
+
+    void add_library_path(const icu::UnicodeString& p) {
+        _library_path.push_back(p);
+    }
+
+    void set_interactive(bool f) {
+        _interactive_flag = f;
+    }
+
+    bool interactive() const {
+        return _interactive_flag;
+    }
+
+    void set_tokenize(bool f) {
+        _tokenize_flag = f;
+    }
+
+    bool only_tokenize() const {
+        return _tokenize_flag;
+    }
+
+    void set_desugar(bool f) {
+        _desugar_flag = f;
+    }
+
+    bool only_desugar() const {
+        return _desugar_flag;
+    }
+
+    void set_unparse(bool f) {
+        _unparse_flag = f;
+    }
+
+    bool only_unparse() const {
+        return _unparse_flag;
+    }
+
+    void set_semantical(bool f) {
+        _semantical_flag = f;
+    }
+
+    bool only_semantical() const {
+        return _semantical_flag;
+    }
+
+    void set_lift(bool f) {
+        _lift_flag = f;
+    }
+
+    bool only_lift() const {
+        return _lift_flag;
+    }
+
+    void set_bytecode(bool f) {
+        _bytecode_flag = f;
+    }
+
+    bool only_bytecode() const {
+        return _bytecode_flag;
+    }
+
+    void render(std::ostream& os) const {
+        os << "interactive:" << _interactive_flag << std::endl;
+        os << "tokenize:   " << _tokenize_flag << std::endl;
+        os << "unparse:    " << _unparse_flag << std::endl;
+        os << "semantical: " << _semantical_flag << std::endl;
+        os << "desugar:    " << _desugar_flag << std::endl;
+        os << "lift:       " << _lift_flag << std::endl;
+        os << "bytecode:   " << _bytecode_flag << std::endl;
+        os << "include:    ";
+        for (auto& i:_include_path) {
+            os << i << ":";
+        }
+        os << std::endl;
+        os << "library:    ";
+        for (auto& i:_library_path) {
+            os << i << ":";
+        }
+        os << std::endl;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const OptionsPtr& m) {
+        m->render(os);
+        return os;
+    }
+private:
+    bool    _interactive_flag;
+    bool    _tokenize_flag;
+    bool    _unparse_flag;
+    bool    _semantical_flag;
+    bool    _desugar_flag;
+    bool    _lift_flag;
+    bool    _bytecode_flag;
+    UnicodeStrings  _include_path;
+    UnicodeStrings  _library_path;
+};
+
 struct VMReduceResult {
     VMObjectPtr result;
     bool        exception;
@@ -221,9 +372,21 @@ typedef enum {
     HALTED
 } reducer_state_t;
 
+class VM;
+typedef std::shared_ptr<VM> VMPtr;
+
+typedef std::function<void(VM* vm, const VMObjectPtr&)> callback_t;
+
 class VM {
 public:
     VM() {};
+
+    virtual ~VM() { // FIX: give a virtual destructor to keep the compiler(-s) happy
+    };
+
+    virtual VMPtr clone() const = 0;
+
+    virtual void initialize(OptionsPtr oo) = 0;
 
     // symbol table manipulation
     virtual symbol_t enter_symbol(const icu::UnicodeString& n) = 0;
@@ -351,9 +514,12 @@ public:
     virtual VMObjectPtr  to_list(const VMObjectPtrs& oo) = 0;
     virtual VMObjectPtrs from_list(const VMObjectPtr& o) = 0;
 
-    // modules (move to a lib?)
-    virtual VMObjectPtr module_load(const icu::UnicodeString& fn) = 0;
-    virtual VMObjectPtr module_run(const VMObjectPtr& m) = 0;
+    // evaluation
+    virtual void        eval_line(const icu::UnicodeString& in, const callback_t& main, const callback_t& exc) = 0;
+    virtual void        eval_module(const icu::UnicodeString& fn) = 0;
+    virtual void        eval_command(const icu::UnicodeString& l) = 0;
+    virtual void        eval_main() = 0;
+    virtual void        eval_interactive() = 0;
 
 /*  TODO: unnecessary probably and needs more thought
     virtual VMObjectPtr module_create(const VMObjectPtr& name, const VMObjectPtr& path,
