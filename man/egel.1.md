@@ -54,7 +54,7 @@ Egel code consist of expression which are evaluated eagerly.
 
    `(0 1)` is just as legal as `(cons 'a' nil)`
 
- * Rewriting is done with the pattern-matching abstraction, uppercase letters denote variables.
+ * Rewriting is done with the pattern-matching anonymous abstraction, uppercase letters denote variables.
 
    `[ X -> X ]` , `[ (cons HEAD TAIL) -> HEAD ]`
 
