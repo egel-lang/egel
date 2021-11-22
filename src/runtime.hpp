@@ -462,7 +462,7 @@ public:
     virtual bool        is_tuple(const VMObjectPtr& o) = 0;
 
     virtual VMObjectPtr create_array() = 0;
-    virtual void        append(VMObjectPtr aa, const VMObjectPtr a) = 0;
+    virtual void         array_append(VMObjectPtr aa, const VMObjectPtr a) = 0;
 
     virtual bool         is_array(const VMObjectPtr& o) = 0;
     virtual int          array_size(const VMObjectPtr& o) = 0;

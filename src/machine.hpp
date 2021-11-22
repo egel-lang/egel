@@ -533,7 +533,7 @@ public:
         return VMObjectArray::create();
     }
 
-    void append(VMObjectPtr aa, const VMObjectPtr a) override {
+    void array_append(VMObjectPtr aa, const VMObjectPtr a) override {
         if (VM_OBJECT_ARRAY_TEST(aa)) {
             auto aa0 = VM_OBJECT_ARRAY_CAST(aa);
             aa0->push_back(a);
