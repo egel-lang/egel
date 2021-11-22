@@ -13,6 +13,7 @@ A list of all major changes between versions of the interpreter.
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc?
 + time and date
++ import/export lists to using/namespace
 + target MSVC
 + complex numbers
 

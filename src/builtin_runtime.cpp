@@ -51,6 +51,96 @@ public:
     }
 };
 
+//## System::modules - list all modules in the runtime
+class Modules: public Medadic {
+public:
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Modules, "System", "modules");
+
+    VMObjectPtr apply() const override {
+        return machine()->query_modules();
+    }
+};
+
+//## System::is_module m - check we have a module
+class IsModule: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsModule, "System", "is_module");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_module(arg0));
+    }
+};
+
+//## System::query_module_name m - get the name of the module
+class QueryModuleName: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleName, "System", "query_module_name");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_module(arg0)) {
+            return machine()->query_module_name(arg0);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## System::query_module_path m - get the path of the module
+class QueryModulePath: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModulePath, "System", "query_module_path");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_module(arg0)) {
+            return machine()->query_module_path(arg0);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## System::query_module_imports m - get the path of the module
+class QueryModuleImports: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleImports, "System", "query_module_imports");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_module(arg0)) {
+            return machine()->query_module_imports(arg0);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## System::query_module_exports m - get the path of the module
+class QueryModuleExports: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleExports, "System", "query_module_exports");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_module(arg0)) {
+            return machine()->query_module_exports(arg0);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## System::query_module_values m - get the path of the module
+class QueryModuleValues: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleValues, "System", "query_module_values");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_module(arg0)) {
+            return machine()->query_module_values(arg0);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 /*
 //## System::symbols - list all symbols in the runtime
 class Symbols: public Medadic {
@@ -133,6 +223,14 @@ std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Dis(vm).clone());
+
+    oo.push_back(Modules(vm).clone());
+    oo.push_back(IsModule(vm).clone());
+    oo.push_back(QueryModuleName(vm).clone());
+    oo.push_back(QueryModulePath(vm).clone());
+    oo.push_back(QueryModuleImports(vm).clone());
+    oo.push_back(QueryModuleExports(vm).clone());
+    oo.push_back(QueryModuleValues(vm).clone());
 //    oo.push_back(Asm(vm).clone()); // XXX: not working at the moment
 //    oo.push_back(Symbols(vm).clone());
 //    oo.push_back(GetType(vm).clone());
