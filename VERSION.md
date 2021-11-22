@@ -7,7 +7,7 @@ A list of all major changes between versions of the interpreter.
 
 + add a Python bridge
 + add a literate scripting mode
-+ static coding combinators (runtime inspection)
++ cleanup internals regarding combinator declarations
 + generate C++ from .eg file (module compilation)
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc?
@@ -19,6 +19,7 @@ A list of all major changes between versions of the interpreter.
 ## The bleeding, cutting edge
 
 + refactor code to have most (external) calls work over machine
++ static coding combinators (runtime inspection)
 
 ## v0.1.3 -- roads half built
 
