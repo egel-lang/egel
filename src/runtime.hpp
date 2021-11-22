@@ -521,11 +521,8 @@ public:
     virtual void        eval_main() = 0;
     virtual void        eval_interactive() = 0;
 
-/*  TODO: unnecessary probably and needs more thought
-    virtual VMObjectPtr module_create(const VMObjectPtr& name, const VMObjectPtr& path,
-                const VMObjectPtrs& imports,  const VMObjectPtrs& declares, const VMObjectPtrs& values) = 0;
-*/
-
+    // module inspection
+    virtual VMObjectPtr query_modules() = 0;
     virtual bool        is_module(const VMObjectPtr& m) = 0;
     virtual VMObjectPtr query_module_name(const VMObjectPtr& m) = 0;
     virtual VMObjectPtr query_module_path(const VMObjectPtr& m) = 0;
@@ -534,7 +531,6 @@ public:
     virtual VMObjectPtr query_module_values(const VMObjectPtr& m) = 0;
 
     // machine state
-    virtual VMObjectPtr query_modules() = 0;
     virtual VMObjectPtr query_symbols() = 0;
     virtual VMObjectPtr query_data()    = 0;
 };

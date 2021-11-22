@@ -624,6 +624,14 @@ public:
         flush();
     }
 
+    void set_options(const OptionsPtr& oo) {
+        _options = oo;
+    }
+
+    OptionsPtr get_options() const {
+        return _options;
+    }
+
     void set_machine(VM* vm) {
         _machine = vm;
     }
@@ -640,12 +648,8 @@ public:
         return _environment;
     }
 
-    void set_options(const OptionsPtr& oo) {
-        _options = oo;
-    }
-
-    OptionsPtr get_options() const {
-        return _options;
+    ModulePtrs get_modules() const {
+        return _modules;
     }
 
     // implements incremental loading for interactive mode

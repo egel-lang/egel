@@ -300,10 +300,12 @@ public:
 
     void define(const VMObjectPtr& o) override {
         // define an undefined symbol
+        throw create_text("stub");
     }
 
     void overwrite(const VMObjectPtr& o) override {
         // define or overwrite a symbol
+        throw create_text("stub");
     }
 
     VMObjectPtr get(const VMObjectPtr& o) override {
@@ -702,13 +704,6 @@ public:
         _eval->eval_interactive();
     }
 
-/*
-    VMObjectPtr module_create(const VMObjectPtr& name, const VMObjectPtr& path,
-                const VMObjectPtrs& imports,  const VMObjectPtrs& declares, const VMObjectPtrs& values) override {
-        throw create_text("stub");
-    }
-*/
-
     bool is_module(const VMObjectPtr& m) override {
         return VMModule::is_module(m);
     }
@@ -755,7 +750,12 @@ public:
 
     // machine state
     VMObjectPtr query_modules() override {
-        throw create_text("stub");
+        auto mm = _manager->get_modules();
+        VMObjectPtrs oo;
+        for (auto& m:mm) {
+            oo.push_back(VMModule(this, m).clone());
+        }
+        return to_list(oo);
     }
 
     VMObjectPtr query_symbols() override {

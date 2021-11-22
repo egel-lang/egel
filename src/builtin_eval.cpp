@@ -22,8 +22,6 @@ public:
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
 
-            auto eval = (Eval*) machine()->get_context();
-
             VMObjectPtr r = nullptr;
             VMObjectPtr e = nullptr;
 
@@ -31,7 +29,7 @@ public:
             callback_t exc  = [&e](VM* vm, const VMObjectPtr& o) { e = o; };
 
             try {
-                eval->eval_line(s, main, exc);
+                machine()->eval_line(s, main, exc);
             } catch (Error &e) {
                 auto s = e.message();
                 throw VMObjectText::create(s);
