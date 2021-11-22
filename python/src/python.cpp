@@ -321,17 +321,17 @@ public:
     }
 };
 
-//## Python:init m - initialize a Python machine
+//## Python:run none - create a Python machine
 class PythonRun: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonRun, "Python", "run");
 
     // XXX: TODO: add extra initialization options once
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (PYTHON_MACHINE_TEST(arg0)) {
-            auto m = PYTHON_MACHINE_CAST(arg0);
-            m->run();
-            return create_none();
+        if (machine()->is_none(arg0)) {
+            auto m = PythonMachine(machine()).clone();
+            PYTHON_MACHINE_CAST(m)->run();
+            return m;
         } else {
             THROW_BADARGS;
         }
