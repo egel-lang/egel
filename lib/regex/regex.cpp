@@ -22,9 +22,9 @@ VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
         auto aa = vm->create_array();
         auto t  = vm->create_text(ss[n]);
 
-        vm->append(aa, cons);
-        vm->append(aa, t);
-        vm->append(aa, result);
+        vm->array_append(aa, cons);
+        vm->array_append(aa, t);
+        vm->array_append(aa, result);
 
         result = aa;
     }

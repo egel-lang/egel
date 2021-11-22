@@ -25,9 +25,9 @@ VMObjectPtr paths_to_list(VM* vm, std::vector<fs::path> ss) {
 
     for (int n = ss.size() - 1; n >= 0; n--) {
         VMObjectPtr aa = vm->create_array();
-        vm->append(aa, cons);
-        vm->append(aa, path_to_object(ss[n]));
-        vm->append(aa, result);
+        vm->array_append(aa, cons);
+        vm->array_append(aa, path_to_object(ss[n]));
+        vm->array_append(aa, result);
 
         result = aa;
     }
