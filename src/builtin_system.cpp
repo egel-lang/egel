@@ -485,10 +485,10 @@ public:
             }
             // return object
             auto oo = machine()->create_array();
-            machine()->append(oo, object);
+            machine()->array_append(oo, object);
             for (const auto& f:fields) {
-                machine()->append(oo, f.first);
-                machine()->append(oo, f.second);
+                machine()->array_append(oo, f.first);
+                machine()->array_append(oo, f.second);
             }
 
             return oo;
@@ -669,9 +669,9 @@ public:
             for (int n = len-1; n >= 0; n--) {
                 auto c  = machine()->create_char(str.char32At(n));
                 auto tt = machine()->create_array();
-                machine()->append(tt, cons);
-                machine()->append(tt, c);
-                machine()->append(tt, ss);
+                machine()->array_append(tt, cons);
+                machine()->array_append(tt, c);
+                machine()->array_append(tt, ss);
                 ss = tt;
             }
             return ss;
