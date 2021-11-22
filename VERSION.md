@@ -6,18 +6,19 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + add a Python bridge
-+ refactor code to have most (external) calls work over machine
 + add a literate scripting mode
 + static coding combinators (runtime inspection)
 + generate C++ from .eg file (module compilation)
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc?
 + time and date
-+ import/export lists to using/namespace
++ add import/export lists to using/namespace
 + target MSVC
 + complex numbers
 
 ## The bleeding, cutting edge
+
++ refactor code to have most (external) calls work over machine
 
 ## v0.1.3 -- roads half built
 
