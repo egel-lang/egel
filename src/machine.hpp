@@ -673,9 +673,9 @@ public:
 
         for (int n = oo.size() - 1; n >= 0; n--) {
             VMObjectPtr aa = create_array();
-            append(aa, cons);
-            append(aa, oo[n]);
-            append(aa, result);
+            array_append(aa, cons);
+            array_append(aa, oo[n]);
+            array_append(aa, result);
 
             result = aa;
         }
