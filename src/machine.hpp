@@ -25,6 +25,10 @@ public:
         _to(other._to), _from(other._from) {
     }
 
+    bool member(const icu::UnicodeString& s) const {
+        return (_from.count(s) > 0);
+    }
+
     symbol_t enter(const icu::UnicodeString& s) {
         if (_from.count(s) == 0) {
             symbol_t n = _to.size();
@@ -300,17 +304,26 @@ public:
 
     void define(const VMObjectPtr& o) override {
         // define an undefined symbol
-        throw create_text("stub");
+        auto s = o->to_text();  // XXX: usually works?
+        if (_symbols.member(s)) {
+            throw create_text("redeclaration of " + s);
+
+        } else {
+            enter_symbol(s);
+            enter_data(o);
+        }
     }
 
     void overwrite(const VMObjectPtr& o) override {
-        // define or overwrite a symbol
-        throw create_text("stub");
+        // define or overwrite
+        auto s = o->to_text();  // XXX: usually works?
+        enter_symbol(s);
+        enter_data(o);
     }
 
     VMObjectPtr get(const VMObjectPtr& o) override {
         // get a defined symbol
-        throw create_text("stub");
+        return get_symbol(o->to_text());
     }
 
     // reduce an expression
