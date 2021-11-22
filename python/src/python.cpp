@@ -550,11 +550,11 @@ public:
                 auto sz = PyTuple_Size(p);
 
                 auto t = m->create_array();
-                m->append(t, m->create_tuple());
+                m->array_append(t, m->create_tuple());
                 for (int n = 0; n < sz; n++) {
                     auto i0 = PyTuple_GetItem(p, n);
                     auto i1 = PythonObject::create(m, i0);
-                    m->append(t, i1);
+                    m->array_append(t, i1);
                 }
                 return t;
             } else {
