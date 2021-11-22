@@ -513,7 +513,27 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToTuple, "Python", "to_tuple");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
+        auto m = machine();
+        if (m->is_array(arg0) && (m->array_size(arg0) > 0) && (m->is_tuple(m->array_get(arg0, 0)))) {
+            auto aa = VM_OBJECT_ARRAY_CAST(arg0);
+            auto sz = aa->size();
+
+            // well-formedness check
+            for (int n = 1; n < sz; n++) {
+                if (!PYTHON_OBJECT_TEST(aa->get(n))) THROW_BADARGS;
+            }
+
+            // translation
+            PyObject* t;
+            t = PyTuple_New(sz-1);
+            for (int n = 1; n < sz; n++) {
+                auto o = PYTHON_OBJECT_VALUE(aa->get(n));
+                PyTuple_SetItem(t, n-1, o);
+            }
+            return PythonObject::create(m, t);
+        } else {
+            THROW_BADARGS;
+        }
     }
 };
 
@@ -523,7 +543,26 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromTuple, "Python", "from_tuple");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            if (Py_IS_TYPE(p, &PyTuple_Type)) {
+                auto sz = PyTuple_Size(p);
+
+                auto t = m->create_array();
+                m->append(t, m->create_tuple());
+                for (int n = 0; n < sz; n++) {
+                    auto i0 = PyTuple_GetItem(p, n);
+                    auto i1 = PythonObject::create(m, i0);
+                    m->append(t, i1);
+                }
+                return t;
+            } else {
+                THROW_BADARGS;
+            }
+        } else {
+            THROW_BADARGS;
+        }
     }
 };
 
