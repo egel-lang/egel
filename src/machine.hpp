@@ -501,16 +501,16 @@ public:
     }
 
     bool is_none(const VMObjectPtr& o) override {
-        return (VM_OBJECT_NONE_TEST(_none));
+        return (VM_OBJECT_NONE_TEST(o));
     }
 
     bool is_true(const VMObjectPtr& o) override {
-        return (VM_OBJECT_TRUE_TEST(_true));
+        return (VM_OBJECT_TRUE_TEST(o));
 
     }
 
     bool is_false(const VMObjectPtr& o) override {
-        return (VM_OBJECT_FALSE_TEST(_false));
+        return (VM_OBJECT_FALSE_TEST(o));
     }
 
     bool is_bool(const VMObjectPtr& o) override {
@@ -518,15 +518,15 @@ public:
     }
 
     bool is_nil(const VMObjectPtr& o) override {
-        return (VM_OBJECT_NIL_TEST(_nil));
+        return (VM_OBJECT_NIL_TEST(o));
     }
 
     bool is_cons(const VMObjectPtr& o) override {
-        return (VM_OBJECT_CONS_TEST(_cons));
+        return (VM_OBJECT_CONS_TEST(o));
     }
 
     bool is_tuple(const VMObjectPtr& o) override {
-        return (VM_OBJECT_TUPLE_TEST(_tuple));
+        return (VM_OBJECT_TUPLE_TEST(o));
     }
 
     VMObjectPtr create_array() override {
