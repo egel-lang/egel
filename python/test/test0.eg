@@ -1,0 +1,22 @@
+# Egel-Python3 bridge tests
+
+import "python3.ego"
+
+using System
+using Python
+
+val python3 = run none
+
+def one_on_one =
+    [ E -> 
+         print "egel object:    " E "\n";
+         let O0 = to_object E in
+         print "python object:  " O0 "\n";
+         let O1 = from_object O0 in
+         print "bridged:        " O1 "\n";
+         let EQ = (E == O1) in
+         print "eq test:        " EQ "\n";
+         EQ ]
+
+def main =
+    one_on_one 1
