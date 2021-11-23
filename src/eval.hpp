@@ -37,8 +37,7 @@ private:
 };
 
 inline void default_main_callback(VM* vm, const VMObjectPtr& o) {
-    symbol_t none = vm->enter_symbol("System", "none");
-    if (!((o->symbol() == none) && (o->tag() == VM_OBJECT_COMBINATOR))) {
+    if (!(VM_OBJECT_NONE_TEST(o))) {
         std::cout << o << std::endl;
     }
 }

@@ -46,7 +46,7 @@ Egel is an expression language and the interpreter a straightforward symbolic ev
 
 Egel code consist of expression which are evaluated eagerly.
 
- * Basic primitive types are integers, floats, unicode characters, and unicode strings.
+ * Basic primitives are integers, floats, unicode characters, and unicode strings.
 
    `0 1 2` , `0.0 3.14 -1.2` , `'a'` `'∀'` , or `"Hello World!"`
 
@@ -66,7 +66,7 @@ Egel code consist of expression which are evaluated eagerly.
 
    `\(cons X XX) -> X`
 
- * Patterns may hold rudimentary type matches.
+ * Patterns may match against tags.
 
    `[ I:int -> "an int" | C:cons -> "a cons" ]`
 

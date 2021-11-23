@@ -50,7 +50,7 @@ Egel is an expression language and the interpreter a straightforward symbolic ev
 Egel code consist of expression which are evaluated eagerly\.
 .
 .IP "\(bu" 4
-Basic primitive types are integers, floats, unicode characters, and unicode strings\.
+Basic primitives are integers, floats, unicode characters, and unicode strings\.
 .
 .IP
 \fB0 1 2\fR , \fB0\.0 3\.14 \-1\.2\fR , \fB\'a\'\fR \fB\'∀\'\fR , or \fB"Hello World!"\fR
@@ -80,7 +80,7 @@ A backslash \fB\e\fR starts a lambda abstraction\.
 \fB\e(cons X XX) \-> X\fR
 .
 .IP "\(bu" 4
-Patterns may hold rudimentary type matches\.
+Patterns may match against tags\.
 .
 .IP
 \fB[ I:int \-> "an int" | C:cons \-> "a cons" ]\fR
