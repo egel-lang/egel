@@ -161,29 +161,29 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
 static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
     auto o = object.get_object();
     if (Py_Is(o, Py_None)) {
-         return vm->create_none();
+        return vm->create_none();
     } else if (Py_Is(o, Py_False)) {
-         return vm->create_false();
+        return vm->create_false();
     } else if (Py_Is(o, Py_True)) {
-         return vm->create_true();
+        return vm->create_true();
     } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
-         vm_int_t n0;
-         PyArg_Parse(o, "l", &n0);
-         auto n1 = vm->create_integer(n0);
-         return n1;
+        vm_int_t n0;
+        PyArg_Parse(o, "l", &n0);
+        auto n1 = vm->create_integer(n0);
+        return n1;
     } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
-         float f0;
-         PyArg_Parse(o, "f", &f0);
-         auto f1 = vm->create_float(f0);
-         return f1;
+        float f0;
+        PyArg_Parse(o, "f", &f0);
+        auto f1 = vm->create_float(f0);
+        return f1;
     } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
-         char *s0;
-         PyArg_Parse(o, "s", &s0);
-         auto s1 = icu::UnicodeString(s0);
-         auto s2 = vm->create_text(s1);
-         return s2;
+        char *s0;
+        PyArg_Parse(o, "s", &s0);
+        auto s1 = icu::UnicodeString(s0);
+        auto s2 = vm->create_text(s1);
+        return s2;
     } else {
-         throw vm->create_text("conversion failed"); 
+        throw vm->create_text("conversion failed"); 
     }
 };
 
@@ -546,6 +546,10 @@ public:
                 PyTuple_SetItem(t, n-1, o);
             }
             return PythonObject::create(m, t);
+        } else if (m->is_tuple(arg0)) { // handle the case of the empty tuple
+            PyObject* t;
+            t = PyTuple_New(0);
+            return PythonObject::create(m, t);
         } else {
             THROW_BADARGS;
         }
@@ -563,15 +567,18 @@ public:
             auto p = PYTHON_OBJECT_VALUE(arg0);
             if (Py_IS_TYPE(p, &PyTuple_Type)) {
                 auto sz = PyTuple_Size(p);
-
-                auto t = m->create_array();
-                m->array_append(t, m->create_tuple());
-                for (int n = 0; n < sz; n++) {
-                    auto i0 = PyTuple_GetItem(p, n);
-                    auto i1 = PythonObject::create(m, i0);
-                    m->array_append(t, i1);
-                }
+                if (sz == 0) {
+                    return m->create_tuple();
+                } else {
+                    auto t = m->create_array();
+                    m->array_append(t, m->create_tuple());
+                    for (int n = 0; n < sz; n++) {
+                        auto i0 = PyTuple_GetItem(p, n);
+                        auto i1 = PythonObject::create(m, i0);
+                        m->array_append(t, i1);
+                    }
                 return t;
+                }
             } else {
                 THROW_BADARGS;
             }
