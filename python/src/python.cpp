@@ -169,7 +169,7 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
     } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
          vm_int_t n0;
          PyArg_Parse(o, "l", &n0);
-         auto n1 = vm->create_float(n0);
+         auto n1 = vm->create_integer(n0);
          return n1;
     } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
          float f0;
