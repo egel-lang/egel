@@ -177,7 +177,7 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
         auto f1 = vm->create_float(f0);
         return f1;
     } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
-        char *s0;
+        char *s0; // XXX: check for possible leak once
         PyArg_Parse(o, "s", &s0);
         auto s1 = icu::UnicodeString(s0);
         auto s2 = vm->create_text(s1);
@@ -191,7 +191,7 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
  * A Python machine.
  **/
 
-//## Python:machine - create a python machine
+//## Python::machine - create a python machine
 class PythonMachine: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonMachine, "Python", "machine");
@@ -233,7 +233,7 @@ protected:
 // XXX: this test shouldn't work
 #define PYTHON_MACHINE_TEST(o) \
     ((o->subtag() == VM_SUB_PYTHON_OBJECT) && \
-     (o->to_text() == "Python::machine"))
+     (o->to_text() == "Python:::machine"))
 #define PYTHON_MACHINE_CAST(o) \
     std::static_pointer_cast<PythonMachine>(o) 
 
@@ -244,7 +244,7 @@ protected:
 class PythonObject;
 typedef std::shared_ptr<PythonObject>   PythonObjectPtr;
 
-//## Python:object - opaque Python object values
+//## Python::object - opaque Python object values
 class PythonObject: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonObject, "Python", "object");
@@ -302,7 +302,7 @@ protected:
 #define PYTHON_OBJECT_VALUE(o) \
     PythonObject::value(o)
 
-//## Python:run none - create a Python machine
+//## Python::run none - create a Python machine
 class PythonRun: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonRun, "Python", "run");
@@ -319,7 +319,7 @@ public:
     }
 };
 
-//## Python:to_object - convert a primitive Egel object to a Python object
+//## Python::to_object - convert a primitive Egel object to a Python object
 class PythonToObject: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToObject, "Python", "to_object");
@@ -334,7 +334,7 @@ public:
     }
 };
 
-//## Python:from_object - convert a primitive Python object to an Egel object
+//## Python::from_object - convert a primitive Python object to an Egel object
 class PythonFromObject: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromObject, "Python", "from_object");
@@ -354,8 +354,150 @@ public:
     }
 };
 
+//## Python::is_none - check for none
+class PythonIsNone: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsNone, "Python", "is_none");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            return machine()->create_bool(Py_Is(o, Py_None));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::is_false - check for false
+class PythonIsFalse: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsFalse, "Python", "is_false");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            return machine()->create_bool(Py_Is(o, Py_False));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::is_true - check for true
+class PythonIsTrue: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsTrue, "Python", "is_true");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            return machine()->create_bool(Py_Is(o, Py_True));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::is_integer - check for integer
+class PythonIsInt: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsInt, "Python", "is_integer");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            return machine()->create_bool(PYTHON_HAS_TYPE(o, PyLong_Type));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::is_float - check for float
+class PythonIsFloat: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsFloat, "Python", "is_float");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            return machine()->create_bool(PYTHON_HAS_TYPE(o, PyFloat_Type));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::is_text - check for text
+class PythonIsText: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsText, "Python", "is_text");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            return machine()->create_bool(PYTHON_HAS_TYPE(o, PyUnicode_Type));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::from_integer - convert from integer
+class PythonFromInteger: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromInteger, "Python", "from_integer");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            vm_int_t n;
+            PyArg_Parse(o, "l", &n);
+            return machine()->create_integer(n);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::from_float - convert from float
+class PythonFromFloat: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromFloat, "Python", "from_float");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            vm_float_t f;
+            PyArg_Parse(o, "f", &f);
+            return machine()->create_float(f);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::from_text - convert from text
+class PythonFromText: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromText, "Python", "from_text");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            char *s0; // XXX: check for possible leak once
+            PyArg_Parse(o, "s", &s0);
+            auto s1 = icu::UnicodeString(s0);
+            return machine()->create_text(s1);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 /*
-// ## Python:module_run fn - open _and_ run a Python script
+// ## Python::module_run fn - open _and_ run a Python script
 class PythonModuleRun: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleRun, "Python", "module_run");
@@ -379,7 +521,7 @@ public:
 }
 */
 
-//## Python:module_import fn - load a module
+//## Python::module_import fn - load a module
 class PythonModuleImport: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleImport, "Python", "module_import");
@@ -405,7 +547,7 @@ public:
 };
 // implement: PyModule_GetDict
 
-//## Python:get_function mod f - retrieve function from module
+//## Python::get_function mod f - retrieve function from module
 class PythonFunction: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFunction, "Python", "get_function");
@@ -429,7 +571,7 @@ public:
     }
 };
 
-//## Python:get_attribute o n - retrieve attribute from object by name
+//## Python::get_attribute o n - retrieve attribute from object by name
 class PythonGetAttribute: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonGetAttribute, "Python", "get_attribute");
@@ -453,7 +595,7 @@ public:
     }
 };
 
-//## Python:set_attribute mod n a - set attribute from object by name
+//## Python::set_attribute mod n a - set attribute from object by name
 class PythonSetAttribute: public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonSetAttribute, "Python", "set_attribute");
@@ -474,7 +616,7 @@ public:
     }
 };
 
-//## Python:get_item o n - retrieve item from object 
+//## Python::get_item o n - retrieve item from object 
 class PythonGetItem: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonGetItem, "Python", "get_item");
@@ -493,7 +635,7 @@ public:
     }
 };
 
-//## Python:set_item o key a - set item from object by item
+//## Python::set_item o key a - set item from object by item
 class PythonSetItem: public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonSetItem, "Python", "set_item");
@@ -522,7 +664,7 @@ public:
  */
 
 
-//## Python:to_tuple l - from egel tuple to a python tuple
+//## Python::to_tuple l - from egel tuple to a python tuple
 class PythonToTuple: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToTuple, "Python", "to_tuple");
@@ -556,7 +698,7 @@ public:
     }
 };
 
-//## Python:from_tuple l - from python tuple to egel tuple
+//## Python::from_tuple l - from python tuple to egel tuple
 class PythonFromTuple: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromTuple, "Python", "from_tuple");
@@ -588,7 +730,7 @@ public:
     }
 };
 
-//## Python:to_list l - from egel list to a python list
+//## Python::to_list l - from egel list to a python list
 class PythonToList: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToList, "Python", "to_list");
@@ -598,7 +740,7 @@ public:
     }
 };
 
-//## Python:from_list l - from python list to egel list
+//## Python::from_list l - from python list to egel list
 class PythonFromList: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromList, "Python", "from_list");
@@ -608,7 +750,7 @@ public:
     }
 };
 
-//## Python:to_dictionary l - from egel list of tuples to a python dictionary
+//## Python::to_dictionary l - from egel list of tuples to a python dictionary
 class PythonToDictionary: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToDictionary, "Python", "to_dictionary");
@@ -618,7 +760,7 @@ public:
     }
 };
 
-//## Python:from_dictionary l - from python dictionary to egel list of tuples
+//## Python::from_dictionary l - from python dictionary to egel list of tuples
 class PythonFromDictionary: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromDictionary, "Python", "from_dictionary");
@@ -628,7 +770,7 @@ public:
     }
 };
 
-//## Python:to_set l - from egel list to a python set
+//## Python::to_set l - from egel list to a python set
 class PythonToSet: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToSet, "Python", "to_set");
@@ -638,7 +780,7 @@ public:
     }
 };
 
-//## Python:from_set l - from python set to egel list
+//## Python::from_set l - from python set to egel list
 class PythonFromSet: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromSet, "Python", "from_set");
@@ -648,7 +790,7 @@ public:
     }
 };
 
-//## Python:call f (x0, ..) - call a python function (the 2nd arg is a tuple)
+//## Python::call f (x0, ..) - call a python function (the 2nd arg is a tuple)
 class PythonCall: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonCall, "Python", "call");
@@ -667,9 +809,20 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
 
     oo.push_back(PythonMachine(vm).clone());
     oo.push_back(PythonObject(vm).clone());
+    oo.push_back(PythonRun(vm).clone());
     oo.push_back(PythonToObject(vm).clone());
     oo.push_back(PythonFromObject(vm).clone());
-    oo.push_back(PythonRun(vm).clone());
+
+    oo.push_back(PythonIsNone(vm).clone());
+    oo.push_back(PythonIsFalse(vm).clone());
+    oo.push_back(PythonIsTrue(vm).clone());
+    oo.push_back(PythonIsInt(vm).clone());
+    oo.push_back(PythonIsFloat(vm).clone());
+    oo.push_back(PythonIsText(vm).clone());
+    oo.push_back(PythonFromInteger(vm).clone());
+    oo.push_back(PythonFromFloat(vm).clone());
+    oo.push_back(PythonFromText(vm).clone());
+
     oo.push_back(PythonModuleImport(vm).clone());
     //oo.push_back(PythonModuleRun(vm).clone());
     oo.push_back(PythonFunction(vm).clone());
