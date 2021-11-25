@@ -400,9 +400,9 @@ public:
 };
 
 //## Python::is_integer - check for integer
-class PythonIsInt: public Monadic {
+class PythonIsInteger: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsInt, "Python", "is_integer");
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsInteger, "Python", "is_integer");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -816,7 +816,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonIsNone(vm).clone());
     oo.push_back(PythonIsFalse(vm).clone());
     oo.push_back(PythonIsTrue(vm).clone());
-    oo.push_back(PythonIsInt(vm).clone());
+    oo.push_back(PythonIsInteger(vm).clone());
     oo.push_back(PythonIsFloat(vm).clone());
     oo.push_back(PythonIsText(vm).clone());
     oo.push_back(PythonFromInteger(vm).clone());
