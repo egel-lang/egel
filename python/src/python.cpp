@@ -45,6 +45,7 @@ public:
 class CPythonObject {
 public:
     CPythonObject() : _object(nullptr) {
+        inc_ref();
     }
 
     CPythonObject(PyObject* o) : _object(o) {
@@ -55,26 +56,28 @@ public:
         inc_ref();
     }
 
+    CPythonObject(const CPythonObject& o): _object(o._object) {
+        inc_ref();
+    }
+
     ~CPythonObject() {
         dec_ref();
         _object= nullptr;
     }
 
-    PyObject* get_object() {
+    PyObject* get_object() const {
         return _object;
-    }
-
-    PyObject* set_object(PyObject* o) {
-        return (_object=o);
     }
 
     PyObject* inc_ref()
     {
+        std::cout << "inc_ref " << _object << std::endl;
         if(_object) Py_XINCREF(_object);
         return _object;
     }
 
     void dec_ref() {
+        std::cout << "dec_ref " << _object << std::endl;
         if(_object) Py_XDECREF(_object);
     }
 
@@ -91,7 +94,9 @@ public:
     }
 
     PyObject* operator = (PyObject* o) {
+        dec_ref();
         _object = o;
+        inc_ref();
         return _object;
     }
 
@@ -121,37 +126,7 @@ private:
 
 #define PYTHON_HAS_TYPE(a,b) (a->ob_type == &b)
 
-static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
-    auto o = CPythonObject();
-    if (Py_Is(o, Py_None)) {
-         return vm->create_none();
-    } else if (Py_Is(o, Py_False)) {
-         return vm->create_false();
-    } else if (Py_Is(o, Py_True)) {
-         return vm->create_true();
-    } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
-         vm_int_t n0;
-         PyArg_Parse(o, "l", &n0);
-         auto n1 = vm->create_float(n0);
-         return n1;
-    } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
-         float f0;
-         PyArg_Parse(o, "f", &f0);
-         auto f1 = vm->create_float(f0);
-         return f1;
-    } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
-         char *s0;
-         PyArg_Parse(o, "s", &s0);
-         auto s1 = icu::UnicodeString(s0);
-         auto s2 = vm->create_text(s1);
-         return s2;
-    } else {
-         throw vm->create_text("conversion failed"); 
-    }
-};
-
 static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
-    std::cout << (o->tag() == VM_OBJECT_INTEGER);
     if (VM_OBJECT_NONE_TEST(o)) {
          return Py_None;
     } else if (VM_OBJECT_FALSE_TEST(o)) {
@@ -174,6 +149,41 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
         return s2;
     } else {
         return nullptr;
+    }
+};
+
+static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
+    auto o = object.get_object();
+    if (Py_Is(o, Py_None)) {
+        std::cout << "create none" << std::endl;
+         return vm->create_none();
+    } else if (Py_Is(o, Py_False)) {
+        std::cout << "create false" << std::endl;
+         return vm->create_false();
+    } else if (Py_Is(o, Py_True)) {
+        std::cout << "create true" << std::endl;
+         return vm->create_true();
+    } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
+        std::cout << "create long" << std::endl;
+         vm_int_t n0;
+         PyArg_Parse(o, "l", &n0);
+         auto n1 = vm->create_float(n0);
+         return n1;
+    } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
+        std::cout << "create float" << std::endl;
+         float f0;
+         PyArg_Parse(o, "f", &f0);
+         auto f1 = vm->create_float(f0);
+         return f1;
+    } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
+        std::cout << "create text" << std::endl;
+         char *s0;
+         PyArg_Parse(o, "s", &s0);
+         auto s1 = icu::UnicodeString(s0);
+         auto s2 = vm->create_text(s1);
+         return s2;
+    } else {
+         throw vm->create_text("conversion failed"); 
     }
 };
 
@@ -220,9 +230,10 @@ protected:
     CPythonMachine* _value = nullptr; // pass raw references around cause funny stuff
 };
 
+// XXX: this test shouldn't work
 #define PYTHON_MACHINE_TEST(o) \
     ((o->subtag() == VM_SUB_PYTHON_OBJECT) && \
-     (o->to_text() == "Python:machine"))
+     (o->to_text() == "Python::machine"))
 #define PYTHON_MACHINE_CAST(o) \
     std::static_pointer_cast<PythonMachine>(o) 
 
@@ -230,17 +241,18 @@ protected:
  * A Python object.
  **/
 
+class PythonObject;
+typedef std::shared_ptr<PythonObject>   PythonObjectPtr;
+
 //## Python:object - opaque Python object values
 class PythonObject: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonObject, "Python", "object");
 
-    PythonObject(const PythonObject& o): Opaque(o.subtag(), o.machine(), o.symbol()) {
-        _value = o.value();
+    PythonObject(const PythonObject& o): Opaque(o.subtag(), o.machine(), o.symbol()), _value(o.value()) {
     }
 
-    PythonObject(VM* vm, const PyObject* o): Opaque(VM_SUB_PYTHON_OBJECT, vm, "Python", "object") {
-        _value = CPythonObject(o); // looks like overkill to me
+    PythonObject(VM* vm, const PyObject* o): Opaque(VM_SUB_PYTHON_OBJECT, vm, "Python", "object"), _value(o) {
     }
 
     VMObjectPtr clone() const override {
@@ -265,16 +277,20 @@ public:
         _value = v;
     }
 
-    void inc_ref() {
-        _value.inc_ref();
-    }
-
-    void dec_ref() {
-    _value.dec_ref();
-    }
-
     CPythonObject value() const {
         return _value;
+    }
+
+    static bool test(const VMObjectPtr& o) {
+        return (o->subtag() == VM_SUB_PYTHON_OBJECT);
+    }
+
+    static PythonObjectPtr cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<PythonObject>(o);
+    }
+
+    static CPythonObject value(const VMObjectPtr& o) {
+        return cast(o)->_value;
     }
 
 protected:
@@ -282,25 +298,22 @@ protected:
 };
 
 #define PYTHON_OBJECT_TEST(o) \
-    (o->subtag() == VM_SUB_PYTHON_OBJECT) 
+    PythonObject::test(o)
 #define PYTHON_OBJECT_VALUE(o) \
-    ((std::static_pointer_cast<PythonObject>(o))->value())
+    PythonObject::value(o)
 
-//## Python:from_object - convert a primitive Python object to an Egel object
-class PythonFromObject: public Monadic {
+//## Python:run none - create a Python machine
+class PythonRun: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromObject, "Python", "from_object");
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonRun, "Python", "run");
 
+    // XXX: TODO: add extra initialization options once
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        try {
-            if (PYTHON_OBJECT_TEST(arg0)) {
-                auto o = PYTHON_OBJECT_VALUE(arg0);
-                auto e = python_to_egel(machine(), o);
-                return e;
-            } else {
-                THROW_BADARGS;
-            }
-        } catch (std::exception e) {
+        if (machine()->is_none(arg0)) {
+            auto m = PythonMachine(machine()).clone();
+            PYTHON_MACHINE_CAST(m)->run();
+            return m;
+        } else {
             THROW_BADARGS;
         }
     }
@@ -321,23 +334,25 @@ public:
     }
 };
 
-//## Python:run none - create a Python machine
-class PythonRun: public Monadic {
+//## Python:from_object - convert a primitive Python object to an Egel object
+class PythonFromObject: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonRun, "Python", "run");
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromObject, "Python", "from_object");
 
-    // XXX: TODO: add extra initialization options once
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (machine()->is_none(arg0)) {
-            auto m = PythonMachine(machine()).clone();
-            PYTHON_MACHINE_CAST(m)->run();
-            return m;
-        } else {
+        try {
+            if (PYTHON_OBJECT_TEST(arg0)) {
+                auto o = PYTHON_OBJECT_VALUE(arg0);
+                auto e = python_to_egel(machine(), o);
+                return e;
+            } else {
+                THROW_BADARGS;
+            }
+        } catch (std::exception e) {
             THROW_BADARGS;
         }
     }
 };
-
 
 /*
 // ## Python:module_run fn - open _and_ run a Python script

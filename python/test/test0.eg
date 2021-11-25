@@ -19,4 +19,11 @@ def one_on_one =
          EQ ]
 
 def main =
-    one_on_one 1
+    #one_on_one none;
+    #one_on_one false;
+    #one_on_one true;
+    #one_on_one 1;
+    #one_on_one 3.14;
+    one_on_one 'a';
+    one_on_one "a text";
+    none
