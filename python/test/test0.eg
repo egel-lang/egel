@@ -11,17 +11,39 @@ val python3 = run none
 
 def one_on_one =
     [ E -> 
-         print "egel (" E ") ";
+         print "egel " E ", ";
          let O0 = to_object E in
          let O1 = from_object O0 in
-         print "bridged (" O1 ") ";
+         print "bridged " O1 ", ";
          let EQ = (E == O1) in
-         print "eq (" EQ ")\n";
+         print "eq " EQ ".\n";
          EQ ]
 
 def test0 =
     map one_on_one {none, false, true, 7, 3.14, 'a', "text"}
 
+def tuple_map =
+    [ F tuple           -> tuple
+    | F (tuple X)       -> tuple (F X)
+    | F (X, Y)          -> tuple (F X, F Y)
+    | F (X, Y, Z)       -> tuple (F X, F Y, F Z)
+    | F (X, Y, Z, A)    -> tuple (F X, F Y, F Y, F A)
+    | F _               -> throw "tuple_map falure" ]
+
+def tuple_on_tuple =
+    [ E -> 
+         print "egel " E ", ";
+         let O0 = to_tuple (tuple_map to_object E) in
+         let O1 = tuple_map (from_object) (from_tuple O0) in
+         print "bridged " O1 ", ";
+         let EQ = (E == O1) in
+         print "eq " EQ ".\n";
+         EQ ]
+
+def test1 =
+    map tuple_on_tuple {tuple, tuple 0}
+
 def main =
     test0;
+    test1;
     none
