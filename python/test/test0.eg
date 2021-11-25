@@ -43,7 +43,53 @@ def tuple_on_tuple =
 def test1 =
     map tuple_on_tuple {tuple, tuple 0, (true, 0), ("hello", none, "world")}
 
+def none_convert =
+    [ X -> if is_none X then "none" else "not none" ]
+
+def none_test =
+    [ X -> print "none test (" X ") result (" (none_convert (to_object X)) ")\n" ]
+
+def false_convert =
+    [ X -> if is_false X then "false" else "not false" ]
+
+def false_test =
+    [ X -> print "false test (" X ") result (" (false_convert (to_object X)) ")\n" ]
+
+def true_convert =
+    [ X -> if is_true X then "true" else "not true" ]
+
+def true_test =
+    [ X -> print "true test (" X ") result (" (true_convert (to_object X)) ")\n" ]
+
+def integer_convert =
+    [ N -> if is_integer N then from_integer N else "no integer" ]
+
+def integer_test =
+    [ X -> print "integer test (" X ") result (" (integer_convert (to_object X)) ")\n" ]
+
+def float_convert =
+    [ F -> if is_float F then from_float F else "no float" ]
+
+def float_test =
+    [ X -> print "float test (" X ") result (" (float_convert (to_object X)) ")\n" ]
+
+def text_convert =
+    [ F -> if is_text F then from_text F else "no text" ]
+
+def text_test =
+    [ X -> print "text test (" X ") result (" (text_convert (to_object X)) ")\n" ]
+
+def test2 =
+    none_test 0; none_test none;
+    false_test 0; false_test false;
+    true_test 0; true_test true;
+    integer_test none; integer_test 7;
+    float_test 7; float_test 3.14;
+    text_test 7; text_test "a text";
+    none
+
 def main =
     test0;
     test1;
+    test2;
     none

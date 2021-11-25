@@ -172,8 +172,8 @@ static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
         auto n1 = vm->create_integer(n0);
         return n1;
     } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
-        float f0;
-        PyArg_Parse(o, "f", &f0);
+        vm_float_t f0;
+        PyArg_Parse(o, "d", &f0);
         auto f1 = vm->create_float(f0);
         return f1;
     } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
@@ -470,7 +470,7 @@ public:
         if (PYTHON_OBJECT_TEST(arg0)) {
             auto o = PYTHON_OBJECT_VALUE(arg0);
             vm_float_t f;
-            PyArg_Parse(o, "f", &f);
+            PyArg_Parse(o, "d", &f);
             return machine()->create_float(f);
         } else {
             THROW_BADARGS;
@@ -664,6 +664,23 @@ public:
  */
 
 
+//## Python::is_tuple l - tuple check
+class PythonIsTuple: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsTuple, "Python", "is_tuple");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (m->is_array(arg0) && (m->array_size(arg0) > 0) && (m->is_tuple(m->array_get(arg0, 0)))) {
+            return machine()->create_true();
+        } else if (m->is_tuple(arg0)) { // handle the case of the empty tuple
+            return machine()->create_true();
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 //## Python::to_tuple l - from egel tuple to a python tuple
 class PythonToTuple: public Monadic {
 public:
@@ -823,6 +840,13 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonFromFloat(vm).clone());
     oo.push_back(PythonFromText(vm).clone());
 
+    oo.push_back(PythonIsTuple(vm).clone());
+    oo.push_back(PythonToTuple(vm).clone());
+    oo.push_back(PythonFromTuple(vm).clone());
+
+    oo.push_back(PythonToList(vm).clone());
+    oo.push_back(PythonFromList(vm).clone());
+
     oo.push_back(PythonModuleImport(vm).clone());
     //oo.push_back(PythonModuleRun(vm).clone());
     oo.push_back(PythonFunction(vm).clone());
@@ -830,10 +854,6 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonSetAttribute(vm).clone());
     oo.push_back(PythonGetItem(vm).clone());
     oo.push_back(PythonSetItem(vm).clone());
-    oo.push_back(PythonToTuple(vm).clone());
-    oo.push_back(PythonFromTuple(vm).clone());
-    oo.push_back(PythonToList(vm).clone());
-    oo.push_back(PythonFromList(vm).clone());
     oo.push_back(PythonToDictionary(vm).clone());
     oo.push_back(PythonFromDictionary(vm).clone());
     oo.push_back(PythonToSet(vm).clone());
