@@ -71,13 +71,13 @@ public:
 
     PyObject* inc_ref()
     {
-        std::cout << "inc_ref " << _object << std::endl;
+        // std::cout << "inc_ref " << _object << std::endl;
         if(_object) Py_XINCREF(_object);
         return _object;
     }
 
     void dec_ref() {
-        std::cout << "dec_ref " << _object << std::endl;
+        // std::cout << "dec_ref " << _object << std::endl;
         if(_object) Py_XDECREF(_object);
     }
 
@@ -141,6 +141,12 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
         auto f0 = VM_OBJECT_FLOAT_VALUE(o);
         PyObject* f1 = Py_BuildValue("f", f0);
         return f1;
+    } else if (VM_OBJECT_CHAR_TEST(o)) {
+        auto s0 = icu::UnicodeString() + VM_OBJECT_CHAR_VALUE(o);
+        char* s1 = unicode_to_char(s0);
+        PyObject* s2 = Py_BuildValue("s", s1);
+        delete s1;
+        return s2;
     } else if (VM_OBJECT_TEXT_TEST(o)) {
         auto s0 = VM_OBJECT_TEXT_VALUE(o);
         char* s1 = unicode_to_char(s0);
@@ -155,28 +161,22 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
 static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
     auto o = object.get_object();
     if (Py_Is(o, Py_None)) {
-        std::cout << "create none" << std::endl;
          return vm->create_none();
     } else if (Py_Is(o, Py_False)) {
-        std::cout << "create false" << std::endl;
          return vm->create_false();
     } else if (Py_Is(o, Py_True)) {
-        std::cout << "create true" << std::endl;
          return vm->create_true();
     } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
-        std::cout << "create long" << std::endl;
          vm_int_t n0;
          PyArg_Parse(o, "l", &n0);
          auto n1 = vm->create_float(n0);
          return n1;
     } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
-        std::cout << "create float" << std::endl;
          float f0;
          PyArg_Parse(o, "f", &f0);
          auto f1 = vm->create_float(f0);
          return f1;
     } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
-        std::cout << "create text" << std::endl;
          char *s0;
          PyArg_Parse(o, "s", &s0);
          auto s1 = icu::UnicodeString(s0);

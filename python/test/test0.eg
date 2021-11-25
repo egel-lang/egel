@@ -1,29 +1,27 @@
 # Egel-Python3 bridge tests
 
+import "prelude.eg"
 import "python3.ego"
 
 using System
 using Python
+using List
 
 val python3 = run none
 
 def one_on_one =
     [ E -> 
-         print "egel object:    " E "\n";
+         print "egel (" E ") ";
          let O0 = to_object E in
-         print "python object:  " O0 "\n";
          let O1 = from_object O0 in
-         print "bridged:        " O1 "\n";
+         print "bridged (" O1 ") ";
          let EQ = (E == O1) in
-         print "eq test:        " EQ "\n";
+         print "eq (" EQ ")\n";
          EQ ]
 
+def test0 =
+    map one_on_one {none, false, true, 7, 3.14, 'a', "text"}
+
 def main =
-    #one_on_one none;
-    #one_on_one false;
-    #one_on_one true;
-    #one_on_one 1;
-    #one_on_one 3.14;
-    one_on_one 'a';
-    one_on_one "a text";
+    test0;
     none
