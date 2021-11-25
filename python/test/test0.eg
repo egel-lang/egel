@@ -41,7 +41,7 @@ def tuple_on_tuple =
          EQ ]
 
 def test1 =
-    map tuple_on_tuple {tuple, tuple 0, (true, 0)}
+    map tuple_on_tuple {tuple, tuple 0, (true, 0), ("hello", none, "world")}
 
 def main =
     test0;
