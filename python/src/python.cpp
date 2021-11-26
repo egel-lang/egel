@@ -671,10 +671,9 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
-        if (m->is_array(arg0) && (m->array_size(arg0) > 0) && (m->is_tuple(m->array_get(arg0, 0)))) {
-            return machine()->create_true();
-        } else if (m->is_tuple(arg0)) { // handle the case of the empty tuple
-            return machine()->create_true();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            return m->create_bool(Py_IS_TYPE(p, &PyTuple_Type));
         } else {
             THROW_BADARGS;
         }
@@ -747,13 +746,49 @@ public:
     }
 };
 
+//## Python::is_list l - check list
+class PythonIsList: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsList, "Python", "is_list");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            return m->create_bool(Py_IS_TYPE(p, &PyList_Type));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 //## Python::to_list l - from egel list to a python list
 class PythonToList: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToList, "Python", "to_list");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
+        auto m = machine();
+        if (m->is_list(arg0)) {
+            auto aa = m->from_list(arg0);
+            auto sz = aa.size();
+
+            // well-formedness check
+            for (unsigned long n = 0; n < sz; n++) {
+                if (!PYTHON_OBJECT_TEST(aa[n])) THROW_BADARGS;
+            }
+
+            // translation
+            PyObject* t;
+            t = PyList_New(sz);
+            for (unsigned long n = 0; n < sz; n++) {
+                auto o = PYTHON_OBJECT_VALUE(aa[n]);
+                PyList_SetItem(t, n, o);
+            }
+            return PythonObject::create(m, t);
+        } else {
+            THROW_BADARGS;
+        }
     }
 };
 
@@ -763,7 +798,26 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromList, "Python", "from_list");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            if (Py_IS_TYPE(p, &PyList_Type)) {
+                auto sz = PyList_Size(p);
+
+                VMObjectPtrs oo;
+                for (int n = 0; n < sz; n++) {
+                    auto i0 = PyList_GetItem(p, n);
+                    auto i1 = PythonObject::create(m, i0);
+                    oo.push_back(i1);
+                }
+
+                return m->to_list(oo);
+            } else {
+                THROW_BADARGS;
+            }
+        } else {
+            THROW_BADARGS;
+        }
     }
 };
 
@@ -844,6 +898,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonToTuple(vm).clone());
     oo.push_back(PythonFromTuple(vm).clone());
 
+    oo.push_back(PythonIsList(vm).clone());
     oo.push_back(PythonToList(vm).clone());
     oo.push_back(PythonFromList(vm).clone());
 

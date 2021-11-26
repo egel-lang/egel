@@ -30,19 +30,6 @@ def tuple_map =
     | F (X, Y, Z, A)    -> (F X, F Y, F Y, F A)
     | F _               -> throw "tuple_map falure" ]
 
-def tuple_on_tuple =
-    [ E -> 
-         print "egel " E ", ";
-         let O0 = to_tuple (tuple_map to_object E) in
-         let O1 = tuple_map (from_object) (from_tuple O0) in
-         print "bridged " O1 ", ";
-         let EQ = (E == O1) in
-         print "eq " EQ ".\n";
-         EQ ]
-
-def test1 =
-    map tuple_on_tuple {tuple, tuple 0, (true, 0), ("hello", none, "world")}
-
 def none_convert =
     [ X -> if is_none X then "none" else "not none" ]
 
@@ -79,13 +66,38 @@ def text_convert =
 def text_test =
     [ X -> print "text test (" X ") result (" (text_convert (to_object X)) ")\n" ]
 
-def test2 =
+def test1 =
     none_test 0; none_test none;
     false_test 0; false_test false;
     true_test 0; true_test true;
     integer_test none; integer_test 7;
     float_test 7; float_test 3.14;
     text_test 7; text_test "a text";
+    none
+
+def tuple_on_tuple =
+    [ E -> 
+         print "egel " E ", ";
+         let O0 = to_tuple (tuple_map to_object E) in
+         let O1 = tuple_map (from_object) (from_tuple O0) in
+         print "bridged " O1 ", ";
+         let EQ = (E == O1) in
+         print "eq " EQ ".\n";
+         EQ ]
+
+def list_on_list =
+    [ E -> 
+         print "egel " E ", ";
+         let O0 = to_list (map to_object E) in
+         let O1 = map (from_object) (from_list O0) in
+         print "bridged " O1 ", ";
+         let EQ = (E == O1) in
+         print "eq " EQ ".\n";
+         EQ ]
+
+def test2 =
+    map tuple_on_tuple {tuple, tuple 0, (true, 0), ("hello", none, "world")};
+    map list_on_list {nil, {0}, {true, 0}, {"hello", none, "world"}};
     none
 
 def main =
