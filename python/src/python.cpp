@@ -659,8 +659,8 @@ public:
  * ---------------------
  * Tuple      | tuple
  * List       | list
- * Dict       | list of pairs
  * Set        | list
+ * Dict       | list of pairs
  */
 
 
@@ -821,6 +821,79 @@ public:
     }
 };
 
+//## Python::is_set l - python set check
+class PythonIsSet: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsSet, "Python", "is_set");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            return m->create_bool(Py_IS_TYPE(p, &PySet_Type));
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::to_set l - from egel list to python set
+class PythonToSet: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToSet, "Python", "to_set");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (m->is_list(arg0)) {
+            auto aa = m->from_list(arg0);
+            auto sz = aa.size();
+
+            // well-formedness check
+            for (unsigned long n = 0; n < sz; n++) {
+                if (!PYTHON_OBJECT_TEST(aa[n])) THROW_BADARGS;
+            }
+
+            // translation
+            PyObject* s;
+            s = PySet_New(nullptr);
+            for (unsigned long n = 0; n < sz; n++) {
+                auto o = PYTHON_OBJECT_VALUE(aa[n]);
+                PySet_Add(s, o);
+            }
+            return PythonObject::create(m, s);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::from_set l - from python set to egel list
+class PythonFromSet: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromSet, "Python", "from_set");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            if (Py_IS_TYPE(p, &PySet_Type)) {
+                VMObjectPtrs oo;
+                auto it = PyObject_GetIter(p);
+                while (auto e0 = PyIter_Next(it)) {
+                    auto e1 = PythonObject::create(m, e0);
+                    oo.push_back(e1);
+                }
+
+                return m->to_list(oo);
+            } else {
+                THROW_BADARGS;
+            }
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 //## Python::to_dictionary l - from egel list of tuples to a python dictionary
 class PythonToDictionary: public Monadic {
 public:
@@ -835,26 +908,6 @@ public:
 class PythonFromDictionary: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromDictionary, "Python", "from_dictionary");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
-    }
-};
-
-//## Python::to_set l - from egel list to a python set
-class PythonToSet: public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToSet, "Python", "to_set");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
-    }
-};
-
-//## Python::from_set l - from python set to egel list
-class PythonFromSet: public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromSet, "Python", "from_set");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         THROW_STUB;
@@ -897,22 +950,23 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonIsTuple(vm).clone());
     oo.push_back(PythonToTuple(vm).clone());
     oo.push_back(PythonFromTuple(vm).clone());
-
     oo.push_back(PythonIsList(vm).clone());
     oo.push_back(PythonToList(vm).clone());
     oo.push_back(PythonFromList(vm).clone());
+    oo.push_back(PythonIsSet(vm).clone());
+    oo.push_back(PythonToSet(vm).clone());
+    oo.push_back(PythonFromSet(vm).clone());
 
-    oo.push_back(PythonModuleImport(vm).clone());
     //oo.push_back(PythonModuleRun(vm).clone());
-    oo.push_back(PythonFunction(vm).clone());
+    oo.push_back(PythonToDictionary(vm).clone());
+    oo.push_back(PythonFromDictionary(vm).clone());
     oo.push_back(PythonGetAttribute(vm).clone());
     oo.push_back(PythonSetAttribute(vm).clone());
     oo.push_back(PythonGetItem(vm).clone());
     oo.push_back(PythonSetItem(vm).clone());
-    oo.push_back(PythonToDictionary(vm).clone());
-    oo.push_back(PythonFromDictionary(vm).clone());
-    oo.push_back(PythonToSet(vm).clone());
-    oo.push_back(PythonFromSet(vm).clone());
+
+    oo.push_back(PythonFunction(vm).clone());
+    oo.push_back(PythonModuleImport(vm).clone());
     oo.push_back(PythonCall(vm).clone());
 
     return oo;

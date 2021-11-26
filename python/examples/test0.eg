@@ -95,9 +95,20 @@ def list_on_list =
          print "eq " EQ ".\n";
          EQ ]
 
+def set_on_set =
+    [ E -> 
+         print "egel " E ", ";
+         let O0 = to_set (map to_object E) in
+         let O1 = map (from_object) (from_set O0) in
+         print "bridged " O1 ", ";
+         let EQ = (E == O1) in
+         print "eq " EQ ".\n";
+         EQ ]
+
 def test2 =
     map tuple_on_tuple {tuple, tuple 0, (true, 0), ("hello", none, "world")};
     map list_on_list {nil, {0}, {true, 0}, {"hello", none, "world"}};
+    map set_on_set {nil, {0}, {true, 0}, {"hello", none, "world"}};
     none
 
 def main =
