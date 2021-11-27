@@ -44,6 +44,9 @@ syn match egelParen			"[()]"
 
 syn match egelComment			"#.*$"	contains=egelTodo,egelTab
 
+syn region egelText matchgroup=egelTripleQuotes
+      \ start=+[uU]\=\z('''\|"""\)+ end="\z1" keepend
+
 "syn match egelError	"-\=\<\d\+\.\d\+\.[^*/\\^]"
 "syn match egelError	"-\=\<\d\+\.\d\+[eEdD][-+]\=\d\+\.\([^*/\\^]\)"
 

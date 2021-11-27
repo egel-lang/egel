@@ -126,8 +126,29 @@ def line0 = """
 print("hello world from Python")
 """
 
+def line1 = """
+def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n-1)
+"""
+
+def line2 = """
+class Person:
+  def __init__(self, name, age):
+    self.name = name
+    self.age = age
+
+  def hello(self):
+    print("Hello my name is " + self.name)
+
+p1 = Person("John", 36)
+p1.hello()
+"""
+
 def test3 =
-    map Python::eval {line0}
+    map Python::eval {line0, line1, line2}
 
 def main =
     test0;
