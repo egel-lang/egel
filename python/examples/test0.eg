@@ -122,8 +122,16 @@ def test2 =
     map dict_on_dict {nil, {(0, 2), (1, 5)}};
     none
 
+def line0 = """
+print("hello world from Python")
+"""
+
+def test3 =
+    map Python::eval {line0}
+
 def main =
     test0;
     test1;
     test2;
+    test3;
     none
