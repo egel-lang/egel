@@ -883,11 +883,26 @@ public:
                     auto e1 = PythonObject::create(m, e0);
                     oo.push_back(e1);
                 }
-
                 return m->to_list(oo);
             } else {
                 THROW_BADARGS;
             }
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::is_dictionary l - from egel list of tuples to a python dictionary
+class PythonIsDictionary: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsDictionary, "Python", "is_dictionary");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            return m->create_bool(Py_IS_TYPE(p, &PyDict_Type));
         } else {
             THROW_BADARGS;
         }
@@ -900,7 +915,32 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToDictionary, "Python", "to_dictionary");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
+        auto m = machine();
+        auto aa = m->from_list(arg0);
+        auto sz = aa.size();
+
+        // well-formedness check
+        for (unsigned long n = 0; n < sz; n++) {
+            auto o = aa[n];
+            if (m->is_array(o) && (m->array_size(arg0) == 3) 
+                  && (m->is_tuple(m->array_get(o, 0)))
+                  && (PYTHON_OBJECT_TEST(m->array_get(o,1))) 
+                  && (PYTHON_OBJECT_TEST(m->array_get(o,2)))) {
+            } else {
+                THROW_BADARGS;
+            }
+        }
+
+        // translation
+        PyObject* s;
+        s = PyDict_New();
+        for (unsigned long n = 0; n < sz; n++) {
+            auto o = aa[n];
+            auto key = PYTHON_OBJECT_VALUE(m->array_get(o,1));
+            auto val = PYTHON_OBJECT_VALUE(m->array_get(o,2));
+            PyDict_SetItem(s, key, val);
+        }
+        return PythonObject::create(m, s);
     }
 };
 
@@ -910,7 +950,32 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromDictionary, "Python", "from_dictionary");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        THROW_STUB;
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto p = PYTHON_OBJECT_VALUE(arg0);
+            if (Py_IS_TYPE(p, &PyDict_Type)) {
+                VMObjectPtrs oo;
+
+                PyObject *key, *val;
+                Py_ssize_t n = 0;
+
+                while (PyDict_Next(p, &n, &key, &val)) {
+                    auto aa = m->create_array();
+                    auto k = PythonObject::create(m, key);
+                    auto v = PythonObject::create(m, val);
+                    m->array_append(aa, m->create_tuple());
+                    m->array_append(aa, k);
+                    m->array_append(aa, v);
+                    oo.push_back(aa);
+                }
+
+                return m->to_list(oo);
+            } else {
+                THROW_BADARGS;
+            }
+        } else {
+            THROW_BADARGS;
+        }
     }
 };
 

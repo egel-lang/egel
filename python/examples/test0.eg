@@ -34,37 +34,37 @@ def none_convert =
     [ X -> if is_none X then "none" else "not none" ]
 
 def none_test =
-    [ X -> print "none test (" X ") result (" (none_convert (to_object X)) ")\n" ]
+    [ X -> print "egel none test (" X ") result (" (none_convert (to_object X)) ")\n" ]
 
 def false_convert =
     [ X -> if is_false X then "false" else "not false" ]
 
 def false_test =
-    [ X -> print "false test (" X ") result (" (false_convert (to_object X)) ")\n" ]
+    [ X -> print "egel false test (" X ") result (" (false_convert (to_object X)) ")\n" ]
 
 def true_convert =
     [ X -> if is_true X then "true" else "not true" ]
 
 def true_test =
-    [ X -> print "true test (" X ") result (" (true_convert (to_object X)) ")\n" ]
+    [ X -> print "egel true test (" X ") result (" (true_convert (to_object X)) ")\n" ]
 
 def integer_convert =
     [ N -> if is_integer N then from_integer N else "no integer" ]
 
 def integer_test =
-    [ X -> print "integer test (" X ") result (" (integer_convert (to_object X)) ")\n" ]
+    [ X -> print "egel integer test (" X ") result (" (integer_convert (to_object X)) ")\n" ]
 
 def float_convert =
     [ F -> if is_float F then from_float F else "no float" ]
 
 def float_test =
-    [ X -> print "float test (" X ") result (" (float_convert (to_object X)) ")\n" ]
+    [ X -> print "egel float test (" X ") result (" (float_convert (to_object X)) ")\n" ]
 
 def text_convert =
     [ F -> if is_text F then from_text F else "no text" ]
 
 def text_test =
-    [ X -> print "text test (" X ") result (" (text_convert (to_object X)) ")\n" ]
+    [ X -> print "egel text test (" X ") result (" (text_convert (to_object X)) ")\n" ]
 
 def test1 =
     none_test 0; none_test none;
@@ -82,7 +82,7 @@ def tuple_on_tuple =
          let O1 = tuple_map (from_object) (from_tuple O0) in
          print "bridged " O1 ", ";
          let EQ = (E == O1) in
-         print "eq " EQ ".\n";
+         print "eq " EQ "\n";
          EQ ]
 
 def list_on_list =
@@ -92,7 +92,7 @@ def list_on_list =
          let O1 = map (from_object) (from_list O0) in
          print "bridged " O1 ", ";
          let EQ = (E == O1) in
-         print "eq " EQ ".\n";
+         print "eq " EQ "\n";
          EQ ]
 
 def set_on_set =
@@ -102,13 +102,24 @@ def set_on_set =
          let O1 = map (from_object) (from_set O0) in
          print "bridged " O1 ", ";
          let EQ = (E == O1) in
-         print "eq " EQ ".\n";
+         print "eq " EQ "\n";
+         EQ ]
+
+def dict_on_dict =
+    [ E -> 
+         print "egel " E ", ";
+         let O0 = to_dictionary (map [(K,V) -> (to_object K, to_object V)] E) in
+         let O1 = map [(K,V) -> (from_object K, from_object V)] (from_dictionary O0) in
+         print "bridged " O1 ", ";
+         let EQ = (E == O1) in
+         print "eq " EQ "\n";
          EQ ]
 
 def test2 =
     map tuple_on_tuple {tuple, tuple 0, (true, 0), ("hello", none, "world")};
     map list_on_list {nil, {0}, {true, 0}, {"hello", none, "world"}};
     map set_on_set {nil, {0}, {true, 0}, {"hello", none, "world"}};
+    map dict_on_dict {nil, {(0, 2), (1, 5)}};
     none
 
 def main =
