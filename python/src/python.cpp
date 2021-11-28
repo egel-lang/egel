@@ -986,11 +986,24 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s   = VM_OBJECT_TEXT_VALUE(arg0);
-            char* fn = unicode_to_char(s);
-            PyRun_SimpleString(fn);
-            delete fn;
-            return machine()->create_none();
+
+            auto fn0 = VM_OBJECT_TEXT_VALUE(arg0);
+            char* fn1 = unicode_to_char(fn0);
+            FILE* fp;
+            fp = fopen(fn1, "r"); // XXX: fp is never closed
+            if (fp == nullptr) {
+                throw create_text("cannot open file: " + fn0);
+            }
+            PyRun_SimpleFile(fp, fn1);
+            delete fn1;
+            fclose(fp);
+            auto e = PyErr_Occurred();
+            if (e) {
+                throw PythonObject::create(machine(), e);
+            } else {
+                return machine()->create_none();
+            }
+            return create_none();
         } else {
             THROW_INVALID;
         }
@@ -1007,11 +1020,16 @@ public:
             auto fn0   = VM_OBJECT_TEXT_VALUE(arg0);
             char* fn1  = unicode_to_char(fn0);
             PyObject* fn2 = PyUnicode_DecodeFSDefault(fn1);
-            PyObject* mod = PyImport_Import(fn2);;
+            PyObject* mod = PyImport_Import(fn2);
             delete fn1;
             Py_XDECREF(fn2);
             if (mod == nullptr) {
-                throw create_text("cannot open module: " + fn0);
+                auto e = PyErr_Occurred();
+                if (e) {
+                    throw PythonObject::create(machine(), e);
+                } else {
+                    throw create_text("cannot open module: " + fn0);
+                }
             }
             auto m = PythonObject(machine(), mod).clone();
             Py_XDECREF(mod);

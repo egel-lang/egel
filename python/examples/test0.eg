@@ -123,7 +123,7 @@ def test2 =
     none
 
 def line0 = """
-print("hello world from Python")
+print("hello world from Python!")
 """
 
 def line1 = """
@@ -141,18 +141,26 @@ class Person:
     self.age = age
 
   def hello(self):
-    print("Hello my name is " + self.name)
+    print("hello my name is " + self.name)
 
 p1 = Person("John", 36)
 p1.hello()
 """
 
 def test3 =
-    map Python::eval {line0, line1, line2}
+    map Python::eval {line0, line1, line2};
+    Python::eval_file "fib.py"
+
+def test4 =
+    Python::eval "import sys; import os";
+    Python::eval "sys.path.append(\".\")";
+    module_import "fib.py"
+    none
 
 def main =
     test0;
     test1;
     test2;
     test3;
+    test4;
     none
