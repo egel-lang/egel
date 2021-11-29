@@ -55,3 +55,6 @@ python/debug/*
 # ignore vscode
 .vscode/*
 python/.vscode/*
+
+# ignore pycache
+python/examples/__pycache__/*
