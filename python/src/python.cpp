@@ -496,31 +496,6 @@ public:
     }
 };
 
-/*
-// ## Python::module_run fn - open _and_ run a Python script
-class PythonModuleRun: public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleRun, "Python", "module_run");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto fn0   = VM_OBJECT_TEXT_VALUE(arg0);
-            char fn1[] = unicode_to_char(fn);
-            FILE* fp;
-            fp = _Py_fopen(fn1, "r"); // XXX: fp is never closed
-            if (fp == nullptr) {
-                throw create_text("cannot open file: " + fn);
-            }
-            PyRun_SimpleFile(fp, fn1);
-            delete fn1;
-            return create_none();
-        } else {
-            THROW_INVALID;
-        }
-    }
-}
-*/
-
 //## Python::get_attribute o n - retrieve attribute from object by name
 class PythonGetAttribute: public Dyadic {
 public:
@@ -967,10 +942,10 @@ public:
     }
 };
 
-//## Python::call f (x0, ..) - call a python function (the 2nd arg is a tuple)
-class PythonCall: public Dyadic {
+//## Python::apply f (x0, ..) - call a python function (the 2nd arg is a tuple)
+class PythonApply: public Dyadic {
 public:
-    DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonCall, "Python", "call");
+    DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonApply, "Python", "apply");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();
@@ -980,6 +955,39 @@ public:
 
             if (Py_IS_TYPE(x, &PyTuple_Type)) {
                 auto r = PyObject_Call(f, x, nullptr);
+                if (r == nullptr) {
+                    auto e = PyErr_Occurred();
+                    if (e) {
+                        throw PythonObject::create(m, e);
+                    } else {
+                        throw m->create_text("Python exception");
+                    }
+                } else {
+                    return PythonObject::create(m, r);
+                }
+            } else {
+                THROW_BADARGS;
+            }
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::call f (x0, ..) d - call a python function with a tuple and a dictionary
+class PythonCall: public Triadic {
+public:
+    TRIADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonCall, "Python", "call");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
+        auto m = machine();
+        if ((PYTHON_OBJECT_TEST(arg0)) && (PYTHON_OBJECT_TEST(arg1)) && (PYTHON_OBJECT_TEST(arg2))) {
+            auto f = PYTHON_OBJECT_VALUE(arg0);
+            auto x = PYTHON_OBJECT_VALUE(arg1);
+            auto d = PYTHON_OBJECT_VALUE(arg2);
+
+            if ((Py_IS_TYPE(x, &PyTuple_Type)) && (Py_IS_TYPE(d, &PyDict_Type))) {
+                auto r = PyObject_Call(f, x, d);
                 if (r == nullptr) {
                     auto e = PyErr_Occurred();
                     if (e) {
@@ -1150,10 +1158,10 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonEvalFile(vm).clone());
 
     oo.push_back(PythonIsCallable(vm).clone());
+    oo.push_back(PythonApply(vm).clone());
     oo.push_back(PythonCall(vm).clone());
     oo.push_back(PythonFunction(vm).clone());
     oo.push_back(PythonModuleImport(vm).clone());
-    //oo.push_back(PythonModuleRun(vm).clone());
 
     return oo;
 }

@@ -165,7 +165,7 @@ def test6 =
     try 
         let M = module_import "fib.py"
         in none
-    catch [ PE -> throw (from_object PE) ]
+    catch [ PE -> throw (from_object PE) ];
     none
 
 def main =
