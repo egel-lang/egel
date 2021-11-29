@@ -156,7 +156,23 @@ def test4 =
     map Python::eval {line0, line1, line2};
     Python::eval_file "fib.py"
 
+def factorial =
+    [ M ->
+        let F = get_attribute M "factorial" in
+        print "egel callable " (is_callable F) "\n";
+        let X = to_tuple (tuple (to_object 5)) in
+        let Y = from_object (apply F X) in
+        print "egel factorial(5) = " Y "\n" ]
+
 def test5 =
+    try 
+        let M = module_add "__main__" in
+        let D = directory M in
+        let L = map from_object (from_list D) in
+        print "egel main directory " L "\n";
+        factorial M;
+        none
+    catch [ PE -> throw (from_object PE) ];
     none
 
 def test6 =
@@ -174,4 +190,6 @@ def main =
     test2;
     test3;
     test4;
+    test5;
+#    test6;
     none

@@ -1056,6 +1056,34 @@ public:
     }
 };
 
+//## Python::module_add s - fetch a loaded module
+class PythonModuleAdd: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleAdd, "Python", "module_add");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_TEXT) {
+            auto  m0  = VM_OBJECT_TEXT_VALUE(arg0);
+            char* m1 = unicode_to_char(m0);
+            PyObject* mod = PyImport_AddModule(m1);
+            delete m1;
+            if (mod == nullptr) {
+                auto e = PyErr_Occurred();
+                if (e) {
+                    throw PythonObject::create(machine(), e);
+                } else {
+                    throw create_text("cannot add module: " + m0);
+                }
+            }
+            auto m = PythonObject(machine(), mod).clone();
+            Py_XDECREF(mod);
+            return m;
+        } else {
+            THROW_INVALID;
+        }
+    }
+};
+
 //## Python::module_import fn - load a module
 class PythonModuleImport: public Monadic {
 public:
@@ -1161,6 +1189,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonApply(vm).clone());
     oo.push_back(PythonCall(vm).clone());
     oo.push_back(PythonFunction(vm).clone());
+    oo.push_back(PythonModuleAdd(vm).clone());
     oo.push_back(PythonModuleImport(vm).clone());
 
     return oo;
