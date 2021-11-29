@@ -122,6 +122,11 @@ def test2 =
     map dict_on_dict {nil, {(0, 2), (1, 5)}};
     none
 
+def test3 =
+    let O = to_list (map to_object {false, 0, "hello"}) in
+    let D = directory O in
+        print "egel dictionary " (map from_object (from_list O)) "\n"
+
 def line0 = """
 print("hello world from Python!")
 """
@@ -147,14 +152,20 @@ p1 = Person("John", 36)
 p1.hello()
 """
 
-def test3 =
+def test4 =
     map Python::eval {line0, line1, line2};
     Python::eval_file "fib.py"
 
-def test4 =
+def test5 =
+    none
+
+def test6 =
     Python::eval "import sys; import os";
     Python::eval "sys.path.append(\".\")";
-    module_import "fib.py"
+    try 
+        let M = module_import "fib.py"
+        in none
+    catch [ PE -> throw (from_object PE) ]
     none
 
 def main =

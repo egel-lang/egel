@@ -929,6 +929,44 @@ public:
     }
 };
 
+//## Python::directory o - get the object list
+class PythonDirectory: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonDirectory, "Python", "directory");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto o = PYTHON_OBJECT_VALUE(arg0);
+            auto d = PyObject_Dir(o);
+            if (d == nullptr) {
+                throw create_text("no object directory");
+            } else {
+                auto p = PythonObject::create(m, d);
+                return p;
+            }
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Python::is_callable f - callable test
+class PythonIsCallable: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsCallable, "Python", "is_callable");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (PYTHON_OBJECT_TEST(arg0)) {
+            auto f = PYTHON_OBJECT_VALUE(arg0);
+            return m->create_bool(PyCallable_Check(f) != 0);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 //## Python::call f (x0, ..) - call a python function (the 2nd arg is a tuple)
 class PythonCall: public Dyadic {
 public:
@@ -1047,7 +1085,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFunction, "Python", "get_function");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-    if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
+        if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
             auto s   = VM_OBJECT_TEXT_VALUE(arg1);
             char* cc  = unicode_to_char(s);
@@ -1102,6 +1140,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonToDictionary(vm).clone());
     oo.push_back(PythonFromDictionary(vm).clone());
 
+    oo.push_back(PythonDirectory(vm).clone());
     oo.push_back(PythonGetAttribute(vm).clone());
     oo.push_back(PythonSetAttribute(vm).clone());
     oo.push_back(PythonGetItem(vm).clone());
@@ -1110,6 +1149,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(PythonEval(vm).clone());
     oo.push_back(PythonEvalFile(vm).clone());
 
+    oo.push_back(PythonIsCallable(vm).clone());
     oo.push_back(PythonCall(vm).clone());
     oo.push_back(PythonFunction(vm).clone());
     oo.push_back(PythonModuleImport(vm).clone());
