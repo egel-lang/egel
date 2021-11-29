@@ -942,7 +942,7 @@ public:
     }
 };
 
-//## Python::apply f (x0, ..) - call a python function (the 2nd arg is a tuple)
+//## Python::apply f (x0, ..) - call a python function with a tuple of arguments
 class PythonApply: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonApply, "Python", "apply");
@@ -1096,7 +1096,7 @@ public:
         if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
             auto s   = VM_OBJECT_TEXT_VALUE(arg1);
-            char* cc  = unicode_to_char(s);
+            char* cc = unicode_to_char(s);
 
             auto func0 = PyObject_GetAttrString(mod, cc);
             delete cc;
