@@ -18,7 +18,9 @@ the bridge.
     user$ sudo make install
 ```
 
-This bridge only supports minimal functionality.
+This bridge supports minimal functionality. Unfortunately, the 
+current Python 3.10 seems buggy and unstable so this development
+is halted for a while.
 
 An example can be found in the `example` directory.
 

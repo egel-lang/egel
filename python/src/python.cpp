@@ -1018,6 +1018,12 @@ public:
             char* code = unicode_to_char(s);
             PyRun_SimpleString(code);
             delete code;
+            auto e = PyErr_Occurred();
+            if (e) {
+                throw PythonObject::create(machine(), e);
+            } else {
+                return machine()->create_none();
+            }
             return machine()->create_none();
         } else {
             THROW_INVALID;

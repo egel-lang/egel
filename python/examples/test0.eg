@@ -176,10 +176,11 @@ def test5 =
     none
 
 def test6 =
-    Python::eval "import sys; import os";
-    Python::eval "sys.path.append(\".\")";
+    Python::eval "import sys";
+    Python::eval "import os";
+    Python::eval "sys.path.append(\"./\")";
     try 
-        let M = module_import "fib.py"
+        let M = module_import "ack"
         in none
     catch [ PE -> throw (from_object PE) ];
     none
@@ -191,5 +192,5 @@ def main =
     test3;
     test4;
     test5;
-#    test6;
+    test6;
     none

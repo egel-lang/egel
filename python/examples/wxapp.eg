@@ -1,0 +1,17 @@
+# Egel-Python3 bridge tests
+
+import "prelude.eg"
+import "python3.ego"
+
+using System
+using Python
+using List
+
+val python3 = run none
+
+def load_wx =
+    Python::eval "import wx"
+
+def main =
+    python3; load_wx
+
