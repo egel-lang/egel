@@ -1,0 +1,46 @@
+# Egel-Python3 bridge tests
+
+import "prelude.eg"
+import "python3.ego"
+
+using System
+using Python
+using List
+
+val python3 = run none
+
+def import_wx =
+    module_import "wx"
+
+def wx_app =
+    [ WX ->
+        let CLASS = get_attribute WX "App" in
+        let APP = apply CLASS (to_tuple tuple) in
+            APP ]
+
+def wx_app_mainloop =
+    [ APP ->
+        let LOOP = get_attribute APP "MainLoop" in
+        apply LOOP (to_tuple tuple);
+        none ]
+
+def wx_frame =
+    [ WX ->
+        let CLASS = get_attribute WX "Frame" in
+        let DICT  = to_dictionary {(to_object "title", to_object "Hello World!")} in
+        let FRAME = call CLASS (to_tuple (tuple (to_object none))) DICT in
+            FRAME ]
+
+def wx_frame_show =
+    [ FRAME ->
+        let SHOW = get_attribute FRAME "Show" in
+        apply SHOW (to_tuple tuple);
+        none ]
+
+def main =
+    let WX  = import_wx in
+    let APP = wx_app WX in
+    let FRAME = wx_frame WX in
+        wx_frame_show FRAME;
+        wx_app_mainloop APP
+
