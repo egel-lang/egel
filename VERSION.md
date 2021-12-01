@@ -5,7 +5,6 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-+ add a Python bridge
 + add a literate scripting mode
 + cleanup internals regarding combinator declarations
 + generate C++ from .eg file (module compilation)
@@ -18,6 +17,9 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+## v0.1.4 -- snakes! everywhere!
+
++ add a Python bridge
 + refactor code to have most (external) calls work over machine
 + static coding combinators (runtime inspection)
 
