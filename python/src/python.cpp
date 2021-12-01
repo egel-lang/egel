@@ -328,7 +328,7 @@ public:
         try {
             auto p0 = egel_to_python(machine(), arg0);
             return PythonObject::create(machine(), p0);
-        } catch (std::exception e) {
+        } catch (std::exception& e) {
             THROW_BADARGS;
         }
     }
@@ -348,7 +348,7 @@ public:
             } else {
                 THROW_BADARGS;
             }
-        } catch (std::exception e) {
+        } catch (std::exception& e) {
             THROW_BADARGS;
         }
     }

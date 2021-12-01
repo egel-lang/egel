@@ -164,6 +164,12 @@ def factorial =
         let Y = from_object (apply F X) in
         print "egel factorial(5) = " Y "\n" ]
 
+def person =
+    [ M ->
+        let P = get_attribute M "p1" in
+        let H = get_attribute P "hello" in
+        apply H (to_tuple tuple) ]
+
 def test5 =
     try 
         let M = module_add "__main__" in
@@ -171,6 +177,7 @@ def test5 =
         let L = map from_object (from_list D) in
         print "egel main directory " L "\n";
         factorial M;
+        person M;
         none
     catch [ PE -> throw (from_object PE) ];
     none
@@ -192,5 +199,5 @@ def main =
     test3;
     test4;
     test5;
-    test6;
+    #test6;
     none
