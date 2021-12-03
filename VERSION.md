@@ -5,11 +5,14 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
++ serialization primitives
++ remote procedure calls (look at grpc)
++ get rid of spurious macros
++ move to C++20 (modules, egel namespace, modern syntax)
+  when libfmt makes it into llvm and gcc?
 + add a literate scripting mode
 + cleanup internals regarding combinator declarations
 + generate C++ from .eg file (module compilation)
-+ move to C++20 (modules, egel namespace, modern syntax)
-  when libfmt makes it into llvm and gcc?
 + time and date
 + add import/export lists to using/namespace
 + target MSVC

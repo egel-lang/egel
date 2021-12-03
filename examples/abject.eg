@@ -1,0 +1,82 @@
+# A collection of terms which are happily accepted by Egel,
+# not so much by a number of Hindley-Milner based type
+# checkers.
+
+import "prelude.eg"
+
+using System
+
+# `ones` is a coalgebraic/lazy infinite list of ones.
+#
+# In Egel, that is achieved by deferring the evaluation of a term,
+# ones none = (1, ones), a pair of a head and a tail.
+
+def ones = \_ -> (1, ones)
+
+# in ghc that term gives:
+# GHCi, version 8.10.7: https://www.haskell.org/ghc/  :? for help
+# Prelude> ones = \_ -> (1, ones)
+#
+# <interactive>:1:8: error:
+#    • Occurs check: cannot construct the infinite type:
+#        b ~ p0 -> (a0, b)
+#    • In the expression: \ _ -> (1, ones)
+#      In an equation for ‘ones’: ones = \ _ -> (1, ones)
+#    • Relevant bindings include ones :: b 
+
+
+# `tuple` can be exploited to blow up a Hindley-Milner type checker.
+# Since with every application the type term doubles, that can 
+# quickly blow up exponentially.
+
+def t = \X -> (X, X)
+
+def term = (t . t . t . t . t) 0
+
+# Or, double the doubling,
+
+def boom = 
+   let F0 = \X -> (X, X) in
+   let F1 = \X -> F0 (F0 X) in
+   let F2 = \X -> F1 (F1 X) in
+   let F3 = \X -> F2 (F2 X) in
+   let F4 = \X -> F3 (F3 X) in
+   let F5 = \X -> F4 (F4 X) in
+       F5 0
+
+# or
+
+def boom2 =
+   let T = (\F -> F . F) in let D = (\X -> (X,X)) in (T.T.T.T) D 0
+
+# A similar trick, the following term has type int but a HM 
+# inferencer often takes a long time to agree.
+# (see "An analysis of ML typability" by Kfoury, Tiuryn and Urzyczyn)
+
+def type_int =
+    let F1 = \K A B -> K A B in
+    let F2 = \K -> K F1 F1 in
+    let F3 = \K -> K F2 F2 in
+    let F4 = \K -> K F3 F3 in
+    let F5 = \K -> K F4 F4 in
+      F5 F4 F3 F2 F1 (+) 2 2
+
+# `tmap` applies a function to both arguments. It will be given # the 
+# constrained type `(a->b) -> (a,a) -> (b,b)` but who wants that?
+
+def tmap = \F (X, Y) -> (F X, F Y)
+
+# A rank-N type looks like:
+#
+# applyBoth 
+#     :: forall a. forall b. (forall x. x -> x) -> (a, b) -> (a, b)
+# applyBoth =
+#     forall a. forall b.           -- [1]
+#     \(f :: forall x. x -> x) ->   -- [2]
+#     \((k, h) :: (a, b)) ->        -- [3]
+#         (f @a k, f @b h)          -- [4]
+# https://www.parsonsmatt.org/2021/11/30/rank_n_types_via_lambda_calculus.html
+#
+# Of course, a tuple is a small container so this holds for all 
+# containers.
+

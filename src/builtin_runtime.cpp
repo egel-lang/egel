@@ -2,6 +2,7 @@
 
 #include "utils.hpp"
 #include "bytecode.hpp"
+#include "serialize.hpp"
 
 #include "builtin_runtime.hpp"
 
@@ -45,6 +46,35 @@ public:
             auto c = VMObjectBytecode(machine(), Code(), s0);
             c.assemble(s1);
             return c.clone();
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## System::serialize t - serialize a term to a text
+class Serialize: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Serialize, "System", "serialize");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        auto s = serialize_to_string(m, arg0);
+        return m->create_text(s);
+    }
+};
+
+//## System::deserialize t - serialize a text to a term
+class Deserialize: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Deserialize, "System", "deserialize");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+        if (m->is_text(arg0)) {
+            auto s = m->value_text(arg0);
+            auto o = deserialize_from_string(m, s);
+            return o;
         } else {
             THROW_BADARGS;
         }
