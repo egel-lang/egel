@@ -1039,74 +1039,69 @@ public:
     void disassemble(std::ostream& os) {
 	auto o = _object;
 	switch (_object->tag()) {
-            case VM_OBJECT_INTEGER:
-                 write_i8(os, VM_OBJECT_INTEGER);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_FLOAT:
-                 write_i8(os, VM_OBJECT_FLOAT);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_CHAR:
-                 write_i8(os, VM_OBJECT_CHAR);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_TEXT:
-                 write_i8(os, VM_OBJECT_TEXT);
-		 write_separator(os);
-		 write_text(os, o->to_text());
-		 break;
-            case VM_OBJECT_POINTER:
-                 write_i8(os, VM_OBJECT_POINTER);
-		 write_separator(os);
-		 write_text(os, "<pointer>"); // XXX
-		 break;
-            case VM_OBJECT_OPAQUE:
-                 write_i8(os, VM_OBJECT_OPAQUE);
-		 write_separator(os);
-		 write_text(os, "<opaque>"); // XXX
-		 break;
-            case VM_OBJECT_COMBINATOR: {
-		 auto c = VM_OBJECT_COMBINATOR_CAST(o);
-		 switch (c->subtag()) {
-	         case VM_SUB_DATA:
-                     write_i8(os, VM_OBJECT_COMBINATOR);
-		     write_separator(os);
-                     write_i16(os, VM_SUB_DATA);
-		     write_separator(os);
-		     write_text(os, c->to_text());
-		     break;
+        case VM_OBJECT_INTEGER:
+            write_i8(os, VM_OBJECT_INTEGER);
+		    write_separator(os);
+		    write_text(os, o->to_text());
+		    break;
+        case VM_OBJECT_FLOAT:
+            write_i8(os, VM_OBJECT_FLOAT);
+            write_separator(os);
+            write_text(os, o->to_text());
+            break;
+        case VM_OBJECT_CHAR:
+            write_i8(os, VM_OBJECT_CHAR);
+            write_separator(os);
+            write_text(os, o->to_text());
+            break;
+        case VM_OBJECT_TEXT:
+            write_i8(os, VM_OBJECT_TEXT);
+            write_separator(os);
+            write_text(os, o->to_text());
+            break;
+        case VM_OBJECT_OPAQUE:
+            write_i8(os, VM_OBJECT_OPAQUE);
+            write_separator(os);
+            write_text(os, "<opaque>"); // XXX
+		    break;
+        case VM_OBJECT_COMBINATOR: {
+		    auto c = VM_OBJECT_COMBINATOR_CAST(o);
+		    switch (c->subtag()) {
+	        case VM_SUB_DATA:
+                write_i8(os, VM_OBJECT_COMBINATOR);
+		        write_separator(os);
+                write_i16(os, VM_SUB_DATA);
+		        write_separator(os);
+		        write_text(os, c->to_text());
+		        break;
 	         case VM_SUB_BYTECODE: {
-		     auto b = VM_OBJECT_BYTECODE_CAST(c);
-                     write_i8(os, VM_OBJECT_COMBINATOR);
-		     write_separator(os);
-                     write_i16(os, VM_SUB_BYTECODE);
-		     write_separator(os);
-		     write_text(os, b->to_text());
-		     write_separator(os);
-		     write_code(os, b->code(), b->machine());
-                     }
-		     break;
-		 default:
-		     break;
-		 }
-		 return;
-		 break;
-                 }
-            case VM_OBJECT_ARRAY: {
-                 write_i8(os, VM_OBJECT_ARRAY);
-		 auto aa = VM_OBJECT_ARRAY_CAST(o);
-		 for (int n = 0; n < aa->size(); n++) {
-		     write_separator(os);
-		     write_text(os, aa->get(n)->to_text());
-		 }
-		 break;
-	    }
+		        auto b = VM_OBJECT_BYTECODE_CAST(c);
+                write_i8(os, VM_OBJECT_COMBINATOR);
+		        write_separator(os);
+                write_i16(os, VM_SUB_BYTECODE);
+		        write_separator(os);
+		        write_text(os, b->to_text());
+		        write_separator(os);
+		        write_code(os, b->code(), b->machine());
+                }
+		        break;
+		    default:
+		        break;
+		    }
+		    return;
+		    break;
+            }
+        case VM_OBJECT_ARRAY: {
+            write_i8(os, VM_OBJECT_ARRAY);
+		    auto aa = VM_OBJECT_ARRAY_CAST(o);
+		    for (int n = 0; n < aa->size(); n++) {
+		        write_separator(os);
+		        write_text(os, aa->get(n)->to_text());
+		    }
+		    break;
+	        }
             default:
-		 break;
+		    break;
         }
     }
 

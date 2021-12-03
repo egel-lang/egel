@@ -27,12 +27,6 @@ template<> struct typetest<vm_char_t> {
     }
 };
 
-template<> struct typetest<vm_ptr_t> {
-    static inline bool func(const VMObjectPtr& o) {
-        return o->tag() == VM_OBJECT_POINTER;
-    }
-};
-
 template<> struct typetest<vm_bool_t> {
     static inline bool func(const VMObjectPtr& o) {
         return (o->symbol() == SYMBOL_FALSE) || (o->symbol() == SYMBOL_TRUE);
@@ -63,12 +57,6 @@ template<> struct value_from<vm_text_t> {
 template<> struct value_from<vm_char_t> {
     static inline vm_char_t func(const VMObjectPtr& o) {
         return VM_OBJECT_CHAR_VALUE(o);
-    }
-};
-
-template<> struct value_from<vm_ptr_t> {
-    static inline vm_ptr_t func(const VMObjectPtr& o) {
-        return VM_OBJECT_POINTER_VALUE(o);
     }
 };
 

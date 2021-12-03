@@ -180,18 +180,15 @@ public:
         auto f = _symbols.enter(STRING_SYSTEM, STRING_FLOAT);
         auto c = _symbols.enter(STRING_SYSTEM, STRING_CHAR);
         auto t = _symbols.enter(STRING_SYSTEM, STRING_TEXT);
-        auto p = _symbols.enter(STRING_SYSTEM, STRING_PTR);
         ASSERT(i == SYMBOL_INT);
         ASSERT(f == SYMBOL_FLOAT);
         ASSERT(c == SYMBOL_CHAR);
         ASSERT(t == SYMBOL_TEXT);
-        ASSERT(p == SYMBOL_POINTER);
         // necessary 'type' definitions
         _int   = VMObjectData::create(this, i);
         _float = VMObjectData::create(this, f);
         _char  = VMObjectData::create(this, c);
         _text  = VMObjectData::create(this, t);
-        _ptr   = VMObjectData::create(this, p);
         _data.enter(_int);
         _data.enter(_float);
         _data.enter(_char);

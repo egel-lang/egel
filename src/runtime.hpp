@@ -95,7 +95,6 @@ enum vm_tag_t {
     VM_OBJECT_FLOAT,
     VM_OBJECT_CHAR,
     VM_OBJECT_TEXT,
-    VM_OBJECT_POINTER,
     VM_OBJECT_OPAQUE,
     VM_OBJECT_COMBINATOR,
     VM_OBJECT_ARRAY,
@@ -106,15 +105,14 @@ const int SYMBOL_INT      = 0;
 const int SYMBOL_FLOAT    = 1;
 const int SYMBOL_CHAR     = 2;
 const int SYMBOL_TEXT     = 3;
-const int SYMBOL_POINTER  = 4;
 
-const int SYMBOL_NONE     = 5;
-const int SYMBOL_TRUE     = 6;
-const int SYMBOL_FALSE    = 7;
+const int SYMBOL_NONE     = 4;
+const int SYMBOL_TRUE     = 5;
+const int SYMBOL_FALSE    = 6;
 
-const int SYMBOL_TUPLE    = 8;
-const int SYMBOL_NIL      = 9;
-const int SYMBOL_CONS     = 10;
+const int SYMBOL_TUPLE    = 7;
+const int SYMBOL_NIL      = 8;
+const int SYMBOL_CONS     = 9;
 
 #define VM_OBJECT_NONE_TEST(o)  (o->symbol() == SYMBOL_NONE)
 #define VM_OBJECT_FALSE_TEST(o) (o->symbol() == SYMBOL_FALSE)
@@ -759,49 +757,6 @@ typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
 #define VM_OBJECT_TEXT_VALUE(a) \
     (VM_OBJECT_TEXT_CAST(a)->value())
 
-class VMObjectPointer : public VMObjectLiteral {
-public:
-    VMObjectPointer(const vm_ptr_t &v)
-        : VMObjectLiteral(VM_OBJECT_POINTER), _value(v) {
-    };
-
-    VMObjectPointer(const VMObjectPointer& l)
-        : VMObjectPointer(l.value()) {
-    }
-
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new VMObjectPointer(*this));
-    }
-
-    static VMObjectPtr create(const vm_ptr_t& v) {
-        return VMObjectPtr(new VMObjectPointer(v));
-    }
-
-    symbol_t symbol() const override {
-        return SYMBOL_POINTER;
-    }
-
-    void render(std::ostream& os) const override {
-        os << '<' << _value << '>';
-    }
-
-    vm_ptr_t value() const {
-        return _value;
-    }
-
-private:
-    vm_ptr_t    _value;
-};
-
-typedef std::shared_ptr<VMObjectPointer> VMObjectPointerPtr;
-#define VM_OBJECT_POINTER_CAST(a) \
-    std::static_pointer_cast<VMObjectPointer>(a)
-#define VM_OBJECT_POINTER_SPLIT(a, v) \
-    auto _##a = VM_OBJECT_POINTER_CAST(a); \
-    auto v    = _##a->value();
-#define VM_OBJECT_POINTER_VALUE(a) \
-    (VM_OBJECT_POINTER_CAST(a)->value())
-
 class VMObjectArray : public VMObject {
 public:
     VMObjectArray()
@@ -1261,14 +1216,6 @@ struct CompareVMObjectPtr
             case VM_OBJECT_TEXT: {
                     auto v0 = VM_OBJECT_TEXT_VALUE(a0);
                     auto v1 = VM_OBJECT_TEXT_VALUE(a1);
-                    if (v0 < v1) return -1;
-                    else if (v1 < v0) return 1;
-                    else return 0;
-                }
-                break;
-            case VM_OBJECT_POINTER: {
-                    auto v0 = VM_OBJECT_POINTER_VALUE(a0);
-                    auto v1 = VM_OBJECT_POINTER_VALUE(a1);
                     if (v0 < v1) return -1;
                     else if (v1 < v0) return 1;
                     else return 0;
