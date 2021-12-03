@@ -193,7 +193,6 @@ public:
         _data.enter(_float);
         _data.enter(_char);
         _data.enter(_text);
-        _data.enter(_ptr);
         auto none0  = _symbols.enter(STRING_SYSTEM, STRING_NONE);
         auto true0  = _symbols.enter(STRING_SYSTEM, STRING_TRUE);
         auto false0 = _symbols.enter(STRING_SYSTEM, STRING_FALSE);
@@ -786,7 +785,6 @@ private:
     VMObjectPtr     _float;
     VMObjectPtr     _char;
     VMObjectPtr     _text;
-    VMObjectPtr     _ptr;
 
     VMObjectPtr     _none;
     VMObjectPtr     _true;
