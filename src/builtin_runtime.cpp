@@ -254,6 +254,9 @@ std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
 
     oo.push_back(Dis(vm).clone());
 
+    oo.push_back(Serialize(vm).clone());
+    oo.push_back(Deserialize(vm).clone());
+
     oo.push_back(Modules(vm).clone());
     oo.push_back(IsModule(vm).clone());
     oo.push_back(QueryModuleName(vm).clone());
