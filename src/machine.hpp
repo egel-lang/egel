@@ -558,6 +558,15 @@ public:
         return VM_OBJECT_ARRAY_VALUE(o);
     }
 
+    bool is_combinator(const VMObjectPtr& o) override {
+        return VM_OBJECT_COMBINATOR_TEST(o);
+    }
+
+    icu::UnicodeString value_symbol(const VMObjectPtr& o) override {
+        auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+        return _symbols.get(sym);
+    }
+
     VMObjectPtr create_data(const icu::UnicodeString& n) override {
         return VMObjectData::create(this, n);
     }

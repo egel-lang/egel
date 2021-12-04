@@ -135,6 +135,12 @@ namespace List (
         [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) (zip_with Z XX YY)
         | Z XX YY               -> nil ]
 
+    ## System::transpose ll - transpose a list of lists
+    def transpose =
+        [ (cons nil XX) -> nil
+        | XX            -> cons (map head XX) (transpose (map tail XX)) ]
+
+
     ## System::any p l - checks whether any element of a list satisfies a predicate
     def any =
         [ P nil          -> false

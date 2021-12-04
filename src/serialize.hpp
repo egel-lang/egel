@@ -8,8 +8,9 @@
 
 #include <map>
 #include <vector>
-#include <queue>
+#include <stack>
 #include <ios>
+#include <ostream>
 
 // unfortunately it looks better to copy the entire object
 // hierarchy of the runtime in order not to taint runtimes
@@ -218,6 +219,36 @@ inline SerialObjectPtr SerialObject::create_text(const objectid_t id, const vm_t
     return SerialText::create(id, n);
 };
 
+class SerialArray: public SerialObject {
+public:
+    SerialArray(const objectid_t id, const std::vector<objectid_t>& c)
+    : SerialObject(VM_OBJECT_ARRAY, id), _value(c) {
+    }
+
+    SerialArray(const SerialArray& s)
+    : SerialArray(s.get_id(), s.get_value()) {
+    }
+
+    static SerialObjectPtr create(const objectid_t id, const std::vector<objectid_t>& c) {
+        return SerialObjectPtr(new SerialArray(id, c));
+    }
+
+    std::vector<objectid_t> get_value() const {
+        return _value;
+    }
+
+private:
+    std::vector<objectid_t>  _value;
+};
+
+inline std::vector<objectid_t> SerialObject::get_array(const SerialObjectPtr& o) {
+    return std::static_pointer_cast<SerialArray>(o)->get_value();
+};
+
+inline SerialObjectPtr SerialObject::create_array(const objectid_t id, const std::vector<objectid_t>& n) {
+    return SerialArray::create(id, n);
+};
+
 class SerialCombinator: public SerialObject {
 public:
     SerialCombinator(const objectid_t id, const icu::UnicodeString& c)
@@ -248,20 +279,154 @@ inline SerialObjectPtr SerialObject::create_combinator(const objectid_t id, cons
     return SerialCombinator::create(id, n);
 };
 
-/*
-inline VMObjectMap graph_to_map(const VMObjectPtr& o) {
-    VMObjectsQueue work;
-};
-*/
+typedef std::vector<SerialObjectPtr> SerialObjectPtrs;
 
-/*
-typedef std::vector<const VMObject*>    VMObjectsTo;
-typedef std::map<const VMObject*, objectid_t> VMObjectsFrom;
-typedef std::queue<const VMObject*>     VMObjectsQueue;
-*/
+typedef std::vector<VMObjectPtr>            VMObjectsTo;
+typedef std::map<VMObjectPtr, objectid_t>   VMObjectsFrom;
+typedef std::stack<VMObjectPtr>             VMObjectsStack;
+typedef std::set<VMObjectPtr>               VMObjectsSet;
+
+inline SerialObjectPtrs to_dag(VM* m, const VMObjectPtr& o) {
+    VMObjectsStack work0;
+    work0.push(o);
+
+    VMObjectsSet   visited;
+    VMObjectsStack work1;
+
+    while (!work0.empty()) {
+        auto o = work0.top(); work0.pop();
+        if (!visited.contains(o)) {
+            visited.insert(o);
+            work1.push(o);
+            if (m->is_array(o)) {
+                auto n = m->array_size(o);
+                for (auto i=0; i<n; i++) {
+                    auto o0 = m->array_get(o, i);
+                    work0.push(o0);
+                }
+            }
+        }
+    }
+    visited.clear();
+
+    VMObjectsFrom    from;
+    SerialObjectPtrs dag;
+
+    while (!work1.empty()) {
+        auto o = work0.top(); work0.pop();
+        auto sz = dag.size();
+        switch (o->tag()) {
+        case VM_OBJECT_INTEGER: {
+            auto n = m->value_integer(o);
+            auto s = SerialObject::create_integer(sz, n);
+            dag.push_back(s);
+            from[o] = sz;
+        }
+        break;
+        case VM_OBJECT_FLOAT: {
+            auto f = m->value_float(o);
+            auto s = SerialObject::create_float(sz, f);
+            dag.push_back(s);
+            from[o] = sz;
+        }
+        break;
+        case VM_OBJECT_CHAR: {
+            auto c = m->value_char(o);
+            auto s = SerialObject::create_char(sz, c);
+            dag.push_back(s);
+            from[o] = sz;
+        }
+        break;
+        case VM_OBJECT_TEXT: {
+            auto t = m->value_text(o);
+            auto s = SerialObject::create_text(sz, t);
+            dag.push_back(s);
+            from[o] = sz;
+        }
+        break;
+        case VM_OBJECT_COMBINATOR: {
+            auto t = m->value_symbol(o);
+            auto s = SerialObject::create_combinator(sz, t);
+            dag.push_back(s);
+            from[o] = sz;
+        }
+        break;
+        case VM_OBJECT_ARRAY: {
+            auto oo = m->array_vector(o);
+            std::vector<objectid_t> ss;
+            for (auto& o0:oo) {
+                ss.push_back(from[o0]);
+            }
+            auto s = SerialObject::create_array(sz, ss);
+            dag.push_back(s);
+            from[o] = sz;
+        }
+        break;
+        case VM_OBJECT_OPAQUE:
+            throw m->create_text("cannot serialize opaque"); // change this once
+        break;
+        }
+    }
+
+    return dag;
+};
+
+inline void dag_serialize(VM* m, const SerialObjectPtrs& dag, std::ostream& os) {
+    for (auto& s:dag) {
+        switch (s->get_tag()) {
+        case VM_OBJECT_INTEGER: {
+            auto n = SerialObject::get_integer(s);
+            os << s->get_id() << ": i " << n << std::endl;
+        }
+        break;
+        case VM_OBJECT_FLOAT: {
+            auto f = SerialObject::get_float(s);
+            os << s->get_id() << ": f " << f << std::endl;
+        }
+        break;
+        case VM_OBJECT_CHAR: {
+            auto c = SerialObject::get_char(s);
+            os << s->get_id() << ": c " << c << std::endl;
+        }
+        break;
+        case VM_OBJECT_TEXT: {
+            auto t = SerialObject::get_text(s);
+            os << s->get_id() << ": t " << t << std::endl;
+        }
+        break;
+        case VM_OBJECT_COMBINATOR: {
+            auto t = SerialObject::get_combinator(s);
+            os << s->get_id() << ": t " << t << std::endl;
+        }
+        break;
+        case VM_OBJECT_ARRAY: {
+            auto ss = SerialObject::get_array(s);
+            os << s->get_id() << ": a [";
+            for (auto& s:ss) {
+                os << " " << s;
+            }
+            os << "]" << std::endl;
+        }
+        break;
+        case VM_OBJECT_OPAQUE: {
+            throw m->create_text("cannot serialize opaque"); // change this once
+        }
+        break;
+        }
+    }
+};
+
+inline icu::UnicodeString dag_text(VM* m, const SerialObjectPtrs& dag) {
+    std::stringstream ss;
+    dag_serialize(m, dag, ss);
+    icu::UnicodeString u(ss.str().c_str());
+    return u;
+};
 
 inline icu::UnicodeString serialize_to_string(VM* m, const VMObjectPtr& o) {
-    throw m->create_text("not implemented");
+    auto dag = to_dag(m, o);
+    auto s = dag_text(m, dag);
+    return s;
 };
 
 inline VMObjectPtr deserialize_from_string(VM* m, const icu::UnicodeString& o) {

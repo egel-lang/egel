@@ -438,6 +438,7 @@ public:
     virtual bool        is_char(const VMObjectPtr& o) = 0;
     virtual bool        is_text(const VMObjectPtr& o) = 0;
 
+
     virtual vm_int_t    value_integer(const VMObjectPtr& o) = 0;
     virtual vm_float_t  value_float(const VMObjectPtr& o) = 0;
     virtual vm_char_t   value_char(const VMObjectPtr& o) = 0;
@@ -467,6 +468,9 @@ public:
     virtual VMObjectPtr  array_get(const VMObjectPtr& o, int n) = 0;
     virtual void         array_set(VMObjectPtr& o, int n, const VMObjectPtr& e) = 0;
     virtual VMObjectPtrs array_vector(const VMObjectPtr& o) = 0;
+
+    virtual bool        is_combinator(const VMObjectPtr& o) = 0;
+    virtual vm_text_t   value_symbol(const VMObjectPtr& o) = 0;
 
     virtual VMObjectPtr create_data(const icu::UnicodeString& s) = 0;
     virtual VMObjectPtr create_data(const icu::UnicodeString& s0, const icu::UnicodeString& s1) = 0;
@@ -895,7 +899,7 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr& thunk) const {
             vv.push_back(tt->get(n));
         }
 
-        auto r = VMObjectArray(vv).clone();
+        auto r = VMObjectArray::create(vv);
 
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
         auto rta   = VM_OBJECT_ARRAY_CAST(rt);
@@ -926,7 +930,7 @@ inline VMObjectPtr VMObjectArray::reduce(const VMObjectPtr& thunk) const {
         vv.push_back(tt[n]);
     }
 
-    auto t = VMObjectArray(vv).clone();
+    auto t = VMObjectArray::create(vv);
 
     return t;
 }
@@ -1123,22 +1127,22 @@ public:
     }
 
     static VMObjectPtr create(VM* vm, const symbol_t s) {
-        return VMObjectData(vm, s).clone();
+        return VMObjectPtr(new VMObjectData(vm, s));
     }
 
     static VMObjectPtr create(VM* vm, const icu::UnicodeString& s) {
         auto sym = vm->enter_symbol(s);
-        return VMObjectData(vm, sym).clone();
+        return VMObjectData::create(vm, sym);
     }
 
     static VMObjectPtr create(VM* vm, const icu::UnicodeString& s0, const icu::UnicodeString& s1) {
         auto sym = vm->enter_symbol(s0, s1);
-        return VMObjectData(vm, sym).clone();
+        return VMObjectData::create(vm, sym);
     }
 
     static VMObjectPtr create(VM* vm, const UnicodeStrings& ss, const icu::UnicodeString& s) {
         auto sym = vm->enter_symbol(ss, s);
-        return VMObjectData(vm, sym).clone();
+        return VMObjectData::create(vm, sym);
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -1384,7 +1388,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
                 }
             } catch (VMObjectPtr e) {
                 auto exc   = tt[3];
@@ -1398,14 +1402,14 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             VMObjectPtrs rr;
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         // also return spurious arguments
@@ -1415,7 +1419,7 @@ public:
             for (unsigned int i = 5; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
@@ -1516,7 +1520,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
                 }
             } catch (VMObjectPtr e) {
                 auto exc   = tt[3];
@@ -1530,14 +1534,14 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             VMObjectPtrs rr;
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         // also return spurious arguments
@@ -1547,7 +1551,7 @@ public:
             for (unsigned int i = 6; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
@@ -1649,7 +1653,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
                 }
             } catch (VMObjectPtr e) {
                 auto exc   = tt[3];
@@ -1663,14 +1667,14 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             VMObjectPtrs rr;
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         // also return spurious arguments
@@ -1680,7 +1684,7 @@ public:
             for (unsigned int i = 7; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
@@ -1783,7 +1787,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
                 }
             } catch (VMObjectPtr e) {
                 auto exc   = tt[3];
@@ -1797,14 +1801,14 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             VMObjectPtrs rr;
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         // also return spurious arguments
@@ -1814,7 +1818,7 @@ public:
             for (unsigned int i = 8; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
@@ -1918,7 +1922,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
                 }
             } catch (VMObjectPtr e) {
                 auto exc   = tt[3];
@@ -1932,14 +1936,14 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             VMObjectPtrs rr;
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         auto index = VM_OBJECT_INTEGER_VALUE(rti);
@@ -2043,7 +2047,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
 
                     auto index = VM_OBJECT_INTEGER_VALUE(rti);
                     auto rta   = VM_OBJECT_ARRAY_CAST(rt);
@@ -2063,7 +2067,7 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             // This seems the way to go about it.. Check Binary etc. for this.
@@ -2071,7 +2075,7 @@ public:
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
             auto index = VM_OBJECT_INTEGER_VALUE(rti);
             auto rta   = VM_OBJECT_ARRAY_CAST(rt);
             rta->set(index, r);
@@ -2135,7 +2139,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
 
                     auto index = VM_OBJECT_INTEGER_VALUE(rti);
                     auto rta   = VM_OBJECT_ARRAY_CAST(rt);
@@ -2155,14 +2159,14 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             VMObjectPtrs rr;
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         VMObjectPtrs kk;
@@ -2222,7 +2226,7 @@ public:
                     for (unsigned int i = 4; i<tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
-                    r = VMObjectArray(rr).clone();
+                    r = VMObjectArray::create(rr);
 
                     auto index = VM_OBJECT_INTEGER_VALUE(rti);
                     auto rta   = VM_OBJECT_ARRAY_CAST(rt);
@@ -2242,14 +2246,14 @@ public:
                 rr.push_back(ee[4]);
                 rr.push_back(e);
 
-                return VMObjectArray(rr).clone();
+                return VMObjectArray::create(rr);
             }
         } else {
             VMObjectPtrs rr;
             for (unsigned int i = 4; i<tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            r = VMObjectArray(rr).clone();
+            r = VMObjectArray::create(rr);
         }
 
         VMObjectPtrs kk;
