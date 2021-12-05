@@ -313,7 +313,7 @@ inline SerialObjectPtrs to_dag(VM* m, const VMObjectPtr& o) {
     SerialObjectPtrs dag;
 
     while (!work1.empty()) {
-        auto o = work0.top(); work0.pop();
+        auto o = work1.top(); work1.pop();
         auto sz = dag.size();
         switch (o->tag()) {
         case VM_OBJECT_INTEGER: {
@@ -386,17 +386,21 @@ inline void dag_serialize(VM* m, const SerialObjectPtrs& dag, std::ostream& os) 
         break;
         case VM_OBJECT_CHAR: {
             auto c = SerialObject::get_char(s);
-            os << s->get_id() << ": c " << c << std::endl;
+            icu::UnicodeString cc;
+            cc = uescape(cc+c);
+            os << s->get_id() << ": c '" << cc << "'" << std::endl;
         }
         break;
         case VM_OBJECT_TEXT: {
             auto t = SerialObject::get_text(s);
-            os << s->get_id() << ": t " << t << std::endl;
+            icu::UnicodeString cc;
+            cc = uescape(t);
+            os << s->get_id() << ": t \"" << cc << "\"" << std::endl;
         }
         break;
         case VM_OBJECT_COMBINATOR: {
             auto t = SerialObject::get_combinator(s);
-            os << s->get_id() << ": t " << t << std::endl;
+            os << s->get_id() << ": o " << t << std::endl;
         }
         break;
         case VM_OBJECT_ARRAY: {
@@ -405,7 +409,7 @@ inline void dag_serialize(VM* m, const SerialObjectPtrs& dag, std::ostream& os) 
             for (auto& s:ss) {
                 os << " " << s;
             }
-            os << "]" << std::endl;
+            os << " ]" << std::endl;
         }
         break;
         case VM_OBJECT_OPAQUE: {
