@@ -252,7 +252,7 @@ inline SerialObjectPtr SerialObject::create_array(const objectid_t id, const std
 class SerialCombinator: public SerialObject {
 public:
     SerialCombinator(const objectid_t id, const icu::UnicodeString& c)
-    : SerialObject(VM_OBJECT_TEXT, id), _value(c) {
+    : SerialObject(VM_OBJECT_COMBINATOR, id), _value(c) {
     }
 
     SerialCombinator(const SerialCombinator& s)
