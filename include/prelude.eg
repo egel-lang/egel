@@ -25,6 +25,9 @@ namespace System (
     ## System::uncurry f (x, y) - uncurry arguments
     def uncurry = [ F (X,Y) -> F X Y ]
 
+    ## System::iter n f x - iterate a function
+    def iter = [ 0 F X -> X | N F X -> iter (N - 1) F (F X) ]
+
     ## System::fst (x, y) - proj0 on pair
     def fst = [ (X,Y) -> X ]
 
