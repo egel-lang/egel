@@ -122,6 +122,13 @@ namespace List (
         | P (cons X XX) -> if P X then cons X (filter P XX) 
                                  else filter P XX ]
 
+    ## List::split p l - split a list into members and non-members of a predicate
+    def split =
+        [ P nil -> (nil, nil)
+        | P (cons X XX) -> 
+            [(XX0, XX1) -> if P X then (cons X XX0, XX1) else (XX0, cons X XX1) ]
+                (split P XX) ]
+
     ## List::flatten ll - flatten a list of lists to a list
     def flatten =
         [ nil                   -> nil
