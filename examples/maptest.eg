@@ -6,6 +6,33 @@ import "map.eg"
 using System
 using Map
 
+
+def test_is_empty =
+    [ M -> print "is_empty: " (is_empty M) "\n" ]
+
+def test_size =
+    [ M S -> print "size = " (size M) " eq " ((size M) == S) "\n" ]
+
+# test empty
+
+def test_empty =
+    test_is_empty empty;
+    test_size empty 0
+
+# test singleton
+
+def singleton =
+    [ K V -> insert K V empty]
+
+def test_nth =
+    [ M K V -> print K " -> " (nth M K) " eq " ((nth M K) == V) "\n" ]
+
+def test_singleton =
+    let S = singleton 0 1 in 
+    test_is_empty S;
+    test_size S 1;
+    test_nth S 0 1
+
 # create a list of tuples
 
 val inc_list = List::map [N -> (N,N+1)] (List::from_to 1 9)
@@ -14,14 +41,10 @@ val inc_list = List::map [N -> (N,N+1)] (List::from_to 1 9)
 
 def inc_map = from_list inc_list
 
-# ask for a few elements
-
-def test_nth =
-    let F = [ N -> print N " -> " (nth inc_map N) ] in
-        F 0; F 3; F 8
-
-def test_size =
+def test_size0 =
     [ M -> (size M) == (List::length (to_list M)) ]
 
 def main =
+    test_empty;
+    test_singleton;
     inc_map

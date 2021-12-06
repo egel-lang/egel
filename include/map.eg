@@ -10,8 +10,8 @@ namespace Map (
 
     data empty, node
 
-    ## Map::empty_test m - test for emptyness
-    def empty_test =
+    ## Map::is_empty m - test for emptyness
+    def is_empty =
         [ empty -> true
         | _     -> false ]
 
@@ -156,7 +156,7 @@ namespace Map (
 
     ## Map::from_list l - list to map
     def from_list =
-        List::foldl [(K,V) M -> insert K V M] empty
+        List::foldl [M (K,V) -> insert K V M] empty
 
     ## Map::position m k - position of key in map
     def position =
@@ -168,11 +168,11 @@ namespace Map (
 
     ## Map::domain m - the keys in the map
     def domain =
-        [ M -> List::map [ (A,B) -> A ] (to_list M) ]
+        [ M -> foldr [ K V L -> cons K L ] nil M ]
 
     ## Map::range m - the values in the map
     def range =
-        [ M -> List::map [ (A,B) -> B ] (to_list M) ]
+        [ M -> foldr [ K V L -> cons V L ] nil M ]
 
     ## Map::any p m - has a key/value in map satisfying predicate
     def any =
