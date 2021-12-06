@@ -1,0 +1,6 @@
+# Egel fully supports ieee754
+
+using System
+
+def main =
+    9007199254740993.0 + 1.0
