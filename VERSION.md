@@ -6,11 +6,13 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + serialization primitives
++ rewrite the runtime to make the interpreter performant
 + remote procedure calls (look at grpc)
 + get rid of spurious macros
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc?
 + add a literate scripting mode
++ add backtick `\` f` as a shorthand for `quote f`
 + cleanup internals regarding combinator declarations
 + generate C++ from .eg file (module compilation)
 + time and date

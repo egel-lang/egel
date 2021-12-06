@@ -45,135 +45,149 @@ namespace List (
 
     using System
 
-    ## System::length l - length of a list
+    ## List::length l - length of a list
     def length =
         [ nil -> 0
         | (cons X XX) -> 1 + (length XX) ]
 
-    ## System::foldl f z l - left fold on a list
+    ## List::foldl f z l - left fold on a list
     def foldl =
         [ F Z nil -> Z
         | F Z (cons X XX) -> foldl F (F Z X) XX ]
 
-    ## System::foldr f z l - right fold on a list
+    ## List::foldr f z l - right fold on a list
     def foldr =
         [ F Z nil -> Z
         | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
-    ## System::head l - head of a list
+    ## List::head l - head of a list
     def head =
         [ (cons X XX) -> X ]
 
-    ## System::tail l - tail of a list
+    ## List::tail l - tail of a list
     def tail =
         [ (cons X XX) -> XX ]
 
-    ## System::++ l0 l1 - concatenation of two lists
+    ## List::++ l0 l1 - concatenation of two lists
     def ++ =
         [ nil YY -> YY
         | (cons X XX) YY -> cons X (XX ++ YY) ]
 
-    ## System::map f l - map a function over a list
+    ## List::map f l - map a function over a list
     def map =
         [ F nil -> nil
         | F (cons X XX) -> let Y = F X in cons Y (map F XX) ]
 
-    ## System::reverse l - reverse a list
+    ## List::reverse l - reverse a list
     def reverse = 
        foldl (flip cons) nil
 
-    ## System::block n - list of number from 0 to n exclusive
+    ## List::block n - list of number from 0 to n exclusive
     def block =
         [ 0 -> nil
         | N -> cons (N - 1) (block (N - 1)) ]
 
-    ## System::nth n l - nth element of a list
+    ## List::nth n l - nth element of a list
     def nth =
         [ 0 (cons X XX) -> X
         | N (cons X XX) -> nth (N - 1) XX ]
 
-    ## System::insert n x l - insert an element at given position
+    ## List::insert n x l - insert an element at given position
     def insert =
         [ 0 X (cons Y YY) -> cons X YY
         | I X (cons Y YY) -> cons Y (insert (I - 1) X YY) ]
 
-    ## System::take n l - take the first n elements of a list
+    ## List::take n l - take the first n elements of a list
     def take =
         [ 0 XX -> nil
         | N (cons X XX) -> cons X (take (N - 1) XX) ]
 
-    ## System::drop n l - drop the first n elements of a list
+    ## List::drop n l - drop the first n elements of a list
     def drop =
         [ 0 XX -> XX
         | N (cons X XX) -> drop (N - 1) XX ]
 
-    ## System::from_to min max - list of numbers for min to max (exclusive)
+    ## List::from_to min max - list of numbers for min to max (exclusive)
     def from_to =
         [ X Y -> 
             if X <= Y then cons X (from_to (X+1) Y)
             else nil ]
 
-    ## System::filter p l - filter all members from a list which satisfy a predicate
+    ## List::filter p l - filter all members from a list which satisfy a predicate
     def filter =
         [ P nil -> nil
         | P (cons X XX) -> if P X then cons X (filter P XX) 
                                  else filter P XX ]
 
-    ## System::flatten ll - flatten a list of lists to a list
+    ## List::flatten ll - flatten a list of lists to a list
     def flatten =
         [ nil                   -> nil
         | (cons nil YY)         -> flatten YY
         | (cons (cons X XX) YY) -> cons X (flatten (cons XX YY)) ]
 
-    ## System::zip l0 l1 - zip to lists to a list of pairs
+    ## List::zip l0 l1 - zip to lists to a list of pairs
     def zip =
         [ (cons X XX) (cons Y YY)  -> cons (X,Y) (zip XX YY)
         | XX YY                    -> nil ]
 
-    ## System::zip_with f l0 l1 - apply a function pairwise to members of two lists
+    ## List::zip_with f l0 l1 - apply a function pairwise to members of two lists
     def zip_with =
         [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) (zip_with Z XX YY)
         | Z XX YY               -> nil ]
 
-    ## System::transpose ll - transpose a list of lists
+    ## List::transpose ll - transpose a list of lists
     def transpose =
         [ (cons nil XX) -> nil
         | XX            -> cons (map head XX) (transpose (map tail XX)) ]
 
 
-    ## System::any p l - checks whether any element of a list satisfies a predicate
+    ## List::any p l - checks whether any element of a list satisfies a predicate
     def any =
         [ P nil          -> false
         | P (cons B BB)  -> if P B then true else any P BB ]
 
-    ## System::all p l - checks whether all elements of a list  satisfies a predicate
+    ## List::all p l - checks whether all elements of a list  satisfies a predicate
     def all =
         [ P nil          -> true
         | P (cons B BB)  -> if P B then all P BB else false ]
 
-    ## System::elem x l - membership test
+    ## List::elem x l - membership test
     def elem =
         [ X -> any ((==) X) ]
 
-    ## System::not_elem x l - inverse membership test
+    ## List::not_elem x l - inverse membership test
     def not_elem =
         [ X -> all ((/=) X) ]
 
-    ## System::union x l - union of two lists (nˆ2 complexity)
+    ## List::union x l - union of two lists (nˆ2 complexity)
     def union =
         [ nil YY            -> YY
         | (cons X XX) YY    -> if elem X YY then union XX YY else cons X (union XX YY) ]
 
-    ## System::insert_everywhere x l - insert a member in every position of a list
+    ## List::insert_everywhere x l - insert a member in every position of a list
     def insert_everywhere =
         [ X nil -> {{X}}
         | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insert_everywhere X YY)) ]
 
-    ## System::concat_map f l - concat map
+    ## List::concat_map f l - concat map
     def concat_map =
         [ F -> foldr ((++) . F) nil ]
 
-    ## System::permutations l - all permutations of a list
+    ## List::permutations l - all permutations of a list
     def permutations =
         foldr (concat_map . insert_everywhere) {{}}
+
+    def merge =
+        [ XX nil -> XX
+        | nil YY -> YY
+        | (cons X XX) (cons Y YY) ->
+                if X <= Y then cons X (merge XX (cons Y YY))
+                else cons Y (merge (cons X XX) YY) ]
+
+    ## List::sort l - merge sort 
+    def sort =
+        [ nil -> nil | (cons X nil) -> cons X nil
+        | XX -> let L = length XX in
+                merge (sort (take (L/2) XX)) (sort (drop (L/2) XX)) ]
+
 )

@@ -40,7 +40,7 @@ Those modules are dynamically loaded.
 
 ## TUTORIAL
 
-Egel is an expression language and the interpreter a straightforward symbolic evaluator.
+Egel is an expression language and the interpreter a symbolic evaluator.
 
 ### Expressions
 

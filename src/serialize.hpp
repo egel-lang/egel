@@ -371,7 +371,60 @@ inline SerialObjectPtrs to_dag(VM* m, const VMObjectPtr& o) {
     return dag;
 };
 
+
+inline VMObjectPtr from_dag(VM* m, const SerialObjectPtrs& dag) {
+    std::map<objectid_t, VMObjectPtr> map;
+
+    for (auto& d:dag) {
+        switch (d->get_tag()) {
+        case VM_OBJECT_INTEGER: {
+            auto n = SerialObject::get_integer(d);
+            auto o = m->create_integer(n);
+            map[d->get_id()] = o;
+        }
+        break;
+        case VM_OBJECT_FLOAT: {
+            auto f = SerialObject::get_float(d);
+            auto o = m->create_float(f);
+            map[d->get_id()] = o;
+        }
+        break;
+        case VM_OBJECT_CHAR: {
+            auto c = SerialObject::get_char(d);
+            auto o = m->create_char(c);
+            map[d->get_id()] = o;
+        }
+        break;
+        case VM_OBJECT_TEXT: {
+            auto t = SerialObject::get_text(d);
+            auto o = m->create_text(t);
+            map[d->get_id()] = o;
+        }
+        break;
+        case VM_OBJECT_COMBINATOR: {
+            auto t = SerialObject::get_combinator(d);
+            auto o = m->get_symbol(t);
+            map[d->get_id()] = o;
+        }
+        break;
+        case VM_OBJECT_ARRAY: {
+            auto nn = SerialObject::get_array(d);
+            auto o = m->create_array();
+            for (auto& n: nn) {
+                m->array_append(o, map[n]);
+            }
+            map[d->get_id()] = o;
+        }
+        break;
+        default:
+            throw m->create_text("unhandled deserialization case");
+        }
+    }
+    return map[dag.size()-1];
+}
+
 inline void dag_serialize(VM* m, const SerialObjectPtrs& dag, std::ostream& os) {
+    os << "[" << std::endl;
     for (auto& s:dag) {
         switch (s->get_tag()) {
         case VM_OBJECT_INTEGER: {
@@ -418,6 +471,193 @@ inline void dag_serialize(VM* m, const SerialObjectPtrs& dag, std::ostream& os) 
         break;
         }
     }
+    os << "]" << std::endl;
+};
+
+inline bool is_char(std::istream& is, char c) {
+    auto p = is.peek();
+    return p == c;
+};
+
+inline int get_char(std::istream& is) {
+    return is.get();
+};
+inline void skip_char(std::istream& is) {
+    get_char(is);
+};
+
+inline void forced_char(VM* m, std::istream& is, char c) {
+    if (is_char(is, c)) {
+        skip_char(is);
+    } else {
+        throw m->create_text("deserialization error");
+    }
+};
+
+inline void skip_white(VM*m, std::istream& is) {
+    while (is_char(is, ' ') || is_char(is, '\n')) {
+        skip_char(is);
+    }
+};
+
+inline vm_char_t parse_char(VM* m, std::istream& is) {
+    forced_char(m, is, '\'');
+    char buffer[32];
+    int n = 0;
+    while (!is_char(is, '\'')) {
+        auto c = (char) get_char(is);
+        if (c == '\\') {
+            buffer[n] = c; n++;
+            c = get_char(is);
+            buffer[n] = c; n++;
+        } else {
+            buffer[n] = c; n++;
+        }
+    }
+    forced_char(m, is, '\'');
+    buffer[n] = '\0';
+
+    auto s = char_to_unicode(buffer);
+    auto u = unicode_unescape(s);
+    return u.char32At(0);
+};
+
+inline icu::UnicodeString parse_text(VM* m, std::istream& is) {
+    forced_char(m, is, '\"');
+    int n = 0; int capacity = 8192;
+    char *buffer = (char*) malloc(capacity);
+    while (!is_char(is, '\"')) {
+        // realloc if necessary
+        if (n >= (capacity - 4)) { // be generous
+            capacity += capacity;
+            buffer = (char*) realloc(buffer, capacity);
+        }
+        auto c = (char) get_char(is);
+        if (c == '\\') {
+            buffer[n] = c; n++;
+            c = get_char(is);
+            buffer[n] = c; n++;
+        } else {
+            buffer[n] = c; n++;
+        }
+    }
+    forced_char(m, is, '\"');
+    buffer[n] = '\0';
+
+    auto s = char_to_unicode(buffer);
+    auto u = unicode_unescape(s);
+    return u;
+};
+
+inline icu::UnicodeString parse_symbol(VM* m, std::istream& is) {
+    int n = 0; int capacity = 8192;
+    char *buffer = (char*) malloc(capacity);
+    while (!is_char(is, '\n')) {
+        // realloc if necessary
+        if (n >= (capacity - 4)) { // be generous
+            capacity += capacity;
+            buffer = (char*) realloc(buffer, capacity);
+        }
+        auto c = (char) get_char(is);
+        if (c == '\\') {
+            buffer[n] = c; n++;
+            c = get_char(is);
+            buffer[n] = c; n++;
+        } else {
+            buffer[n] = c; n++;
+        }
+    }
+    buffer[n] = '\0';
+
+
+    auto s = char_to_unicode((const char*)buffer);
+    free(buffer);
+    return s;
+};
+
+inline std::vector<objectid_t> parse_array(VM* m, std::istream& is) {
+    std::vector<objectid_t> oo;
+
+    forced_char(m, is, '[');
+    skip_white(m, is);
+    while (!is_char(is, ']')) {
+        objectid_t o;
+        is >> o;
+        oo.push_back(o);
+        skip_white(m, is);
+    }
+    forced_char(m, is, ']');
+
+    return oo;
+}
+
+inline SerialObjectPtrs dag_deserialize(VM* m, std::istream& is) {
+    SerialObjectPtrs ss;
+
+    forced_char(m, is, '[');
+    skip_white(m, is);
+
+    while (!is_char(is, ']')) {
+        objectid_t o;
+        is >> o;
+        skip_white(m, is);
+        forced_char(m, is, ':');
+        skip_white(m, is);
+        auto c = get_char(is);
+        skip_white(m, is);
+        switch(c) {
+        case 'i': {
+            vm_int_t n;
+            is >> n;
+            auto s = SerialObject::create_integer(o, n);
+            ss.push_back(s);
+        }
+        break;
+        case 'f': {
+            vm_float_t f;
+            is >> f;
+            auto s = SerialObject::create_float(o, f);
+            ss.push_back(s);
+        }
+        break;
+        case 'c': {
+            vm_char_t c;
+            c = parse_char(m, is);
+            auto s = SerialObject::create_char(o, c);
+            ss.push_back(s);
+        }
+        break;
+        case 't': {
+            vm_text_t t;
+            t = parse_text(m, is);
+            auto s = SerialObject::create_text(o, t);
+            ss.push_back(s);
+        }
+        break;
+        case 'o': {
+            icu::UnicodeString t;
+            t = parse_symbol(m, is);
+            auto s = SerialObject::create_combinator(o, t);
+            ss.push_back(s);
+        }
+        break;
+        case 'a': {
+            icu::UnicodeString t;
+            auto oo = parse_array(m, is);
+            auto s = SerialObject::create_array(o, oo);
+            ss.push_back(s);
+        }
+        break;
+        default:
+            throw m->create_text("deserialization error");
+        break;
+        }
+        skip_white(m, is);
+    }
+
+    forced_char(m, is, ']');
+
+    return ss;
 };
 
 inline icu::UnicodeString dag_text(VM* m, const SerialObjectPtrs& dag) {
@@ -427,14 +667,33 @@ inline icu::UnicodeString dag_text(VM* m, const SerialObjectPtrs& dag) {
     return u;
 };
 
+// no idea why this is needed, copied from the intertubes
+class membuf : public std::basic_streambuf<char> {
+public:
+  membuf(const uint8_t *p, size_t l) {
+    setg((char*)p, (char*)p, (char*)p + l);
+  }
+};
+
+inline SerialObjectPtrs dag_from_text(VM* m, const icu::UnicodeString& s) {
+    auto buffer = (uint8_t*) unicode_to_char(s);
+    membuf sbuf(buffer, (size_t) (buffer + sizeof(buffer)));
+    std::istream in(&sbuf);
+    auto ss = dag_deserialize(m, in);
+    free(buffer);
+    return ss;
+};
+
 inline icu::UnicodeString serialize_to_string(VM* m, const VMObjectPtr& o) {
     auto dag = to_dag(m, o);
     auto s = dag_text(m, dag);
     return s;
 };
 
-inline VMObjectPtr deserialize_from_string(VM* m, const icu::UnicodeString& o) {
-    throw m->create_text("not implemented");
+inline VMObjectPtr deserialize_from_string(VM* m, const icu::UnicodeString& s) {
+    auto dag = dag_from_text(m, s);
+    auto o = from_dag(m, dag);
+    return o;
 };
 
 #endif

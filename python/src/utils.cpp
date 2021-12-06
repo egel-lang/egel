@@ -58,10 +58,24 @@ bool exists_file(const char* filename) {
 // Unicode routines
 
 char* unicode_to_char(const icu::UnicodeString &str) {
+    /* old code - no utf8 conversion
     auto len = str.extract(0, STRING_MAX_SIZE, nullptr, (uint32_t) 0);
     auto buffer = new char[len+1];
     str.extract(0, STRING_MAX_SIZE, buffer, len+1);
     return buffer;
+    */
+   
+    std::string utf8;
+    str.toUTF8String(utf8);
+    auto cc0 = utf8.c_str();
+    auto len = strlen(cc);
+    auto cc1 = (char*) malloc(len+1);
+    strncpy(cc1, cc0, len+1);
+    return cc1;
+}
+
+icu::UnicodeString char_to_unicode(const char* cc) {
+    return icu::UnicodeString(cc);
 }
 
 UChar* unicode_to_uchar(const icu::UnicodeString &str) {

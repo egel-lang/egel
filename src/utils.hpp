@@ -59,6 +59,15 @@ typedef std::vector<icu::UnicodeString> UnicodeStrings;
 char* unicode_to_char(const icu::UnicodeString &str);
 
 /** 
+ ** Converts a character array to a Unicode string.
+ **
+ ** @param cc  the UTF8 character array
+ **
+ ** @return a character array (heap allocated)
+ **/
+icu::UnicodeString char_to_unicode(const char* cc);
+
+/** 
  ** Converts a icu::UnicodeString to a UChar array.
  **
  ** @param str  the string
