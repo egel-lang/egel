@@ -1,0 +1,6 @@
+# Serialization example
+
+using System
+
+def main =
+    deserialize (serialize {none, 1, 3.14, '∀', "hello!"})
