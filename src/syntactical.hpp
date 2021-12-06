@@ -340,8 +340,13 @@ public:
                 AstPtr q = parse_pattern();
                 qq.push_back(q);
             }
+            q = nullptr;
+            if (tag() == TOKEN_BAR) {
+                skip();
+                q = parse_pattern();
+            }
             force_token(TOKEN_RCURLY);
-            return AstExprList(p, qq).clone();
+            return AstExprList(p, qq, q).clone();
         }
     }
 

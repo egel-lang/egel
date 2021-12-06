@@ -39,7 +39,7 @@ namespace System (
 
 )
 
-namespace Opt (
+namespace Option (
     data just
     data nothing
 )

@@ -1,0 +1,228 @@
+import "prelude.eg"
+
+# map defined on size balanced trees
+
+namespace Map (
+
+    using List
+    using System
+    using Option
+
+    data empty, node
+
+    ## Map::empty_test m - test for emptyness
+    def empty_test =
+        [ empty -> true
+        | _     -> false ]
+
+    ## Map::choose m - look at one key from the map
+    def choose =
+        [ (node N K V L R) -> K | _ -> throw "choose on empty map" ]
+
+    ## Map::maximum m - take the maximum key/value from the map
+    def maximum =
+        [ (node N K V L empty) -> (K,V)
+        | (node N K V L R)     -> maximum R ]
+
+    ## Map::minimum m - take the minimim key/value from the map
+    def minimum =
+        [ (node N K V empty R) -> (K,V)
+        | (node N K V L R)     -> minimum L ]
+
+    ## Map::size m - size of the map
+    def size =
+        [ empty            -> 0
+        | (node N K V L R) -> N ]
+
+    ## Map::look m k - retrieve optional value from map with key
+    def look =
+        [ empty            A -> nothing
+        | (node S K V L R) A -> 
+            if A < K then look L A else if K < A then look R A
+            else just V ]
+
+    ## Map::has m k - check for key in map
+    def has =
+        [ M K -> [ nothing -> false | (just _)  -> true ] (look M K) ]
+
+    ## Map::member m k v - check whether key/value is a member of map
+    def member =
+        [ M K V -> [ nothing  -> false | (just W) -> W == V ] (look M K) ]
+
+    ## Map::nth m k - take value from map with key
+    def nth =
+        [ M K -> [ (just V) -> V ] (look M K) ]
+
+    ## Map::nth_total c m k - take value from map with key or return constant
+    def nth_total =
+        [ C M K -> [ (just V) -> V | _ -> C ] (look M K) ]
+
+    ## Map::new_node k v l r - create a new node
+    def new_node =
+        [ K V L R -> node (1 + (size L) + (size R)) K V L R ]
+
+    ## Map::balance0 - balance to left
+    def balance0 =
+        [ K V L R ->
+            [ (node SX KX VX LX RX) ->
+                if size L < size RX 
+                then new_node KX VX (new_node K V L LX) RX
+                else new_node K V L R
+            | _ -> new_node K V L R ] R ]
+
+    ## Map::balance0 - balance to right
+    def balance1 =
+        [ K V L R ->
+            [ (node SX KX VX LX RX) ->
+                if size R < size LX 
+                then new_node KX VX LX (new_node K V RX R)
+                else new_node K V L R
+            | _ -> new_node K V L R ] L ]
+
+    ## Map::balance - sloppy balance on size
+    def balance =
+        [ K V L R ->
+            let SL = size L in let SR = size R in
+            if SL < SR then balance0 K V L R
+            else if SR < SL then  balance1 K V L R
+            else new_node K V L R ]
+
+    ## Map::glue m0 m1 - glue two maps together
+    def glue =
+        [ L R ->
+        [ empty _ -> R | _ empty -> L
+        | (node SX KX VX LX RX) (node SY KY VY LY RY) -> 
+            if (SX < SY) then balance KY VY (glue L LY) RY
+            else balance KX VX LX (glue RX R) ] L R ]
+
+    ## Map::change f m - change a map with a key and an update function (option value to option value)
+    def change =
+        [ A F empty ->
+            [ nothing   -> empty
+            | (just V)  -> balance A V empty empty ] (F nothing)
+        | A F (node S K V L R) ->
+            if A < K then balance K V (change A F L) R
+            else if K < A then balance K V L (change A F R)
+            else [ nothing   -> glue L R
+                 | (just Z)  -> balance K Z L R ] (F (just V)) ]
+
+    ## Map::insert k v m - insert key/value into map
+    def insert =
+        [ K V -> change K [X -> just V] ]
+
+    ## Map::delete k m - delete key from map
+    def delete =
+        [ K -> change K [ V -> nothing ] ]
+
+    ## Map::remove k v m - remove key/value from map
+    def remove =
+        [ K V0 -> change K 
+            [ nothing   -> nothing 
+            | (just V1) -> if V0 == V1 then just V0 else nothing ] ]
+
+    
+    ## Map::foldr f c m - foldr with key/value and accumulator function
+    def foldr =
+        [ F Z empty            -> Z
+        | F Z (node S K V L R) -> foldr F (F K V (foldr F Z R)) L ]
+
+    ## Map::foldl f c m - foldl with key/value and accumulator function
+    def foldl =
+        [ F Z empty            -> Z
+        | F Z (node S K V L R) -> foldl F (F K V (foldl F Z L)) R ]
+
+    ## Map::foldm f c m - foldm with key/value and accumulator function
+    def foldm =
+        [ F Z empty            -> Z
+        | F Z (node S K V L R) -> F K V (foldm F Z L) (foldm F Z R) ]
+
+    def fold = foldr
+
+    ## Map::apply f m - map f to values in map
+    def apply =
+        [ F M -> fold [ K V M -> insert K (F V) M ] empty M ]
+
+    ## Map::to_up_list m - map to increasing list of key/value tuples
+    def to_up_list =
+        [ M -> foldr [ K V L -> cons (K,V) L ] nil M ]
+
+    ## Map::to_down_list f m - map to decreasing list of key/value tuples
+    def to_down_list =
+        [ M -> foldl [ K V L -> cons (K,V) L ]  nil M ]
+
+    ## Map::to_list m - map to list
+    def to_list =
+        to_up_list
+
+    ## Map::from_list l - list to map
+    def from_list =
+        List::foldl [(K,V) M -> insert K V M] empty
+
+    ## Map::position m k - position of key in map
+    def position =
+        [ empty A -> 0
+        | (node S K V L R) A ->
+            if A < K then position L A
+            else if K < A then 1 + (size L) + (position R A)
+            else (size L) ]
+
+    ## Map::domain m - the keys in the map
+    def domain =
+        [ M -> List::map [ (A,B) -> A ] (to_list M) ]
+
+    ## Map::range m - the values in the map
+    def range =
+        [ M -> List::map [ (A,B) -> B ] (to_list M) ]
+
+    ## Map::any p m - has a key/value in map satisfying predicate
+    def any =
+        [ P empty -> false
+        | P (node S K V L R) ->
+            if P K V then true
+            else if any P L then true
+            else any P R ]
+
+    ## Map::all p m - all key/value in map satisfy predicate
+    def all  =
+        [ P M -> not (any [ K V -> not (P K V) ] M) ]
+
+    ## Map::filter p m - filter all key/value in map satisfy predicate
+    def filter =
+        [ P M -> fold [ K V M -> if P K V then insert K V M else M ] empty M ]
+
+    ## Map::union m0 m1 - union of two maps
+    def union =
+        [ M0 M1 -> fold [ K V M -> insert K V M] M0 M1 ]
+
+    ## Map::intersection m0 m1 - intersection of two maps
+    def intersection =
+        [ M0 M1 -> filter [ K V -> has M1 K ] M0 ]
+
+    ## Map::inverse m - construct inverse of a map
+    def inverse =
+        [ M -> fold [ K V M -> insert V K M ] empty M ]
+
+    ## Map::compose m0 m1 - compose two maps
+    def compose =
+        [ M0 M1 -> apply (nth M0) M1 ]
+
+    ## Map::decompose m - decompose a map into two maps with integers 
+    def decompose =
+        [ M ->
+            foldr 
+            [ K V (M0, M1) -> 
+                (insert K (size M0) M0, insert (size M0) V M1) ]
+            (empty, empty) M
+        ]
+
+    ## Map::partition f m - partition with a function which maps key/value to part
+    def partition =
+        [ P M -> 
+            [ F -> fold (F P) empty M]
+            [ P K V M ->
+                    [I -> insert I (insert K V (nth_total (empty) M I)) M ]
+                    (P K V) ]
+        ]
+
+
+)
