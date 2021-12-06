@@ -103,11 +103,14 @@ public:
         return rewrite(a);
     }
 
-    //  F( {e0, .., en} ) -> (cons F(e0) (.. (cons F(en) nil ))) )
-    AstPtr rewrite_expr_list(const Position& p, const AstPtrs& ee) override {
+    //  F( {e0, .., en|ee} ) -> (cons F(e0) (.. (cons F(en) F(ee) ))) )
+    AstPtr rewrite_expr_list(const Position& p, const AstPtrs& ee, const AstPtr& tl) override {
         auto nil = AstExprCombinator(p, STRING_SYSTEM, STRING_NIL).clone();
         auto cons = AstExprCombinator(p, STRING_SYSTEM, STRING_CONS).clone();
         auto l = nil;
+        if (tl != nullptr) {
+            l = rewrite(tl);
+        }
         for (int i = ee.size() - 1; i >= 0; i--) {
             l = AstExprApplication(p, cons, ee[i], l).clone();
         }

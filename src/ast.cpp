@@ -6,6 +6,9 @@ uint_t Ast::line_length = 80;
 int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1);
 
 int compare_ast(const AstPtr& a0, const AstPtr& a1) {
+    if ((a0 == nullptr) && (a1 == nullptr)) return true;
+    if (a0 == nullptr) return 1;
+    if (a1 == nullptr) return -1;
     ast_tag_t t0 = a0->tag();
     ast_tag_t t1 = a1->tag();
     if (t0 < t1) {
@@ -146,9 +149,11 @@ int compare_ast_tag(ast_tag_t t, const AstPtr& a0, const AstPtr& a1) {
     }
     //  list and tuple
     case AST_EXPR_LIST: {
-        AST_EXPR_LIST_SPLIT(a0, p0, tt0);
-        AST_EXPR_LIST_SPLIT(a1, p1, tt1);
-        return compare_asts(tt0, tt1);
+        AST_EXPR_LIST_SPLIT(a0, p0, tt0, tl0);
+        AST_EXPR_LIST_SPLIT(a1, p1, tt1, tl1);
+        c = compare_asts(tt0, tt1);
+        if (c != 0) return c;
+        return compare_ast(tl0, tl1);
         break;
     }
     case AST_EXPR_TUPLE: {

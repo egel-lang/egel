@@ -67,9 +67,14 @@ public:
         return AstExprTuple(p, tt0).clone();
     }
 
-    virtual AstPtr transform_expr_list(const AstPtr& a, const Position& p, const AstPtrs& tt) {
+    virtual AstPtr transform_expr_list(const AstPtr& a, const Position& p, const AstPtrs& tt, const AstPtr& tl) {
         auto tt0 = transforms(tt);
-        return AstExprList(p, tt0).clone();
+        if (tl == nullptr) {
+            return AstExprList(p, tt0).clone();
+        } else {
+            auto tl0 = transform(tl);
+            return AstExprList(p, tt0, tl0).clone();
+        }
     }
 
     virtual AstPtr transform_expr_application(const AstPtr& a, const Position& p, const AstPtrs& tt) {
@@ -242,8 +247,8 @@ public:
             break;
         }
         case AST_EXPR_LIST: {
-            AST_EXPR_LIST_SPLIT(a, p, tt);
-            return transform_expr_list(a, p, tt);
+            AST_EXPR_LIST_SPLIT(a, p, tt, tl);
+            return transform_expr_list(a, p, tt, tl);
             break;
         }
         // compound statements
@@ -411,9 +416,14 @@ public:
         return AstExprTuple(p, tt0).clone();
     }
 
-    virtual AstPtr rewrite_expr_list(const Position& p, const AstPtrs& tt) {
+    virtual AstPtr rewrite_expr_list(const Position& p, const AstPtrs& tt, const AstPtr& tl) {
         auto tt0 = rewrites(tt);
-        return AstExprList(p, tt0).clone();
+        if (tl == nullptr) {
+            return AstExprList(p, tt0).clone();
+        } else {
+            auto tl0 = rewrite(tl);
+            return AstExprList(p, tt0, tl0).clone();
+        }
     }
 
     // compound statements
@@ -587,8 +597,8 @@ public:
             break;
         }
         case AST_EXPR_LIST: {
-            AST_EXPR_LIST_SPLIT(a, p, tt);
-            return rewrite_expr_list(p, tt);
+            AST_EXPR_LIST_SPLIT(a, p, tt, tl);
+            return rewrite_expr_list(p, tt, tl);
             break;
         }
         // compound statements
@@ -740,8 +750,13 @@ public:
         visits(tt);
     }
 
-    virtual void visit_expr_list(const Position& p, const AstPtrs& tt) {
-        visits(tt);
+    virtual void visit_expr_list(const Position& p, const AstPtrs& tt, const AstPtr& tl) {
+        if (tl == nullptr) {
+            visits(tt);
+        } else {
+            visits(tt);
+            visit(tl);
+        }
     }
 
     virtual void visit_expr_application(const Position& p, const AstPtrs& tt) {
@@ -895,8 +910,8 @@ public:
             break;
         }
         case AST_EXPR_LIST: {
-            AST_EXPR_LIST_SPLIT(a, p, tt);
-            return visit_expr_list(p, tt);
+            AST_EXPR_LIST_SPLIT(a, p, tt, tl);
+            return visit_expr_list(p, tt, tl);
             break;
         }
         // compound statements

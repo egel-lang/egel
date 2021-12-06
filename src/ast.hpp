@@ -557,11 +557,15 @@ typedef std::shared_ptr<AstExprOperator> AstExprOperatorPtr;
 class AstExprList : public Ast {
 public:
     AstExprList(const Position &p, const AstPtrs& c)
-        : Ast(AST_EXPR_LIST, p), _content(c) {
+        : Ast(AST_EXPR_LIST, p), _content(c), _tail(nullptr) {
+    }
+
+    AstExprList(const Position &p, const AstPtrs& c, const AstPtr& tl)
+        : Ast(AST_EXPR_LIST, p), _content(c), _tail(tl) {
     }
 
     AstExprList(const AstExprList& c) 
-        : AstExprList(c.position(), c.content()) {
+        : AstExprList(c.position(), c.content(), c.tail()) {
     }
 
     AstPtr clone() const {
@@ -572,6 +576,10 @@ public:
         return _content;
     }
 
+    AstPtr tail() const {
+        return _tail;
+    }
+
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
         l += 1;
@@ -579,6 +587,10 @@ public:
             l = e->approximate_length(l);
             l += 2;
             if (l >= line_length) return l;
+        }
+        if (tail() != nullptr) {
+            l += 2;
+            l = tail()->approximate_length(l);
         }
         l += 1;
         return l;
@@ -596,6 +608,10 @@ public:
                 }
                 c->render(os, indent+4);
             }
+            if (tail() != nullptr) {
+                os << "|";
+                tail()->render(os, indent + 2);
+            }
             os << "}";
         } else {
             os << "{";
@@ -609,20 +625,26 @@ public:
                 c->render(os, indent+4);
                 skip_line(os, indent+4);
             }
+            if (tail() != nullptr) {
+                os << "|";
+                tail()->render(os, indent + 2);
+            }
             os << "}";
         }
     }
 
 private:
     AstPtrs _content;
+    AstPtr  _tail;
 };
 
 typedef std::shared_ptr<AstExprList> AstExprListPtr;
 #define AST_EXPR_LIST_CAST(a)    std::static_pointer_cast<AstExprList>(a)
-#define AST_EXPR_LIST_SPLIT(a, p, dd) \
+#define AST_EXPR_LIST_SPLIT(a, p, dd, tl) \
     auto _##a  = AST_EXPR_LIST_CAST(a); \
     auto p   = _##a->position(); \
-    auto dd  = _##a->content();
+    auto dd  = _##a->content(); \
+    auto tl  = _##a->tail();
 
 class AstExprTuple : public Ast {
 public:
