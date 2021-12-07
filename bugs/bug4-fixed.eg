@@ -1,0 +1,4 @@
+using System
+
+def main =
+    deserialize (serialize '∀')

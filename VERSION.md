@@ -23,6 +23,10 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+
+## v0.1.5 -- advent of adventures
+
++ map abstract datatype
 + add `{X0,X1|XX}` pretty list syntax
 + serialization primitives
 
