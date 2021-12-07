@@ -1,0 +1,127 @@
+# generators
+
+import "prelude.eg"
+
+namespace Gen (
+
+    using System
+
+    ## Gen::to_list g - generator to list
+    def to_list =
+        [ nil -> nil
+        | (cons X XX) -> cons X (to_list (XX none)) ]
+
+    ## Gen::from_list l - list to generator
+    def from_list =
+        [ nil -> nil
+        | (cons X XX) -> cons X [ _ -> from_list XX ] ]
+
+    ## Gen::length l - length of a list
+    def length =
+        [ nil -> 0
+        | (cons X XX) -> 1 + (length (XX none)) ]
+
+    ## Gen::foldl f z l - left fold on a list
+    def foldl =
+        [ F Z nil -> Z
+        | F Z (cons X XX) -> foldl F (F Z X) (XX none) ]
+
+    ## Gen::foldr f z l - right fold on a list
+    def foldr =
+        [ F Z nil -> Z
+        | F Z (cons X XX) -> F X (foldr F Z (XX none)) ]
+
+    ## Gen::head l - head of a list
+    def head =
+        [ (cons X XX) -> X ]
+
+    ## Gen::tail l - tail of a list
+    def tail =
+        [ (cons X XX) -> (XX none) ]
+
+    ## Gen::++ l0 l1 - concatenation of two lists
+    def ++ =
+        [ nil YY -> YY
+        | (cons X XX) YY -> cons X [ _ -> (XX none) ++ YY ] ]
+
+    ## Gen::map f l - map a function over a list
+    def map =
+        [ F nil -> nil
+        | F (cons X XX) -> let Y = F X in cons Y (map F (XX none)) ]
+
+    ## Gen::reverse l - reverse a list
+    def reverse = 
+       foldl (flip cons) nil
+
+    ## Gen::block n - list of number from 0 to n exclusive
+    def block =
+        [ 0 -> nil
+        | N -> cons (N - 1)  [ _ -> (block (N - 1)) ] ]
+
+    ## Gen::nth n l - nth element of a list
+    def nth =
+        [ 0 (cons X XX) -> X
+        | N (cons X XX) -> nth (N - 1) (XX none) ]
+
+    ## Gen::insert n x l - insert an element at given position
+    def insert =
+        [ 0 X (cons Y YY) -> cons X YY
+        | I X (cons Y YY) -> cons Y [_ -> (insert (I - 1) X (YY none)) ] ]
+
+    ## Gen::take n l - take the first n elements of a list
+    def take =
+        [ 0 XX -> nil
+        | N (cons X XX) -> cons X [_ -> (take (N - 1) (XX none)) ] ]
+
+    ## Gen::drop n l - drop the first n elements of a list
+    def drop =
+        [ 0 XX -> XX
+        | N (cons X XX) -> drop (N - 1) (XX none) ]
+
+    ## Gen::from_to min max - list of numbers for min to max (exclusive)
+    def from_to =
+        [ X Y -> 
+            if X <= Y then cons X [ _ -> (from_to (X+1) Y) ]
+            else nil ]
+
+    ## Gen::filter p l - filter all members from a list which satisfy a predicate
+    def filter =
+        [ P nil -> nil
+        | P (cons X XX) -> if P X then cons X [ _ -> (filter P (XX none)) ] 
+                                 else filter P (XX none) ]
+
+    ## Gen::flatten ll - flatten a list of lists to a list
+    def flatten =
+        [ nil                   -> nil
+        | (cons nil YY)         -> flatten (YY none)
+        | (cons (cons X XX) YY) -> cons X [ _ -> flatten (cons (XX none) YY) ] ]
+
+    ## Gen::zip l0 l1 - zip to lists to a list of pairs
+    def zip =
+        [ (cons X XX) (cons Y YY)  -> cons (X,Y) [ _ -> zip (XX none) (YY none) ]
+        | XX YY                    -> nil ]
+
+    ## Gen::zip_with f l0 l1 - apply a function pairwise to members of two lists
+    def zip_with =
+        [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) [ _ -> zip_with Z (XX none) (YY none)]
+        | Z XX YY               -> nil ]
+
+    ## Gen::any p l - checks whether any element of a list satisfies a predicate
+    def any =
+        [ P nil          -> false
+        | P (cons B BB)  -> if P B then true else any P (BB none) ]
+
+    ## Gen::all p l - checks whether all elements of a list  satisfies a predicate
+    def all =
+        [ P nil          -> true
+        | P (cons B BB)  -> if P B then all P (BB none) else false ]
+
+    ## Gen::elem x l - membership test
+    def elem =
+        [ X -> any ((==) X) ]
+
+    ## Gen::not_elem x l - inverse membership test
+    def not_elem =
+        [ X -> all ((/=) X) ]
+
+)
