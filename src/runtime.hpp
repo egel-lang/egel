@@ -780,8 +780,6 @@ public:
     VMObjectArray(const VMObjectArray& l)
         : VMObjectArray(l.value()) {
     }
-/*
-    */
 
     VMObjectArray(const int size)
         : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs(size)) {

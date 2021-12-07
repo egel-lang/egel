@@ -762,11 +762,17 @@ public:
                 reg_t       z = FETCH_reg(_code,pc);
 
                 size_t sz = (size_t) z - y + 1;
-                auto oo = VM_OBJECT_ARRAY_CAST(VMObjectArray::create(sz));
-                for (reg_t n = y; n <= z; n++) {
-                    oo->set(n-y, reg[n]);
+                if (sz > 0) { // we do generate empty arrays sometimes
+                    auto oo = VM_OBJECT_ARRAY_CAST(VMObjectArray::create(sz));
+                    for (reg_t n = y; n <= z; n++) {
+                        oo->set(n-y, reg[n]);
+                    }
+                    reg.set(x, oo);
+                } else {
+                    auto oo = VM_OBJECT_ARRAY_CAST(VMObjectArray::create(0));
+                    reg.set(x, oo);
+
                 }
-                reg.set(x, oo);
                 }
                 break;
             case OP_CONCATX: {
@@ -783,8 +789,9 @@ public:
                     auto yc = VM_OBJECT_ARRAY_CAST(y0);
                     auto zc = VM_OBJECT_ARRAY_CAST(z0);
 
+                    size_t sz = yc->size() + zc->size() - i;
+
                     if ( i < zc->size()) { // there are members in z to be copied
-                        size_t sz = yc->size() + zc->size() - i;
 
                         if (sz > 1) {
                             auto oo = VM_OBJECT_ARRAY_CAST(VMObjectArray::create(sz));
@@ -797,7 +804,7 @@ public:
                             }
                             reg.set(x, oo);
                         } else {
-                            auto o = zc->get(0);
+                            auto o = zc->get(i);
                             reg.set(x, o);
                         }
                     } else { // optimize for `drop i z = {}` case
