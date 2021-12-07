@@ -653,14 +653,13 @@ public:
                 if (sz == 0) {
                     return m->create_tuple();
                 } else {
-                    auto t = m->create_array();
-                    m->array_append(t, m->create_tuple());
+                    VMObjectPtrs oo;
                     for (int n = 0; n < sz; n++) {
                         auto i0 = PyTuple_GetItem(p, n);
                         auto i1 = PythonObject::create(m, i0);
-                        m->array_append(t, i1);
+                        oo.push_back(i1);
                     }
-                return t;
+                    return m->to_tuple(oo);
                 }
             } else {
                 THROW_BADARGS;
@@ -888,10 +887,10 @@ public:
                     auto aa = m->create_array();
                     auto k = PythonObject::create(m, key);
                     auto v = PythonObject::create(m, val);
-                    m->array_append(aa, m->create_tuple());
-                    m->array_append(aa, k);
-                    m->array_append(aa, v);
-                    oo.push_back(aa);
+                    VMObjectPtrs tt;
+                    tt.push_back(k);
+                    tt.push_back(v);
+                    oo.push_back(m->to_tuple(tt));
                 }
 
                 return m->to_list(oo);

@@ -484,14 +484,14 @@ public:
                 fields[ff1[n]] = ff1[n+1];
             }
             // return object
-            auto oo = machine()->create_array();
-            machine()->array_append(oo, object);
+            VMObjectPtrs oo;
+            oo.push_back(object);
             for (const auto& f:fields) {
-                machine()->array_append(oo, f.first);
-                machine()->array_append(oo, f.second);
+                oo.push_back(f.first);
+                oo.push_back(f.second);
             }
 
-            return oo;
+            return machine()->create_array(oo);
         } else {
             THROW_BADARGS;
         }
@@ -658,23 +658,16 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unpack, "System", "unpack");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        auto nil  = machine()->create_nil();
-        auto cons = machine()->create_cons();
-
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto str = VM_OBJECT_TEXT_VALUE(arg0);
 
-            VMObjectPtr ss = nil;
+            VMObjectPtrs ss;
             int len = str.length();
             for (int n = len-1; n >= 0; n--) {
                 auto c  = machine()->create_char(str.char32At(n));
-                auto tt = machine()->create_array();
-                machine()->array_append(tt, cons);
-                machine()->array_append(tt, c);
-                machine()->array_append(tt, ss);
-                ss = tt;
+                ss.push_back(c);
             }
-            return ss;
+            return machine()->to_list(ss);
         } else {
             THROW_BADARGS;
         }

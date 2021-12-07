@@ -408,12 +408,12 @@ inline VMObjectPtr from_dag(VM* m, const SerialObjectPtrs& dag) {
         }
         break;
         case VM_OBJECT_ARRAY: {
+            VMObjectPtrs oo;
             auto nn = SerialObject::get_array(d);
-            auto o = m->create_array();
             for (auto& n: nn) {
-                m->array_append(o, map[n]);
+                oo.push_back(map[n]);
             }
-            map[d->get_id()] = o;
+            map[d->get_id()] = m->create_array(oo);
         }
         break;
         default:

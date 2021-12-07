@@ -54,8 +54,9 @@ def test_map =
     test_nth M 3 4;
     test_nth M 9 10;
     print_map (delete 3 (delete 7 M));
-    List::map [ N -> nth M N ] (domain M)
-    
+    print (List::map [ N -> nth M N ] (domain M)) "\n";
+    print (Map::foldr [ V E -> cons V E ] nil M) "\n";
+    none
 
 def main =
     test_empty;

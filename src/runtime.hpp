@@ -460,9 +460,11 @@ public:
     virtual bool        is_cons(const VMObjectPtr& o) = 0;
     virtual bool        is_tuple(const VMObjectPtr& o) = 0;
 
-    virtual VMObjectPtr create_array() = 0;
+    // deprecate the following
+    virtual VMObjectPtr  create_array() = 0;
     virtual void         array_append(VMObjectPtr aa, const VMObjectPtr a) = 0;
 
+    virtual VMObjectPtr  create_array(const VMObjectPtrs& oo) = 0;
     virtual bool         is_array(const VMObjectPtr& o) = 0;
     virtual int          array_size(const VMObjectPtr& o) = 0;
     virtual VMObjectPtr  array_get(const VMObjectPtr& o, int n) = 0;
@@ -510,6 +512,10 @@ public:
                                         std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) = 0;
     virtual VMObjectPtr create_variadic(const std::vector<icu::UnicodeString>& ss, const icu::UnicodeString& s,
                                         std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) = 0;
+
+    // convenience (appends and strips tuple tag)
+    virtual VMObjectPtr  to_tuple(const VMObjectPtrs& oo) = 0;
+    virtual VMObjectPtrs from_tuple(const VMObjectPtr& tt) = 0;
 
     // convenience (for internal usage)
     virtual bool         is_list(const VMObjectPtr& o) = 0;
@@ -787,6 +793,7 @@ public:
         }
     }
 
+    // deprecate
     static VMObjectPtr create() {
         return VMObjectPtr(new VMObjectArray());
     }

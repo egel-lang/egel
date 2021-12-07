@@ -525,10 +525,12 @@ public:
         return (VM_OBJECT_TUPLE_TEST(o));
     }
 
+    // deprecate
     VMObjectPtr create_array() override {
         return VMObjectArray::create();
     }
 
+    // deprecate
     void array_append(VMObjectPtr aa, const VMObjectPtr a) override {
         if (VM_OBJECT_ARRAY_TEST(aa)) {
             auto aa0 = VM_OBJECT_ARRAY_CAST(aa);
@@ -536,6 +538,10 @@ public:
         } else {
             throw ErrorInternal("push to array failed");
         }
+    }
+
+    VMObjectPtr create_array(const VMObjectPtrs& oo) override {
+        return VMObjectArray::create(oo);
     }
 
     bool is_array(const VMObjectPtr& o) override {
@@ -654,6 +660,29 @@ public:
         return VariadicCallback::create(this, ss, s, f);
     }
 
+    VMObjectPtr to_tuple(const VMObjectPtrs& oo) override {
+        VMObjectPtrs tt;
+        tt.push_back(create_tuple());
+        for (auto& o: oo) {
+            tt.push_back(o);
+        }
+        return create_array(tt);
+    }
+
+    VMObjectPtrs from_tuple(const VMObjectPtr& oo) override {
+        VMObjectPtrs tt;
+        if (is_tuple(oo)) {
+            return tt;
+        } else if (is_array(oo)) {
+            auto tt1 = array_vector(oo);
+            for (unsigned int n = 1; n < tt1.size(); n++) {
+                tt.push_back(tt1[n]);
+            }
+            return tt;
+        } else {
+            return tt;
+        }
+    }
     // convenience (for internal usage)
     bool         is_list(const VMObjectPtr& o) override { // XXX: tail-recursive version
         if (is_nil(o)) {
@@ -677,12 +706,12 @@ public:
         VMObjectPtr result = nil;
 
         for (int n = oo.size() - 1; n >= 0; n--) {
-            VMObjectPtr aa = create_array();
-            array_append(aa, cons);
-            array_append(aa, oo[n]);
-            array_append(aa, result);
+            VMObjectPtrs aa;
+            aa.push_back(cons);
+            aa.push_back(oo[n]);
+            aa.push_back(result);
 
-            result = aa;
+            result = create_array(aa);
         }
 
         return result;

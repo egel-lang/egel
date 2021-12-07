@@ -18,21 +18,13 @@ VMObjectPtr path_to_object(const fs::path& p) {
 }
 
 VMObjectPtr paths_to_list(VM* vm, std::vector<fs::path> ss) {
-    auto nil  = vm->create_nil();
-    auto cons = vm->create_cons();
-
-    VMObjectPtr result = nil;
+    VMObjectPtrs oo;
 
     for (int n = ss.size() - 1; n >= 0; n--) {
-        VMObjectPtr aa = vm->create_array();
-        vm->array_append(aa, cons);
-        vm->array_append(aa, path_to_object(ss[n]));
-        vm->array_append(aa, result);
-
-        result = aa;
+        oo.push_back(path_to_object(ss[n]));
     }
 
-    return result;
+    return vm->to_list(oo);
 }
 
 fs::path object_to_path(const VMObjectPtr& o) {
