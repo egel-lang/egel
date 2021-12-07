@@ -121,22 +121,32 @@ namespace Map (
             | (just V1) -> if V0 == V1 then just V0 else nothing ] ]
 
     
+    ## Map::foldr_key f c m - foldr with key/value and accumulator function
+    def foldr_key =
+        [ F Z empty            -> Z
+        | F Z (node S K V L R) -> foldr_key F (F K V (foldr_key F Z R)) L ]
+
+    ## Map::foldl_key f c m - foldl with key/value and accumulator function
+    def foldl_key =
+        [ F Z empty            -> Z
+        | F Z (node S K V L R) -> foldl_key F (F K V (foldl_key F Z L)) R ]
+
+    ## Map::foldm_key f c m - foldm with key/value and accumulator function
+    def foldm_key =
+        [ F Z empty            -> Z
+        | F Z (node S K V L R) -> F K V (foldm_key F Z L) (foldm_key F Z R) ]
+
     ## Map::foldr f c m - foldr with key/value and accumulator function
     def foldr =
-        [ F Z empty            -> Z
-        | F Z (node S K V L R) -> foldr F (F K V (foldr F Z R)) L ]
+        [ F Z M -> foldr_key [K V Z -> F V Z] Z M ]
 
     ## Map::foldl f c m - foldl with key/value and accumulator function
     def foldl =
-        [ F Z empty            -> Z
-        | F Z (node S K V L R) -> foldl F (F K V (foldl F Z L)) R ]
+        [ F Z M -> foldl_key [K V Z -> F V Z] Z M ]
 
     ## Map::foldm f c m - foldm with key/value and accumulator function
     def foldm =
-        [ F Z empty            -> Z
-        | F Z (node S K V L R) -> F K V (foldm F Z L) (foldm F Z R) ]
-
-    def fold = foldr
+        [ F Z M -> foldm_key [K V Z -> F V Z] Z M ]
 
     ## Map::apply f m - map f to values in map
     def apply =
@@ -144,11 +154,11 @@ namespace Map (
 
     ## Map::to_up_list m - map to increasing list of key/value tuples
     def to_up_list =
-        [ M -> foldr [ K V L -> cons (K,V) L ] nil M ]
+        [ M -> foldr_key [ K V L -> cons (K,V) L ] nil M ]
 
     ## Map::to_down_list f m - map to decreasing list of key/value tuples
     def to_down_list =
-        [ M -> foldl [ K V L -> cons (K,V) L ]  nil M ]
+        [ M -> foldl_key [ K V L -> cons (K,V) L ]  nil M ]
 
     ## Map::to_list m - map to list
     def to_list =
@@ -168,11 +178,11 @@ namespace Map (
 
     ## Map::domain m - the keys in the map
     def domain =
-        [ M -> foldr [ K V L -> cons K L ] nil M ]
+        [ M -> foldr_key [ K V L -> cons K L ] nil M ]
 
     ## Map::range m - the values in the map
     def range =
-        [ M -> foldr [ K V L -> cons V L ] nil M ]
+        [ M -> foldr_key [ K V L -> cons V L ] nil M ]
 
     ## Map::any p m - has a key/value in map satisfying predicate
     def any =
@@ -209,7 +219,7 @@ namespace Map (
     ## Map::decompose m - decompose a map into two maps with integers 
     def decompose =
         [ M ->
-            foldr 
+            foldr_key 
             [ K V (M0, M1) -> 
                 (insert K (size M0) M0, insert (size M0) V M1) ]
             (empty, empty) M
