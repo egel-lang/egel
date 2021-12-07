@@ -78,6 +78,10 @@ namespace Gen (
         [ 0 XX -> XX
         | N (cons X XX) -> drop (N - 1) (XX none) ]
 
+    ## Gen::from min - list of numbers from min 
+    def from =
+        [ N -> cons N [ _ -> from (N+1) ] ]
+
     ## Gen::from_to min max - list of numbers for min to max (exclusive)
     def from_to =
         [ X Y -> 
