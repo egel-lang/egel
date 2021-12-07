@@ -121,30 +121,30 @@ namespace Map (
             | (just V1) -> if V0 == V1 then just V0 else nothing ] ]
 
     
-    ## Map::foldr_key f c m - foldr with key/value and accumulator function
+    ## Map::foldr_key f c m - foldr with value and key/value accumulator function
     def foldr_key =
         [ F Z empty            -> Z
         | F Z (node S K V L R) -> foldr_key F (F K V (foldr_key F Z R)) L ]
 
-    ## Map::foldl_key f c m - foldl with key/value and accumulator function
+    ## Map::foldl_key f c m - foldl with value and key/value accumulator function
     def foldl_key =
         [ F Z empty            -> Z
         | F Z (node S K V L R) -> foldl_key F (F K V (foldl_key F Z L)) R ]
 
-    ## Map::foldm_key f c m - foldm with key/value and accumulator function
+    ## Map::foldm_key f c m - foldm with value and key/value accumulator function
     def foldm_key =
         [ F Z empty            -> Z
         | F Z (node S K V L R) -> F K V (foldm_key F Z L) (foldm_key F Z R) ]
 
-    ## Map::foldr f c m - foldr with key/value and accumulator function
+    ## Map::foldr f c m - foldr with value and accumulator function
     def foldr =
         [ F Z M -> foldr_key [K V Z -> F V Z] Z M ]
 
-    ## Map::foldl f c m - foldl with key/value and accumulator function
+    ## Map::foldl f c m - foldl with value and accumulator function
     def foldl =
         [ F Z M -> foldl_key [K V Z -> F V Z] Z M ]
 
-    ## Map::foldm f c m - foldm with key/value and accumulator function
+    ## Map::foldm f c m - foldm with value and accumulator function
     def foldm =
         [ F Z M -> foldm_key [K V Z -> F V Z] Z M ]
 
