@@ -150,7 +150,7 @@ namespace Map (
 
     ## Map::apply f m - map f to values in map
     def apply =
-        [ F M -> fold [ K V M -> insert K (F V) M ] empty M ]
+        [ F M -> foldl [ K V M -> insert K (F V) M ] empty M ]
 
     ## Map::to_up_list m - map to increasing list of key/value tuples
     def to_up_list =
@@ -198,11 +198,11 @@ namespace Map (
 
     ## Map::filter p m - filter all key/value in map satisfy predicate
     def filter =
-        [ P M -> fold [ K V M -> if P K V then insert K V M else M ] empty M ]
+        [ P M -> foldl [ K V M -> if P K V then insert K V M else M ] empty M ]
 
     ## Map::union m0 m1 - union of two maps
     def union =
-        [ M0 M1 -> fold [ K V M -> insert K V M] M0 M1 ]
+        [ M0 M1 -> foldl [ K V M -> insert K V M] M0 M1 ]
 
     ## Map::intersection m0 m1 - intersection of two maps
     def intersection =
@@ -210,7 +210,7 @@ namespace Map (
 
     ## Map::inverse m - construct inverse of a map
     def inverse =
-        [ M -> fold [ K V M -> insert V K M ] empty M ]
+        [ M -> foldl [ K V M -> insert V K M ] empty M ]
 
     ## Map::compose m0 m1 - compose two maps
     def compose =
@@ -228,7 +228,7 @@ namespace Map (
     ## Map::partition f m - partition with a function which maps key/value to part
     def partition =
         [ P M -> 
-            [ F -> fold (F P) empty M]
+            [ F -> foldl (F P) empty M]
             [ P K V M ->
                     [I -> insert I (insert K V (nth_total (empty) M I)) M ]
                     (P K V) ]
