@@ -24,6 +24,8 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+* small internal tweaks to array creation
+* generators library
 
 ## v0.1.5 -- advent of adventures
 
