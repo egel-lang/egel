@@ -795,7 +795,6 @@ public:
         }
     }
 
-    // deprecate
     static VMObjectPtr create(int size) {
         return VMObjectPtr(new VMObjectArray(size));
     }
@@ -805,6 +804,18 @@ public:
             return pp[0];
         } else {
             return VMObjectPtr(new VMObjectArray(pp));
+        }
+    }
+
+    static VMObjectPtr create(const VMObjectPtr* pp, size_t sz) {
+        if (sz == 1) {
+            return pp[0];
+        } else {
+            auto aa = std::static_pointer_cast<VMObjectArray>(create(sz));
+            for (size_t n = 0; n < sz ; n++) {
+                aa->set(n, pp[n]);
+            }
+            return aa;
         }
     }
 
@@ -984,7 +995,7 @@ public:
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            ret = machine()->create_array(rr);
+            ret = VMObjectArray::create(rr);
         } else {
             ret = tt[4];
         }
@@ -1164,7 +1175,7 @@ public:
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            ret = machine()->create_array(rr);
+            ret = VMObjectArray::create(rr);
         } else {
             ret = tt[4];
         }

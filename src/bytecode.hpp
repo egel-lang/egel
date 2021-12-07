@@ -534,11 +534,39 @@ public:
 private:
     static const int MAX_REGISTERS = 64;
 
-    //std::vector<VMObjectPtr>        _fast;
     VMObjectPtr                     _fast[MAX_REGISTERS];
     std::map<reg_t, VMObjectPtr>    _fallback;
 };
 
+class Scratch {
+public:
+    Scratch() {
+    }
+
+    size_t size() {
+        return _size;
+    }
+
+    VMObjectPtr* content() {
+        return _fast;
+    }
+
+    void push_back(const VMObjectPtr& o) {
+        _fast[_size] = o; _size++;
+    }
+
+    void clear() {
+        while (_size > 0) {
+            _fast[_size-1] = nullptr; _size--;
+        }
+    }
+    
+private:
+    static const int MAX_SCRATCH = 64;
+
+    VMObjectPtr _fast[MAX_SCRATCH];
+    size_t      _size;
+};
 
 class VMObjectBytecode: public VMObjectCombinator {
 public:
@@ -608,6 +636,7 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
         Registers  reg;
+        VMObjectPtrs scratch;
 
         uint32_t pc = 0;
         reg.set(0, thunk);
@@ -729,14 +758,16 @@ public:
                 reg_t       y = FETCH_reg(_code,pc);
                 reg_t       z = FETCH_reg(_code,pc);
 
-                auto xx0 = VMObjectArray::create(1+z-y);
-                auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
+                //auto xx0 = VMObjectArray::create(1+z-y);
+                //auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
                 for (reg_t n = y; n <= z; n++) {
-                //    xx1->push_back(reg[n]);
-                    xx1->set(n-y, reg[n]);
+                    scratch.push_back(reg[n]);
+                    //xx1->set(n-y, reg[n]);
                 }
-                reg.set(x, xx1);
+                //reg.set(x, xx1);
+                reg.set(x, VMObjectArray::create(scratch));
 
+                scratch.clear();
                 }
                 break;
             case OP_CONCATX: {
@@ -757,16 +788,17 @@ public:
                         auto yy = VM_OBJECT_ARRAY_VALUE(y0);
                         auto zz = VM_OBJECT_ARRAY_VALUE(z0);
 
-                        auto xx = VMObjectPtrs();
+                        //auto xx = VMObjectPtrs();
 
-                        for (auto& y1:yy) xx.push_back(y1);
-                        for (int n = (int) i; n < (int) zz.size(); n++) xx.push_back(zz[n]);
+                        for (auto& y1:yy) scratch.push_back(y1);
+                        for (int n = (int) i; n < (int) zz.size(); n++) scratch.push_back(zz[n]);
 
-                        if (xx.size() == 1) { // XXX: move to reg.set?
-                            reg.set(x, xx[0]);
+                        if (scratch.size() == 1) { // XXX: move to reg.set?
+                            reg.set(x, scratch[0]);
                         } else {
-                            reg.set(x, machine()->create_array(xx));
+                            reg.set(x, VMObjectArray::create(scratch));
                         }
+                        scratch.clear();
                     } else { // optimize for `drop i z = {}` case
                         if (yc->size() == 1) { // XXX: move to reg.set?
                             reg.set(x, yc->get(0));
