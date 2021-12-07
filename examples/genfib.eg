@@ -1,0 +1,14 @@
+# generator example of Fibonnaci
+
+import "prelude.eg"
+import "generator.eg"
+
+using System
+using Gen
+
+def fib =
+    cons 1 [ _ -> cons 1 [ _ -> Gen::zip_with (+) fib (Gen::tail fib) ] ]
+
+def main =
+    to_list (take 25 fib)
+
