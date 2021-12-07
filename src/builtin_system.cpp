@@ -763,7 +763,7 @@ public:
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
             thunk.push_back(machine()->create_none());
-            return VMObjectArray(thunk).clone();
+            return machine()->create_array(thunk);
         } else {
             THROW_BADARGS;
         }
@@ -784,7 +784,7 @@ public:
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
             thunk.push_back(machine()->create_none());
-            return VMObjectArray(thunk).clone();
+            return machine()->create_array(thunk);
         } else {
             THROW_BADARGS;
         }

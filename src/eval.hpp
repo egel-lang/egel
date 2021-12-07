@@ -94,7 +94,7 @@ public:
         for (uint i = 5; i < tt.size(); i++) {
             rr.push_back(tt[i]);
         }
-        return VMObjectArray(rr).clone();
+        return machine()->create_array(rr);
     }
 private:
     VMReduceResult _result;

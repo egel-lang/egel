@@ -461,8 +461,8 @@ public:
     virtual bool        is_tuple(const VMObjectPtr& o) = 0;
 
     // deprecate the following
-    virtual VMObjectPtr  create_array() = 0;
-    virtual void         array_append(VMObjectPtr aa, const VMObjectPtr a) = 0;
+    //virtual VMObjectPtr  create_array() = 0;
+    //virtual void         array_append(VMObjectPtr aa, const VMObjectPtr a) = 0;
 
     virtual VMObjectPtr  create_array(const VMObjectPtrs& oo) = 0;
     virtual bool         is_array(const VMObjectPtr& o) = 0;
@@ -780,6 +780,8 @@ public:
     VMObjectArray(const VMObjectArray& l)
         : VMObjectArray(l.value()) {
     }
+/*
+    */
 
     VMObjectArray(const int size)
         : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs(size)) {
@@ -794,10 +796,6 @@ public:
     }
 
     // deprecate
-    static VMObjectPtr create() {
-        return VMObjectPtr(new VMObjectArray());
-    }
-
     static VMObjectPtr create(int size) {
         return VMObjectPtr(new VMObjectArray(size));
     }
@@ -986,7 +984,7 @@ public:
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            ret = VMObjectArray(rr).clone();
+            ret = machine()->create_array(rr);
         } else {
             ret = tt[4];
         }
@@ -1166,7 +1164,7 @@ public:
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
-            ret = VMObjectArray(rr).clone();
+            ret = machine()->create_array(rr);
         } else {
             ret = tt[4];
         }

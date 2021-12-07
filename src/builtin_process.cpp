@@ -118,7 +118,7 @@ public:
                 VMObjectPtrs thunk;
                 thunk.push_back(_program);
                 thunk.push_back(in); //NOTE: _program and in are reduced
-                auto app = VMObjectArray(thunk).clone();
+                auto app = machine()->create_array(thunk);
 
                 in = nullptr;
 

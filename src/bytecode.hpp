@@ -757,16 +757,15 @@ public:
                         auto yy = VM_OBJECT_ARRAY_VALUE(y0);
                         auto zz = VM_OBJECT_ARRAY_VALUE(z0);
 
-                        auto xx0 = VMObjectArray::create();
-                        auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
+                        auto xx = VMObjectPtrs();
 
-                        for (auto& y1:yy) xx1->push_back(y1);
-                        for (int n = (int) i; n < (int) zz.size(); n++) xx1->push_back(zz[n]);
+                        for (auto& y1:yy) xx.push_back(y1);
+                        for (int n = (int) i; n < (int) zz.size(); n++) xx.push_back(zz[n]);
 
-                        if (xx1->size() == 1) { // XXX: move to reg.set?
-                            reg.set(x, xx1->get(0));
+                        if (xx.size() == 1) { // XXX: move to reg.set?
+                            reg.set(x, xx[0]);
                         } else {
-                            reg.set(x, xx1);
+                            reg.set(x, machine()->create_array(xx));
                         }
                     } else { // optimize for `drop i z = {}` case
                         if (yc->size() == 1) { // XXX: move to reg.set?

@@ -331,7 +331,7 @@ public:
         rr.push_back(nullptr); // exc
         rr.push_back(ret); // c
         rr.push_back(nullptr); // arg0
-        auto r = VMObjectArray(rr).clone();
+        auto r = create_array(rr);
 
         VMObjectPtrs ee;
         ee.push_back(nullptr); // rt
@@ -340,7 +340,7 @@ public:
         ee.push_back(nullptr); // exc
         ee.push_back(exc); // c
         ee.push_back(nullptr); // arg0
-        auto e = VMObjectArray(ee).clone();
+        auto e = create_array(ee);
 
         auto i = VMObjectInteger(5).clone();
         VMObjectPtrs tt;
@@ -349,7 +349,7 @@ public:
         tt.push_back(r); // k
         tt.push_back(e); // exc
         tt.push_back(f); // c
-        auto t = VMObjectArray(tt).clone();
+        auto t = create_array(tt);
 
         auto trampoline = t;
         while ( (trampoline != nullptr) && (*run != HALTED) ) {
@@ -526,11 +526,14 @@ public:
     }
 
     // deprecate
+    /*
     VMObjectPtr create_array() override {
         return VMObjectArray::create();
     }
+    */
 
     // deprecate
+    /*
     void array_append(VMObjectPtr aa, const VMObjectPtr a) override {
         if (VM_OBJECT_ARRAY_TEST(aa)) {
             auto aa0 = VM_OBJECT_ARRAY_CAST(aa);
@@ -539,6 +542,7 @@ public:
             throw ErrorInternal("push to array failed");
         }
     }
+    */
 
     VMObjectPtr create_array(const VMObjectPtrs& oo) override {
         return VMObjectArray::create(oo);
