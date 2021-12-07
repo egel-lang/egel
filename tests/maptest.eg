@@ -35,16 +35,28 @@ def test_singleton =
 
 # create a list of tuples
 
-val inc_list = List::map [N -> (N,N+1)] (List::from_to 1 9)
-
-# create a map from the list
+def inc_list = List::map [N -> (N,N+1)] (List::from_to 1 9)
 
 def inc_map = from_list inc_list
 
 def test_size0 =
     [ M -> (size M) == (List::length (to_list M)) ]
 
+def print_map =
+    [ M -> print "map: " (to_list M) "\n" ]
+
+def test_map =
+    let M = inc_map in
+    print_map M;
+    test_is_empty M;
+    test_size M 9;
+    test_nth M 1 2;
+    test_nth M 3 4;
+    test_nth M 9 10;
+    print_map (delete 3 (delete 7 M))
+    
+
 def main =
     test_empty;
     test_singleton;
-    inc_map
+    test_map
