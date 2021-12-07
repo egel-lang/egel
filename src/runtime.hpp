@@ -823,14 +823,24 @@ public:
         return _value[0]->symbol();
     }
 
-    int size() const {
+    size_t size() const {
         return _value.size();
     }
 
+    VMObjectPtr& operator[](const size_t i) {
+        return _value[i];
+    }
+
+    const VMObjectPtr& operator[](const size_t i) const {
+        return _value[i];
+    }
+
+    // deprecate
     VMObjectPtr get(unsigned int i) const {
         return _value[i];
     }
 
+    // deprecate
     void set(unsigned int i, const VMObjectPtr& o) {
         _value[i] = o;
     }
@@ -911,7 +921,7 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr& thunk) const {
         auto k     = tt->get(2);
 
         VMObjectPtrs vv;
-        for (unsigned int n = 4; (int) n < tt->size(); n++) {
+        for (size_t n = 4; n < tt->size(); n++) {
             vv.push_back(tt->get(n));
         }
 

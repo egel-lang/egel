@@ -540,7 +540,7 @@ private:
 
 class Scratch {
 public:
-    Scratch() {
+    Scratch(): _size(0) {
     }
 
     size_t size() {
@@ -559,6 +559,10 @@ public:
         while (_size > 0) {
             _fast[_size-1] = nullptr; _size--;
         }
+    }
+
+    VMObjectPtr& operator[](size_t n) {
+        return _fast[n];
     }
     
 private:
@@ -636,7 +640,6 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
         Registers  reg;
-        VMObjectPtrs scratch;
 
         uint32_t pc = 0;
         reg.set(0, thunk);
@@ -758,16 +761,12 @@ public:
                 reg_t       y = FETCH_reg(_code,pc);
                 reg_t       z = FETCH_reg(_code,pc);
 
-                //auto xx0 = VMObjectArray::create(1+z-y);
-                //auto xx1 = VM_OBJECT_ARRAY_CAST(xx0);
+                size_t sz = (size_t) z - y + 1;
+                auto oo = VM_OBJECT_ARRAY_CAST(VMObjectArray::create(sz));
                 for (reg_t n = y; n <= z; n++) {
-                    scratch.push_back(reg[n]);
-                    //xx1->set(n-y, reg[n]);
+                    oo->set(n-y, reg[n]);
                 }
-                //reg.set(x, xx1);
-                reg.set(x, VMObjectArray::create(scratch));
-
-                scratch.clear();
+                reg.set(x, oo);
                 }
                 break;
             case OP_CONCATX: {
@@ -784,21 +783,23 @@ public:
                     auto yc = VM_OBJECT_ARRAY_CAST(y0);
                     auto zc = VM_OBJECT_ARRAY_CAST(z0);
 
-                    if ( i < zc->size()) { // XXX: rewrite to use the cast
-                        auto yy = VM_OBJECT_ARRAY_VALUE(y0);
-                        auto zz = VM_OBJECT_ARRAY_VALUE(z0);
+                    if ( i < zc->size()) { // there are members in z to be copied
+                        size_t sz = yc->size() + zc->size() - i;
 
-                        //auto xx = VMObjectPtrs();
-
-                        for (auto& y1:yy) scratch.push_back(y1);
-                        for (int n = (int) i; n < (int) zz.size(); n++) scratch.push_back(zz[n]);
-
-                        if (scratch.size() == 1) { // XXX: move to reg.set?
-                            reg.set(x, scratch[0]);
+                        if (sz > 1) {
+                            auto oo = VM_OBJECT_ARRAY_CAST(VMObjectArray::create(sz));
+                            size_t l = 0;
+                            for (size_t n = 0; n < yc->size(); n++) {
+                                oo->set(l,yc->get(n)); l++;
+                            }
+                            for (size_t n = i; n < zc->size(); n++) {
+                                oo->set(l,zc->get(n)); l++;
+                            }
+                            reg.set(x, oo);
                         } else {
-                            reg.set(x, VMObjectArray::create(scratch));
+                            auto o = zc->get(0);
+                            reg.set(x, o);
                         }
-                        scratch.clear();
                     } else { // optimize for `drop i z = {}` case
                         if (yc->size() == 1) { // XXX: move to reg.set?
                             reg.set(x, yc->get(0));
@@ -1125,7 +1126,7 @@ public:
         case VM_OBJECT_ARRAY: {
             write_i8(os, VM_OBJECT_ARRAY);
 		    auto aa = VM_OBJECT_ARRAY_CAST(o);
-		    for (int n = 0; n < aa->size(); n++) {
+		    for (size_t n = 0; n < aa->size(); n++) {
 		        write_separator(os);
 		        write_text(os, aa->get(n)->to_text());
 		    }
