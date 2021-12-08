@@ -649,18 +649,6 @@ public:
 
         while (true) {
 
-#ifdef DEBUG
-            // code for debuggin
-            std::cout << "eval: ";
-            render(std::cout);
-            std::cout << std::endl;
-            for (reg_t n = 0; n < 128; n++) {
-                if (reg[n] != nullptr) {
-                    std::cout << n << "\t" << reg[n] << std::endl;
-                }
-            }
-#endif
-
             switch (LOOK_op(_code, pc)) {
             case OP_NIL: {
                 //  x           x := null

@@ -17,6 +17,17 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+// from utils.... XXX
+char* unicode_to_char(const icu::UnicodeString &str) {
+    std::string utf8;
+    str.toUTF8String(utf8);
+    auto cc0 = utf8.c_str();
+    auto len = strlen(cc0);
+    auto cc1 = (char*) malloc(len+1);
+    strncpy(cc1, cc0, len+1);
+    return cc1;
+}
+
 /**
  * In C++, copy constructors for streams are usually undefined
  * which makes a simple solution of just assigning or passing
@@ -86,6 +97,14 @@ public:
 
     virtual UnicodeString read_line() { // implemented otherwise
         throw Unsupported();
+    }
+
+    virtual UnicodeString read_all() {
+        UnicodeString s; // replace with a buffer once
+        while (!eof()) {
+            s += read_line();
+        }
+        return s;
     }
 
     virtual void write(const UnicodeString& n) {
@@ -188,9 +207,10 @@ public:
 class ChannelFile: public Channel {
 public:
     ChannelFile(const UnicodeString& fn): Channel(CHANNEL_FILE), _fn(fn) {
-        std::string utf8;
-        fn.toUTF8String(utf8);
-        _stream = std::fstream(utf8.c_str()); // unsafe due to NUL
+        std::cerr << "creating " << fn << std::endl;
+        auto cc = unicode_to_char(fn);
+        _stream = std::fstream(cc, std::fstream::in | std::fstream::out); // unsafe due to NUL
+        free(cc);
     }
 
     static ChannelPtr create(const UnicodeString& fn) {
@@ -210,6 +230,7 @@ public:
     }
 
     virtual void write(const UnicodeString& s) override {
+        std::cerr << "writing: " << s << std::endl;
         _stream << s;
     }
 
@@ -339,12 +360,20 @@ class ChannelValue: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ChannelValue, "OS", "channel");
 
+    ChannelValue(VM* m, const ChannelPtr& chan): ChannelValue(m) {
+        _value = chan;
+    }
+
     ChannelValue(const ChannelValue& chan): Opaque(VM_SUB_EGO, chan.machine(), chan.symbol()) {
         _value = chan.value();
     }
 
     VMObjectPtr clone() const override {
         return VMObjectPtr(new ChannelValue(*this));
+    }
+
+    static VMObjectPtr create(VM* m, const ChannelPtr& c) {
+        return VMObjectPtr(new ChannelValue(m, c));
     }
 
     int compare(const VMObjectPtr& o) override {
@@ -457,9 +486,8 @@ public:
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto fn = VM_OBJECT_TEXT_VALUE(arg0);
             auto stream = ChannelFile::create(fn);
-            auto channel  = ChannelValue(machine());
-            channel.set_value(stream);
-            return channel.clone();
+            auto channel = ChannelValue::create(machine(), stream);
+            return channel;
         } else {
             THROW_BADARGS;
         }
@@ -519,6 +547,25 @@ public:
             return create_text(str);
         } else {
             THROW_INVALID;
+        }
+    }
+};
+
+//## OS::read_all c - read entire channel content
+class ReadAll: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, ReadAll, "OS", "read_all");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            UnicodeString str = chan->read_all();
+            return create_text(str);
+        } else {
+            THROW_BADARGS;
         }
     }
 };
@@ -809,6 +856,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Close(vm).clone());
     oo.push_back(Read(vm).clone());
     oo.push_back(ReadLine(vm).clone());
+    oo.push_back(ReadAll(vm).clone());
     oo.push_back(Write(vm).clone());
     oo.push_back(WriteLine(vm).clone());
     oo.push_back(Flush(vm).clone());

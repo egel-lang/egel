@@ -42,6 +42,52 @@ VMObjectPtr error_to_object(const fs::filesystem_error& e) {
     return VMObjectText(s).clone();
 }
 
+//## OS::concat p0 p1 - concatenates two paths
+class Concat: public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_EGO, Concat, OS_STRING, "concat");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            try {
+                auto p0 = object_to_path(arg0);
+                auto p1 = object_to_path(arg1);
+
+                p0 += p1;
+
+                return path_to_object(p0);
+            } catch (const fs::filesystem_error& e) {
+                throw error_to_object(e);
+            } 
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## OS::concat_with p0 p1 - concatenates two paths with a directory separator
+class ConcatWith: public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_EGO, ConcatWith, OS_STRING, "concat_with");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+            try {
+                auto p0 = object_to_path(arg0);
+                auto p1 = object_to_path(arg1);
+
+                p0 /= p1;
+
+                return path_to_object(p0);
+            } catch (const fs::filesystem_error& e) {
+                throw error_to_object(e);
+            } 
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 //## OS::empty p - checks whether the path is empty
 class Empty: public Monadic {
 public:
@@ -1410,6 +1456,8 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
+    oo.push_back(Concat(vm).clone());
+    oo.push_back(ConcatWith(vm).clone());
     oo.push_back(Empty(vm).clone());
     oo.push_back(HasRootPath(vm).clone());
     oo.push_back(HasRootName(vm).clone());

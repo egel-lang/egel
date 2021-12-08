@@ -1,0 +1,115 @@
+# A tiny object database
+
+# * a database is a directory
+# * a subdirectory is a table
+# * a file is a record, the filename is the key, the content is the 
+#   value
+
+import "fs.ego"
+import "os.ego"
+
+import "prelude.eg"
+
+namespace Tiny (
+
+using System
+using List
+
+data database
+
+def db_tiny =
+    [ HOME PATH -> database HOME PATH ]
+
+def db_home =
+    [ (database HOME PATH) -> HOME ]
+
+def db_path =
+    [ (database HOME PATH) -> PATH ]
+
+def db_location =
+    [ DB -> OS::concat_with (db_home DB) (db_path DB) ]
+
+def db_table_location =
+    [ DB TABLE -> OS::concat_with (db_location DB) TABLE ]
+
+def db_exists =
+    [ DB -> OS::is_directory (db_location DB) ]
+
+def db_create =
+    [ DB -> OS::create_directory (db_location DB) ]
+
+def db_list_tables =
+    [ DB ->
+        let N  = String::count_char (db_location DB) in
+        let FF = OS::directory (db_location DB) in
+            map (String::remove 0 (N+1)) FF ]
+
+def db_create_table =
+    [ DB TABLE -> 
+        OS::create_directory (db_table_location DB TABLE) ]
+
+def db_drop_table =
+    [ DB TABLE -> 
+        OS::remove_all (db_table_location DB TABLE) ]
+
+def db_list_records =
+    [ DB TABLE ->
+        let KEYS = OS::directory (db_table_location DB TABLE) in
+            KEYS ] 
+
+def db_read_table =
+    [ DB TABLE ->
+        let LOC   = db_table_location DB TABLE in
+        let KEYS  = db_list_records DB TABLE in
+        map [KEY -> (KEY, db_read_record DB TABLE KEY)] KEYS ]
+
+def db_record_location =
+    [ DB TABLE KEY ->
+        let R = OS::concat_with (db_table_location DB TABLE) KEY 
+        in OS::concat KEY ".k" ]
+
+def db_create_record =
+    [ DB TABLE KEY VALUE ->
+        let FN = db_record_location DB TABLE KEY in
+        if OS::exists FN then throw "record exists"
+        else write_object FN VALUE ]
+        
+def db_update_record =
+    [ DB TABLE KEY VALUE ->
+        let FN = db_record_location DB TABLE KEY in
+        if OS::exists FN then 
+            remove_object FN; 
+            write_object FN VALUE 
+        else throw "record doesn't exist" ]
+
+def db_write_record =
+    [ DB TABLE KEY VALUE ->
+        let FN = db_record_location DB TABLE KEY in
+        write_object FN VALUE ]
+
+def db_read_record =
+    [ DB TABLE KEY ->
+        let FN = db_record_location DB TABLE KEY in
+        read_object FN ]
+
+def db_remove_record =
+    [ DB TABLE KEY ->
+        let FN = db_record_location DB TABLE KEY in
+        remove_object FN ]
+
+def read_object =
+    [ FN -> 
+        let CHAN = OS::open FN in
+        let O = deserialize (OS::read_all CHAN) in
+            OS::close CHAN; O ]
+        
+def write_object =
+    [ FN:text O -> 
+        let CHAN = OS::open FN in
+            OS::write CHAN (serialize O);
+            OS::close CHAN ]
+
+def remove_object =
+    [ FN -> OS::remove FN ]
+
+)
