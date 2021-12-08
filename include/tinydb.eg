@@ -117,4 +117,17 @@ def write_object =
 def remove_object =
     [ FN -> OS::remove FN ]
 
+def db_lock_location =
+    [ DB -> 
+        try db_create_table DB "tinydb" catch [X -> X];
+        db_record_location DB "tinydb" "lock" ]
+        
+
+def transaction =
+    [ DB F -> 
+        let LOCK = OS::flock (db_lock_location DB) in
+        let F LOCK ]
+
 )
+
+

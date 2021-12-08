@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/file.h> //for flock
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -257,6 +258,10 @@ protected:
 class ChannelFD: public Channel {
 public:
     ChannelFD(const int fd): Channel(CHANNEL_FD), _fd(fd) {
+    }
+
+    ~ChannelFD() {
+        ::close(_fd);
     }
 
     static ChannelPtr create(const int fd) {
@@ -670,6 +675,30 @@ public:
     }
 };
 
+//## OS::flock f n - create a filesystem lock file (not process safe)
+class Flock: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, Flock, "OS", "flock");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        auto m = machine();
+
+        if (m->is_text(arg0)) {
+            auto s  = m->value_text(arg0);
+            auto fn = unicode_to_char(s);
+
+            auto fd = open(fn, O_WRONLY | O_CREAT, 0644); // channels not fds so just open a file
+            flock(fd, LOCK_EX);
+            free(fn);
+            auto cn = ChannelFD::create(fd);
+            auto c  = ChannelValue::create(m, cn); // lock will be released when object destroyed
+            return c;
+        } else {
+            THROW_INVALID;
+        }
+    }
+};
+
 //## OS::exit n - flush all channels and terminate process with exit code n
 // (0 to indicate no errors, a small positive integer for failure.)
 class Exit: public Monadic {
@@ -877,6 +906,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(WriteLine(vm).clone());
     oo.push_back(Flush(vm).clone());
     oo.push_back(Eof(vm).clone());
+    oo.push_back(Flock(vm).clone());
     oo.push_back(Exit(vm).clone());
 
 // hacked TCP protocol
