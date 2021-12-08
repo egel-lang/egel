@@ -128,7 +128,7 @@ namespace Tiny (
                 F LOCK ]
 
     def read_object =
-        [ FN -> 
+        [ FN:text -> 
             let CHAN = OS::open_in FN in
             let O = deserialize (OS::read_all CHAN) in
                 OS::close CHAN; O ]
@@ -140,7 +140,7 @@ namespace Tiny (
                 OS::close CHAN ]
 
     def remove_object =
-        [ FN -> OS::remove FN ]
+        [ FN:text -> OS::remove FN ]
 
     def db_lock_location =
         [ DB -> 
