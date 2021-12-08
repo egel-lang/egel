@@ -15,7 +15,7 @@ typedef std::vector<icu::UnicodeString> UnicodeStrings;
 VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
     VMObjectPtrs oo;
 
-    for (int n = ss.size() - 1; n >= 0; n--) {
+    for (int n = 0; n < (int) ss.size(); n++) {
         auto t  = vm->create_text(ss[n]);
         oo.push_back(t);
     }
