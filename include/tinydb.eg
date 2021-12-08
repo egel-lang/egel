@@ -99,13 +99,13 @@ def db_remove_record =
 
 def read_object =
     [ FN -> 
-        let CHAN = OS::open FN in
+        let CHAN = OS::open_in FN in
         let O = deserialize (OS::read_all CHAN) in
             OS::close CHAN; O ]
         
 def write_object =
     [ FN:text O -> 
-        let CHAN = OS::open FN in
+        let CHAN = OS::open_out FN in
             OS::write CHAN (serialize O);
             OS::close CHAN ]
 

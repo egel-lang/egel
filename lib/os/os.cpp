@@ -206,15 +206,14 @@ public:
 
 class ChannelFile: public Channel {
 public:
-    ChannelFile(const UnicodeString& fn): Channel(CHANNEL_FILE), _fn(fn) {
-        std::cerr << "creating " << fn << std::endl;
+    ChannelFile(const UnicodeString& fn, std::ios_base::openmode m): Channel(CHANNEL_FILE), _fn(fn) {
         auto cc = unicode_to_char(fn);
-        _stream = std::fstream(cc, std::fstream::in | std::fstream::out); // unsafe due to NUL
+        _stream = std::fstream(cc, m); // unsafe due to NUL
         free(cc);
     }
 
-    static ChannelPtr create(const UnicodeString& fn) {
-        return ChannelPtr(new ChannelFile(fn));
+    static ChannelPtr create(const UnicodeString& fn, std::ios_base::openmode m) {
+        return ChannelPtr(new ChannelFile(fn, m));
     }
 
     virtual UnicodeString read() override {
@@ -230,7 +229,6 @@ public:
     }
 
     virtual void write(const UnicodeString& s) override {
-        std::cerr << "writing: " << s << std::endl;
         _stream << s;
     }
 
@@ -477,15 +475,32 @@ public:
 
 /* File channel creation and destruction */
 
-//## OS::open fn - create a channel from filename 
-class Open: public Monadic {
+//## OS::open_in fn - create a channel from filename 
+class OpenIn: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, Open, "OS", "open");
+    MONADIC_PREAMBLE(VM_SUB_EGO, OpenIn, "OS", "open_in");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto fn = VM_OBJECT_TEXT_VALUE(arg0);
-            auto stream = ChannelFile::create(fn);
+            auto stream = ChannelFile::create(fn, std::fstream::in);
+            auto channel = ChannelValue::create(machine(), stream);
+            return channel;
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## OS::open_out fn - create a channel from filename 
+class OpenOut: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, OpenOut, "OS", "open_out");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (arg0->tag() == VM_OBJECT_TEXT) {
+            auto fn = VM_OBJECT_TEXT_VALUE(arg0);
+            auto stream = ChannelFile::create(fn, std::fstream::out);
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
         } else {
@@ -852,7 +867,8 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Stdin(vm).clone());
     oo.push_back(Stdout(vm).clone());
     oo.push_back(Stderr(vm).clone());
-    oo.push_back(Open(vm).clone());
+    oo.push_back(OpenIn(vm).clone());
+    oo.push_back(OpenOut(vm).clone());
     oo.push_back(Close(vm).clone());
     oo.push_back(Read(vm).clone());
     oo.push_back(ReadLine(vm).clone());
