@@ -46,7 +46,9 @@ def db_list_tables =
 
 def db_create_table =
     [ DB TABLE -> 
-        OS::create_directory (db_table_location DB TABLE) ]
+        let LOC = db_table_location DB TABLE in
+        if OS::exists LOC then throw "table exists"
+        else OS::create_directory LOC ]
 
 def db_drop_table =
     [ DB TABLE -> 
@@ -54,8 +56,9 @@ def db_drop_table =
 
 def db_list_records =
     [ DB TABLE ->
-        let KEYS = OS::directory (db_table_location DB TABLE) in
-            KEYS ] 
+        let N  = String::count_char (db_table_location DB TABLE) in
+        let FF = OS::directory (db_table_location DB TABLE) in
+            map OS::stem FF ]
 
 def db_read_table =
     [ DB TABLE ->
@@ -66,7 +69,7 @@ def db_read_table =
 def db_record_location =
     [ DB TABLE KEY ->
         let R = OS::concat_with (db_table_location DB TABLE) KEY 
-        in OS::concat KEY ".k" ]
+        in OS::concat R ".k" ]
 
 def db_create_record =
     [ DB TABLE KEY VALUE ->
@@ -85,12 +88,14 @@ def db_update_record =
 def db_write_record =
     [ DB TABLE KEY VALUE ->
         let FN = db_record_location DB TABLE KEY in
+        remove_object FN; 
         write_object FN VALUE ]
 
 def db_read_record =
     [ DB TABLE KEY ->
         let FN = db_record_location DB TABLE KEY in
-        read_object FN ]
+        if OS::exists FN then read_object FN
+        else throw "record doesn't exist" ]
 
 def db_remove_record =
     [ DB TABLE KEY ->
