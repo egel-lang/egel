@@ -18,81 +18,81 @@ namespace Tiny (
 
     data database
 
-    ## db_tiny h p - tiny database object from a home and path
+    ## Tiny::db_tiny h p - tiny database object from a home and path
     def db_tiny =
         [ HOME PATH -> database HOME PATH ]
 
-    ## db_home db - retrieve the home location
+    ## Tiny::db_home db - retrieve the home location
     def db_home =
         [ (database HOME PATH) -> HOME ]
 
-    ## db_path db - retrieve the database name
+    ## Tiny::db_path db - retrieve the database name
     def db_path =
         [ (database HOME PATH) -> PATH ]
 
-    ## db_location db - path to database
+    ## Tiny::db_location db - path to database
     def db_location =
         [ DB -> OS::concat_with (db_home DB) (db_path DB) ]
 
-    ## db_location db table - path to a table
+    ## Tiny::db_location db table - path to a table
     def db_table_location =
         [ DB TABLE -> OS::concat_with (db_location DB) TABLE ]
 
-    ## db_exists db - does this database exist
+    ## Tiny::db_exists db - does this database exist
     def db_exists =
         [ DB -> OS::is_directory (db_location DB) ]
 
-    ## db_create db - create the database
+    ## Tiny::db_create db - create the database
     def db_create =
         [ DB -> OS::create_directory (db_location DB) ]
 
-    ## db_list_tables db - list all tables in database
+    ## Tiny::db_list_tables db - list all tables in database
     def db_list_tables =
         [ DB ->
             let N  = String::count_char (db_location DB) in
             let FF = OS::directory (db_location DB) in
                 map (String::remove 0 (N+1)) FF ]
 
-    ## db_create_table db table - create a table in the database
+    ## Tiny::db_create_table db table - create a table in the database
     def db_create_table =
         [ DB TABLE -> 
             let LOC = db_table_location DB TABLE in
             if OS::exists LOC then throw "table exists"
             else OS::create_directory LOC ]
 
-    ## db_drop_table db table - drop a table from the database
+    ## Tiny::db_drop_table db table - drop a table from the database
     def db_drop_table =
         [ DB TABLE -> 
             OS::remove_all (db_table_location DB TABLE) ]
 
-    ## db_list_records db table - list all records from a table 
+    ## Tiny::db_list_records db table - list all records from a table 
     def db_list_records =
         [ DB TABLE ->
             let N  = String::count_char (db_table_location DB TABLE) in
             let FF = OS::directory (db_table_location DB TABLE) in
                 map OS::stem FF ]
 
-    ## db_read_table db table - read all table returning key/value pairs
+    ## Tiny::db_read_table db table - read all table returning key/value pairs
     def db_read_table =
         [ DB TABLE ->
             let LOC   = db_table_location DB TABLE in
             let KEYS  = db_list_records DB TABLE in
             map [KEY -> (KEY, db_read_record DB TABLE KEY)] KEYS ]
 
-    ## db_record_location db table key - record location on the filesystem
+    ## Tiny::db_record_location db table key - record location on the filesystem
     def db_record_location =
         [ DB TABLE KEY ->
             let R = OS::concat_with (db_table_location DB TABLE) KEY 
             in OS::concat R ".k" ]
 
-    ## db_create_record db table key value - store a new key/value 
+    ## Tiny::db_create_record db table key value - store a new key/value 
     def db_create_record =
         [ DB TABLE KEY VALUE ->
             let FN = db_record_location DB TABLE KEY in
             if OS::exists FN then throw "record exists"
             else write_object FN VALUE ]
             
-    ## db_update_record db table key value - update a key/value 
+    ## Tiny::db_update_record db table key value - update a key/value 
     def db_update_record =
         [ DB TABLE KEY VALUE ->
             let FN = db_record_location DB TABLE KEY in
@@ -101,27 +101,27 @@ namespace Tiny (
                 write_object FN VALUE 
             else throw "record doesn't exist" ]
 
-    ## db_write_record db table key value - unconditionally create record
+    ## Tiny::db_write_record db table key value - unconditionally create record
     def db_write_record =
         [ DB TABLE KEY VALUE ->
             let FN = db_record_location DB TABLE KEY in
             remove_object FN; 
             write_object FN VALUE ]
 
-    ## db_write_record db table key - retrieve a record value
+    ## Tiny::db_write_record db table key - retrieve a record value
     def db_read_record =
         [ DB TABLE KEY ->
             let FN = db_record_location DB TABLE KEY in
             if OS::exists FN then read_object FN
             else throw "record doesn't exist" ]
 
-    ## db_remove_record db table key - remove a record by key
+    ## Tiny::db_remove_record db table key - remove a record by key
     def db_remove_record =
         [ DB TABLE KEY ->
             let FN = db_record_location DB TABLE KEY in
             remove_object FN ]
 
-    ## db_transaction db f - a transaction is a program holding on to a lock
+    ## Tiny::db_transaction db f - a transaction is a program holding on to a lock
     def db_transaction =
         [ DB F -> 
             let LOCK = OS::flock (db_lock_location DB) in
