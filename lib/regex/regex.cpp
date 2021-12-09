@@ -47,7 +47,7 @@ public:
     }
 
     int compare(const VMObjectPtr& o) override {
-        if ((o->tag() == VM_OBJECT_OPAQUE) &&
+        if ((machine()->is_opaque(o)) &&
                 (o->symbol() == this->symbol())) {
             RegexPtr r = std::static_pointer_cast<Regex>(o);
             if (string() < r->string()) {

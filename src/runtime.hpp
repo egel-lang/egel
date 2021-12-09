@@ -1180,7 +1180,7 @@ typedef std::shared_ptr<VMObjectData> VMObjectDataPtr;
 
 typedef std::shared_ptr<VMObjectCombinator> VMObjectCombinatorPtr;
 #define VM_OBJECT_COMBINATOR_TEST(a) \
-    (a->tag_test(VM_OBJECT_COMBINATOR))
+    (a->tag() == VM_OBJECT_COMBINATOR)
 #define VM_OBJECT_COMBINATOR_CAST(a) \
     std::static_pointer_cast<VMObjectCombinator>(a)
 #define VM_OBJECT_COMBINATOR_SYMBOL(a) \

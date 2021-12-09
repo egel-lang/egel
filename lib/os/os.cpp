@@ -399,7 +399,7 @@ protected:
 };
 
 #define CHANNEL_TEST(o, sym) \
-    ((o->tag() == VM_OBJECT_OPAQUE) && \
+    ((machine()->is_opaque(o)) && \
      (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
 #define CHANNEL_VALUE(o) \
     ((std::static_pointer_cast<ChannelValue>(o))->value())
@@ -794,7 +794,7 @@ protected:
 };
 
 #define SERVER_OBJECT_TEST(o, sym) \
-    ((o->tag() == VM_OBJECT_OPAQUE) && \
+    ((machine()->is_opaque(o)) && \
      (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
 #define SERVER_OBJECT_CAST(o) \
     (std::static_pointer_cast<ServerObject>(o))

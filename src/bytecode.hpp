@@ -632,7 +632,7 @@ public:
                 auto y0 = reg[y];
                 auto z0 = reg[z];
 
-                ASSERT(x0->tag() == VM_OBJECT_ARRAY);
+                ASSERT(machine()->is_array(x0));
                 ASSERT(y0->tag() == VM_OBJECT_INTEGER);
 
                 auto xv = VM_OBJECT_ARRAY_CAST(x0);
@@ -650,7 +650,7 @@ public:
                 index_t     i = FETCH_idx(_code,pc);
 
                 auto z0 = reg[z];
-                if (z0->tag() == VM_OBJECT_ARRAY) {
+                if (machine()->is_array(z0)) {
                     auto zz = VM_OBJECT_ARRAY_CAST(z0);
                     flag = (( (int) y - (int) x + 1) <= (int) zz->size() - (int) i);
                     if (flag) {
@@ -673,7 +673,7 @@ public:
                 reg_t       z = FETCH_reg(_code,pc);
 
                 auto z0 = reg[z];
-                if (z0->tag() == VM_OBJECT_ARRAY) {
+                if (machine()->is_array(z0)) {
                     auto zz = VM_OBJECT_ARRAY_CAST(z0);
                     flag = (( (int) y - (int) x + 1) == (int) zz->size() );
                     if (flag) {
@@ -718,8 +718,8 @@ public:
 
                 auto y0 = reg[y];
                 auto z0 = reg[z];
-                if ((y0->tag() == VM_OBJECT_ARRAY) &&
-                    (z0->tag() == VM_OBJECT_ARRAY) ) {
+                if ((machine()->is_array(y0)) &&
+                    (machine()->is_array(z0)) ) {
                     auto yc = VM_OBJECT_ARRAY_CAST(y0);
                     auto zc = VM_OBJECT_ARRAY_CAST(z0);
 

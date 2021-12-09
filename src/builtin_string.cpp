@@ -241,7 +241,7 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, MoveIndex, "String", "move_index");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (machine()->is_text(arg2))) {
             auto n = machine()->get_integer(arg0);
             auto d = machine()->get_integer(arg1);
             auto s = machine()->get_text(arg2);

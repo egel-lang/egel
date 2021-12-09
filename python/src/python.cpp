@@ -127,28 +127,28 @@ private:
 #define PYTHON_HAS_TYPE(a,b) (a->ob_type == &b)
 
 static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
-    if (VM_OBJECT_NONE_TEST(o)) {
+    if (machine->is_none(o)) {
          return Py_None;
-    } else if (VM_OBJECT_FALSE_TEST(o)) {
+    } else if (machine->is_false(o)) {
          return Py_False;
-    } else if (VM_OBJECT_TRUE_TEST(o)) {
+    } else if (machine->is_true(o)) {
          return Py_True;
-    } else if (VM_OBJECT_INTEGER_TEST(o)) {
-        auto n0 = machine()->get_integer(o);
+    } else if (machine->is_integer(o)) {
+        auto n0 = machine->get_integer(o);
         PyObject* n1 = Py_BuildValue("l", n0); // XXX: l = long int; L = long long
         return n1;
-    } else if (machine()->is_float()(o)) {
-        auto f0 = machine()->get_float(o);
+    } else if (machine->is_float()(o)) {
+        auto f0 = machine->get_float(o);
         PyObject* f1 = Py_BuildValue("f", f0);
         return f1;
-    } else if (VM_OBJECT_CHAR_TEST(o)) {
-        auto s0 = icu::UnicodeString() + machine()->get_char(o);
+    } else if (machine->is_char(o)) {
+        auto s0 = icu::UnicodeString() + machine->get_char(o);
         char* s1 = unicode_to_char(s0);
         PyObject* s2 = Py_BuildValue("s", s1);
         delete s1;
         return s2;
-    } else if (VM_OBJECT_TEXT_TEST(o)) {
-        auto s0 = machine()->get_text(o);
+    } else if (machine->is_text(o)) {
+        auto s0 = machine->get_text(o);
         char* s1 = unicode_to_char(s0);
         PyObject* s2 = Py_BuildValue("s", s1);
         delete s1;
@@ -158,32 +158,32 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
     }
 };
 
-static VMObjectPtr python_to_egel(VM* vm, const CPythonObject& object) {
+static VMObjectPtr python_to_egel(VM* machine, const CPythonObject& object) {
     auto o = object.get_object();
     if (Py_Is(o, Py_None)) {
-        return vm->create_none();
+        return machine->create_none();
     } else if (Py_Is(o, Py_False)) {
-        return vm->create_false();
+        return machine->create_false();
     } else if (Py_Is(o, Py_True)) {
-        return vm->create_true();
+        return machine->create_true();
     } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
-        vm_int_t n0;
+        machine_int_t n0;
         PyArg_Parse(o, "l", &n0);
-        auto n1 = vm->create_integer(n0);
+        auto n1 = machine->create_integer(n0);
         return n1;
     } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
-        vm_float_t f0;
+        machine_float_t f0;
         PyArg_Parse(o, "d", &f0);
-        auto f1 = vm->create_float(f0);
+        auto f1 = machine->create_float(f0);
         return f1;
     } else if (PYTHON_HAS_TYPE(o, PyUnicode_Type)) {
         char *s0; // XXX: check for possible leak once
         PyArg_Parse(o, "s", &s0);
         auto s1 = icu::UnicodeString(s0);
-        auto s2 = vm->create_text(s1);
+        auto s2 = machine->create_text(s1);
         return s2;
     } else {
-        throw vm->create_text("conversion failed"); 
+        throw machine->create_text("conversion failed"); 
     }
 };
 

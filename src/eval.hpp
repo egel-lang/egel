@@ -63,7 +63,7 @@ public:
     }
 
     static VMObjectPtr create(VM* vm, const VMObjectPtr& o, const VMReduceResult& r) {
-        if (VM_OBJECT_COMBINATOR_TEST(o)) {
+        if (o->tag() == VM_OBJECT_COMBINATOR) {
             auto c = VM_OBJECT_COMBINATOR_CAST(o);
             auto v = VarCombinator(vm, c->symbol(), r).clone();
             return v;

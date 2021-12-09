@@ -203,7 +203,7 @@ public:
     }
     
     static bool is_module(const VMObjectPtr& o) {
-        return ((o->tag() == VM_OBJECT_OPAQUE) && (o->subtag() == VM_SUB_MODULE));
+        return (o->subtag() == VM_SUB_MODULE);
     }
 
     static VMModulePtr module_cast(const VMObjectPtr& o) {
@@ -292,7 +292,7 @@ public:
 
     void declarations(NamespacePtr& env) override {
         for (auto& o:_exports) {
-            if (o->tag() == VM_OBJECT_COMBINATOR) {
+            if (machine()->is_combinator(o)) {
                 auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
                 auto s   = machine()->get_combinator_string(sym);
 
@@ -410,7 +410,7 @@ public:
 
     void declarations(NamespacePtr& env) override {
         for (auto& o:_exports) {
-            if (o->tag() == VM_OBJECT_COMBINATOR) {
+            if (machine()->is_combinator(o)) {
                 auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
                 auto s   = machine()->get_combinator_string(sym);
 

@@ -129,7 +129,7 @@ public:
                     set_state(HALTED);
                 } else {
                     auto t = r.result;
-                    if (t->tag() == VM_OBJECT_ARRAY) {
+                    if (machine()->is_array(t)) {
                         auto ff = machine()->get_array(t);
                         if ((ff.size() == 3) && (ff[0]->symbol() == tup)) {
                             out_push(ff[1]);
@@ -205,7 +205,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
 
-        if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == pr)) {
+        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == pr)) {
             auto process = std::static_pointer_cast<Process>(arg0);
             VMObjectPtr msg = nullptr;
             while ((msg = process->out_pop()) == nullptr) {
@@ -226,7 +226,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
 
-        if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == pr)) {
+        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == pr)) {
             auto process = std::static_pointer_cast<Process>(arg0);
             process->set_state(HALTED);
             return machine()->create_none();

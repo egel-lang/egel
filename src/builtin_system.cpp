@@ -394,7 +394,7 @@ public:
         static symbol_t object = 0;
         if (object == 0) object = machine()->enter_symbol("System", "object");
 
-        if (arg1->tag() == VM_OBJECT_ARRAY) {
+        if (machine()->is_array(arg1)) {
             auto ff = machine()->get_array(arg1);
             auto sz = ff.size();
             // check head is an object
@@ -427,7 +427,7 @@ public:
         static symbol_t object = 0;
         if (object == 0) object = machine()->enter_symbol("System", "object");
 
-        if (arg2->tag() == VM_OBJECT_ARRAY) {
+        if (machine()->is_array(arg2)) {
             auto ff = machine()->get_array(arg2);
             auto sz = ff.size();
             // check head is an object
@@ -459,7 +459,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, ExtendField, "System", "extend");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_ARRAY) && (arg1->tag() == VM_OBJECT_ARRAY) ) {
+        if ( (machine()->is_array(arg0)) && (machine()->is_array(arg1)) ) {
             auto ff0 = machine()->get_array(arg0);
             auto sz0 = ff0.size();
             auto ff1 = machine()->get_array(arg1);
@@ -643,7 +643,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         symbol_t sym = machine()->enter_symbol("System", "reference");
 
-        if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == sym)) {
+        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == sym)) {
             auto r = std::static_pointer_cast<Reference>(arg0);
             r->set_ref(arg1);
             return arg0;
@@ -690,7 +690,7 @@ public:
         icu::UnicodeString ss;
         auto a = arg0;
 
-        while ( (a->tag() == VM_OBJECT_ARRAY) ) {
+        while ( (machine()->is_array(a)) ) {
             auto aa = machine()->get_array(a);
             if (aa.size() != 3) THROW_INVALID;
             if (aa[0]->symbol() != _cons) THROW_INVALID;
@@ -756,10 +756,10 @@ public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyAnd, "System", "&&");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+        if ( (machine()->is_combinator(arg0)) &&
              (arg0->symbol() == SYMBOL_FALSE) ) {
             return arg0;
-        } else if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+        } else if ( (machine()->is_combinator(arg0)) &&
              (arg0->symbol() == SYMBOL_TRUE) ) {
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
@@ -777,10 +777,10 @@ public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyOr, "System", "||");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+        if ( (machine()->is_combinator(arg0)) &&
              (arg0->symbol() == SYMBOL_TRUE) ) {
             return arg0;
-        } else if ( (arg0->tag() == VM_OBJECT_COMBINATOR) &&
+        } else if ( (machine()->is_combinator(arg0)) &&
              (arg0->symbol() == SYMBOL_FALSE) ) {
             VMObjectPtrs thunk;
             thunk.push_back(arg1);
@@ -807,7 +807,7 @@ public:
                 s += arg->to_text();
             } else if (arg->tag() == VM_OBJECT_CHAR) {
                 s += machine()->get_char(arg);
-            } else if (arg->tag() == VM_OBJECT_TEXT) {
+            } else if (machine()->is_text(arg)) {
                 s += machine()->get_text(arg);
             } else {
                 s += arg->to_text();
@@ -843,7 +843,7 @@ public:
             return nullptr;
         } else {
             auto a0 = args[0];
-            if (a0->tag() == VM_OBJECT_TEXT) {
+            if (machine()->is_text(a0)) {
                 auto f = machine()->get_text(a0);
                 auto fmt = unicode_to_char(f);
 
@@ -863,7 +863,7 @@ public:
                         auto s1 = unicode_to_char(s0);
                         store.push_back(s1);
                         delete s1;
-                    } else if (arg->tag() == VM_OBJECT_TEXT) {
+                    } else if (machine()->is_text(arg)) {
                         auto t = machine()->get_text(arg);
                         auto s0 = unicode_to_char(t);
                         store.push_back(s0);
