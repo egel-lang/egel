@@ -345,7 +345,7 @@ inline SerialObjectPtrs to_dag(VM* m, const VMObjectPtr& o) {
         }
         break;
         case VM_OBJECT_COMBINATOR: {
-            auto t = m->value_symbol(o);
+            auto t = m->symbol(o);
             auto s = SerialObject::create_combinator(sz, t);
             dag.push_back(s);
             from[o] = sz;
@@ -403,7 +403,7 @@ inline VMObjectPtr from_dag(VM* m, const SerialObjectPtrs& dag) {
         break;
         case VM_OBJECT_COMBINATOR: {
             auto t = SerialObject::get_combinator(d);
-            auto o = m->get_symbol(t);
+            auto o = m->get_combinator(t);
             map[d->get_id()] = o;
         }
         break;

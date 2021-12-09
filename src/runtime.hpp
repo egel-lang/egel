@@ -391,8 +391,8 @@ public:
     virtual symbol_t enter_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) = 0;
     virtual symbol_t enter_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) = 0;
 
-    virtual int get_symbols_size() = 0;
-    virtual icu::UnicodeString get_symbol_string(symbol_t s) = 0;
+    virtual int get_combinators_size() = 0;
+    virtual icu::UnicodeString get_combinator_string(symbol_t s) = 0;
 
     // data table manipulation
     virtual data_t      enter_data(const VMObjectPtr& o) = 0;
@@ -417,10 +417,10 @@ public:
     virtual void* get_context() const = 0;
 
     // convenience routines
-    virtual VMObjectPtr get_symbol(const symbol_t t) = 0;
-    virtual VMObjectPtr get_symbol(const icu::UnicodeString& n) = 0;
-    virtual VMObjectPtr get_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) = 0;
-    virtual VMObjectPtr get_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) = 0;
+    virtual VMObjectPtr get_combinator(const symbol_t t) = 0;
+    virtual VMObjectPtr get_combinator(const icu::UnicodeString& n) = 0;
+    virtual VMObjectPtr get_combinator(const icu::UnicodeString& n0, const icu::UnicodeString& n1) = 0;
+    virtual VMObjectPtr get_combinator(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) = 0;
 
     // state
     virtual void        define(const VMObjectPtr& o) = 0;    // define an undefined symbol
@@ -474,7 +474,7 @@ public:
     virtual bool        is_combinator(const VMObjectPtr& o) = 0;
     virtual bool        is_opaque(const VMObjectPtr& o) = 0;
 
-    virtual vm_text_t   value_symbol(const VMObjectPtr& o) = 0;
+    virtual vm_text_t   symbol(const VMObjectPtr& o) = 0;
 
     virtual VMObjectPtr create_data(const icu::UnicodeString& s) = 0;
     virtual VMObjectPtr create_data(const icu::UnicodeString& s0, const icu::UnicodeString& s1) = 0;
@@ -988,7 +988,7 @@ public:
     }
 
     icu::UnicodeString text() const {
-        return _machine->get_symbol_string(_symbol);
+        return _machine->get_combinator_string(_symbol);
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -1074,7 +1074,7 @@ public:
         if (_symbol == SYMBOL_NIL) {
             return "{}";
         } else {
-            return _machine->get_symbol_string(_symbol);
+            return _machine->get_combinator_string(_symbol);
         }
     }
 

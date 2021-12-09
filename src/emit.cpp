@@ -229,7 +229,7 @@ public:
     }
 
     void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
-        auto c = get_machine()->get_symbol(nn, n);
+        auto c = get_machine()->get_combinator(nn, n);
         auto d = get_machine()->enter_data(c);
         visit_constant(d);
     }
@@ -341,7 +341,7 @@ public:
                 head_flag = true;
             } else if (a->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(a, p, nn, n);
-                auto v = get_machine()->get_symbol(nn, n);
+                auto v = get_machine()->get_combinator(nn, n);
                 auto d = get_machine()->get_data(v);
                 get_coder()->emit_op_data(c, d);
                 head_flag = true;
@@ -414,7 +414,7 @@ public:
 
             if (t->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(t, p, nn, n);
-                auto o = get_machine()->get_symbol(nn, n);
+                auto o = get_machine()->get_combinator(nn, n);
                 auto d = get_machine()->get_data(o);
 
                 auto rt = get_coder()->generate_register();

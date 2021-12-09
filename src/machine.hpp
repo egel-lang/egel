@@ -251,11 +251,11 @@ public:
         return _symbols.enter(nn, n);
     }
 
-    virtual int get_symbols_size() override {
+    virtual int get_combinators_size() override {
         return _symbols.size();
     }
 
-    icu::UnicodeString get_symbol_string(symbol_t s) override {
+    icu::UnicodeString get_combinator_string(symbol_t s) override {
         return _symbols.get(s);
     }
 
@@ -277,25 +277,25 @@ public:
     }
 
     // convenience
-    VMObjectPtr get_symbol(const symbol_t s) override {
+    VMObjectPtr get_combinator(const symbol_t s) override {
         auto o = VMObjectStub(this, s).clone();
         auto d = enter_data(o);
         return get_data(d);
     }
 
-    VMObjectPtr get_symbol(const icu::UnicodeString& n) override {
+    VMObjectPtr get_combinator(const icu::UnicodeString& n) override {
         auto i = enter_symbol(n);
-        return get_symbol(i);
+        return get_combinator(i);
     }
 
-    VMObjectPtr get_symbol(const icu::UnicodeString& n0, const icu::UnicodeString& n1) override {
+    VMObjectPtr get_combinator(const icu::UnicodeString& n0, const icu::UnicodeString& n1) override {
         auto i = enter_symbol(n0, n1);
-        return get_symbol(i);
+        return get_combinator(i);
     }
 
-    VMObjectPtr get_symbol(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) override {
+    VMObjectPtr get_combinator(const std::vector<icu::UnicodeString>& nn, const icu::UnicodeString& n) override {
         auto i = enter_symbol(nn, n);
-        return get_symbol(i);
+        return get_combinator(i);
     }
 
     void define(const VMObjectPtr& o) override {
@@ -319,7 +319,7 @@ public:
 
     VMObjectPtr get(const VMObjectPtr& o) override {
         // get a defined symbol
-        return get_symbol(o->to_text());
+        return get_combinator(o->to_text());
     }
 
     // reduce an expression
@@ -576,7 +576,7 @@ public:
         return VM_OBJECT_OPAQUE_TEST(o);
     }
 
-    icu::UnicodeString value_symbol(const VMObjectPtr& o) override {
+    icu::UnicodeString symbol(const VMObjectPtr& o) override {
         return _symbols.get(o->symbol());
     }
 

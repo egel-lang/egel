@@ -24,6 +24,8 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+* dictionary
+* tinydb
 * small internal tweaks to array creation
 * generators library
 

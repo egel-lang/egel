@@ -465,7 +465,7 @@ public:
             auto ff1 = VM_OBJECT_ARRAY_VALUE(arg1);
             auto sz1 = ff1.size();
 
-            auto object = machine()->get_symbol("System", "object");
+            auto object = machine()->get_combinator("System", "object");
 
             // check head is an object
             if (sz0 == 0) THROW_INVALID;

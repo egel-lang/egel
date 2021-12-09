@@ -20,7 +20,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (arg0->tag() == VM_OBJECT_TEXT) {
             auto s = VM_OBJECT_TEXT_VALUE(arg0);
-	    auto o = machine()->get_symbol(s);
+	    auto o = machine()->get_combinator(s);
 	    Disassembler d(o);
 	    return VMObjectText(d.disassemble()).clone();
         } else {

@@ -45,8 +45,8 @@ public:
         return _value.size();
     }
 
-    VMObjectPtr has(const VMObjectPtr key) {
-        return _value[key];
+    bool has(const VMObjectPtr key) {
+        return _value.count(key) > 0;
     }
 
     VMObjectPtr get(const VMObjectPtr& key) {
@@ -86,9 +86,9 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->value_symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
             auto d = Dictionary::cast(arg0);
-            return d->has(arg1);
+            return m->create_bool(d->has(arg1));
         } else {
             THROW_BADARGS;
         }
@@ -102,7 +102,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->value_symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
             auto d = Dictionary::cast(arg0);
             return d->get(arg1);
         } else {
@@ -118,10 +118,10 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->value_symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
             auto d = Dictionary::cast(arg0);
             d->set(arg1, arg2);
-            return m->create_none();
+            return arg0;
         } else {
             THROW_BADARGS;
         }
@@ -135,7 +135,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->value_symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
             auto d = Dictionary::cast(arg0);
             auto oo = d->keys();
             return m->to_list(oo);
