@@ -287,7 +287,7 @@ public:
         if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = machine()->get_text(arg1);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
+            auto s1 = machine()->get_text(arg2);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;
@@ -316,7 +316,7 @@ public:
         if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = machine()->get_text(arg1);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
+            auto s1 = machine()->get_text(arg2);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;

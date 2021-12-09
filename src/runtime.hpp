@@ -477,7 +477,7 @@ public:
     virtual int          array_size(const VMObjectPtr& o) = 0;
     virtual VMObjectPtr  array_get(const VMObjectPtr& o, int n) = 0;
     virtual void         array_set(VMObjectPtr& o, int n, const VMObjectPtr& e) = 0;
-    virtual VMObjectPtrs array_vector(const VMObjectPtr& o) = 0;
+    virtual VMObjectPtrs get_array(const VMObjectPtr& o) = 0;
 
     virtual bool        is_combinator(const VMObjectPtr& o) = 0;
     virtual bool        is_opaque(const VMObjectPtr& o) = 0;

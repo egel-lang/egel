@@ -244,7 +244,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto n = machine()->get_integer(arg0);
             auto d = machine()->get_integer(arg1);
-            auto s = VM_OBJECT_TEXT_VALUE(arg2);
+            auto s = machine()->get_text(arg2);
             return machine()->create_integer(s.moveIndex32(n, d));
         } else {
             THROW_BADARGS;
@@ -324,7 +324,7 @@ public:
             auto s0 = machine()->get_text(arg0);
             auto s1 = machine()->get_text(arg1);
             return machine()->create_text(s0.append(s1));
-        } else if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+        } else if ((machine()->is_text(arg0)) && (machine()->is_char(arg1))) {
             auto s0 = machine()->get_text(arg0);
             auto c  = machine()->get_char(arg1);
             return machine()->create_text(s0.append(c));
@@ -344,7 +344,7 @@ public:
         if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto s0 = machine()->get_text(arg0);
             auto n  = machine()->get_integer(arg1);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
+            auto s1 = machine()->get_text(arg2);
             return machine()->create_text(s1.insert(n, s0));
         } else {
             THROW_BADARGS;
@@ -361,7 +361,7 @@ public:
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto s0 = machine()->get_text(arg0);
             auto s1 = machine()->get_text(arg1);
-            auto s2 = VM_OBJECT_TEXT_VALUE(arg2);
+            auto s2 = machine()->get_text(arg2);
             return machine()->create_text(s2.findAndReplace(s0, s1));
         } else {
             THROW_BADARGS;
@@ -378,7 +378,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto n0 = machine()->get_integer(arg0);
             auto n1 = machine()->get_integer(arg1);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
+            auto s0 = machine()->get_text(arg2);
             return machine()->create_text(s0.removeBetween(n0, n1));
         } else {
             THROW_BADARGS;
@@ -395,7 +395,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto n0 = machine()->get_integer(arg0);
             auto n1 = machine()->get_integer(arg1);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
+            auto s0 = machine()->get_text(arg2);
             return machine()->create_text(s0.retainBetween(n0, n1));
         } else {
             THROW_BADARGS;
@@ -499,7 +499,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ord, "String", "ord");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (machine()->is_text(arg0)) {
+        if (machine()->is_char(arg0)) {
             auto c = machine()->get_char(arg0);
             return machine()->create_integer(c);
         } else {

@@ -395,7 +395,7 @@ public:
         if (object == 0) object = machine()->enter_symbol("System", "object");
 
         if (arg1->tag() == VM_OBJECT_ARRAY) {
-            auto ff = VM_OBJECT_ARRAY_VALUE(arg1);
+            auto ff = machine()->get_array(arg1);
             auto sz = ff.size();
             // check head is an object
             if (sz == 0) THROW_INVALID;
@@ -428,7 +428,7 @@ public:
         if (object == 0) object = machine()->enter_symbol("System", "object");
 
         if (arg2->tag() == VM_OBJECT_ARRAY) {
-            auto ff = VM_OBJECT_ARRAY_VALUE(arg2);
+            auto ff = machine()->get_array(arg2);
             auto sz = ff.size();
             // check head is an object
             if (sz == 0) THROW_INVALID;
@@ -460,9 +460,9 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if ( (arg0->tag() == VM_OBJECT_ARRAY) && (arg1->tag() == VM_OBJECT_ARRAY) ) {
-            auto ff0 = VM_OBJECT_ARRAY_VALUE(arg0);
+            auto ff0 = machine()->get_array(arg0);
             auto sz0 = ff0.size();
-            auto ff1 = VM_OBJECT_ARRAY_VALUE(arg1);
+            auto ff1 = machine()->get_array(arg1);
             auto sz1 = ff1.size();
 
             auto object = machine()->get_combinator("System", "object");
@@ -509,10 +509,11 @@ public:
             return arg0;
         } else if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return machine()->create_integer(f);
-        } else if (machine()->is_text(arg0)) {
+            return machine()->create_integer((int)f);
+        } else if (machine()->is_char(arg0)) {
             auto c = machine()->get_char(arg0);
-            return machine()->create_integer(c);
+            auto i = convert_to_int(icu::UnicodeString()+c);
+            return machine()->create_integer(i);
         } else if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
             auto i = convert_to_int(s);
@@ -558,7 +559,7 @@ public:
             auto f = machine()->get_float(arg0);
             auto s = convert_from_float(f);
             return machine()->create_text(s);
-        } else if (machine()->is_text(arg0)) {
+        } else if (machine()->is_char(arg0)) {
             auto c = machine()->get_char(arg0);
             auto s = convert_from_char(c);
             return machine()->create_text(s);
@@ -690,12 +691,12 @@ public:
         auto a = arg0;
 
         while ( (a->tag() == VM_OBJECT_ARRAY) ) {
-            auto aa = VM_OBJECT_ARRAY_VALUE(a);
+            auto aa = machine()->get_array(a);
             if (aa.size() != 3) THROW_INVALID;
             if (aa[0]->symbol() != _cons) THROW_INVALID;
             if (aa[1]->tag() != VM_OBJECT_CHAR) THROW_INVALID;
 
-            auto c = VM_OBJECT_CHAR_VALUE(aa[1]);
+            auto c = machine()->get_char(aa[1]);
 
             ss += c;
 
@@ -805,9 +806,9 @@ public:
             } else if (arg->tag() == VM_OBJECT_FLOAT) {
                 s += arg->to_text();
             } else if (arg->tag() == VM_OBJECT_CHAR) {
-                s += VM_OBJECT_CHAR_VALUE(arg);
+                s += machine()->get_char(arg);
             } else if (arg->tag() == VM_OBJECT_TEXT) {
-                s += VM_OBJECT_TEXT_VALUE(arg);
+                s += machine()->get_text(arg);
             } else {
                 s += arg->to_text();
             }
@@ -843,7 +844,7 @@ public:
         } else {
             auto a0 = args[0];
             if (a0->tag() == VM_OBJECT_TEXT) {
-                auto f = VM_OBJECT_TEXT_VALUE(a0);
+                auto f = machine()->get_text(a0);
                 auto fmt = unicode_to_char(f);
 
                 fmt::dynamic_format_arg_store<fmt::format_context> store;
@@ -851,19 +852,19 @@ public:
                 for (int n = 1; n < (int) args.size(); n++) {
                     auto arg = args[n];
                     if (arg->tag() == VM_OBJECT_INTEGER) {
-                        auto i = VM_OBJECT_INTEGER_VALUE(arg);
+                        auto i = machine()->get_integer(arg);
                         store.push_back(i);
                     } else if (arg->tag() == VM_OBJECT_FLOAT) {
-                        auto f = VM_OBJECT_FLOAT_VALUE(arg);
+                        auto f = machine()->get_float(arg);
                         store.push_back(f);
                     } else if (arg->tag() == VM_OBJECT_CHAR) {
-                        auto c = VM_OBJECT_CHAR_VALUE(arg);
+                        auto c = machine()->get_char(arg);
                         auto s0 = icu::UnicodeString(c);
                         auto s1 = unicode_to_char(s0);
                         store.push_back(s1);
                         delete s1;
                     } else if (arg->tag() == VM_OBJECT_TEXT) {
-                        auto t = VM_OBJECT_TEXT_VALUE(arg);
+                        auto t = machine()->get_text(arg);
                         auto s0 = unicode_to_char(t);
                         store.push_back(s0);
                         delete s0;

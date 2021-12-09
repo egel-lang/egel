@@ -352,7 +352,7 @@ inline SerialObjectPtrs to_dag(VM* m, const VMObjectPtr& o) {
         }
         break;
         case VM_OBJECT_ARRAY: {
-            auto oo = m->array_vector(o);
+            auto oo = m->get_array(o);
             std::vector<objectid_t> ss;
             for (auto& o0:oo) {
                 ss.push_back(from[o0]);

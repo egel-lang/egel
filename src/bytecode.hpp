@@ -636,7 +636,7 @@ public:
                 ASSERT(y0->tag() == VM_OBJECT_INTEGER);
 
                 auto xv = VM_OBJECT_ARRAY_CAST(x0);
-                auto yv = VM_OBJECT_INTEGER_VALUE(y0);
+                auto yv = machine()->get_integer(y0);
 
                 xv->set(yv, z0);
 

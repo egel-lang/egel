@@ -134,21 +134,21 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
     } else if (VM_OBJECT_TRUE_TEST(o)) {
          return Py_True;
     } else if (VM_OBJECT_INTEGER_TEST(o)) {
-        auto n0 = VM_OBJECT_INTEGER_VALUE(o);
+        auto n0 = machine()->get_integer(o);
         PyObject* n1 = Py_BuildValue("l", n0); // XXX: l = long int; L = long long
         return n1;
     } else if (VM_OBJECT_FLOAT_TEST(o)) {
-        auto f0 = VM_OBJECT_FLOAT_VALUE(o);
+        auto f0 = machine()->get_float(o);
         PyObject* f1 = Py_BuildValue("f", f0);
         return f1;
     } else if (VM_OBJECT_CHAR_TEST(o)) {
-        auto s0 = icu::UnicodeString() + VM_OBJECT_CHAR_VALUE(o);
+        auto s0 = icu::UnicodeString() + machine()->get_char(o);
         char* s1 = unicode_to_char(s0);
         PyObject* s2 = Py_BuildValue("s", s1);
         delete s1;
         return s2;
     } else if (VM_OBJECT_TEXT_TEST(o)) {
-        auto s0 = VM_OBJECT_TEXT_VALUE(o);
+        auto s0 = machine()->get_text(o);
         char* s1 = unicode_to_char(s0);
         PyObject* s2 = Py_BuildValue("s", s1);
         delete s1;

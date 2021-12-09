@@ -130,7 +130,7 @@ public:
                 } else {
                     auto t = r.result;
                     if (t->tag() == VM_OBJECT_ARRAY) {
-                        auto ff = VM_OBJECT_ARRAY_VALUE(t);
+                        auto ff = machine()->get_array(t);
                         if ((ff.size() == 3) && (ff[0]->symbol() == tup)) {
                             out_push(ff[1]);
                             _program = ff[2]; 

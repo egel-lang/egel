@@ -38,25 +38,25 @@ template<typename T> struct value_from {};
 
 template<> struct value_from<vm_int_t> {
     static inline vm_int_t func(const VMObjectPtr& o) {
-        return VM_OBJECT_INTEGER_VALUE(o);
+        return machine()->get_integer(o);
     }
 };
 
 template<> struct value_from<vm_float_t> {
     static inline vm_float_t func(const VMObjectPtr& o) {
-        return VM_OBJECT_FLOAT_VALUE(o);
+        return machine()->get_float(o);
     }
 };
 
 template<> struct value_from<vm_text_t> {
     static inline vm_text_t func(const VMObjectPtr& o) {
-        return VM_OBJECT_TEXT_VALUE(o);
+        return machine()->get_text(o);
     }
 };
 
 template<> struct value_from<vm_char_t> {
     static inline vm_char_t func(const VMObjectPtr& o) {
-        return VM_OBJECT_CHAR_VALUE(o);
+        return machine()->get_char(o);
     }
 };
 

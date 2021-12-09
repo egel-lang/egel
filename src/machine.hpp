@@ -545,7 +545,7 @@ public:
         VM_OBJECT_ARRAY_CAST(o)->set(n, e);
     }
 
-    VMObjectPtrs array_vector(const VMObjectPtr& o) override {
+    VMObjectPtrs get_array(const VMObjectPtr& o) override {
         return VM_OBJECT_ARRAY_VALUE(o);
     }
 
@@ -678,7 +678,7 @@ public:
         if (is_tuple(oo)) {
             return tt;
         } else if (is_array(oo)) {
-            auto tt1 = array_vector(oo);
+            auto tt1 = get_array(oo);
             for (unsigned int n = 1; n < tt1.size(); n++) {
                 tt.push_back(tt1[n]);
             }
