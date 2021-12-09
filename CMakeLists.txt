@@ -148,6 +148,12 @@ add_library(random MODULE ${RANDOM_LIST})
 target_link_libraries(random ICU::uc ICU::i18n ICU::io)
 set_target_properties(random PROPERTIES PREFIX "" SUFFIX ".ego")
 
+# dict.ego
+file(GLOB DICT_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/dict/*.cpp")
+add_library(dict MODULE ${DICT_LIST})
+target_link_libraries(dict ICU::uc ICU::i18n ICU::io)
+set_target_properties(dict PROPERTIES PREFIX "" SUFFIX ".ego")
+
 # installation
 include(GNUInstallDirs)
 
@@ -169,7 +175,7 @@ install(FILES ${INCLUDE_LIST}
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 
-install(TARGETS os fs regex random
+install(TARGETS os fs regex random dict
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 

@@ -572,9 +572,12 @@ public:
         return VM_OBJECT_COMBINATOR_TEST(o);
     }
 
+    bool is_opaque(const VMObjectPtr& o) override {
+        return VM_OBJECT_OPAQUE_TEST(o);
+    }
+
     icu::UnicodeString value_symbol(const VMObjectPtr& o) override {
-        auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-        return _symbols.get(sym);
+        return _symbols.get(o->symbol());
     }
 
     VMObjectPtr create_data(const icu::UnicodeString& n) override {

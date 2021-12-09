@@ -472,6 +472,8 @@ public:
     virtual VMObjectPtrs array_vector(const VMObjectPtr& o) = 0;
 
     virtual bool        is_combinator(const VMObjectPtr& o) = 0;
+    virtual bool        is_opaque(const VMObjectPtr& o) = 0;
+
     virtual vm_text_t   value_symbol(const VMObjectPtr& o) = 0;
 
     virtual VMObjectPtr create_data(const icu::UnicodeString& s) = 0;
@@ -1033,6 +1035,8 @@ private:
 };
 
 typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
+#define VM_OBJECT_OPAQUE_TEST(a) \
+    (a->tag() == VM_OBJECT_OPAQUE)
 #define VM_OBJECT_OPAQUE_CAST(a) \
     std::static_pointer_cast<VMObjectOpaque>(a)
 #define VM_OBJECT_OPAQUE_COMPARE(o0, o1) \
