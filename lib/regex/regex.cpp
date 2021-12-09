@@ -284,7 +284,7 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (machine()->is_text(arg2))) {
             auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = machine()->get_text(arg1);
             auto s1 = machine()->get_text(arg2);
@@ -313,7 +313,7 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (machine()->is_text(arg2))) {
             auto pat = Regex::regex_pattern_cast(arg0);
             auto s0 = machine()->get_text(arg1);
             auto s1 = machine()->get_text(arg2);

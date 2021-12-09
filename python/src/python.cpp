@@ -137,7 +137,7 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
         auto n0 = machine()->get_integer(o);
         PyObject* n1 = Py_BuildValue("l", n0); // XXX: l = long int; L = long long
         return n1;
-    } else if (VM_OBJECT_FLOAT_TEST(o)) {
+    } else if (machine()->is_float()(o)) {
         auto f0 = machine()->get_float(o);
         PyObject* f1 = Py_BuildValue("f", f0);
         return f1;

@@ -801,9 +801,9 @@ public:
 
         icu::UnicodeString s;
         for (auto& arg:args) {
-            if (arg->tag() == VM_OBJECT_INTEGER) {
+            if (machine()->is_integer(arg)) {
                 s += arg->to_text();
-            } else if (arg->tag() == VM_OBJECT_FLOAT) {
+            } else if (machine()->is_float(arg)) {
                 s += arg->to_text();
             } else if (arg->tag() == VM_OBJECT_CHAR) {
                 s += machine()->get_char(arg);
@@ -851,13 +851,13 @@ public:
                 
                 for (int n = 1; n < (int) args.size(); n++) {
                     auto arg = args[n];
-                    if (arg->tag() == VM_OBJECT_INTEGER) {
+                    if (machine()->is_integer(arg)) {
                         auto i = machine()->get_integer(arg);
                         store.push_back(i);
-                    } else if (arg->tag() == VM_OBJECT_FLOAT) {
+                    } else if (machine()->is_float(arg)) {
                         auto f = machine()->get_float(arg);
                         store.push_back(f);
-                    } else if (arg->tag() == VM_OBJECT_CHAR) {
+                    } else if (machine()->is_char(arg)) {
                         auto c = machine()->get_char(arg);
                         auto s0 = icu::UnicodeString(c);
                         auto s1 = unicode_to_char(s0);

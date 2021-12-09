@@ -5,25 +5,25 @@ template<typename T> struct typetest {};
 
 template<> struct typetest<vm_int_t> {
     static inline bool func(const VMObjectPtr& o) {
-        return o->tag() == VM_OBJECT_INTEGER;
+        return machine()->is_integer(o);
     }
 };
 
 template<> struct typetest<vm_float_t> {
     static inline bool func(const VMObjectPtr& o) {
-        return o->tag() == VM_OBJECT_FLOAT;
+        return machine()->is_float(o);
     }
 };
 
 template<> struct typetest<vm_text_t> {
     static inline bool func(const VMObjectPtr& o) {
-        return o->tag() == VM_OBJECT_TEXT;
+        return machine()->is_text(o);
     }
 };
 
 template<> struct typetest<vm_char_t> {
     static inline bool func(const VMObjectPtr& o) {
-        return o->tag() == VM_OBJECT_CHAR;
+        return machine()->is_char(o);
     }
 };
 

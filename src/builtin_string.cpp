@@ -341,7 +341,7 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Insert, "String", "insert");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1)) && (machine()->is_text(arg2))) {
             auto s0 = machine()->get_text(arg0);
             auto n  = machine()->get_integer(arg1);
             auto s1 = machine()->get_text(arg2);
@@ -358,7 +358,7 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, FindAndReplace, "String", "replace");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1)) && (machine()->is_text(arg2))) {
             auto s0 = machine()->get_text(arg0);
             auto s1 = machine()->get_text(arg1);
             auto s2 = machine()->get_text(arg2);
@@ -375,7 +375,7 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Remove, "String", "remove");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (machine()->is_text(arg2))) {
             auto n0 = machine()->get_integer(arg0);
             auto n1 = machine()->get_integer(arg1);
             auto s0 = machine()->get_text(arg2);
@@ -392,7 +392,7 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Retain, "String", "retain");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (machine()->is_text(arg2))) {
             auto n0 = machine()->get_integer(arg0);
             auto n1 = machine()->get_integer(arg1);
             auto s0 = machine()->get_text(arg2);
