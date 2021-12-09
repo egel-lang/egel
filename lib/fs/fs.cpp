@@ -48,7 +48,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Concat, OS_STRING, "concat");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -71,7 +71,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ConcatWith, OS_STRING, "concat_with");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -94,7 +94,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Empty, OS_STRING, "empty");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.empty();
@@ -115,7 +115,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootPath, OS_STRING, "has_root_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_root_path();
@@ -136,7 +136,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootName, OS_STRING, "has_root_name");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_root_name();
@@ -157,7 +157,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootDirectory, OS_STRING, "has_root_directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_root_directory();
@@ -178,7 +178,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRelativePath, OS_STRING, "has_relative_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_relative_path();
@@ -199,7 +199,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasParentPath, OS_STRING, "has_parent_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_parent_path();
@@ -220,7 +220,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasFilename, OS_STRING, "has_filename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_filename();
@@ -241,7 +241,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasStem, OS_STRING, "has_stem");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_stem();
@@ -262,7 +262,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasExtension, OS_STRING, "has_extension");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.has_extension();
@@ -284,7 +284,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsAbsolute, OS_STRING, "is_absolute");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.is_absolute();
@@ -306,7 +306,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRelative, OS_STRING, "is_relative");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto b = p0.is_relative();
@@ -327,7 +327,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootName, OS_STRING, "root_name");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.root_name();
@@ -348,7 +348,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootDirectory, OS_STRING, "root_directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.root_directory();
@@ -369,7 +369,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootPath, OS_STRING, "root_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.root_path();
@@ -390,7 +390,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RelativePath, OS_STRING, "relative_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.relative_path();
@@ -411,7 +411,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ParentPath, OS_STRING, "parent_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.parent_path();
@@ -432,7 +432,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Filename, OS_STRING, "filename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.filename();
@@ -453,7 +453,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Stem, OS_STRING, "stem");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.stem();
@@ -474,7 +474,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Extension, OS_STRING, "extension");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = p0.extension();
@@ -495,7 +495,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Absolute, OS_STRING, "absolute");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = fs::absolute(p0);
@@ -517,7 +517,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Canonical, OS_STRING, "canonical");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = fs::canonical(p0);
@@ -540,7 +540,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, WeaklyCanonical, OS_STRING, "weakly_canonical");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = fs::weakly_canonical(p0);
@@ -563,7 +563,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Relative, OS_STRING, "relative");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -588,7 +588,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Proximate, OS_STRING, "proximate");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -612,7 +612,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Copy, OS_STRING, "copy");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -635,7 +635,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CopyFile, OS_STRING, "copy_file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -659,7 +659,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CopySymlink, OS_STRING, "copy_symlink");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -683,7 +683,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectory, OS_STRING, "create_directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -705,7 +705,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectories, OS_STRING, "create_directories");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -728,7 +728,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateHardLink, OS_STRING, "create_hard_link");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -751,7 +751,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateSymlink, OS_STRING, "create_symlink");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -774,7 +774,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateDirectorySymlink, OS_STRING, "create_directory_symlink");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -814,7 +814,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SetCurrentPath, OS_STRING, "set_current_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -836,7 +836,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exists, OS_STRING, "exists");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -858,7 +858,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Equivalent, OS_STRING, "equivalent");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -882,7 +882,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, FileSize, OS_STRING, "file_size");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -905,7 +905,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HardLinkCount, OS_STRING, "hard_link_count");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -929,7 +929,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Permissions, OS_STRING, "permissions");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -951,10 +951,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ReplacePermissions, OS_STRING, "replace_permissions");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
-                auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+                auto n1 = machine()->get_integer(arg1);
 
                 //fs::permissions(p0,(fs::perms) n1, fs::perm_options::replace);
                 fs::permissions(p0,(fs::perms) n1);
@@ -976,10 +976,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, AddPermissions, OS_STRING, "add_permissions");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
-                auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+                auto n1 = machine()->get_integer(arg1);
 
                 fs::permissions(p0,(fs::perms) n1, fs::perm_options::add);
 
@@ -999,10 +999,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, RemovePermissions, OS_STRING, "remove_permissions");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
-                auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+                auto n1 = machine()->get_integer(arg1);
 
                 fs::permissions(p0,(fs::perms) n1, fs::perm_options::remove);
 
@@ -1023,7 +1023,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadSymlink, OS_STRING, "read_symlink");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1045,7 +1045,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Remove, OS_STRING, "remove");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1067,7 +1067,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RemoveAll, OS_STRING, "remove_all");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1090,7 +1090,7 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Rename, OS_STRING, "rename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
@@ -1113,10 +1113,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ResizeFile, OS_STRING, "resize_file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER)) {
+        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
-                auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+                auto n1 = machine()->get_integer(arg1);
 
                 fs::resize_file(p0,n1);
 
@@ -1136,7 +1136,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceFree, OS_STRING, "space_free");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1159,7 +1159,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceCapacity, OS_STRING, "space_capacity");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1181,7 +1181,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceAvailable, OS_STRING, "space_available");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1222,7 +1222,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsBlockFile, OS_STRING, "is_block_file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1244,7 +1244,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsCharacterFile, OS_STRING, "is_character_file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1267,7 +1267,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsDirectory, OS_STRING, "is_directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1290,7 +1290,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsEmpty, OS_STRING, "is_empty");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1313,7 +1313,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsFifo, OS_STRING, "is_fifo");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1336,7 +1336,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsOther, OS_STRING, "is_other");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1359,7 +1359,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRegularFile, OS_STRING, "is_regular_file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1381,7 +1381,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsSocket, OS_STRING, "is_socket");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1404,7 +1404,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsSymlink, OS_STRING, "is_symlink");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 
@@ -1427,7 +1427,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Directory, OS_STRING, "directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
             try {
                 auto p0 = object_to_path(arg0);
 

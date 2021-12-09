@@ -486,8 +486,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenIn, "OS", "open_in");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto fn = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto fn = machine()->get_text(arg0);
             auto stream = ChannelFile::create(fn, std::fstream::in);
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
@@ -503,8 +503,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenOut, "OS", "open_out");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto fn = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto fn = machine()->get_text(arg0);
             auto stream = ChannelFile::create(fn, std::fstream::out);
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
@@ -526,7 +526,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             chan->close();
-            return create_none();
+            return machine()->create_none();
         } else {
             THROW_BADARGS;
         }
@@ -545,7 +545,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             UnicodeString str = chan->read();
-            return create_text(str);
+            return machine()->create_text(str);
         } else {
             THROW_BADARGS;
         }
@@ -564,7 +564,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             UnicodeString str = chan->read_line();
-            return create_text(str);
+            return machine()->create_text(str);
         } else {
             THROW_INVALID;
         }
@@ -583,7 +583,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             UnicodeString str = chan->read_all();
-            return create_text(str);
+            return machine()->create_text(str);
         } else {
             THROW_BADARGS;
         }
@@ -601,10 +601,10 @@ public:
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
-            if (arg1->tag() == VM_OBJECT_TEXT) {
-                auto s = VM_OBJECT_TEXT_VALUE(arg1);
+            if (machine()->is_text(arg1)) {
+                auto s = machine()->get_text(arg1);
                 chan->write(s);
-                return create_none();
+                return machine()->create_none();
             } else {
                 THROW_INVALID;
             }
@@ -625,10 +625,10 @@ public:
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
-            if (arg1->tag() == VM_OBJECT_TEXT) {
-                auto s = VM_OBJECT_TEXT_VALUE(arg1);
+            if (machine()->is_text(arg1)) {
+                auto s = machine()->get_text(arg1);
                 chan->write_line(s);
-                return create_none();
+                return machine()->create_none();
             } else {
                 THROW_INVALID;
             }
@@ -650,7 +650,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             chan->flush();
-            return create_none();
+            return machine()->create_none();
         } else {
             THROW_INVALID;
         }
@@ -668,7 +668,7 @@ public:
 
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
-            return create_bool(chan->eof());
+            return machine()->create_bool(chan->eof());
         } else {
             THROW_INVALID;
         }
@@ -684,7 +684,7 @@ public:
         auto m = machine();
 
         if (m->is_text(arg0)) {
-            auto s  = m->value_text(arg0);
+            auto s  = m->get_text(arg0);
             auto fn = unicode_to_char(s);
 
             auto fd = open(fn, O_WRONLY | O_CREAT, 0644); // channels not fds so just open a file
@@ -706,12 +706,12 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exit, "OS", "exit");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
+        if (machine()->is_integer(arg0)) {
+            auto i = machine()->get_integer(arg0);
             // XXX: uh.. flushall, or something?
             exit(i);
             // play nice
-            return create_none();
+            return machine()->create_none();
         } else {
             THROW_BADARGS;
         }
@@ -824,9 +824,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Server, "OS", "server");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto port = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto in   = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) ) {
+            auto port = machine()->get_integer(arg0);
+            auto in   = machine()->get_integer(arg1);
 
             auto so = ServerObject(machine());
             so.bind(port, in);
@@ -844,9 +844,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Client, "OS", "client");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto host = VM_OBJECT_TEXT_VALUE(arg0);
-            auto port = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_text(arg0)) && (machine()->is_integer(arg1)) ) {
+            auto host = machine()->get_text(arg0);
+            auto port = machine()->get_integer(arg1);
 
             struct sockaddr_in server_address;
             int sockfd;

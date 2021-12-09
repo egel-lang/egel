@@ -71,7 +71,7 @@ public:
         return _state;
     }
 
-    VM* get_machine() const {
+    VM* machine() const {
         return _machine;
     }
 
@@ -201,36 +201,36 @@ public:
     void visit_expr_integer(const Position& p, const icu::UnicodeString& v) override {
         if (v.startsWith("0x")) {
             auto i = VMObjectInteger(convert_to_hexint(v)).clone();
-            auto d = get_machine()->enter_data(i);
+            auto d = machine()->enter_data(i);
             visit_constant(d);
         } else {
             auto i = VMObjectInteger(convert_to_int(v)).clone();
-            auto d = get_machine()->enter_data(i);
+            auto d = machine()->enter_data(i);
             visit_constant(d);
         }
     }
 
     void visit_expr_float(const Position& p, const icu::UnicodeString& v) override {
         auto i = VMObjectFloat(convert_to_float(v)).clone();
-        auto d = get_machine()->enter_data(i);
+        auto d = machine()->enter_data(i);
         visit_constant(d);
     }
 
     void visit_expr_character(const Position& p, const icu::UnicodeString& v) override {
         auto i = VMObjectChar(convert_to_char(v)).clone();
-        auto d = get_machine()->enter_data(i);
+        auto d = machine()->enter_data(i);
         visit_constant(d);
     }
 
     void visit_expr_text(const Position& p, const icu::UnicodeString& v) override {
         auto i = VMObjectText(convert_to_text(v)).clone();
-        auto d = get_machine()->enter_data(i);
+        auto d = machine()->enter_data(i);
         visit_constant(d);
     }
 
     void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
-        auto c = get_machine()->get_combinator(nn, n);
-        auto d = get_machine()->enter_data(c);
+        auto c = machine()->get_combinator(nn, n);
+        auto d = machine()->enter_data(c);
         visit_constant(d);
     }
 
@@ -341,8 +341,8 @@ public:
                 head_flag = true;
             } else if (a->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(a, p, nn, n);
-                auto v = get_machine()->get_combinator(nn, n);
-                auto d = get_machine()->get_data(v);
+                auto v = machine()->get_combinator(nn, n);
+                auto d = machine()->get_data(v);
                 get_coder()->emit_op_data(c, d);
                 head_flag = true;
             } else {
@@ -374,7 +374,7 @@ public:
             // generate thunks for nil fields
             if (!head_flag) {
                 auto i = VMObjectInteger(4).clone();
-                auto d = get_machine()->enter_data(i);
+                auto d = machine()->enter_data(i);
                 get_coder()->emit_op_data(rti, d);
 
                 set_register_rt(rt);
@@ -385,7 +385,7 @@ public:
 
             for (uint_t n = 1; n < sz; n++) {
                 auto i = VMObjectInteger(n+4).clone();
-                auto d = get_machine()->enter_data(i);
+                auto d = machine()->enter_data(i);
                 reg_t q = get_coder()->generate_register();
                 get_coder()->emit_op_data(q, d);
 
@@ -414,8 +414,8 @@ public:
 
             if (t->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(t, p, nn, n);
-                auto o = get_machine()->get_combinator(nn, n);
-                auto d = get_machine()->get_data(o);
+                auto o = machine()->get_combinator(nn, n);
+                auto d = machine()->get_data(o);
 
                 auto rt = get_coder()->generate_register();
 
@@ -526,7 +526,7 @@ public:
         // handler thunk as the combinator 
         auto new_exci = get_coder()->generate_register();
         auto i = VMObjectInteger(4).clone();
-        auto d = get_machine()->enter_data(i);
+        auto d = machine()->enter_data(i);
         get_coder()->emit_op_data(new_exci, d);
 
         set_register_exc(exc);
@@ -551,8 +551,8 @@ public:
             switch (n->tag()) {
             case AST_EXPR_COMBINATOR: {
                     AST_EXPR_COMBINATOR_SPLIT(n, p, ss, s);
-                    auto d = VMObjectData(get_machine(), ss, s).clone();
-                    get_machine()->define_data(d);
+                    auto d = VMObjectData(machine(), ss, s).clone();
+                    machine()->define_data(d);
                 }
                 break;
             default:
@@ -596,10 +596,10 @@ public:
 
         auto code = get_coder()->code();
         AST_EXPR_COMBINATOR_SPLIT(n, p0, ss, s);
-        auto b = VMObjectBytecode(get_machine(), code, ss, s).clone();
+        auto b = VMObjectBytecode(machine(), code, ss, s).clone();
 
         get_coder()->reset();
-        get_machine()->define_data(b);
+        machine()->define_data(b);
     }
 
     // treat as a definition
@@ -642,10 +642,10 @@ public:
 
         auto code = get_coder()->code();
         AST_EXPR_OPERATOR_SPLIT(o, p0, ss, s);
-        auto b = VMObjectBytecode(get_machine(), code, ss, s).clone();
+        auto b = VMObjectBytecode(machine(), code, ss, s).clone();
 
         get_coder()->reset();
-        get_machine()->define_data(b);
+        machine()->define_data(b);
     }
 
 private:

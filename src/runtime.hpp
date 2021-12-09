@@ -176,6 +176,14 @@ public:
         return _subtag;
     }
 
+    bool tag_test(vm_tag_t t) const {
+        return _tag == t;
+    }
+
+    bool subtag_test(vm_subtag_t t) const {
+        return _subtag == t;
+    }
+
     virtual VMObjectPtr clone() const = 0;
 
     friend std::ostream& operator<<(std::ostream& os, const VMObjectPtr& a) {
@@ -439,10 +447,10 @@ public:
     virtual bool        is_text(const VMObjectPtr& o) = 0;
 
 
-    virtual vm_int_t    value_integer(const VMObjectPtr& o) = 0;
-    virtual vm_float_t  value_float(const VMObjectPtr& o) = 0;
-    virtual vm_char_t   value_char(const VMObjectPtr& o) = 0;
-    virtual vm_text_t   value_text(const VMObjectPtr& o) = 0;
+    virtual vm_int_t    get_integer(const VMObjectPtr& o) = 0;
+    virtual vm_float_t  get_float(const VMObjectPtr& o) = 0;
+    virtual vm_char_t   get_char(const VMObjectPtr& o) = 0;
+    virtual vm_text_t   get_text(const VMObjectPtr& o) = 0;
 
     virtual VMObjectPtr create_none() = 0;
     virtual VMObjectPtr create_true() = 0;
@@ -473,8 +481,13 @@ public:
 
     virtual bool        is_combinator(const VMObjectPtr& o) = 0;
     virtual bool        is_opaque(const VMObjectPtr& o) = 0;
+    virtual bool        is_data(const VMObjectPtr& o) = 0;
+    virtual bool        is_bytecode(const VMObjectPtr& o) = 0;
 
     virtual vm_text_t   symbol(const VMObjectPtr& o) = 0;
+
+    virtual icu::UnicodeString get_bytecode(const VMObjectPtr& o) = 0;
+    virtual VMObjectPtr create_bytecode(const icu::UnicodeString& s) = 0;
 
     virtual VMObjectPtr create_data(const icu::UnicodeString& s) = 0;
     virtual VMObjectPtr create_data(const icu::UnicodeString& s0, const icu::UnicodeString& s1) = 0;
@@ -1086,44 +1099,7 @@ public:
         os << text();
     }
 
-    // convenience routines
-    VMObjectPtr create_none() const {
-        return _machine->create_none();
-    }
-
-    VMObjectPtr create_true() const {
-        return _machine->create_bool(true);
-    }
-
-    VMObjectPtr create_false() const {
-        return _machine->create_bool(false);
-    }
-
-    VMObjectPtr create_bool(const bool b) const {
-        return _machine->create_bool(b);
-    }
-
-    VMObjectPtr create_integer(const vm_int_t v) const {
-        return VMObjectInteger::create(v);
-    }
-
-    VMObjectPtr create_float(const vm_float_t v) const {
-        return VMObjectFloat::create(v);
-    }
-
-    VMObjectPtr create_char(const vm_char_t v) const {
-        return VMObjectChar::create(v);
-    }
-
-    VMObjectPtr create_text(const vm_text_t v) const {
-        return VMObjectText::create(v);
-    }
-
-    VMObjectPtr create_text(const char* v) const {
-        return VMObjectText::create(v);
-    }
-
-private:
+ private:
     VM*         _machine;
     symbol_t    _symbol;
 };
@@ -1204,11 +1180,13 @@ typedef std::shared_ptr<VMObjectData> VMObjectDataPtr;
 
 typedef std::shared_ptr<VMObjectCombinator> VMObjectCombinatorPtr;
 #define VM_OBJECT_COMBINATOR_TEST(a) \
-    (a->tag() == VM_OBJECT_COMBINATOR)
+    (a->tag_test(VM_OBJECT_COMBINATOR))
 #define VM_OBJECT_COMBINATOR_CAST(a) \
     std::static_pointer_cast<VMObjectCombinator>(a)
 #define VM_OBJECT_COMBINATOR_SYMBOL(a) \
     (VM_OBJECT_COMBINATOR_CAST(a)->symbol())
+#define VM_OBJECT_DATA_TEST(a) \
+    (a->subtag_test(VM_SUB_DATA))
 
 struct CompareVMObjectPtr 
 {

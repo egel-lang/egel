@@ -132,8 +132,8 @@ public:
         return _manager;
     }
 
-    VM* get_machine() {
-        return _manager->get_machine();
+    VM* machine() {
+        return _manager->machine();
     }
 
     AstPtrs get_usings() {
@@ -146,7 +146,7 @@ public:
      * Batch evalution is easy, it sets up the handlers and reduces the 'main' combinator.
      */
     void eval_main() {
-        auto vm = get_machine();
+        auto vm = machine();
         auto c = vm->get_combinator("main");
 
         if (c->subtag() != VM_SUB_STUB) {
@@ -162,7 +162,7 @@ public:
 
     // XXX: handle exceptions properly once
     void eval_values() {
-        auto vm = get_machine();
+        auto vm = machine();
         auto mm = get_manager();
         auto vv = mm->values();
         for (auto& v: vv) {
@@ -222,7 +222,7 @@ public:
     }
 
     void handle_definition(const AstPtr& d) {
-        auto vm = get_machine();
+        auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
@@ -259,7 +259,7 @@ public:
     }
 
     void handle_data(const AstPtr& d) {
-        auto vm = get_machine();
+        auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
@@ -308,7 +308,7 @@ public:
      */
     void handle_expression(const AstPtr& a, const VMObjectPtr& r, const VMObjectPtr& exc) {
         auto fv = generate_fresh_combinator();
-        auto vm = get_machine();
+        auto vm = machine();
         auto p = a->position();
         auto n = AstExprCombinator(p, fv).clone();
         auto d = AstDeclDefinition(p, n, a).clone();
@@ -326,7 +326,7 @@ public:
     // XXX: very much wrong probably. A val declaration should not call the callbacks
     // handlers but either throw a parse error or return none.
     void handle_value(const AstPtr& d) {
-        auto vm = get_machine();
+        auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
@@ -347,7 +347,7 @@ public:
     }
 
     void return_none(const callback_t& callback) {
-        auto vm  = get_machine();
+        auto vm  = machine();
         auto none = vm->create_none();
         (callback)(vm, none);
     }
@@ -362,7 +362,7 @@ public:
      **/
     void eval_line(const icu::UnicodeString& in, const callback_t& main, const callback_t& exc) {
         auto mm = get_manager();
-        auto vm = get_machine();
+        auto vm = machine();
 
         // parse the line
         AstPtr aa;

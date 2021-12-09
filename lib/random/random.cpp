@@ -38,9 +38,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Random, "Math", "between");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER)) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger(random::get().between(i0, i1)).clone();
         } else {
             // XXX: extend once with two float values

@@ -18,11 +18,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dis, "System", "dis");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-	    auto o = machine()->get_combinator(s);
-	    Disassembler d(o);
-	    return VMObjectText(d.disassemble()).clone();
+        if (machine()->is_bytecode(arg0)) {
+            auto s = machine()->get_bytecode(arg0);
+            return machine()->create_text(s);
         } else {
             THROW_BADARGS;
         }
@@ -35,17 +33,9 @@ public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Asm, "System", "asm");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            auto l = s.length();
-            auto p = s.indexOf("::");
-            icu::UnicodeString s0;
-            icu::UnicodeString s1;
-            s.extract(0, p, s0);
-            s.extract(p+2, l-(p+2), s1);
-            auto c = VMObjectBytecode(machine(), Code(), s0);
-            c.assemble(s1);
-            return c.clone();
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_bytecode(s);
         } else {
             THROW_BADARGS;
         }
@@ -72,7 +62,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
         if (m->is_text(arg0)) {
-            auto s = m->value_text(arg0);
+            auto s = m->get_text(arg0);
             auto o = deserialize_from_string(m, s);
             return o;
         } else {
@@ -203,8 +193,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetType, "System", "get_type");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
             auto o = machine()->get_data_string(s);
 
             return VMObjectText("stub").clone();
@@ -220,8 +210,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, SetData, "System", "set_data");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
 	    auto c = VMObjectData(machine(), s).clone();
             machine()->define_data(c);
             return c;
@@ -237,8 +227,8 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, SetDef, "System", "set_def");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
             auto o = machine()->get_data_string(s);
 
             return VMObjectText("stub").clone();
@@ -253,6 +243,7 @@ std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Dis(vm).clone());
+    oo.push_back(Asm(vm).clone());
 
     oo.push_back(Serialize(vm).clone());
     oo.push_back(Deserialize(vm).clone());
@@ -264,11 +255,6 @@ std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
     oo.push_back(QueryModuleImports(vm).clone());
     oo.push_back(QueryModuleExports(vm).clone());
     oo.push_back(QueryModuleValues(vm).clone());
-//    oo.push_back(Asm(vm).clone()); // XXX: not working at the moment
-//    oo.push_back(Symbols(vm).clone());
-//    oo.push_back(GetType(vm).clone());
-//    oo.push_back(SetData(vm).clone());
-//    oo.push_back(SetDef(vm).clone());
 
     return oo;
 }

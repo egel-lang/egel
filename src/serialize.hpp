@@ -317,28 +317,28 @@ inline SerialObjectPtrs to_dag(VM* m, const VMObjectPtr& o) {
         auto sz = dag.size();
         switch (o->tag()) {
         case VM_OBJECT_INTEGER: {
-            auto n = m->value_integer(o);
+            auto n = m->get_integer(o);
             auto s = SerialObject::create_integer(sz, n);
             dag.push_back(s);
             from[o] = sz;
         }
         break;
         case VM_OBJECT_FLOAT: {
-            auto f = m->value_float(o);
+            auto f = m->get_float(o);
             auto s = SerialObject::create_float(sz, f);
             dag.push_back(s);
             from[o] = sz;
         }
         break;
         case VM_OBJECT_CHAR: {
-            auto c = m->value_char(o);
+            auto c = m->get_char(o);
             auto s = SerialObject::create_char(sz, c);
             dag.push_back(s);
             from[o] = sz;
         }
         break;
         case VM_OBJECT_TEXT: {
-            auto t = m->value_text(o);
+            auto t = m->get_text(o);
             auto s = SerialObject::create_text(sz, t);
             dag.push_back(s);
             from[o] = sz;

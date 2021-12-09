@@ -19,9 +19,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsFinite, "Math", "is_finite");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_bool(isfinite(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_bool(isfinite(f));
         } else {
             THROW_BADARGS;
         }
@@ -34,9 +34,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsInfinite, "Math", "is_infinite");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_bool(isinf(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_bool(isinf(f));
         } else {
             THROW_BADARGS;
         }
@@ -49,9 +49,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsNan, "Math", "is_nan");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_bool(isnan(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_bool(isnan(f));
         } else {
             THROW_BADARGS;
         }
@@ -64,9 +64,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsNormal, "Math", "is_normal");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_bool(isnormal(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_bool(isnormal(f));
         } else {
             THROW_BADARGS;
         }
@@ -79,7 +79,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Euler, "Math", "e");
 
     VMObjectPtr apply() const override {
-        return create_float(M_E);
+        return machine()->create_float(M_E);
     }
 };
 
@@ -89,7 +89,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Ln2, "Math", "ln2");
 
     VMObjectPtr apply() const override {
-        return create_float(M_LN2);
+        return machine()->create_float(M_LN2);
     }
 };
 
@@ -99,7 +99,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Ln10, "Math", "ln10");
 
     VMObjectPtr apply() const override {
-        return create_float(M_LN10);
+        return machine()->create_float(M_LN10);
     }
 };
 
@@ -109,7 +109,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Log2e, "Math", "log2e");
 
     VMObjectPtr apply() const override {
-        return create_float(M_LOG2E);
+        return machine()->create_float(M_LOG2E);
     }
 };
 
@@ -119,7 +119,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Log10e, "Math", "log10e");
 
     VMObjectPtr apply() const override {
-        return create_float(M_LOG10E);
+        return machine()->create_float(M_LOG10E);
     }
 };
 
@@ -129,7 +129,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Pi, "Math", "pi");
 
     VMObjectPtr apply() const override {
-        return create_float(M_PI);
+        return machine()->create_float(M_PI);
     }
 };
 
@@ -139,7 +139,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Sqrt1_2, "Math", "sqrt1_2");
 
     VMObjectPtr apply() const override {
-        return create_float(M_SQRT1_2);
+        return machine()->create_float(M_SQRT1_2);
     }
 };
 
@@ -149,7 +149,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Sqrt2, "Math", "sqrt2");
 
     VMObjectPtr apply() const override {
-        return create_float(M_SQRT2);
+        return machine()->create_float(M_SQRT2);
     }
 };
 
@@ -159,9 +159,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Abs, "Math", "abs");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(abs(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(abs(f));
         } else {
             THROW_BADARGS;
         }
@@ -174,9 +174,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Acos, "Math", "acos");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(acos(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(acos(f));
         } else {
             THROW_BADARGS;
         }
@@ -190,9 +190,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Acosh, "Math", "acosh");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(acosh(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(acosh(f));
         } else {
             THROW_BADARGS;
         }
@@ -206,9 +206,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Asin, "Math", "asin");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(asin(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(asin(f));
         } else {
             THROW_BADARGS;
         }
@@ -222,9 +222,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Asinh, "Math", "asinh");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(asinh(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(asinh(f));
         } else {
             THROW_BADARGS;
         }
@@ -238,9 +238,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Atan, "Math", "atan");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(atan(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(atan(f));
         } else {
             THROW_BADARGS;
         }
@@ -253,9 +253,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Atanh, "Math", "atanh");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(atanh(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(atanh(f));
         } else {
             THROW_BADARGS;
         }
@@ -269,10 +269,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Atan2, "Math", "atan2");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            return create_float(atan2(f0, f1));
+        if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
+            return machine()->create_float(atan2(f0, f1));
         } else {
             THROW_BADARGS;
         }
@@ -285,9 +285,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Cbrt, "Math", "cbrt");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(cbrt(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(cbrt(f));
         } else {
             THROW_BADARGS;
         }
@@ -301,9 +301,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ceil, "Math", "ceil");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(ceil(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(ceil(f));
         } else {
             THROW_BADARGS;
         }
@@ -316,9 +316,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Cos, "Math", "cos");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(cos(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(cos(f));
         } else {
             THROW_BADARGS;
         }
@@ -332,9 +332,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Cosh, "Math", "cosh");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(cosh(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(cosh(f));
         } else {
             THROW_BADARGS;
         }
@@ -347,9 +347,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Exp, "Math", "exp");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(exp(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(exp(f));
         } else {
             THROW_BADARGS;
         }
@@ -363,9 +363,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Expm1, "Math", "expm1");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(expm1(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(expm1(f));
         } else {
             THROW_BADARGS;
         }
@@ -378,9 +378,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Floor, "Math", "floor");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(floor(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(floor(f));
         } else {
             THROW_BADARGS;
         }
@@ -395,8 +395,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Fround, "Math", "fround");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
             return create_float(fround(f));
         } else {
             THROW_BADARGS;
@@ -412,9 +412,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log, "Math", "log");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(log(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(log(f));
         } else {
             THROW_BADARGS;
         }
@@ -428,9 +428,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log1p, "Math", "log1p");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(log1p(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(log1p(f));
         } else {
             THROW_BADARGS;
         }
@@ -444,9 +444,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log10, "Math", "log10");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(log10(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(log10(f));
         } else {
             THROW_BADARGS;
         }
@@ -460,9 +460,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log2, "Math", "log2");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(log2(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(log2(f));
         } else {
             THROW_BADARGS;
         }
@@ -475,10 +475,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Max, "Math", "max");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            return create_float((f0<f1)?f1:f0);
+        if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
+            return machine()->create_float((f0<f1)?f1:f0);
         } else {
             THROW_BADARGS;
         }
@@ -492,10 +492,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, MMin, "Math", "min");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            return create_float((f0<f1)?f0:f1);
+        if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
+            return machine()->create_float((f0<f1)?f0:f1);
         } else {
             THROW_BADARGS;
         }
@@ -508,10 +508,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Pow, "Math", "pow");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_FLOAT) && (arg1->tag() == VM_OBJECT_FLOAT)) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
-            return create_float(pow(f0, f1));
+        if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
+            return machine()->create_float(pow(f0, f1));
         } else {
             THROW_BADARGS;
         }
@@ -524,7 +524,7 @@ public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Random, "Math", "random");
 
     VMObjectPtr apply() const override {
-        return create_float(random());
+        return machine()->create_float(random());
     }
 };
 
@@ -534,9 +534,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Round, "Math", "round");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_integer(lround(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_integer(lround(f));
         } else {
             THROW_BADARGS;
         }
@@ -549,10 +549,10 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sign, "Math", "sign");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
             auto b = signbit(f);
-            return create_integer((b!=0)? (-1) : (1));
+            return machine()->create_integer((b!=0)? (-1) : (1));
         } else {
             THROW_BADARGS;
         }
@@ -566,9 +566,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sin, "Math", "sin");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(sin(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(sin(f));
         } else {
             THROW_BADARGS;
         }
@@ -582,9 +582,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sinh, "Math", "sinh");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(sinh(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(sinh(f));
         } else {
             THROW_BADARGS;
         }
@@ -598,9 +598,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sqrt, "Math", "sqrt");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(sqrt(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(sqrt(f));
         } else {
             THROW_BADARGS;
         }
@@ -613,9 +613,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tan, "Math", "tan");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(tan(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(tan(f));
         } else {
             THROW_BADARGS;
         }
@@ -628,9 +628,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tanh, "Math", "tanh");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(tanh(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(tanh(f));
         } else {
             THROW_BADARGS;
         }
@@ -643,9 +643,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Trunc, "Math", "trunc");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_float(trunc(f));
+        if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_float(trunc(f));
         } else {
             THROW_BADARGS;
         }

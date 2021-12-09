@@ -16,10 +16,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringEq, "String", "eq");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0 == s1);
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s0 == s1);
         } else {
             THROW_BADARGS;
         }
@@ -32,10 +32,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringNeq, "String", "neq");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0 != s1);
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s0 != s1);
         } else {
             THROW_BADARGS;
         }
@@ -48,10 +48,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringGt, "String", "gt");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0 > s1);
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s0 > s1);
         } else {
             THROW_BADARGS;
         }
@@ -64,10 +64,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringLs, "String", "ls");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0 < s1);
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s0 < s1);
         } else {
             THROW_BADARGS;
         }
@@ -80,10 +80,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringGe, "String", "ge");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0 >= s1);
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s0 >= s1);
         } else {
             THROW_BADARGS;
         }
@@ -96,10 +96,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringLe, "String", "le");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s0 <= s1);
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s0 <= s1);
         } else {
             THROW_BADARGS;
         }
@@ -112,10 +112,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Compare, "String", "compare");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_integer(s0.compare(s1));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_integer(s0.compare(s1));
         } else {
             THROW_BADARGS;
         }
@@ -128,10 +128,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, CompareCodePointOrder, "String", "compare_order");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_integer(s0.compareCodePointOrder(s1));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_integer(s0.compareCodePointOrder(s1));
         } else {
             THROW_BADARGS;
         }
@@ -144,10 +144,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, CaseCompare, "String", "case_compare");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_integer(s0.caseCompare(s1, U_FOLD_CASE_DEFAULT));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_integer(s0.caseCompare(s1, U_FOLD_CASE_DEFAULT));
         } else {
             THROW_BADARGS;
         }
@@ -160,10 +160,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StartsWith, "String", "starts_with");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s1.startsWith(s0));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s1.startsWith(s0));
         } else {
             THROW_BADARGS;
         }
@@ -176,10 +176,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, EndsWith, "String", "ends_with");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_bool(s1.endsWith(s0));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_bool(s1.endsWith(s0));
         } else {
             THROW_BADARGS;
         }
@@ -192,10 +192,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, IndexOf, "String", "index_of");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_integer(s1.indexOf(s0));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_integer(s1.indexOf(s0));
         } else {
             THROW_BADARGS;
         }
@@ -208,10 +208,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, LastIndexOf, "String", "last_index_of");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_integer(s1.lastIndexOf(s0));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_integer(s1.lastIndexOf(s0));
         } else {
             THROW_BADARGS;
         }
@@ -224,10 +224,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, CharAt, "String", "char_at");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto n = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto s = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_char(s.char32At(n));
+        if ((machine()->is_integer(arg0)) && (machine()->is_text(arg1))) {
+            auto n = machine()->get_integer(arg0);
+            auto s = machine()->get_text(arg1);
+            return machine()->create_char(s.char32At(n));
         } else {
             THROW_BADARGS;
         }
@@ -241,11 +241,11 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, MoveIndex, "String", "move_index");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
-            auto n = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto d = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto n = machine()->get_integer(arg0);
+            auto d = machine()->get_integer(arg1);
             auto s = VM_OBJECT_TEXT_VALUE(arg2);
-            return create_integer(s.moveIndex32(n, d));
+            return machine()->create_integer(s.moveIndex32(n, d));
         } else {
             THROW_BADARGS;
         }
@@ -259,9 +259,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, CountChar, "String", "count_char");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_integer(s.countChar32());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_integer(s.countChar32());
         } else {
             THROW_BADARGS;
         }
@@ -275,9 +275,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsEmpty, "String", "is_empty");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_bool(s.isEmpty());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_bool(s.isEmpty());
         } else {
             THROW_BADARGS;
         }
@@ -290,9 +290,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, HashCode, "String", "hash_code");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_integer(s.hashCode());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_integer(s.hashCode());
         } else {
             THROW_BADARGS;
         }
@@ -305,9 +305,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsBogus, "String", "is_bogus");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_bool(s.isBogus());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_bool(s.isBogus());
         } else {
             THROW_BADARGS;
         }
@@ -320,14 +320,14 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Append, "String", "append");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
-            return create_text(s0.append(s1));
-        } else if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_CHAR)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto c  = VM_OBJECT_CHAR_VALUE(arg1);
-            return create_text(s0.append(c));
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->create_text(s0.append(s1));
+        } else if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
+            auto s0 = machine()->get_text(arg0);
+            auto c  = machine()->get_char(arg1);
+            return machine()->create_text(s0.append(c));
         } else {
             THROW_BADARGS;
         }
@@ -341,11 +341,11 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Insert, "String", "insert");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto n  = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto s0 = machine()->get_text(arg0);
+            auto n  = machine()->get_integer(arg1);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
-            return create_text(s1.insert(n, s0));
+            return machine()->create_text(s1.insert(n, s0));
         } else {
             THROW_BADARGS;
         }
@@ -358,11 +358,11 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, FindAndReplace, "String", "replace");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_TEXT) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto s1 = VM_OBJECT_TEXT_VALUE(arg1);
+        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
             auto s2 = VM_OBJECT_TEXT_VALUE(arg2);
-            return create_text(s2.findAndReplace(s0, s1));
+            return machine()->create_text(s2.findAndReplace(s0, s1));
         } else {
             THROW_BADARGS;
         }
@@ -375,11 +375,11 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Remove, "String", "remove");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
-            auto n0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto n0 = machine()->get_integer(arg0);
+            auto n1 = machine()->get_integer(arg1);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
-            return create_text(s0.removeBetween(n0, n1));
+            return machine()->create_text(s0.removeBetween(n0, n1));
         } else {
             THROW_BADARGS;
         }
@@ -392,11 +392,11 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Retain, "String", "retain");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((arg0->tag() == VM_OBJECT_INTEGER) && (arg1->tag() == VM_OBJECT_INTEGER) && (arg2->tag() == VM_OBJECT_TEXT)) {
-            auto n0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto n1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
+            auto n0 = machine()->get_integer(arg0);
+            auto n1 = machine()->get_integer(arg1);
             auto s0 = VM_OBJECT_TEXT_VALUE(arg2);
-            return create_text(s0.retainBetween(n0, n1));
+            return machine()->create_text(s0.retainBetween(n0, n1));
         } else {
             THROW_BADARGS;
         }
@@ -409,9 +409,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Trim, "String", "trim");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_text(s.trim());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_text(s.trim());
         } else {
             THROW_BADARGS;
         }
@@ -424,9 +424,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Reverse, "String", "reverse");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_text(s.reverse());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_text(s.reverse());
         } else {
             THROW_BADARGS;
         }
@@ -439,9 +439,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUpper, "String", "to_upper");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_text(s.toUpper());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_text(s.toUpper());
         } else {
             THROW_BADARGS;
         }
@@ -454,9 +454,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToLower, "String", "to_lower");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_text(s.toLower());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_text(s.toLower());
         } else {
             THROW_BADARGS;
         }
@@ -469,9 +469,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, FoldCase, "String", "fold_case");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_text(s.foldCase());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_text(s.foldCase());
         } else {
             THROW_BADARGS;
         }
@@ -484,9 +484,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unescape, "String", "unescape");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            return create_text(s.unescape());
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            return machine()->create_text(s.unescape());
         } else {
             THROW_BADARGS;
         }
@@ -499,9 +499,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ord, "String", "ord");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_CHAR) {
-            auto c = VM_OBJECT_CHAR_VALUE(arg0);
-            return create_integer(c);
+        if (machine()->is_text(arg0)) {
+            auto c = machine()->get_char(arg0);
+            return machine()->create_integer(c);
         } else {
             THROW_BADARGS;
         }
@@ -514,9 +514,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Chr, "String", "chr");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto n = VM_OBJECT_INTEGER_VALUE(arg0);
-            return create_char(n);
+        if (machine()->is_integer(arg0)) {
+            auto n = machine()->get_integer(arg0);
+            return machine()->create_char(n);
         } else {
             THROW_BADARGS;
         }

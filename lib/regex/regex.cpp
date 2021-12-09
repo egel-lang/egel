@@ -112,8 +112,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Compile, REGEX_STRING, "compile");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto s0 = machine()->get_text(arg0);
             UParseError parse_error;
             UErrorCode  error_code = U_ZERO_ERROR;
             icu::UnicodeString pat = s0;
@@ -135,9 +135,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Match, REGEX_STRING, "match");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1))) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;
@@ -146,7 +146,7 @@ public:
             auto b = r->matches(error_code);
             delete r;
 
-            return create_bool(b);
+            return machine()->create_bool(b);
         } else {
             THROW_BADARGS;
         }
@@ -159,9 +159,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookAt, REGEX_STRING, "look_at");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1))) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;
@@ -170,7 +170,7 @@ public:
             auto b = r->lookingAt(error_code);
             delete r;
 
-            return create_bool(b);
+            return machine()->create_bool(b);
         } else {
             THROW_BADARGS;
         }
@@ -183,9 +183,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1))) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;
@@ -196,9 +196,9 @@ public:
             delete r;
 
 	    if (b) {
-            	return create_text(s);
+            	return machine()->create_text(s);
 	    } else {
-		return create_none();
+		return machine()->create_none();
 	    }
         } else {
             THROW_BADARGS;
@@ -212,9 +212,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Split, REGEX_STRING, "split");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1))) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;
@@ -252,9 +252,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Matches, REGEX_STRING, "matches");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1))) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;
@@ -284,9 +284,9 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
 
             auto r = pat->matcher(s0);
@@ -313,9 +313,9 @@ public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT) && (arg2->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) && (arg2->tag() == VM_OBJECT_TEXT)) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
             auto s1 = VM_OBJECT_TEXT_VALUE(arg2);
 
             auto r = pat->matcher(s0);
@@ -342,9 +342,9 @@ public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Group, REGEX_STRING, "group");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((Regex::is_regex_pattern(arg0)) && (arg1->tag() == VM_OBJECT_TEXT)) {
+        if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1))) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) THROW_INVALID;

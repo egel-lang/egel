@@ -447,19 +447,19 @@ public:
         return o->tag() == VM_OBJECT_TEXT;
     }
 
-    vm_int_t value_integer(const VMObjectPtr& o) override {
+    vm_int_t get_integer(const VMObjectPtr& o) override {
         return VM_OBJECT_INTEGER_VALUE(o);
     }
 
-    vm_float_t value_float(const VMObjectPtr& o) override {
+    vm_float_t get_float(const VMObjectPtr& o) override {
         return VM_OBJECT_FLOAT_VALUE(o);
     }
 
-    vm_char_t value_char(const VMObjectPtr& o) override {
+    vm_char_t get_char(const VMObjectPtr& o) override {
         return VM_OBJECT_CHAR_VALUE(o);
     }
 
-    vm_text_t value_text(const VMObjectPtr& o) override {
+    vm_text_t get_text(const VMObjectPtr& o) override {
         return VM_OBJECT_TEXT_VALUE(o);
     }
 
@@ -525,25 +525,6 @@ public:
         return (VM_OBJECT_TUPLE_TEST(o));
     }
 
-    // deprecate
-    /*
-    VMObjectPtr create_array() override {
-        return VMObjectArray::create();
-    }
-    */
-
-    // deprecate
-    /*
-    void array_append(VMObjectPtr aa, const VMObjectPtr a) override {
-        if (VM_OBJECT_ARRAY_TEST(aa)) {
-            auto aa0 = VM_OBJECT_ARRAY_CAST(aa);
-            aa0->push_back(a);
-        } else {
-            throw ErrorInternal("push to array failed");
-        }
-    }
-    */
-
     VMObjectPtr create_array(const VMObjectPtrs& oo) override {
         return VMObjectArray::create(oo);
     }
@@ -574,6 +555,22 @@ public:
 
     bool is_opaque(const VMObjectPtr& o) override {
         return VM_OBJECT_OPAQUE_TEST(o);
+    }
+
+    bool is_data(const VMObjectPtr& o) override {
+        return VM_OBJECT_DATA_TEST(o);
+    }
+
+    bool is_bytecode(const VMObjectPtr& o) override {
+        return (o->subtag_test(VM_SUB_BYTECODE));
+    }
+
+    icu::UnicodeString get_bytecode(const VMObjectPtr& o) override {
+        throw create_text("stub");
+    }
+
+    VMObjectPtr create_bytecode(const icu::UnicodeString& s) override {
+        throw create_text("stub");
     }
 
     icu::UnicodeString symbol(const VMObjectPtr& o) override {

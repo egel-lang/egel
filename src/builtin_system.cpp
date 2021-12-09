@@ -73,16 +73,16 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, MonMin, "System", "!-");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
+        if (machine()->is_integer(arg0)) {
+            auto i = machine()->get_integer(arg0);
             vm_int_t res;
             if (mul_overflow((vm_int_t) -1, i, &res)) {
                 THROW_OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
-        } else if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+        } else if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
             return VMObjectFloat(-f).clone();
         } else {
             THROW_BADARGS;
@@ -96,25 +96,25 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Add, "System", "+");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (add_overflow(i0, i1, &res)) {
                 THROW_OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+        } else if ( (machine()->is_float(arg0)) &&
+             (machine()->is_float(arg1)) ) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
             return VMObjectFloat(f0+f1).clone();
-        } else if ( (arg0->tag() == VM_OBJECT_TEXT) &&
-             (arg1->tag() == VM_OBJECT_TEXT) ) {
-            auto f0 = VM_OBJECT_TEXT_VALUE(arg0);
-            auto f1 = VM_OBJECT_TEXT_VALUE(arg1);
+        } else if ( (machine()->is_text(arg0)) &&
+             (machine()->is_text(arg1)) ) {
+            auto f0 = machine()->get_text(arg0);
+            auto f1 = machine()->get_text(arg1);
             return VMObjectText(f0+f1).clone();
         } else {
             THROW_BADARGS;
@@ -128,10 +128,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Min, "System", "-");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (sub_overflow(i0, i1, &res)) {
                 THROW_OVERFLOW;
@@ -139,10 +139,10 @@ public:
             } else {
                 return VMObjectInteger(res).clone();
             }
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+        } else if ( (machine()->is_float(arg0)) &&
+             (machine()->is_float(arg1)) ) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
             return VMObjectFloat(f0-f1).clone();
         } else {
             THROW_BADARGS;
@@ -156,20 +156,20 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mul, "System", "*");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (mul_overflow(i0, i1, &res)) {
                 THROW_OVERFLOW;
             } else {
                 return VMObjectInteger(res).clone();
             }
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+        } else if ( (machine()->is_float(arg0)) &&
+             (machine()->is_float(arg1)) ) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
             return VMObjectFloat(f0*f1).clone();
         } else {
             THROW_BADARGS;
@@ -183,18 +183,18 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Div, "System", "/");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             if (i1 == 0) {
                 THROW_DIVZERO;
             }
             return VMObjectInteger(i0/i1).clone();
-        } else if ( (arg0->tag() == VM_OBJECT_FLOAT) &&
-             (arg1->tag() == VM_OBJECT_FLOAT) ) {
-            auto f0 = VM_OBJECT_FLOAT_VALUE(arg0);
-            auto f1 = VM_OBJECT_FLOAT_VALUE(arg1);
+        } else if ( (machine()->is_float(arg0)) &&
+             (machine()->is_float(arg1)) ) {
+            auto f0 = machine()->get_float(arg0);
+            auto f1 = machine()->get_float(arg1);
             if (f1 == 0.0) {
                 THROW_DIVZERO;
             }
@@ -211,10 +211,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mod, "System", "%");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             if (i1 == 0) {
                 THROW_DIVZERO;
             }
@@ -231,10 +231,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinAnd, "System", "&");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger(i0&i1).clone();
         } else {
             THROW_BADARGS;
@@ -248,10 +248,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinOr, "System", "$");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger(i0|i1).clone();
         } else {
             THROW_BADARGS;
@@ -265,10 +265,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinXOr, "System", "^");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger(i0^i1).clone();
         } else {
             THROW_BADARGS;
@@ -282,8 +282,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, BinComplement, "System", "!~");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
+        if ( (machine()->is_integer(arg0)) ) {
+            auto i0 = machine()->get_integer(arg0);
             return VMObjectInteger(~i0).clone();
         } else {
             THROW_BADARGS;
@@ -297,10 +297,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinLeftShift, "System", "<<");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger(i0<<i1).clone();
         } else {
             THROW_BADARGS;
@@ -314,10 +314,10 @@ public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinRightShift, "System", ">>");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (arg0->tag() == VM_OBJECT_INTEGER) &&
-             (arg1->tag() == VM_OBJECT_INTEGER) ) {
-            auto i0 = VM_OBJECT_INTEGER_VALUE(arg0);
-            auto i1 = VM_OBJECT_INTEGER_VALUE(arg1);
+        if ( (machine()->is_integer(arg0)) &&
+             (machine()->is_integer(arg1)) ) {
+            auto i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger(i0>>i1).clone();
         } else {
             THROW_BADARGS;
@@ -505,18 +505,18 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Toint, "System", "to_int");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
+        if (machine()->is_integer(arg0)) {
             return arg0;
-        } else if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
-            return create_integer(f);
-        } else if (arg0->tag() == VM_OBJECT_CHAR) {
-            auto c = VM_OBJECT_CHAR_VALUE(arg0);
-            return create_integer(c);
-        } else if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+        } else if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_integer(f);
+        } else if (machine()->is_text(arg0)) {
+            auto c = machine()->get_char(arg0);
+            return machine()->create_integer(c);
+        } else if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
             auto i = convert_to_int(s);
-            return create_integer(i);
+            return machine()->create_integer(i);
         } else {
             THROW_BADARGS;
         }
@@ -529,15 +529,15 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tofloat, "System", "to_float");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
-            return create_float(i);
-        } else if (arg0->tag() == VM_OBJECT_FLOAT) {
+        if (machine()->is_integer(arg0)) {
+            auto i = machine()->get_integer(arg0);
+            return machine()->create_float(i);
+        } else if (machine()->is_float(arg0)) {
             return arg0;
-        } else if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+        } else if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
             auto i = convert_to_float(s);
-            return create_float(i);
+            return machine()->create_float(i);
         } else {
             THROW_BADARGS;
         }
@@ -550,19 +550,19 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Totext, "System", "to_text");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
+        if (machine()->is_integer(arg0)) {
+            auto i = machine()->get_integer(arg0);
             auto s = convert_from_int(i);
-            return create_text(s);
-        } else if (arg0->tag() == VM_OBJECT_FLOAT) {
-            auto f = VM_OBJECT_FLOAT_VALUE(arg0);
+            return machine()->create_text(s);
+        } else if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
             auto s = convert_from_float(f);
-            return create_text(s);
-        } else if (arg0->tag() == VM_OBJECT_CHAR) {
-            auto c = VM_OBJECT_CHAR_VALUE(arg0);
+            return machine()->create_text(s);
+        } else if (machine()->is_text(arg0)) {
+            auto c = machine()->get_char(arg0);
             auto s = convert_from_char(c);
-            return create_text(s);
-        } else if (arg0->tag() == VM_OBJECT_TEXT) {
+            return machine()->create_text(s);
+        } else if (machine()->is_text(arg0)) {
             return arg0;
         } else {
             THROW_BADARGS;
@@ -658,8 +658,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unpack, "System", "unpack");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto str = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto str = machine()->get_text(arg0);
 
             VMObjectPtrs ss;
             int len = str.length();
@@ -712,8 +712,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Arg, "System", "arg");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            auto i = VM_OBJECT_INTEGER_VALUE(arg0);
+        if (machine()->is_integer(arg0)) {
+            auto i = machine()->get_integer(arg0);
             if (i < application_argc) {
                 return VMObjectText(application_argv[i]).clone();
             } else {
@@ -732,8 +732,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Getenv, "System", "get_env");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto t = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto t = machine()->get_text(arg0);
             char* s = unicode_to_char(t);
             char* r = std::getenv(s);
             delete s;
@@ -814,7 +814,7 @@ public:
         }
         std::cout << s;
 
-        return create_none();
+        return machine()->create_none();
     }
 };
 
@@ -827,7 +827,7 @@ public:
         std::string line;
         std::getline(std::cin, line);
         icu::UnicodeString str(line.c_str());
-        return create_text(str);
+        return machine()->create_text(str);
     }
 };
 

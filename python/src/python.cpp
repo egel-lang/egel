@@ -504,7 +504,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
             auto mod  = PYTHON_OBJECT_VALUE(arg0);
-            auto s    = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s    = machine()->get_text(arg1);
             char* cc  = unicode_to_char(s);
 
             auto attr = PyObject_GetAttrString(mod, cc);
@@ -528,7 +528,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1) && PYTHON_OBJECT_TEST(arg2)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
-            auto s   = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s   = machine()->get_text(arg1);
             char* n  = unicode_to_char(s);
             auto a   = PYTHON_OBJECT_VALUE(arg2);
 
@@ -1012,8 +1012,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonEval, "Python", "eval");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s     = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto s     = machine()->get_text(arg0);
             char* code = unicode_to_char(s);
             PyRun_SimpleString(code);
             delete code;
@@ -1036,9 +1036,9 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonEvalFile, "Python", "eval_file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
+        if (machine()->is_text(arg0)) {
 
-            auto fn0 = VM_OBJECT_TEXT_VALUE(arg0);
+            auto fn0 = machine()->get_text(arg0);
             char* fn1 = unicode_to_char(fn0);
             FILE* fp;
             fp = fopen(fn1, "r"); // XXX: fp is never closed
@@ -1067,8 +1067,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleAdd, "Python", "module_add");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto  m0  = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto  m0  = machine()->get_text(arg0);
             char* m1 = unicode_to_char(m0);
             PyObject* mod = PyImport_AddModule(m1);
             delete m1;
@@ -1095,8 +1095,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleImport, "Python", "module_import");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto fn0   = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto fn0   = machine()->get_text(arg0);
             char* fn1  = unicode_to_char(fn0);
             PyObject* fn2 = PyUnicode_DecodeFSDefault(fn1);
             PyObject* mod = PyImport_Import(fn2);
@@ -1128,7 +1128,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
-            auto s   = VM_OBJECT_TEXT_VALUE(arg1);
+            auto s   = machine()->get_text(arg1);
             char* cc = unicode_to_char(s);
 
             auto func0 = PyObject_GetAttrString(mod, cc);

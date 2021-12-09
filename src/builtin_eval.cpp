@@ -19,8 +19,8 @@ public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Evaluate, "System", "eval");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
 
             VMObjectPtr r = nullptr;
             VMObjectPtr e = nullptr;

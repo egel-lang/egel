@@ -636,7 +636,7 @@ public:
         _machine = vm;
     }
 
-    VM* get_machine() const {
+    VM* machine() const {
         return _machine;
     }
 
