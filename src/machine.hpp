@@ -13,6 +13,7 @@
 #include "runtime.hpp"
 #include "modules.hpp"
 #include "eval.hpp"
+#include "assembler.hpp"
 
 class SymbolTable {
 public:
@@ -574,11 +575,13 @@ public:
     }
 
     icu::UnicodeString get_bytecode(const VMObjectPtr& o) override {
-        throw create_text("stub");
+        Disassembler d(o);
+        return d.disassemble();
     }
 
     VMObjectPtr create_bytecode(const icu::UnicodeString& s) override {
-        throw create_text("stub");
+        Assembler a(this, s);
+        return a.assemble();
     }
 
     icu::UnicodeString symbol(const VMObjectPtr& o) override {

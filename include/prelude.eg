@@ -76,6 +76,11 @@ namespace List (
         [ nil YY -> YY
         | (cons X XX) YY -> cons X (XX ++ YY) ]
 
+    ## List::postpend l e - postpend an element
+    def postpend =
+        [ nil Y -> cons Y nil
+        | (cons X XX) Y -> cons X (postpend XX Y) ]
+
     ## List::map f l - map a function over a list
     def map =
         [ F nil -> nil
