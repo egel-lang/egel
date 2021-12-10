@@ -1608,7 +1608,7 @@ public:
     }
 
     static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1) {
-        return AstPtr(new AstDeclValue(p, e1, e1));
+        return AstPtr(new AstDeclValue(p, e0, e1));
     }
 
     AstPtr name() const {

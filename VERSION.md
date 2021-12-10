@@ -9,8 +9,6 @@ A list of all major changes between versions of the interpreter.
 + rewrite the runtime to make the interpreter performant
 + module rework and compile into local module
 + remote procedure calls (look at grpc)
-+ get rid of spurious macros
-+ get rid of .clone() for class::create()
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc?
 + add a literate scripting mode
@@ -24,6 +22,8 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+* get rid of spurious macros
++ get rid of .clone() for class::create()
 * dictionary
 * tinydb
 * small internal tweaks to array creation
