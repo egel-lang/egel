@@ -31,8 +31,8 @@ public:
         _state = RUNNING;
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new Process(*this));
+    static VMObjectPtr create(VM* vm, const VMObjectPtr& f) {
+        return VMObjectPtr(new Process(vm, f));
     }
 
     int compare(const VMObjectPtr& o) override {
@@ -135,11 +135,11 @@ public:
                             out_push(ff[1]);
                             _program = ff[2]; 
                         } else {
-                            _exception = VMObjectText("no tuple").clone();
+                            _exception = VMObjectText::create("no tuple");
                             set_state(HALTED);
                         }
                     } else {
-                        _exception = VMObjectText("no tuple").clone();
+                        _exception = VMObjectText::create("no tuple");
                         set_state(HALTED);
                     }
                 }
@@ -169,7 +169,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto vm = machine();
 
-        auto proc = Process(vm, arg0).clone();
+        auto proc = Process::create(vm, arg0);
 
         std::thread run(run_process, proc);
 
@@ -239,11 +239,12 @@ public:
 std::vector<VMObjectPtr> builtin_process(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(Process(vm).clone()); // XXX: I always forget whether this is needed
-    oo.push_back(Proc(vm).clone());
-    oo.push_back(Send(vm).clone());
-    oo.push_back(Recv(vm).clone());
-    oo.push_back(Halt(vm).clone());
+    //oo.push_back(Process::create(vm)); // XXX: I always forget whether this is needed
+    oo.push_back(VMObjectStub::create(vm, "System::process")); // XXX: I always forget whether this is needed
+    oo.push_back(Proc::create(vm));
+    oo.push_back(Send::create(vm));
+    oo.push_back(Recv::create(vm));
+    oo.push_back(Halt::create(vm));
 
     return oo;
 }

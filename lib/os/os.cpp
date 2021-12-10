@@ -371,10 +371,6 @@ public:
         _value = chan.value();
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new ChannelValue(*this));
-    }
-
     static VMObjectPtr create(VM* m, const ChannelPtr& c) {
         return VMObjectPtr(new ChannelValue(m, c));
     }
@@ -411,9 +407,8 @@ public:
 
     VMObjectPtr apply() const override {
         auto cin = ChannelStreamIn::create();
-        auto in  = ChannelValue(machine());
-        in.set_value(cin);
-        return in.clone();
+        auto in  = ChannelValue::create(machine(), cin);
+        return in;
     }
 };
 
@@ -424,9 +419,8 @@ public:
 
     VMObjectPtr apply() const override {
         auto cout = ChannelStreamOut::create();
-        auto out  = ChannelValue(machine());
-        out.set_value(cout);
-        return out.clone();
+        auto out  = ChannelValue::create(machine(), cout);
+        return out;
     }
 };
 
@@ -437,9 +431,8 @@ public:
 
     VMObjectPtr apply() const override {
         auto cerr = ChannelStreamErr::create();
-        auto err  = ChannelValue(machine());
-        err.set_value(cerr);
-        return err.clone();
+        auto err  = ChannelValue::create(machine(), cerr);
+        return err;
     }
 };
 
@@ -457,7 +450,7 @@ public:
     VMObjectPtr apply() const override {
         vm_int_t n;
         std::cin >> n;
-        return VMObjectInteger(n).clone();
+        return VMObjectInteger::create(n);
     }
 };
 
@@ -473,7 +466,7 @@ public:
     VMObjectPtr apply() const override {
         vm_float_t f;
         std::cin >> f;
-        return VMObjectFloat(f).clone();
+        return VMObjectFloat::create(f);
     }
 };
 */
@@ -734,8 +727,8 @@ public:
         _sockfd = so._sockfd;
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new ServerObject(*this));
+    static VMObjectPtr create(VM* vm) {
+        return VMObjectPtr(new ServerObject(vm));
     }
 
     int compare(const VMObjectPtr& o) override {
@@ -781,9 +774,8 @@ public:
             throw VMObjectText::create("error opening socket");
         }
         auto cn = ChannelFD::create(fd);
-        auto c  = ChannelValue(machine());
-        c.set_value(cn);
-        return c.clone();
+        auto c  = ChannelValue::create(machine(), cn);
+        return c;
     }
 
 protected:
@@ -828,10 +820,10 @@ public:
             auto port = machine()->get_integer(arg0);
             auto in   = machine()->get_integer(arg1);
 
-            auto so = ServerObject(machine());
-            so.bind(port, in);
+            auto so = ServerObject::create(machine());
+            SERVER_OBJECT_CAST(so)->bind(port, in);
 
-            return so.clone();
+            return so;
         } else {
             THROW_BADARGS;
         }
@@ -872,9 +864,8 @@ public:
             }
 
             auto cn = ChannelFD::create(sockfd);
-            auto c  = ChannelValue(machine());
-            c.set_value(cn);
-            return c.clone();
+            auto c  = ChannelValue::create(machine(), cn);
+            return c;
 
         } else {
             THROW_BADARGS;
@@ -890,30 +881,31 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-//    oo.push_back(VMObjectData(vm, "OS", "channel").clone());
+//    oo.push_back::create(VMObjectData(vm, "OS", "channel"));
 
-    oo.push_back(ChannelValue(vm).clone());
-    oo.push_back(Stdin(vm).clone());
-    oo.push_back(Stdout(vm).clone());
-    oo.push_back(Stderr(vm).clone());
-    oo.push_back(OpenIn(vm).clone());
-    oo.push_back(OpenOut(vm).clone());
-    oo.push_back(Close(vm).clone());
-    oo.push_back(Read(vm).clone());
-    oo.push_back(ReadLine(vm).clone());
-    oo.push_back(ReadAll(vm).clone());
-    oo.push_back(Write(vm).clone());
-    oo.push_back(WriteLine(vm).clone());
-    oo.push_back(Flush(vm).clone());
-    oo.push_back(Eof(vm).clone());
-    oo.push_back(Flock(vm).clone());
-    oo.push_back(Exit(vm).clone());
+    //oo.push_back(ChannelValue::create(vm));
+    oo.push_back(VMObjectStub::create(vm, "<OS::channel>"));
+    oo.push_back(Stdin::create(vm));
+    oo.push_back(Stdout::create(vm));
+    oo.push_back(Stderr::create(vm));
+    oo.push_back(OpenIn::create(vm));
+    oo.push_back(OpenOut::create(vm));
+    oo.push_back(Close::create(vm));
+    oo.push_back(Read::create(vm));
+    oo.push_back(ReadLine::create(vm));
+    oo.push_back(ReadAll::create(vm));
+    oo.push_back(Write::create(vm));
+    oo.push_back(WriteLine::create(vm));
+    oo.push_back(Flush::create(vm));
+    oo.push_back(Eof::create(vm));
+    oo.push_back(Flock::create(vm));
+    oo.push_back(Exit::create(vm));
 
 // hacked TCP protocol
-    oo.push_back(ServerObject(vm).clone());
-    oo.push_back(Accept(vm).clone());
-    oo.push_back(Server(vm).clone());
-    oo.push_back(Client(vm).clone());
+    oo.push_back(ServerObject::create(vm));
+    oo.push_back(Accept::create(vm));
+    oo.push_back(Server::create(vm));
+    oo.push_back(Client::create(vm));
 
     return oo;
 }

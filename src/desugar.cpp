@@ -21,7 +21,7 @@ public:
     AstPtr rewrite_expr_wildcard(const Position& p, const icu::UnicodeString& v) override {
         icu::UnicodeString w = "WILD";
         w = w + unicode_convert_uint(tick());
-        return AstExprVariable(p, w).clone();
+        return AstExprVariable::create(p, w);
     }
 
 private:
@@ -46,23 +46,23 @@ public:
         auto t0 = rewrite(t);
         auto e0 = rewrite(e);
 
-        auto a0 = AstExprCombinator(p, STRING_SYSTEM, STRING_TRUE).clone();
+        auto a0 = AstExprCombinator::create(p, STRING_SYSTEM, STRING_TRUE);
         AstPtrs aa0;
         aa0.push_back(a0);
-        auto a1 = AstExprMatch(p, aa0, AstEmpty().clone(), t0).clone();
+        auto a1 = AstExprMatch::create(p, aa0, AstEmpty::create(), t0);
 
-        auto b0 = AstExprWildcard(p, "_").clone();
+        auto b0 = AstExprWildcard::create(p, "_");
         AstPtrs bb0;
         bb0.push_back(b0);
-        auto b1 = AstExprMatch(p, bb0, AstEmpty().clone(), e0).clone();
+        auto b1 = AstExprMatch::create(p, bb0, AstEmpty::create(), e0);
 
         AstPtrs cc0;
         cc0.push_back(a1);
         cc0.push_back(b1);
 
-        auto c = AstExprBlock(p, cc0).clone();
+        auto c = AstExprBlock::create(p, cc0);
 
-        auto d = AstExprApplication(p, c, i0).clone();
+        auto d = AstExprApplication::create(p, c, i0);
 
         return d;
     }
@@ -82,10 +82,10 @@ public:
 
     //  F( (e0, .., en) ) -> ( tuple F(e0) .. F(en) )
     AstPtr rewrite_expr_tuple(const Position& p, const AstPtrs& ee) override {
-        auto t = AstExprCombinator(p, STRING_SYSTEM, STRING_TUPLE).clone();
+        auto t = AstExprCombinator::create(p, STRING_SYSTEM, STRING_TUPLE);
         for (auto& e: ee) {
             auto e0 = rewrite(e);
-            t = AstExprApplication(p, t, e0).clone();
+            t = AstExprApplication::create(p, t, e0);
         }
         return t;
     }
@@ -105,14 +105,14 @@ public:
 
     //  F( {e0, .., en|ee} ) -> (cons F(e0) (.. (cons F(en) F(ee) ))) )
     AstPtr rewrite_expr_list(const Position& p, const AstPtrs& ee, const AstPtr& tl) override {
-        auto nil = AstExprCombinator(p, STRING_SYSTEM, STRING_NIL).clone();
-        auto cons = AstExprCombinator(p, STRING_SYSTEM, STRING_CONS).clone();
+        auto nil = AstExprCombinator::create(p, STRING_SYSTEM, STRING_NIL);
+        auto cons = AstExprCombinator::create(p, STRING_SYSTEM, STRING_CONS);
         auto l = nil;
         if (tl != nullptr) {
             l = rewrite(tl);
         }
         for (int i = ee.size() - 1; i >= 0; i--) {
-            l = AstExprApplication(p, cons, ee[i], l).clone();
+            l = AstExprApplication::create(p, cons, ee[i], l);
         }
         return rewrite(l);
     }
@@ -134,13 +134,13 @@ public:
         auto r0 = rewrite(r);
         auto l0 = rewrite(l);
 
-        auto k = AstExprCombinator(p, STRING_SYSTEM, STRING_K).clone();
+        auto k = AstExprCombinator::create(p, STRING_SYSTEM, STRING_K);
  
-        auto b0 = AstExprWildcard(p, "_").clone();
+        auto b0 = AstExprWildcard::create(p, "_");
         AstPtrs bb0;
         bb0.push_back(b0);
 
-        return AstExprLet(p, bb0, r0, l0).clone();
+        return AstExprLet::create(p, bb0, r0, l0);
     }
 };
 
@@ -161,7 +161,7 @@ public:
         AstPtrs mm;
         auto m0 = rewrite(m);
         mm.push_back(m0);
-        return AstExprBlock(p, mm).clone();
+        return AstExprBlock::create(p, mm);
     }
 };
 
@@ -181,13 +181,13 @@ public:
         auto r0 = rewrite(r);
         auto b0 = rewrite(b);
 
-        auto m = AstExprMatch(p, ll, AstEmpty().clone(), b0).clone();
+        auto m = AstExprMatch::create(p, ll, AstEmpty::create(), b0);
 
         AstPtrs mm;
         mm.push_back(m);
-        auto q =  AstExprBlock(p, mm).clone();
+        auto q =  AstExprBlock::create(p, mm);
 
-        return AstExprApplication(p, q, r0).clone();
+        return AstExprApplication::create(p, q, r0);
     }
 };
 
@@ -203,17 +203,17 @@ public:
     }
 
     AstPtr rewrite_decl_definition(const Position& p, const AstPtr& c, const AstPtr& e) override {
-        return AstDeclDefinition(p, c, e).clone(); // cut
+        return AstDeclDefinition::create(p, c, e); // cut
     }
 
     AstPtr rewrite_decl_operator(const Position& p, const AstPtr& c, const AstPtr& e) override {
-        return AstDeclOperator(p, c, e).clone(); // cut
+        return AstDeclOperator::create(p, c, e); // cut
     }
 
     AstPtr rewrite_decl_object(const Position& p, const AstPtr& c, const AstPtrs& vv, const AstPtrs& ff, const AstPtrs& ee) override {
         AstPtrs oo;
         AstPtrs dd;
-        oo.push_back(AstExprCombinator(p, STRING_SYSTEM, STRING_OBJECT).clone());
+        oo.push_back(AstExprCombinator::create(p, STRING_SYSTEM, STRING_OBJECT));
         for (auto f:ff) {
             if (f->tag() == AST_DECL_DATA) {
                 AST_DECL_DATA_SPLIT(f, p, dd0);
@@ -229,24 +229,24 @@ public:
                 PANIC("failed to rewrite field");
             }
         }
-        AstPtr body = AstExprApplication(p, oo).clone();
+        AstPtr body = AstExprApplication::create(p, oo);
         for (auto e:ee) {
-            auto ex = AstExprCombinator(p, STRING_SYSTEM, STRING_EXTEND).clone();
+            auto ex = AstExprCombinator::create(p, STRING_SYSTEM, STRING_EXTEND);
             AstPtrs bb;
             bb.push_back(ex);
             bb.push_back(e);
             bb.push_back(body);
-            body = AstExprApplication(p, bb).clone();
+            body = AstExprApplication::create(p, bb);
         }
         if (vv.size() > 0) {
-            auto m = AstExprMatch(p, vv, AstEmpty().clone(), body).clone();
-            auto l = AstExprBlock(p, m).clone();
+            auto m = AstExprMatch::create(p, vv, AstEmpty::create(), body);
+            auto l = AstExprBlock::create(p, m);
             body = l;
         }
         AstPtrs decls;
-        decls.push_back(AstDeclData(p, dd).clone());
-        decls.push_back(AstDeclDefinition(p, c, body).clone());
-        return AstWrapper(p, decls).clone();
+        decls.push_back(AstDeclData::create(p, dd));
+        decls.push_back(AstDeclDefinition::create(p, c, body));
+        return AstWrapper::create(p, decls);
     }
 };
 
@@ -263,10 +263,10 @@ public:
 
     //  F( throw e ) -> ( (System.throw e) )
     AstPtr rewrite_expr_throw(const Position& p, const AstPtr& e) override {
-        auto t0 = AstExprCombinator(p, STRING_SYSTEM, STRING_THROW).clone();
+        auto t0 = AstExprCombinator::create(p, STRING_SYSTEM, STRING_THROW);
         auto e0 = rewrite(e);
 
-        return AstExprApplication(p, t0, e0).clone();
+        return AstExprApplication::create(p, t0, e0);
     }
 };
 
@@ -283,13 +283,13 @@ public:
 
     //  F( throw e ) -> ( (System.throw e) )
     AstPtr rewrite_expr_try(const Position& p, const AstPtr& t, const AstPtr& c) override {
-        auto id = AstExprCombinator(p, STRING_SYSTEM, STRING_ID).clone();
+        auto id = AstExprCombinator::create(p, STRING_SYSTEM, STRING_ID);
         auto t0 = rewrite(t);
         auto c0 = rewrite(c);
 
-        auto e0 = AstExprTry(p, t0, c0).clone();
+        auto e0 = AstExprTry::create(p, t0, c0);
 
-        return AstExprApplication(p, id, e0).clone();
+        return AstExprApplication::create(p, id, e0);
     }
 };
 
@@ -306,13 +306,13 @@ public:
 
     AstPtr lambdify(const AstPtr& e) {
         auto p = e->position();
-        auto v = AstExprVariable(p, "WILD0").clone();
+        auto v = AstExprVariable::create(p, "WILD0");
         AstPtrs vv;
         vv.push_back(v);
-        auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
+        auto m = AstExprMatch::create(p, vv, AstEmpty::create(), e);
         AstPtrs mm;
         mm.push_back(m);
-        return AstExprBlock(p, mm).clone();
+        return AstExprBlock::create(p, mm);
 
     }
 
@@ -325,15 +325,15 @@ public:
                 auto arg0 = ee[1];
                 if ( (s == "System:!-") && (arg0->tag() == AST_EXPR_INTEGER) ) {
                     AST_EXPR_INTEGER_SPLIT(arg0, p, s);
-                    return AstExprInteger(p, "-"+s).clone();
+                    return AstExprInteger::create(p, "-"+s);
                 } else {
-                    return AstExprApplication(p, rewrites(ee)).clone();
+                    return AstExprApplication::create(p, rewrites(ee));
                 }
             } else {
-                return AstExprApplication(p, rewrites(ee)).clone();
+                return AstExprApplication::create(p, rewrites(ee));
             }
         } else {
-            return AstExprApplication(p, rewrites(ee)).clone();
+            return AstExprApplication::create(p, rewrites(ee));
         }
     }
 };
@@ -351,13 +351,13 @@ public:
 
     AstPtr lambdify(const AstPtr& e) {
         auto p = e->position();
-        auto v = AstExprVariable(p, "WILD0").clone();
+        auto v = AstExprVariable::create(p, "WILD0");
         AstPtrs vv;
         vv.push_back(v);
-        auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
+        auto m = AstExprMatch::create(p, vv, AstEmpty::create(), e);
         AstPtrs mm;
         mm.push_back(m);
-        return AstExprBlock(p, mm).clone();
+        return AstExprBlock::create(p, mm);
 
     }
 
@@ -376,15 +376,15 @@ public:
                     ff.push_back(arg0);
                     ff.push_back(arg1);
 
-                    return AstExprApplication(p, ff).clone();
+                    return AstExprApplication::create(p, ff);
                 } else {
-                    return AstExprApplication(p, rewrites(ee)).clone();
+                    return AstExprApplication::create(p, rewrites(ee));
                 }
             } else {
-                return AstExprApplication(p, rewrites(ee)).clone();
+                return AstExprApplication::create(p, rewrites(ee));
             }
         } else {
-            return AstExprApplication(p, rewrites(ee)).clone();
+            return AstExprApplication::create(p, rewrites(ee));
         }
     }
 };

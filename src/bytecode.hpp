@@ -561,8 +561,8 @@ public:
         : VMObjectBytecode(d.machine(), d.code(), d.symbol()) {
     }
     
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new VMObjectBytecode(*this));
+    static VMObjectPtr create(VM* m, const Code& c, const UnicodeStrings& nn, const icu::UnicodeString& n) {
+        return VMObjectPtr(new VMObjectBytecode(m, c, nn, n));
     }
 
     static VMObjectPtr create(VM* m, const Code& c, const icu::UnicodeString& s) {

@@ -19,7 +19,7 @@ public:
     }
 
     void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
-        auto c = VMObjectData(_machine, nn, n).clone();
+        auto c = VMObjectData::create(_machine, nn, n);
         _machine->define_data(c);
     }
 
@@ -200,30 +200,30 @@ public:
 
     void visit_expr_integer(const Position& p, const icu::UnicodeString& v) override {
         if (v.startsWith("0x")) {
-            auto i = VMObjectInteger(convert_to_hexint(v)).clone();
+            auto i = VMObjectInteger::create(convert_to_hexint(v));
             auto d = machine()->enter_data(i);
             visit_constant(d);
         } else {
-            auto i = VMObjectInteger(convert_to_int(v)).clone();
+            auto i = VMObjectInteger::create(convert_to_int(v));
             auto d = machine()->enter_data(i);
             visit_constant(d);
         }
     }
 
     void visit_expr_float(const Position& p, const icu::UnicodeString& v) override {
-        auto i = VMObjectFloat(convert_to_float(v)).clone();
+        auto i = VMObjectFloat::create(convert_to_float(v));
         auto d = machine()->enter_data(i);
         visit_constant(d);
     }
 
     void visit_expr_character(const Position& p, const icu::UnicodeString& v) override {
-        auto i = VMObjectChar(convert_to_char(v)).clone();
+        auto i = VMObjectChar::create(convert_to_char(v));
         auto d = machine()->enter_data(i);
         visit_constant(d);
     }
 
     void visit_expr_text(const Position& p, const icu::UnicodeString& v) override {
-        auto i = VMObjectText(convert_to_text(v)).clone();
+        auto i = VMObjectText::create(convert_to_text(v));
         auto d = machine()->enter_data(i);
         visit_constant(d);
     }
@@ -373,7 +373,7 @@ public:
 
             // generate thunks for nil fields
             if (!head_flag) {
-                auto i = VMObjectInteger(4).clone();
+                auto i = VMObjectInteger::create(4);
                 auto d = machine()->enter_data(i);
                 get_coder()->emit_op_data(rti, d);
 
@@ -384,7 +384,7 @@ public:
             }
 
             for (uint_t n = 1; n < sz; n++) {
-                auto i = VMObjectInteger(n+4).clone();
+                auto i = VMObjectInteger::create(n+4);
                 auto d = machine()->enter_data(i);
                 reg_t q = get_coder()->generate_register();
                 get_coder()->emit_op_data(q, d);
@@ -525,7 +525,7 @@ public:
         // the catch thunk evaluates with the old exception and places its result in the
         // handler thunk as the combinator 
         auto new_exci = get_coder()->generate_register();
-        auto i = VMObjectInteger(4).clone();
+        auto i = VMObjectInteger::create(4);
         auto d = machine()->enter_data(i);
         get_coder()->emit_op_data(new_exci, d);
 
@@ -551,7 +551,7 @@ public:
             switch (n->tag()) {
             case AST_EXPR_COMBINATOR: {
                     AST_EXPR_COMBINATOR_SPLIT(n, p, ss, s);
-                    auto d = VMObjectData(machine(), ss, s).clone();
+                    auto d = VMObjectData::create(machine(), ss, s);
                     machine()->define_data(d);
                 }
                 break;
@@ -596,7 +596,7 @@ public:
 
         auto code = get_coder()->code();
         AST_EXPR_COMBINATOR_SPLIT(n, p0, ss, s);
-        auto b = VMObjectBytecode(machine(), code, ss, s).clone();
+        auto b = VMObjectBytecode::create(machine(), code, ss, s);
 
         get_coder()->reset();
         machine()->define_data(b);
@@ -642,7 +642,7 @@ public:
 
         auto code = get_coder()->code();
         AST_EXPR_OPERATOR_SPLIT(o, p0, ss, s);
-        auto b = VMObjectBytecode(machine(), code, ss, s).clone();
+        auto b = VMObjectBytecode::create(machine(), code, ss, s);
 
         get_coder()->reset();
         machine()->define_data(b);

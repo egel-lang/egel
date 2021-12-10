@@ -143,8 +143,8 @@ public:
         : VMObjectResult(d.machine(), d.symbol(), d._result, d._exception) {
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr( (VMObject*) new VMObjectResult(*this));
+    static VMObjectPtr create(VM* m, const symbol_t s, VMReduceResult* r, const bool exc) {
+        return VMObjectPtr(new VMObjectResult(m, s, r, exc));
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -170,7 +170,7 @@ public:
     virtual ~Machine() {
     }
 
-    VMPtr clone() const override {
+    static VMPtr create() {
         return VMPtr(new Machine()); // XXX: use a copy constructor once
     }
 
@@ -229,12 +229,12 @@ public:
 
     // initialize
     void initialize(OptionsPtr oo) override {
-        NamespacePtr env = Namespace().clone();
+        NamespacePtr env = Namespace::create();
 
         _options = oo;
-        _manager = ModuleManager().clone();
+        _manager = ModuleManager::create();
         _manager->init(oo, this);
-        _eval = Eval().clone();
+        _eval = Eval::create();
         _eval->init(_manager);
     }
 
@@ -278,7 +278,7 @@ public:
 
     // convenience
     VMObjectPtr get_combinator(const symbol_t s) override {
-        auto o = VMObjectStub(this, s).clone();
+        auto o = VMObjectStub::create(this, s);
         auto d = enter_data(o);
         return get_data(d);
     }
@@ -342,7 +342,7 @@ public:
         ee.push_back(nullptr); // arg0
         auto e = create_array(ee);
 
-        auto i = VMObjectInteger(5).clone();
+        auto i = VMObjectInteger::create(5);
         VMObjectPtrs tt;
         tt.push_back(r); // rt
         tt.push_back(i); // rti
@@ -377,10 +377,10 @@ public:
         VMReduceResult r;
 
         auto sm = enter_symbol("Internal", "result");
-        auto m  = VMObjectResult(this, sm, &r, false).clone();
+        auto m  = VMObjectResult::create(this, sm, &r, false);
 
         auto se = enter_symbol("Internal", "exception");
-        auto e  = VMObjectResult(this, se, &r, true).clone();
+        auto e  = VMObjectResult::create(this, se, &r, true);
 
         reduce(f, m, e, run);
         return r;
@@ -412,6 +412,14 @@ public:
 
     void set_context(void* m) override {
         _context = m;
+    }
+
+    vm_tag_t    get_tag(const VMObjectPtr& o) override {
+        return o->tag();
+    }
+
+    vm_subtag_t get_subtag(const VMObjectPtr& o) override {
+        return o->subtag();
     }
 
     // primitive values
@@ -633,7 +641,7 @@ public:
                               std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1)> f) override {
         return DyadicCallback::create(this, ss, s, f);
     }
-
+/*
     VMObjectPtr create_triadic(const icu::UnicodeString& s, 
                                std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override {
         return TriadicCallback::create(this, s, f);
@@ -648,7 +656,9 @@ public:
                                std::function<VMObjectPtr(const VMObjectPtr& a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override {
         return TriadicCallback::create(this, ss, s, f);
     }
+    */
 
+/*
     VMObjectPtr create_variadic(const icu::UnicodeString& s, 
                                 std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) override {
         return VariadicCallback::create(this, s, f);
@@ -663,7 +673,7 @@ public:
                                 std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) override {
         return VariadicCallback::create(this, ss, s, f);
     }
-
+*/
     VMObjectPtr to_tuple(const VMObjectPtrs& oo) override {
         VMObjectPtrs tt;
         tt.push_back(create_tuple());
@@ -804,7 +814,7 @@ public:
         auto mm = _manager->get_modules();
         VMObjectPtrs oo;
         for (auto& m:mm) {
-            oo.push_back(VMModule(this, m).clone());
+            oo.push_back(VMModule::create(this, m));
         }
         return to_list(oo);
     }

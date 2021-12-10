@@ -16,8 +16,8 @@ public:
         : EvalResult(d.machine(), d.symbol(), d.callback()) {
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new EvalResult(*this));
+    static VMObjectPtr create(VM* m, const symbol_t s, const callback_t call) {
+        return VMObjectPtr(new EvalResult(m, s, call));
     }
 
     callback_t callback() const {
@@ -58,14 +58,14 @@ public:
         VarCombinator(c.machine(), c.symbol(), c.result()) {
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new VarCombinator(*this));
+    static VMObjectPtr create(VM* m, const symbol_t s, const VMReduceResult& r) {
+        return VMObjectPtr(new VarCombinator(m, s, r));
     }
 
     static VMObjectPtr create(VM* vm, const VMObjectPtr& o, const VMReduceResult& r) {
         if (o->tag() == VM_OBJECT_COMBINATOR) {
             auto c = VM_OBJECT_COMBINATOR_CAST(o);
-            auto v = VarCombinator(vm, c->symbol(), r).clone();
+            auto v = VarCombinator::create(vm, c->symbol(), r);
             return v;
         } else {
             throw ErrorInternal("failure to create Var");
@@ -119,8 +119,8 @@ public:
     ~Eval() {
     }
 
-    EvalPtr clone() const {
-        return EvalPtr(new Eval(*this));
+    static EvalPtr create() {
+        return EvalPtr(new Eval());
     }
 
     void init(ModuleManagerPtr mm) {
@@ -170,7 +170,7 @@ public:
             auto c = vm->get_combinator(v.string());
             auto sym = c->symbol();
             auto r = vm->reduce(c);
-            auto d = VarCombinator(vm, sym, r).clone();
+            auto d = VarCombinator::create(vm, sym, r);
             vm->define_data(d);
         }
     }
@@ -231,7 +231,7 @@ public:
             dd.push_back(u);
         }
         dd.push_back(d);
-        auto w = AstWrapper(p, dd).clone();
+        auto w = AstWrapper::create(p, dd);
 
         // bypass standard semantical analysis and declare this def in the context.
         // that manner, definitions may be overridded in interactive mode.
@@ -268,7 +268,7 @@ public:
             dd.push_back(u);
         }
         dd.push_back(d);
-        auto w = AstWrapper(p, dd).clone();
+        auto w = AstWrapper::create(p, dd);
 
         // bypass standard semantical analysis and declare the data in the context.
         // that manner, data may be overridded in interactive mode.
@@ -310,8 +310,8 @@ public:
         auto fv = generate_fresh_combinator();
         auto vm = machine();
         auto p = a->position();
-        auto n = AstExprCombinator(p, fv).clone();
-        auto d = AstDeclDefinition(p, n, a).clone();
+        auto n = AstExprCombinator::create(p, fv);
+        auto d = AstDeclDefinition::create(p, n, a);
 
         // treat it as a definition Dummy
         handle_definition(d);
@@ -332,7 +332,7 @@ public:
 
         if (d->tag() == AST_DECL_VALUE) { // start off by treating the val as a def
             AST_DECL_VALUE_SPLIT(d, p0, c0, e0);
-            handle_definition(AstDeclDefinition(p, c0, e0).clone());
+            handle_definition(AstDeclDefinition::create(p, c0, e0));
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
                 auto o = vm->get_combinator(c1->to_text());
@@ -372,9 +372,9 @@ public:
 
         // set up the handlers
         auto sr = vm->enter_symbol("Internal", "result");
-        auto rr = EvalResult(vm, sr, main).clone();
+        auto rr = EvalResult::create(vm, sr, main);
         auto se = vm->enter_symbol("Internal", "exception");
-        auto e  = EvalResult(vm, se, exc).clone();
+        auto e  = EvalResult::create(vm, se, exc);
 
         // handle the commands
         if (aa->tag() == AST_WRAPPER) {

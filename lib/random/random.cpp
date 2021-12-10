@@ -41,7 +41,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger(random::get().between(i0, i1)).clone();
+            return VMObjectInteger::create(random::get().between(i0, i1));
         } else {
             // XXX: extend once with two float values
             THROW_BADARGS;
@@ -56,7 +56,7 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(Random(vm).clone());
+    oo.push_back(Random::create(vm));
 
     return oo;
 

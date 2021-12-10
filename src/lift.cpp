@@ -22,7 +22,7 @@ public:
                 for (auto& p0:pp) {
                     pp0.push_back(p0);
                 }
-                return AstExprMatch(p, pp0, g, e).clone();
+                return AstExprMatch::create(p, pp0, g, e);
             }
             break;
         default:
@@ -45,7 +45,7 @@ public:
         // rewrite the matches
         auto mm0 = rewrites(mm);
         // determine the freevars
-        auto e0 = AstExprBlock(p, mm0).clone();
+        auto e0 = AstExprBlock::create(p, mm0);
         auto fv0 = freevars(e0);
         // this conversion is actually completely unnecessary but better safe than sorry
         AstPtrs fv;
@@ -58,13 +58,13 @@ public:
             mm1.push_back(push_fv_front(fv, m));
         }
         // apply the bloch to the freevars
-        auto e1 = AstExprBlock(p, mm1).clone();
+        auto e1 = AstExprBlock::create(p, mm1);
         AstPtrs aa;
         aa.push_back(e1);
         for (auto& v:fv) {
             aa.push_back(v);
         }
-        return AstExprApplication(p, aa).clone();
+        return AstExprApplication::create(p, aa);
     }
 };
 
@@ -88,12 +88,12 @@ public:
             AstPtrs aa1;
             for (auto& a0:aa0) aa1.push_back(a0);
             for (uint_t n = 1; n < aa.size(); n++)  aa1.push_back(aa[n]);
-            return rewrite(AstExprApplication(p, aa1).clone());
+            return rewrite(AstExprApplication::create(p, aa1));
         } else if (aa.size() == 1) {
             return rewrite(aa[0]);
         } else {
             auto aa0 = rewrites(aa);
-            return AstExprApplication(p, aa0).clone();
+            return AstExprApplication::create(p, aa0);
         }
     }
 };
@@ -146,12 +146,12 @@ public:
             AST_EXPR_COMBINATOR_SPLIT(c, p, nn, n);
             icu::UnicodeString n0 = n + s;
             auto nn0 = localize(nn);
-            return AstExprCombinator(p, nn0, n0).clone();
+            return AstExprCombinator::create(p, nn0, n0);
         } else if (c->tag() == AST_EXPR_OPERATOR) {
             AST_EXPR_OPERATOR_SPLIT(c, p, nn, n); // XXX: keep source to source correct
             icu::UnicodeString n0 = n + s;
             auto nn0 = localize(nn);
-            return AstExprOperator(p, nn0, n0).clone();
+            return AstExprOperator::create(p, nn0, n0);
         } else {
             PANIC("combinator expected");
             return nullptr;
@@ -166,9 +166,9 @@ public:
 
     AstPtr rewrite_expr_block(const Position& p, const AstPtrs& mm) override {
         auto mm0 = rewrites(mm);
-        auto e = AstExprBlock(p, mm0).clone();
+        auto e = AstExprBlock::create(p, mm0);
         auto c = fresh_combinator();
-        auto decl = AstDeclDefinition(p, c, e).clone();
+        auto decl = AstDeclDefinition::create(p, c, e);
         add_lifted(decl);
         return c;
     }
@@ -181,7 +181,7 @@ public:
         } else {
             auto t1   = rewrite(t);
             auto tnew = fresh_combinator();
-            auto td   = AstDeclDefinition(p, tnew, t1).clone();
+            auto td   = AstDeclDefinition::create(p, tnew, t1);
             add_lifted(td);
             t0 = tnew;
         }
@@ -192,12 +192,12 @@ public:
         } else {
             auto c1   = rewrite(c);
             auto cnew = fresh_combinator();
-            auto cd   = AstDeclDefinition(p, cnew, c1).clone();
+            auto cd   = AstDeclDefinition::create(p, cnew, c1);
             add_lifted(cd);
             c0 = cnew;
         }
 
-        return AstExprTry(p, t0, c0).clone();
+        return AstExprTry::create(p, t0, c0);
     }
     */
 
@@ -207,16 +207,16 @@ public:
         if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
             AST_EXPR_BLOCK_SPLIT(e, p0, mm);
             auto mm0 = rewrites(mm);
-            e0 = AstExprBlock(p0, mm0).clone();
+            e0 = AstExprBlock::create(p0, mm0);
         } else {
             e0 = rewrite(e);
         }
-        auto e1 = AstDeclDefinition(p, c, e0).clone();
+        auto e1 = AstDeclDefinition::create(p, c, e0);
         if (get_lifted().size() == 0) {
             return e1;
         } else {
             add_lifted(e1);
-            return AstWrapper(p, get_lifted()).clone();
+            return AstWrapper::create(p, get_lifted());
         }
     }
 
@@ -226,16 +226,16 @@ public:
         if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
             AST_EXPR_BLOCK_SPLIT(e, p0, mm);
             auto mm0 = rewrites(mm);
-            e0 = AstExprBlock(p0, mm0).clone();
+            e0 = AstExprBlock::create(p0, mm0);
         } else {
             e0 = rewrite(e);
         }
-        auto e1 = AstDeclOperator(p, c, e0).clone();
+        auto e1 = AstDeclOperator::create(p, c, e0);
         if (get_lifted().size() == 0) {
             return e1;
         } else {
             add_lifted(e1);
-            return AstWrapper(p, get_lifted()).clone();
+            return AstWrapper::create(p, get_lifted());
         }
     }
 
@@ -245,16 +245,16 @@ public:
         if (e->tag() == AST_EXPR_BLOCK) { // keep direct block definitions
             AST_EXPR_BLOCK_SPLIT(e, p0, mm);
             auto mm0 = rewrites(mm);
-            e0 = AstExprBlock(p0, mm0).clone();
+            e0 = AstExprBlock::create(p0, mm0);
         } else {
             e0 = rewrite(e);
         }
-        auto e1 = AstDeclValue(p, c, e0).clone();
+        auto e1 = AstDeclValue::create(p, c, e0);
         if (get_lifted().size() == 0) {
             return e1;
         } else {
             add_lifted(e1);
-            return AstWrapper(p, get_lifted()).clone();
+            return AstWrapper::create(p, get_lifted());
         }
     }
 
@@ -282,12 +282,12 @@ public:
         } else { // wrap all expressions in a nullary lambda to simplify code generation
                  // (i.e., generate a return instruction at the end of each match)
             AstPtrs vv;
-            auto m = AstExprMatch(p, vv, AstEmpty().clone(), e).clone();
+            auto m = AstExprMatch::create(p, vv, AstEmpty::create(), e);
             AstPtrs mm;
             mm.push_back(m);
-            e0 = AstExprBlock(p, mm).clone();
+            e0 = AstExprBlock::create(p, mm);
         }
-        return AstDeclDefinition(p, c, e0).clone();
+        return AstDeclDefinition::create(p, c, e0);
     }
 
     // treat as a definition
@@ -295,7 +295,7 @@ public:
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
             AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
-            return AstDeclOperator(p1, c1, e1).clone();
+            return AstDeclOperator::create(p1, c1, e1);
         } else {
             PANIC("didn't find a definition");
             return nullptr;
@@ -307,7 +307,7 @@ public:
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
             AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
-            return AstDeclValue(p1, c1, e1).clone();
+            return AstDeclValue::create(p1, c1, e1);
         } else {
             PANIC("didn't find a definition");
             return nullptr;

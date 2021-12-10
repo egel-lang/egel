@@ -14,7 +14,7 @@ typedef std::vector<icu::UnicodeString> UnicodeStrings;
 
 // convenience functions
 VMObjectPtr path_to_object(const fs::path& p) {
-    return VMObjectText(p.c_str()).clone();
+    return VMObjectText::create(p.c_str());
 }
 
 VMObjectPtr paths_to_list(VM* vm, std::vector<fs::path> ss) {
@@ -39,7 +39,7 @@ fs::path object_to_path(const VMObjectPtr& o) {
 
 VMObjectPtr error_to_object(const fs::filesystem_error& e) {
     auto s = e.what();
-    return VMObjectText(s).clone();
+    return VMObjectText::create(s);
 }
 
 //## OS::concat p0 p1 - concatenates two paths
@@ -1456,69 +1456,69 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(Concat(vm).clone());
-    oo.push_back(ConcatWith(vm).clone());
-    oo.push_back(Empty(vm).clone());
-    oo.push_back(HasRootPath(vm).clone());
-    oo.push_back(HasRootName(vm).clone());
-    oo.push_back(HasRootDirectory(vm).clone());
-    oo.push_back(HasRelativePath(vm).clone());
-    oo.push_back(HasParentPath(vm).clone());
-    oo.push_back(HasFilename(vm).clone());
-    oo.push_back(HasStem(vm).clone());
-    oo.push_back(HasExtension(vm).clone());
-    oo.push_back(IsAbsolute(vm).clone());
-    oo.push_back(IsRelative(vm).clone());
-    oo.push_back(RootName(vm).clone());
-    oo.push_back(RootDirectory(vm).clone());
-    oo.push_back(RootPath(vm).clone());
-    oo.push_back(RelativePath(vm).clone());
-    oo.push_back(ParentPath(vm).clone());
-    oo.push_back(Filename(vm).clone());
-    oo.push_back(Stem(vm).clone());
-    oo.push_back(Extension(vm).clone());
-    oo.push_back(Absolute(vm).clone());
-    //oo.push_back(Canonical(vm).clone());
-    //oo.push_back(WeaklyCanonical(vm).clone());
-    //oo.push_back(Relative(vm).clone());
-    //oo.push_back(Proximate(vm).clone());
-    oo.push_back(Copy(vm).clone());
-    oo.push_back(CopyFile(vm).clone());
-    oo.push_back(CopySymlink(vm).clone());
-    oo.push_back(CreateDirectory(vm).clone());
-    oo.push_back(CreateDirectories(vm).clone());
-    oo.push_back(CreateHardLink(vm).clone());
-    oo.push_back(CreateSymlink(vm).clone());
-    oo.push_back(CreateDirectorySymlink(vm).clone());
-    oo.push_back(CurrentPath(vm).clone());
-    oo.push_back(SetCurrentPath(vm).clone());
-    oo.push_back(Exists(vm).clone());
-    oo.push_back(Equivalent(vm).clone());
-    oo.push_back(FileSize(vm).clone());
-    oo.push_back(HardLinkCount(vm).clone());
-    oo.push_back(Permissions(vm).clone());
-    oo.push_back(ReplacePermissions(vm).clone());
-    //oo.push_back(AddPermissions(vm).clone());
-    //oo.push_back(RemovePermissions(vm).clone());
-    oo.push_back(ReadSymlink(vm).clone());
-    oo.push_back(Remove(vm).clone());
-    oo.push_back(RemoveAll(vm).clone());
-    oo.push_back(Rename(vm).clone());
-    oo.push_back(ResizeFile(vm).clone());
-    oo.push_back(SpaceFree(vm).clone());
-    oo.push_back(SpaceCapacity(vm).clone());
-    oo.push_back(SpaceAvailable(vm).clone());
-    oo.push_back(TempDirectoryPath(vm).clone());
-    oo.push_back(IsBlockFile(vm).clone());
-    oo.push_back(IsCharacterFile(vm).clone());
-    oo.push_back(IsDirectory(vm).clone());
-    oo.push_back(IsEmpty(vm).clone());
-    oo.push_back(IsFifo(vm).clone());
-    oo.push_back(IsOther(vm).clone());
-    oo.push_back(IsRegularFile(vm).clone());
-    oo.push_back(IsSocket(vm).clone());
-    oo.push_back(IsSymlink(vm).clone());
-    oo.push_back(Directory(vm).clone());
+    oo.push_back(Concat::create(vm));
+    oo.push_back(ConcatWith::create(vm));
+    oo.push_back(Empty::create(vm));
+    oo.push_back(HasRootPath::create(vm));
+    oo.push_back(HasRootName::create(vm));
+    oo.push_back(HasRootDirectory::create(vm));
+    oo.push_back(HasRelativePath::create(vm));
+    oo.push_back(HasParentPath::create(vm));
+    oo.push_back(HasFilename::create(vm));
+    oo.push_back(HasStem::create(vm));
+    oo.push_back(HasExtension::create(vm));
+    oo.push_back(IsAbsolute::create(vm));
+    oo.push_back(IsRelative::create(vm));
+    oo.push_back(RootName::create(vm));
+    oo.push_back(RootDirectory::create(vm));
+    oo.push_back(RootPath::create(vm));
+    oo.push_back(RelativePath::create(vm));
+    oo.push_back(ParentPath::create(vm));
+    oo.push_back(Filename::create(vm));
+    oo.push_back(Stem::create(vm));
+    oo.push_back(Extension::create(vm));
+    oo.push_back(Absolute::create(vm));
+    //oo.push_back(Canonical::create(vm));
+    //oo.push_back(WeaklyCanonical::create(vm));
+    //oo.push_back(Relative::create(vm));
+    //oo.push_back(Proximate::create(vm));
+    oo.push_back(Copy::create(vm));
+    oo.push_back(CopyFile::create(vm));
+    oo.push_back(CopySymlink::create(vm));
+    oo.push_back(CreateDirectory::create(vm));
+    oo.push_back(CreateDirectories::create(vm));
+    oo.push_back(CreateHardLink::create(vm));
+    oo.push_back(CreateSymlink::create(vm));
+    oo.push_back(CreateDirectorySymlink::create(vm));
+    oo.push_back(CurrentPath::create(vm));
+    oo.push_back(SetCurrentPath::create(vm));
+    oo.push_back(Exists::create(vm));
+    oo.push_back(Equivalent::create(vm));
+    oo.push_back(FileSize::create(vm));
+    oo.push_back(HardLinkCount::create(vm));
+    oo.push_back(Permissions::create(vm));
+    oo.push_back(ReplacePermissions::create(vm));
+    //oo.push_back(AddPermissions::create(vm));
+    //oo.push_back(RemovePermissions::create(vm));
+    oo.push_back(ReadSymlink::create(vm));
+    oo.push_back(Remove::create(vm));
+    oo.push_back(RemoveAll::create(vm));
+    oo.push_back(Rename::create(vm));
+    oo.push_back(ResizeFile::create(vm));
+    oo.push_back(SpaceFree::create(vm));
+    oo.push_back(SpaceCapacity::create(vm));
+    oo.push_back(SpaceAvailable::create(vm));
+    oo.push_back(TempDirectoryPath::create(vm));
+    oo.push_back(IsBlockFile::create(vm));
+    oo.push_back(IsCharacterFile::create(vm));
+    oo.push_back(IsDirectory::create(vm));
+    oo.push_back(IsEmpty::create(vm));
+    oo.push_back(IsFifo::create(vm));
+    oo.push_back(IsOther::create(vm));
+    oo.push_back(IsRegularFile::create(vm));
+    oo.push_back(IsSocket::create(vm));
+    oo.push_back(IsSymlink::create(vm));
+    oo.push_back(Directory::create(vm));
 
     return oo;
 }

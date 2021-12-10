@@ -240,13 +240,13 @@ public:
         switch (get_identify_state()) {
         case STATE_IDENTIFY_USE: {
                 auto v1 = get(p, v);
-                return AstExprVariable(p, v1).clone();
+                return AstExprVariable::create(p, v1);
             }
             break;
         case STATE_IDENTIFY_PATTERN: {
                 auto fv = fresh_variable();
                 declare(p, v, fv);
-                return AstExprVariable(p, fv).clone();
+                return AstExprVariable::create(p, fv);
             }
             break;
         default:
@@ -262,7 +262,7 @@ public:
         case STATE_IDENTIFY_PATTERN:
         case STATE_IDENTIFY_USE: {
                 auto v = get(p, nn, t);
-                auto c = AstExprCombinator(p, ee, v).clone();
+                auto c = AstExprCombinator::create(p, ee, v);
                 return c;
             }
             break;
@@ -280,7 +280,7 @@ public:
         case STATE_IDENTIFY_PATTERN: 
         case STATE_IDENTIFY_USE: {
                 auto v = get(p, nn, t);
-                auto c = AstExprOperator(p, ee, v).clone();
+                auto c = AstExprOperator::create(p, ee, v);
                 return c;
             }
             break;
@@ -301,7 +301,7 @@ public:
         set_identify_state(STATE_IDENTIFY_USE);
         auto e0 = rewrite(e);
         leave_range();
-        return AstExprMatch(p, mm0, g0, e0).clone();
+        return AstExprMatch::create(p, mm0, g0, e0);
     }
 
     AstPtr rewrite_expr_let(const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) override {
@@ -313,7 +313,7 @@ public:
         set_identify_state(STATE_IDENTIFY_USE);
         auto body0 = rewrite(body);
         leave_range();
-        return AstExprLet(p, lhs0, rhs0, body0).clone();
+        return AstExprLet::create(p, lhs0, rhs0, body0);
     }
 
     AstPtr rewrite_expr_tag(const Position& p, const AstPtr& e, const AstPtr& t) override {
@@ -322,25 +322,25 @@ public:
         set_identify_state(STATE_IDENTIFY_USE);
         auto t0 = rewrite(t);
         set_identify_state(STATE_IDENTIFY_PATTERN);
-        return AstExprTag(p, e0, t0).clone();
+        return AstExprTag::create(p, e0, t0);
     }
 
     AstPtr rewrite_directive_using(const Position& p, const UnicodeStrings& nn) override {
         add_using(nn);
-        return AstDirectUsing(p, nn).clone();
+        return AstDirectUsing::create(p, nn);
     }
 
     AstPtr rewrite_decl_data(const Position& p, const AstPtrs& ee) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
             auto ee0 = rewrites(ee);
-            auto a = AstDeclData(p, ee0).clone();
+            auto a = AstDeclData::create(p, ee0);
             set_identify_state(STATE_IDENTIFY_FIELD);
             return a;
         } else {
             set_identify_state(STATE_IDENTIFY_USE);
             auto ee0 = rewrites(ee);
-            auto a = AstDeclData(p, ee0).clone();
+            auto a = AstDeclData::create(p, ee0);
             push_declaration(a);
             return a;
         }
@@ -351,13 +351,13 @@ public:
             set_identify_state(STATE_IDENTIFY_USE);
             auto n0 = rewrite(n);
             auto e0 = rewrite(e);
-            auto a = AstDeclDefinition(p, n0, e0).clone();
+            auto a = AstDeclDefinition::create(p, n0, e0);
             set_identify_state(STATE_IDENTIFY_FIELD);
             return a;
         } else {
             auto n0 = rewrite(n);
             auto e0 = rewrite(e);
-            auto a = AstDeclDefinition(p, n0, e0).clone();
+            auto a = AstDeclDefinition::create(p, n0, e0);
             push_declaration(a);
             set_identify_state(STATE_IDENTIFY_USE);
             return a;
@@ -368,7 +368,7 @@ public:
         set_identify_state(STATE_IDENTIFY_USE);
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
-        auto a =  AstDeclValue(p, l0, r0).clone();
+        auto a =  AstDeclValue::create(p, l0, r0);
         push_declaration(a);
         return a;
     }
@@ -377,7 +377,7 @@ public:
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
         auto e0 = rewrite(e);
-        auto a = AstDeclOperator(p, c0, e0).clone();
+        auto a = AstDeclOperator::create(p, c0, e0);
         push_declaration(a);
         return a;
     }
@@ -393,7 +393,7 @@ public:
         set_identify_state(STATE_IDENTIFY_FIELD);
         auto ff0 = rewrites(ff);
         leave_range();
-        auto a = AstDeclObject(p, c0, vv0, ff0, ee0).clone();
+        auto a = AstDeclObject::create(p, c0, vv0, ff0, ee0);
         push_declaration(a);
         set_identify_state(STATE_IDENTIFY_USE);
         return a;
@@ -408,13 +408,13 @@ public:
         auto dd0 = rewrites(dd);
         leave_range();
         set_namespace(nn0);
-        return AstDeclNamespace(p, nn, dd0).clone();
+        return AstDeclNamespace::create(p, nn, dd0);
     }
 
     AstPtr rewrite_wrapper(const Position& p, const AstPtrs& dd) override {
         auto dd0 = rewrites(dd);
         auto aa = pop_declarations();
-        return AstWrapper(p, aa).clone();
+        return AstWrapper::create(p, aa);
     }
 
 private:

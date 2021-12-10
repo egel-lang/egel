@@ -9,7 +9,7 @@ public:
     }
 
     void visit_directive_import(const Position& p, const icu::UnicodeString& i) override {
-        _imports.push_back(AstDirectImport(p, i).clone());
+        _imports.push_back(AstDirectImport::create(p, i));
     }
 
     // cuts    
@@ -42,7 +42,7 @@ public:
     }
 
     void visit_decl_value(const Position& p, const AstPtr& n, const AstPtr& e) override {
-        _values.push_back(AstDeclValue(p, n, e).clone());
+        _values.push_back(AstDeclValue::create(p, n, e));
     }
 
     // cuts    

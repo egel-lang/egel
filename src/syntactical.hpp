@@ -44,35 +44,35 @@ public:
     // literals
     AstPtr parse_integer() {
         check_token(TOKEN_INTEGER);
-        AstPtr a = AstExprInteger(position(), look().text()).clone();
+        AstPtr a = AstExprInteger::create(position(), look().text());
         skip();
         return a;
     }
 
     AstPtr parse_hexinteger() {
         check_token(TOKEN_HEXINTEGER);
-        AstPtr a = AstExprHexInteger(position(), look().text()).clone();
+        AstPtr a = AstExprHexInteger::create(position(), look().text());
         skip();
         return a;
     }
 
     AstPtr parse_float() {
         check_token(TOKEN_FLOAT);
-        AstPtr a = AstExprFloat(position(), look().text()).clone();
+        AstPtr a = AstExprFloat::create(position(), look().text());
         skip();
         return a;
     }
 
     AstPtr parse_character() {
         check_token(TOKEN_CHAR);
-        AstPtr a = AstExprCharacter(position(), look().text()).clone();
+        AstPtr a = AstExprCharacter::create(position(), look().text());
         skip();
         return a;
     }
 
     AstPtr parse_text() {
         check_token(TOKEN_TEXT);
-        AstPtr a = AstExprText(position(), look().text()).clone();
+        AstPtr a = AstExprText::create(position(), look().text());
         skip();
         return a;
     }
@@ -139,7 +139,7 @@ public:
         Position p = position();
         icu::UnicodeString s = look().text();
         skip();
-        return AstExprVariable(p, s).clone();
+        return AstExprVariable::create(p, s);
     }
 
     AstPtr parse_wildcard() {
@@ -147,7 +147,7 @@ public:
         icu::UnicodeString s = look().text();
         if (s != "_") throw ErrorSyntactical(p, "wildcard expected");
         skip();
-        return AstExprWildcard(p, s).clone();
+        return AstExprWildcard::create(p, s);
     }
 
     AstPtr parse_combinator() {
@@ -162,7 +162,7 @@ public:
         check_token(TOKEN_LOWERCASE);
         icu::UnicodeString n = look().text();
         skip();
-        return AstExprCombinator(p, nn, n).clone();
+        return AstExprCombinator::create(p, nn, n);
     }
 
     AstPtr parse_operator() {
@@ -177,7 +177,7 @@ public:
         check_token(TOKEN_OPERATOR);
         icu::UnicodeString n = look().text();
         skip();
-        return AstExprCombinator(p, nn, n).clone();
+        return AstExprCombinator::create(p, nn, n);
     }
 
     AstPtr parse_prefix_operator() {
@@ -192,7 +192,7 @@ public:
         check_token(TOKEN_OPERATOR);
         icu::UnicodeString n = '!' + look().text();
         skip();
-        return AstExprCombinator(p, nn, n).clone();
+        return AstExprCombinator::create(p, nn, n);
     }
 
     AstPtr parse_enclosed_operator() {
@@ -275,7 +275,7 @@ public:
                 Position p = position();
                 skip();
                 auto c = parse_combinator();
-                return AstExprTag(p, e, c).clone();
+                return AstExprTag::create(p, e, c);
             } else {
                 return e;
             }
@@ -295,7 +295,7 @@ public:
                     AstPtr q = parse_pattern_primary();
                     qq.push_back(q);
                 }
-                return AstExprApplication(p, qq).clone();
+                return AstExprApplication::create(p, qq);
             } else {
                 return q;
             }
@@ -318,7 +318,7 @@ public:
                 qq.push_back(q);
             }
             force_token(TOKEN_RPAREN);
-            return AstExprTuple(p, qq).clone();
+            return AstExprTuple::create(p, qq);
         } else {
             force_token(TOKEN_RPAREN);
             return q;
@@ -331,7 +331,7 @@ public:
         AstPtrs qq = AstPtrs();
         if (tag() == TOKEN_RCURLY) {
             skip();
-            return AstExprList(p, qq).clone();
+            return AstExprList::create(p, qq);
         } else {
             AstPtr q = parse_pattern();
             qq.push_back(q);
@@ -346,7 +346,7 @@ public:
                 q = parse_pattern();
             }
             force_token(TOKEN_RCURLY);
-            return AstExprList(p, qq, q).clone();
+            return AstExprList::create(p, qq, q);
         }
     }
 
@@ -378,18 +378,18 @@ public:
             AstPtr q = parse_expression();
             force_token(TOKEN_ARROW);
             AstPtr e = parse_expression();
-            return AstExprMatch(p, mm, q, e).clone();
+            return AstExprMatch::create(p, mm, q, e);
         } else {
-            AstPtr q = AstEmpty().clone();
+            AstPtr q = AstEmpty::create();
             force_token(TOKEN_ARROW);
             AstPtr e = parse_expression();
-            return AstExprMatch(p, mm, q, e).clone();
+            return AstExprMatch::create(p, mm, q, e);
         }
         */
-        AstPtr q = AstEmpty().clone();
+        AstPtr q = AstEmpty::create();
         force_token(TOKEN_ARROW);
         AstPtr e = parse_expression();
-        return AstExprMatch(p, mm, q, e).clone();
+        return AstExprMatch::create(p, mm, q, e);
     }
 
     AstPtr parse_block() {
@@ -402,7 +402,7 @@ public:
             mm.push_back(m);
         } while (tag() == TOKEN_BAR);
         force_token(TOKEN_RSQUARE);
-        return AstExprBlock(p, mm).clone();
+        return AstExprBlock::create(p, mm);
     }
 
     AstPtr parse_lambda() {
@@ -410,7 +410,7 @@ public:
         AstPtrs mm = AstPtrs();
         force_token(TOKEN_LAMBDA);
         AstPtr m = parse_match();
-        return AstExprLambda(p, m).clone();
+        return AstExprLambda::create(p, m);
     }
 
     AstPtr parse_enclosed() {
@@ -427,7 +427,7 @@ public:
                 qq.push_back(q);
             }
             force_token(TOKEN_RPAREN);
-            return AstExprTuple(p, qq).clone();
+            return AstExprTuple::create(p, qq);
         } else {
             force_token(TOKEN_RPAREN);
             return q;
@@ -440,7 +440,7 @@ public:
         AstPtrs qq = AstPtrs();
         if (tag() == TOKEN_RCURLY) {
             skip();
-            return AstExprList(p, qq).clone();
+            return AstExprList::create(p, qq);
         } else {
             AstPtr q = parse_expression();
             qq.push_back(q);
@@ -455,7 +455,7 @@ public:
                 q = parse_expression();
             }
             force_token(TOKEN_RCURLY);
-            return AstExprList(p, qq, q).clone();
+            return AstExprList::create(p, qq, q);
         }
     }
 
@@ -467,7 +467,7 @@ public:
         AstPtr e1 = parse_expression();
         force_token(TOKEN_ELSE);
         AstPtr e2 = parse_expression();
-        return AstExprIf(p, e0, e1, e2).clone();
+        return AstExprIf::create(p, e0, e1, e2);
     }
 
     AstPtr parse_try() {
@@ -476,14 +476,14 @@ public:
         AstPtr e0 = parse_expression();
         force_token(TOKEN_CATCH);
         AstPtr e1 = parse_expression();
-        return AstExprTry(p, e0, e1).clone();
+        return AstExprTry::create(p, e0, e1);
     }
 
     AstPtr parse_throw() {
         Position p = position();
         force_token(TOKEN_THROW);
         AstPtr e0 = parse_expression();
-        return AstExprThrow(p, e0).clone();
+        return AstExprThrow::create(p, e0);
     }
 
     AstPtr parse_let() {
@@ -494,7 +494,7 @@ public:
         AstPtr e1 = parse_expression();
         force_token(TOKEN_IN);
         AstPtr e2 = parse_expression();
-        return AstExprLet(p, ee, e1, e2).clone();
+        return AstExprLet::create(p, ee, e1, e2);
     }
 
     bool is_primary() {
@@ -593,7 +593,7 @@ public:
                 AstPtr e = parse_primary_prefix();
                 ee.push_back(e);
             }
-            return AstExprApplication(p, ee).clone();
+            return AstExprApplication::create(p, ee);
         } else {
             return e;
         }
@@ -633,7 +633,7 @@ public:
                 rhs = parse_arithmetic_expression_1(rhs, la);
                 la = peek_operator();
             }
-            lhs = AstExprApplication(p, op, lhs, rhs).clone();
+            lhs = AstExprApplication::create(p, op, lhs, rhs);
         }
         return lhs;
     }
@@ -649,7 +649,7 @@ public:
         if (tag() == TOKEN_SEMICOLON) {
             skip();
             AstPtr e1 = parse_expression();
-            return AstExprStatement(p, e0, e1).clone();
+            return AstExprStatement::create(p, e0, e1);
         } else {
             return e0;
         }
@@ -677,7 +677,7 @@ public:
         force_token(TOKEN_COMMA);
         auto e = parse_expression();
         ee.push_back(e);
-        return AstDeclData(p, ee).clone();
+        return AstDeclData::create(p, ee);
     }
 
     AstPtr parse_field_definition() {
@@ -687,13 +687,13 @@ public:
             AstPtr c = parse_combinator();
             force_token(TOKEN_EQ);
             AstPtr e = parse_expression();
-            return AstDeclDefinition(p, c, e).clone();
+            return AstDeclDefinition::create(p, c, e);
             /*
         } else if (is_operator()) {
             AstPtr c = parse_operator();
             force_token(TOKEN_EQ);
             AstPtr e = parse_expression();
-            return AstDeclOperator(p, c, e).clone();
+            return AstDeclOperator::create(p, c, e);
             */
         } else {
             throw ErrorSyntactical(p, "combinator expected in field");
@@ -735,7 +735,7 @@ public:
             e = parse_combinator();
             ee.push_back(e);
         };
-        return AstDeclData(p, ee).clone();
+        return AstDeclData::create(p, ee);
     }
 
     AstPtr parse_decl_definition() {
@@ -745,12 +745,12 @@ public:
             AstPtr c = parse_combinator();
             force_token(TOKEN_EQ);
             AstPtr e = parse_expression();
-            return AstDeclDefinition(p, c, e).clone();
+            return AstDeclDefinition::create(p, c, e);
         } else if (is_operator()) {
             AstPtr c = parse_operator();
             force_token(TOKEN_EQ);
             AstPtr e = parse_expression();
-            return AstDeclOperator(p, c, e).clone();
+            return AstDeclOperator::create(p, c, e);
         } else {
             throw ErrorSyntactical(p, "combinator or operator expected");
         }
@@ -763,7 +763,7 @@ public:
             AstPtr c = parse_combinator();
             force_token(TOKEN_EQ);
             AstPtr e = parse_expression();
-            return AstDeclValue(p, c, e).clone();
+            return AstDeclValue::create(p, c, e);
         } else {
             throw ErrorSyntactical(p, "combinator expected");
         }
@@ -793,7 +793,7 @@ public:
         force_token(TOKEN_LPAREN);
         auto ff = parse_fields();
         force_token(TOKEN_RPAREN);
-        return AstDeclObject(p, c, vv, ff, ee).clone();
+        return AstDeclObject::create(p, c, vv, ff, ee);
     }
 
     AstPtr parse_decl_namespace() {
@@ -807,7 +807,7 @@ public:
             dd.push_back(d);
         }
         force_token(TOKEN_RPAREN);
-        return AstDeclNamespace(p, n, dd).clone();
+        return AstDeclNamespace::create(p, n, dd);
     }
 
     bool is_decl() {
@@ -867,7 +867,7 @@ public:
         Position p = position();
         force_token(TOKEN_USING);
         UnicodeStrings n = parse_namespace();
-        return AstDirectUsing(p, n).clone();
+        return AstDirectUsing::create(p, n);
     }
 
     AstPtr parse_import() {
@@ -876,7 +876,7 @@ public:
         check_token(TOKEN_TEXT);
         icu::UnicodeString n = look().text();
         skip();
-        return AstDirectImport(p, n).clone();
+        return AstDirectImport::create(p, n);
     }
 
     AstPtr parse_directive() {
@@ -912,13 +912,13 @@ public:
             AstPtr d = parse_decl_or_directive();
             dd.push_back(d);
         }
-        return AstWrapper(p, dd).clone();
+        return AstWrapper::create(p, dd);
     }
 
 protected:
     // convenience methods
     AstPtr app(AstPtr e0, AstPtr e1) {
-        return AstExprApplication(e0->position(), e0, e1).clone();
+        return AstExprApplication::create(e0->position(), e0, e1);
     }
 
 private:
@@ -947,7 +947,7 @@ public:
     AstPtr parse_line() {
         Position p = position();
         AstPtrs aa;
-        if (tag() == TOKEN_EOF) return AstWrapper(p, aa).clone();
+        if (tag() == TOKEN_EOF) return AstWrapper::create(p, aa);
         auto a = parse_command();
         aa.push_back(a);
         while (tag() == TOKEN_DSEMICOLON) {
@@ -956,7 +956,7 @@ public:
             aa.push_back(a);
         }
         if (tag() == TOKEN_EOF) {
-            return AstWrapper(p, aa).clone();
+            return AstWrapper::create(p, aa);
         } else {
             auto p = position();
             throw ErrorSyntactical(p, look(0).text() + " unexpected");

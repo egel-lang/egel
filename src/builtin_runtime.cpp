@@ -179,9 +179,9 @@ public:
             auto aa = machine()->create_array();
             auto t = machine()->create_text(s);
             machine()->push_array(cons);
-            aa.push_back(VMObjectText(s).clone());
+            aa.push_back(VMObjectText(s));
             aa.push_back(ss);
-            aa = VMObjectArray(tt).clone();
+            aa = VMObjectArray(tt);
        };
        return aa;
     }
@@ -197,7 +197,7 @@ public:
             auto s = machine()->get_text(arg0);
             auto o = machine()->get_data_string(s);
 
-            return VMObjectText("stub").clone();
+            return VMObjectText::create("stub");
         } else {
             THROW_BADARGS;
         }
@@ -212,7 +212,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
-	    auto c = VMObjectData(machine(), s).clone();
+	    auto c = VMObjectData::create(machine(), s);
             machine()->define_data(c);
             return c;
         } else {
@@ -231,7 +231,7 @@ public:
             auto s = machine()->get_text(arg0);
             auto o = machine()->get_data_string(s);
 
-            return VMObjectText("stub").clone();
+            return VMObjectText::create("stub");
         } else {
             THROW_BADARGS;
         }
@@ -242,19 +242,19 @@ public:
 std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(Dis(vm).clone());
-    oo.push_back(Asm(vm).clone());
+    oo.push_back(Dis::create(vm));
+    oo.push_back(Asm::create(vm));
 
-    oo.push_back(Serialize(vm).clone());
-    oo.push_back(Deserialize(vm).clone());
+    oo.push_back(Serialize::create(vm));
+    oo.push_back(Deserialize::create(vm));
 
-    oo.push_back(Modules(vm).clone());
-    oo.push_back(IsModule(vm).clone());
-    oo.push_back(QueryModuleName(vm).clone());
-    oo.push_back(QueryModulePath(vm).clone());
-    oo.push_back(QueryModuleImports(vm).clone());
-    oo.push_back(QueryModuleExports(vm).clone());
-    oo.push_back(QueryModuleValues(vm).clone());
+    oo.push_back(Modules::create(vm));
+    oo.push_back(IsModule::create(vm));
+    oo.push_back(QueryModuleName::create(vm));
+    oo.push_back(QueryModulePath::create(vm));
+    oo.push_back(QueryModuleImports::create(vm));
+    oo.push_back(QueryModuleExports::create(vm));
+    oo.push_back(QueryModuleValues::create(vm));
 
     return oo;
 }

@@ -42,8 +42,8 @@ public:
         // delete _pattern; 
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new Regex(*this));
+    static VMObjectPtr create(VM* vm, icu::RegexPattern* p) {
+        return VMObjectPtr(new Regex(vm, p));
     }
 
     int compare(const VMObjectPtr& o) override {
@@ -121,7 +121,7 @@ public:
             if (U_FAILURE(error_code)) {
                 THROW_INVALID;
             } else {
-                return Regex(this->machine(), p).clone();
+                return Regex::create(this->machine(), p);
             }
         } else {
             THROW_BADARGS;
@@ -299,7 +299,7 @@ public:
             if (U_FAILURE(error_code)) {
                 THROW_INVALID;
             } else {
-                return VMObjectText(s2).clone();
+                return VMObjectText::create(s2);
             }
         } else {
             THROW_BADARGS;
@@ -328,7 +328,7 @@ public:
             if (U_FAILURE(error_code)) {
                 THROW_INVALID;
             } else {
-                return VMObjectText(s2).clone();
+                return VMObjectText::create(s2);
             }
         } else {
             THROW_BADARGS;
@@ -377,15 +377,15 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(Compile(vm).clone());
-    oo.push_back(Match(vm).clone());
-    oo.push_back(LookAt(vm).clone());
-    oo.push_back(LookMatch(vm).clone());
-    oo.push_back(Split(vm).clone());
-    oo.push_back(Matches(vm).clone());
-    oo.push_back(Replace(vm).clone());
-    oo.push_back(ReplaceAll(vm).clone());
-    oo.push_back(Group(vm).clone());
+    oo.push_back(Compile::create(vm));
+    oo.push_back(Match::create(vm));
+    oo.push_back(LookAt::create(vm));
+    oo.push_back(LookMatch::create(vm));
+    oo.push_back(Split::create(vm));
+    oo.push_back(Matches::create(vm));
+    oo.push_back(Replace::create(vm));
+    oo.push_back(ReplaceAll::create(vm));
+    oo.push_back(Group::create(vm));
 
     return oo;
 

@@ -63,8 +63,8 @@ public:
     virtual ~Namespace() { // keep the compiler happy
     }
 
-    NamespacePtr clone() {
-        return NamespacePtr(new Namespace(*this));
+    static NamespacePtr create() {
+        return NamespacePtr(new Namespace());
     }
 
     NamespacePtr create_namespace(const icu::UnicodeString& n) {

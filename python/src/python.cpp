@@ -200,7 +200,7 @@ public:
         _value = m._value;
     }
 
-    VMObjectPtr clone() const override {
+    VMObjectPtr create() const override {
         return VMObjectPtr(new PythonMachine(*this)); // XXX: closes and creates?
     }
 
@@ -255,12 +255,12 @@ public:
     PythonObject(VM* vm, const PyObject* o): Opaque(VM_SUB_PYTHON_OBJECT, vm, "Python", "object"), _value(o) {
     }
 
-    VMObjectPtr clone() const override {
+    VMObjectPtr create() const override {
         return VMObjectPtr(new PythonObject(*this));
     }
 
     static VMObjectPtr create(VM* vm, PyObject* o) {
-        return PythonObject(vm, o).clone();
+        return PythonObject::create(vm, o);
     }
 
     static VMObjectPtr create(VM* vm, const PyObject* o) {
@@ -310,7 +310,7 @@ public:
     // XXX: TODO: add extra initialization options once
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_none(arg0)) {
-            auto m = PythonMachine(machine()).clone();
+            auto m = PythonMachine::create(machine());
             PYTHON_MACHINE_CAST(m)->run();
             return m;
         } else {
@@ -510,7 +510,7 @@ public:
             auto attr = PyObject_GetAttrString(mod, cc);
             delete cc;
             if (attr) {
-                return PythonObject(machine(), attr).clone();
+                return PythonObject::create(machine(), attr);
             } else {
                 throw create_text("no attribute: " + s);
             }
@@ -1080,7 +1080,7 @@ public:
                     throw create_text("cannot add module: " + m0);
                 }
             }
-            auto m = PythonObject(machine(), mod).clone();
+            auto m = PythonObject::create(machine(), mod);
             Py_XDECREF(mod);
             return m;
         } else {
@@ -1110,7 +1110,7 @@ public:
                     throw create_text("cannot open module: " + fn0);
                 }
             }
-            auto m = PythonObject(machine(), mod).clone();
+            auto m = PythonObject::create(machine(), mod);
             Py_XDECREF(mod);
             return m;
         } else {
@@ -1151,51 +1151,51 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(PythonMachine(vm).clone());
-    oo.push_back(PythonRun(vm).clone());
+    oo.push_back(PythonMachine::create(vm));
+    oo.push_back(PythonRun::create(vm));
 
-    oo.push_back(PythonObject(vm).clone());
-    oo.push_back(PythonToObject(vm).clone());
-    oo.push_back(PythonFromObject(vm).clone());
+    oo.push_back(PythonObject::create(vm));
+    oo.push_back(PythonToObject::create(vm));
+    oo.push_back(PythonFromObject::create(vm));
 
-    oo.push_back(PythonIsNone(vm).clone());
-    oo.push_back(PythonIsFalse(vm).clone());
-    oo.push_back(PythonIsTrue(vm).clone());
-    oo.push_back(PythonIsInteger(vm).clone());
-    oo.push_back(PythonIsFloat(vm).clone());
-    oo.push_back(PythonIsText(vm).clone());
-    oo.push_back(PythonFromInteger(vm).clone());
-    oo.push_back(PythonFromFloat(vm).clone());
-    oo.push_back(PythonFromText(vm).clone());
+    oo.push_back(PythonIsNone::create(vm));
+    oo.push_back(PythonIsFalse::create(vm));
+    oo.push_back(PythonIsTrue::create(vm));
+    oo.push_back(PythonIsInteger::create(vm));
+    oo.push_back(PythonIsFloat::create(vm));
+    oo.push_back(PythonIsText::create(vm));
+    oo.push_back(PythonFromInteger::create(vm));
+    oo.push_back(PythonFromFloat::create(vm));
+    oo.push_back(PythonFromText::create(vm));
 
-    oo.push_back(PythonIsTuple(vm).clone());
-    oo.push_back(PythonToTuple(vm).clone());
-    oo.push_back(PythonFromTuple(vm).clone());
-    oo.push_back(PythonIsList(vm).clone());
-    oo.push_back(PythonToList(vm).clone());
-    oo.push_back(PythonFromList(vm).clone());
-    oo.push_back(PythonIsSet(vm).clone());
-    oo.push_back(PythonToSet(vm).clone());
-    oo.push_back(PythonFromSet(vm).clone());
-    oo.push_back(PythonIsDictionary(vm).clone());
-    oo.push_back(PythonToDictionary(vm).clone());
-    oo.push_back(PythonFromDictionary(vm).clone());
+    oo.push_back(PythonIsTuple::create(vm));
+    oo.push_back(PythonToTuple::create(vm));
+    oo.push_back(PythonFromTuple::create(vm));
+    oo.push_back(PythonIsList::create(vm));
+    oo.push_back(PythonToList::create(vm));
+    oo.push_back(PythonFromList::create(vm));
+    oo.push_back(PythonIsSet::create(vm));
+    oo.push_back(PythonToSet::create(vm));
+    oo.push_back(PythonFromSet::create(vm));
+    oo.push_back(PythonIsDictionary::create(vm));
+    oo.push_back(PythonToDictionary::create(vm));
+    oo.push_back(PythonFromDictionary::create(vm));
 
-    oo.push_back(PythonDirectory(vm).clone());
-    oo.push_back(PythonGetAttribute(vm).clone());
-    oo.push_back(PythonSetAttribute(vm).clone());
-    oo.push_back(PythonGetItem(vm).clone());
-    oo.push_back(PythonSetItem(vm).clone());
+    oo.push_back(PythonDirectory::create(vm));
+    oo.push_back(PythonGetAttribute::create(vm));
+    oo.push_back(PythonSetAttribute::create(vm));
+    oo.push_back(PythonGetItem::create(vm));
+    oo.push_back(PythonSetItem::create(vm));
 
-    oo.push_back(PythonEval(vm).clone());
-    oo.push_back(PythonEvalFile(vm).clone());
+    oo.push_back(PythonEval::create(vm));
+    oo.push_back(PythonEvalFile::create(vm));
 
-    oo.push_back(PythonIsCallable(vm).clone());
-    oo.push_back(PythonApply(vm).clone());
-    oo.push_back(PythonCall(vm).clone());
-    oo.push_back(PythonFunction(vm).clone());
-    oo.push_back(PythonModuleAdd(vm).clone());
-    oo.push_back(PythonModuleImport(vm).clone());
+    oo.push_back(PythonIsCallable::create(vm));
+    oo.push_back(PythonApply::create(vm));
+    oo.push_back(PythonCall::create(vm));
+    oo.push_back(PythonFunction::create(vm));
+    oo.push_back(PythonModuleAdd::create(vm));
+    oo.push_back(PythonModuleImport::create(vm));
 
     return oo;
 }

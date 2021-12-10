@@ -21,10 +21,6 @@ public:
     Dictionary(const Dictionary& d): Dictionary(d.machine(), d.value()) {
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new Dictionary(*this));
-    }
-
     static VMObjectPtr create(VM* m, const dict_t& d) {
         return VMObjectPtr(new Dictionary(m, d));
     }
@@ -153,12 +149,11 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(Dictionary(vm).clone());
-    oo.push_back(Dict(vm).clone());
-    oo.push_back(DictHas(vm).clone());
-    oo.push_back(DictGet(vm).clone());
-    oo.push_back(DictSet(vm).clone());
-    oo.push_back(DictKeys(vm).clone());
+    oo.push_back(Dict::create(vm));
+    oo.push_back(DictHas::create(vm));
+    oo.push_back(DictGet::create(vm));
+    oo.push_back(DictSet::create(vm));
+    oo.push_back(DictKeys::create(vm));
 
     return oo;
 }

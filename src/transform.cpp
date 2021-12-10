@@ -43,23 +43,23 @@ public:
     AstPtr rewrite_expr_match(const Position& p, const AstPtrs& mm, const AstPtr& g, const AstPtr& e) override {
         for (auto m:mm) {
             if (occurs(_source, m)) {
-                return AstExprMatch(p, mm, g, e).clone();
+                return AstExprMatch::create(p, mm, g, e);
             }
         }
         auto g0 = rewrite(g);
         auto e0 = rewrite(e);
-        return AstExprMatch(p, mm, g0, e0).clone();
+        return AstExprMatch::create(p, mm, g0, e0);
     }
 
     AstPtr rewrite_expr_let(const Position& p, const AstPtrs& lhs, const AstPtr& rhs, const AstPtr& body) override {
         for (auto m:lhs) {
             if (occurs(_source, m)) {
-                return AstExprLet(p, lhs, rhs, body).clone();
+                return AstExprLet::create(p, lhs, rhs, body);
             }
         }
         auto rhs0 = rewrite(rhs);
         auto body0 = rewrite(body);
-        return AstExprLet(p, lhs, rhs0, body0).clone();
+        return AstExprLet::create(p, lhs, rhs0, body0);
     }
 
     AstPtr rewrite(const AstPtr& a) override {
@@ -112,10 +112,10 @@ public:
     void visit_expr_variable(const Position& p, const icu::UnicodeString& n) override {
         switch (get_state()) {
         case FREEVARS_INSERT:
-            insert(AstExprVariable(p, n).clone());
+            insert(AstExprVariable::create(p, n));
             break;
         case FREEVARS_REMOVE:
-            remove(AstExprVariable(p, n).clone());
+            remove(AstExprVariable::create(p, n));
             break;
         }
     }

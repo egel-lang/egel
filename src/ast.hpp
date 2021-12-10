@@ -77,8 +77,6 @@ public:
         return _tag;
     }
 
-    virtual AstPtr clone() const = 0;
-
     friend std::ostream& operator<<(std::ostream& os, const AstPtr& a) {
         a->render(os, 0);
         return os;
@@ -141,8 +139,8 @@ public:
     AstEmpty(const AstEmpty&): AstEmpty() {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstEmpty(*this));
+    static AstPtr create() {
+        return AstPtr(new AstEmpty());
     }
 
     uint_t approximate_length(uint_t indent) const {
@@ -193,8 +191,8 @@ public:
         : AstExprInteger(l.position(), l.text()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprInteger(*this));
+    static AstPtr create(const Position& p, const icu::UnicodeString &text) {
+        return AstPtr(new AstExprInteger(p, text));
     }
 
 };
@@ -217,8 +215,8 @@ public:
         : AstExprHexInteger(l.position(), l.text()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprHexInteger(*this));
+    static AstPtr create(const Position& p, const icu::UnicodeString& hex) {
+        return AstPtr(new AstExprHexInteger(p, hex));
     }
 
 };
@@ -241,8 +239,8 @@ public:
         : AstExprFloat(l.position(), l.text()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprFloat(*this));
+    static AstPtr create(const Position& p, const icu::UnicodeString& text) {
+        return AstPtr(new AstExprFloat(p, text));
     }
 
 };
@@ -265,8 +263,8 @@ public:
         : AstExprCharacter(l.position(), l.text()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprCharacter(*this));
+    static AstPtr create(const Position& p, const icu::UnicodeString& text) {
+        return AstPtr(new AstExprCharacter(p, text));
     }
 
 };
@@ -289,8 +287,8 @@ public:
         : AstExprText(l.position(), l.text()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprText(*this));
+    static AstPtr create(const Position& p, const icu::UnicodeString& text) {
+        return AstPtr(new AstExprText(p, text));
     }
 
 };
@@ -315,8 +313,8 @@ public:
         : AstExprVariable(l.position(), l.text()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprVariable(*this));
+    static AstPtr create(const Position& p, const icu::UnicodeString& text) {
+        return AstPtr(new AstExprVariable(p, text));
     }
 
 };
@@ -338,8 +336,8 @@ public:
         : AstExprWildcard(l.position(), l.text()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprWildcard(*this));
+    static AstPtr create(const Position& p, const icu::UnicodeString& text) {
+        return AstPtr(new AstExprWildcard(p, text));
     }
 
 };
@@ -361,8 +359,8 @@ public:
         : AstExprTag(a.position(), a.expression(), a.tag()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprTag(*this));
+    static AstPtr create(const Position& p, const AstPtr& e, const AstPtr& t) {
+        return AstPtr(new AstExprTag(p, e, t));
     }
 
     AstPtr expression() const {
@@ -412,6 +410,12 @@ typedef std::shared_ptr<AstExprTag> AstExprTagPtr;
 
 class AstExprCombinator : public Ast {
 public:
+    AstExprCombinator(const Position &p,  const icu::UnicodeString &c)
+        : Ast(AST_EXPR_COMBINATOR, p), _combinator(c) {
+            UnicodeStrings nn;
+            _path = nn;
+    };
+
     AstExprCombinator(const Position &p,  const UnicodeStrings& pp, const icu::UnicodeString &c)
         : Ast(AST_EXPR_COMBINATOR, p), _path(pp), _combinator(c) {
     };
@@ -423,18 +427,20 @@ public:
             _path = nn;
     };
 
-    AstExprCombinator(const Position &p,  const icu::UnicodeString &c)
-        : Ast(AST_EXPR_COMBINATOR, p), _combinator(c) {
-            UnicodeStrings nn;
-            _path = nn;
-    };
-
     AstExprCombinator(const AstExprCombinator& c)
         : AstExprCombinator(c.position(), c.path(), c.combinator()) {
     }
 
-    AstPtr clone() const override {
-        return AstPtr(new AstExprCombinator(*this));
+    static AstPtr create(const Position &p, const icu::UnicodeString &c) {
+        return AstPtr(new AstExprCombinator(p, c));
+    }
+
+    static AstPtr create(const Position &p,  const UnicodeStrings& pp, const icu::UnicodeString &c) {
+        return AstPtr(new AstExprCombinator(p, pp, c));
+    }
+
+    static AstPtr create(const Position &p,  const icu::UnicodeString& n, const icu::UnicodeString &c) {
+        return AstPtr(new AstExprCombinator(p, n, c));
     }
 
     UnicodeStrings path() const {
@@ -502,8 +508,12 @@ public:
         : AstExprOperator(c.position(), c.path(), c.combinator()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprOperator(*this));
+    static AstPtr create(const Position &p,  const UnicodeStrings& pp, const icu::UnicodeString &c) {
+        return AstPtr(new AstExprOperator(p, pp, c));
+    }
+
+    static AstPtr create(const Position &p,  const icu::UnicodeString& n, const icu::UnicodeString &c) {
+        return AstPtr(new AstExprOperator(p, n, c));
     }
 
     UnicodeStrings path() const {
@@ -568,9 +578,14 @@ public:
         : AstExprList(c.position(), c.content(), c.tail()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprList(*this));
+    static AstPtr create(const Position &p, const AstPtrs& c) {
+        return AstPtr(new AstExprList(p, c));
     }
+
+    static AstPtr create(const Position &p, const AstPtrs& c, const AstPtr& tl) {
+        return AstPtr(new AstExprList(p, c, tl));
+    }
+
 
     AstPtrs content() const {
         return _content;
@@ -656,8 +671,8 @@ public:
         : AstExprTuple(c.position(), c.content()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprTuple(*this));
+    static AstPtr create(const Position &p, const AstPtrs& c) {
+        return AstPtr(new AstExprTuple(p, c));
     }
 
     AstPtrs content() const {
@@ -752,8 +767,16 @@ public:
         : AstExprApplication(a.position(), a.arguments()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprApplication(*this));
+    static AstPtr create(const Position &p, const AstPtrs &aa) {
+        return AstPtr(new AstExprApplication(p, aa));
+    }
+
+    static AstPtr create(const Position &p, const AstPtr &l, const AstPtr &r) {
+        return AstPtr(new AstExprApplication(p, l, r));
+    }
+
+    static AstPtr create(const Position &p, const AstPtr &op, const AstPtr &e0, const AstPtr& e1) {
+        return AstPtr(new AstExprApplication(p, op, e0, e1));
     }
 
     AstPtrs arguments() const {
@@ -823,8 +846,8 @@ public:
         : AstExprMatch(c.position(), c.patterns(), c.guard(), c.result()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprMatch(*this));
+    static AstPtr create(const Position &p, const AstPtrs& pp, const AstPtr& g, const AstPtr& r) {
+        return AstPtr(new AstExprMatch(p, pp, g, r));
     }
 
     AstPtrs patterns() const {
@@ -929,8 +952,12 @@ public:
         : AstExprBlock(c.position(), c.matches()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprBlock(*this));
+    static AstPtr create(const Position &p, const AstPtr& m) {
+        return AstPtr(new AstExprBlock(p, m));
+    }
+
+    static AstPtr create(const Position &p, const AstPtrs& mm) {
+        return AstPtr(new AstExprBlock(p, mm));
     }
 
     AstPtrs matches() const {
@@ -1009,8 +1036,8 @@ public:
         : AstExprLambda(c.position(), c.match()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprLambda(*this));
+    static AstPtr create(const Position &p, const AstPtr& m) {
+        return AstPtr(new AstExprLambda(p, m));
     }
 
     AstPtr match() const {
@@ -1052,8 +1079,8 @@ public:
         : AstExprLet(a.position(), a.left_hand_side(), a.right_hand_side(), a.expression()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprLet(*this));
+    static AstPtr create(const Position &p, const AstPtrs &ee, const AstPtr &e1, const AstPtr e2) {
+        return AstPtr(new AstExprLet(p, ee, e1, e2));
     }
 
     AstPtrs left_hand_side() const {
@@ -1133,8 +1160,8 @@ public:
         : AstExprTry(a.position(), a.try0(), a.catch0()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprTry(*this));
+    static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1) {
+        return AstPtr(new AstExprTry(p, e0, e1));
     }
 
     AstPtr try0() const {
@@ -1201,8 +1228,8 @@ public:
         : AstExprThrow(a.position(), a.throw0()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprThrow(*this));
+    static AstPtr create(const Position &p, const AstPtr &e0) {
+        return AstPtr(new AstExprThrow(p, e0));
     }
 
     AstPtr throw0() const {
@@ -1251,8 +1278,8 @@ public:
         : AstExprIf(a.position(), a.if0(), a.then0(), a.else0()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprIf(*this));
+    static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1, const AstPtr& e2) {
+        return AstPtr(new AstExprIf(p, e0, e1, e2));
     }
 
     AstPtr if0() const {
@@ -1329,8 +1356,8 @@ public:
         : AstExprStatement(a.position(), a.lhs(), a.rhs()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstExprStatement(*this));
+    static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1) {
+        return AstPtr(new AstExprStatement(p, e0, e1));
     }
 
     AstPtr lhs() const {
@@ -1389,8 +1416,8 @@ public:
         : AstDeclNamespace(c.position(), c.name(), c.content()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDeclNamespace(*this));
+    static AstPtr create(const Position &p, const UnicodeStrings& name, const AstPtrs& c) {
+        return AstPtr(new AstDeclNamespace(p, name, c));
     }
 
     UnicodeStrings name() const {
@@ -1446,8 +1473,8 @@ public:
         : AstDeclData(a.position(), a.names()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDeclData(*this));
+    static AstPtr create(const Position &p, const AstPtrs& nn) {
+        return AstPtr(new AstDeclData(p, nn));
     }
     
     AstPtrs names() const {
@@ -1518,8 +1545,8 @@ public:
         : AstDeclDefinition(a.position(), a.name(), a.expression()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDeclDefinition(*this));
+    static AstPtr create(const Position &p, const AstPtr& n, const AstPtr& e) {
+        return AstPtr(new AstDeclDefinition(p, n, e));
     }
     
     AstPtr name() const {
@@ -1580,8 +1607,8 @@ public:
         : AstDeclValue(a.position(), a.name(), a.expression()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDeclValue(*this));
+    static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1) {
+        return AstPtr(new AstDeclValue(p, e1, e1));
     }
 
     AstPtr name() const {
@@ -1642,8 +1669,8 @@ public:
         : AstDeclOperator(a.position(), a.combinator(), a.expression()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDeclOperator(*this));
+    static AstPtr create(const Position &p, const AstPtr& c, const AstPtr& e) {
+        return AstPtr(new AstDeclOperator(p, c, e));
     }
     
     AstPtr combinator() const {
@@ -1706,8 +1733,8 @@ public:
         : AstDeclObject(a.position(), a.name(), a.variables(), a.fields(), a.extends()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDeclObject(*this));
+    static AstPtr create(const Position &p, const AstPtr& n, const AstPtrs& vv, const AstPtrs& ff, const AstPtrs& ee) {
+        return AstPtr(new AstDeclObject(p, n, vv, ff, ee));
     }
     
     AstPtr name() const {
@@ -1787,8 +1814,8 @@ public:
         : AstDirectImport(c.position(), c.import()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDirectImport(*this));
+    static AstPtr create(const Position &p,  const icu::UnicodeString &v) {
+        return AstPtr(new AstDirectImport(p, v));
     }
 
     icu::UnicodeString import() const {
@@ -1828,8 +1855,8 @@ public:
         : AstDirectUsing(c.position(), c.using0()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstDirectUsing(*this));
+    static AstPtr create(const Position &p,  const UnicodeStrings &v) {
+        return AstPtr(new AstDirectUsing(p, v));
     }
 
     UnicodeStrings using0() const {
@@ -1877,8 +1904,8 @@ public:
         : AstWrapper(c.position(), c.content()) {
     }
 
-    AstPtr clone() const {
-        return AstPtr(new AstWrapper(*this));
+    static AstPtr create(const Position &p, const AstPtrs& c) {
+        return AstPtr(new AstWrapper(p, c));
     }
 
     AstPtrs content() const {

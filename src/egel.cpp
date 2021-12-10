@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
     };
 
     // options
-    OptionsPtr oo = Options().clone();
+    OptionsPtr oo = Options::create();
 
 
     // check for include paths
@@ -238,7 +238,7 @@ int main(int argc, char *argv[]) {
     };
 
     // create a machine
-    VMPtr m = Machine().clone();
+    VMPtr m = Machine::create();
 
     // initialize (rebinding exceptions need to be caught)
     try {

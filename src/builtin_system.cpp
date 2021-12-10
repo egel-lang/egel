@@ -79,11 +79,11 @@ public:
             if (mul_overflow((vm_int_t) -1, i, &res)) {
                 THROW_OVERFLOW;
             } else {
-                return VMObjectInteger(res).clone();
+                return VMObjectInteger::create(res);
             }
         } else if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return VMObjectFloat(-f).clone();
+            return VMObjectFloat::create(-f);
         } else {
             THROW_BADARGS;
         }
@@ -104,18 +104,18 @@ public:
             if (add_overflow(i0, i1, &res)) {
                 THROW_OVERFLOW;
             } else {
-                return VMObjectInteger(res).clone();
+                return VMObjectInteger::create(res);
             }
         } else if ( (machine()->is_float(arg0)) &&
              (machine()->is_float(arg1)) ) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
-            return VMObjectFloat(f0+f1).clone();
+            return VMObjectFloat::create(f0+f1);
         } else if ( (machine()->is_text(arg0)) &&
              (machine()->is_text(arg1)) ) {
             auto f0 = machine()->get_text(arg0);
             auto f1 = machine()->get_text(arg1);
-            return VMObjectText(f0+f1).clone();
+            return VMObjectText::create(f0+f1);
         } else {
             THROW_BADARGS;
         }
@@ -135,15 +135,15 @@ public:
             vm_int_t res;
             if (sub_overflow(i0, i1, &res)) {
                 THROW_OVERFLOW;
-                throw VMObjectInteger(res).clone();
+                throw VMObjectInteger::create(res);
             } else {
-                return VMObjectInteger(res).clone();
+                return VMObjectInteger::create(res);
             }
         } else if ( (machine()->is_float(arg0)) &&
              (machine()->is_float(arg1)) ) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
-            return VMObjectFloat(f0-f1).clone();
+            return VMObjectFloat::create(f0-f1);
         } else {
             THROW_BADARGS;
         }
@@ -164,13 +164,13 @@ public:
             if (mul_overflow(i0, i1, &res)) {
                 THROW_OVERFLOW;
             } else {
-                return VMObjectInteger(res).clone();
+                return VMObjectInteger::create(res);
             }
         } else if ( (machine()->is_float(arg0)) &&
              (machine()->is_float(arg1)) ) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
-            return VMObjectFloat(f0*f1).clone();
+            return VMObjectFloat::create(f0*f1);
         } else {
             THROW_BADARGS;
         }
@@ -190,7 +190,7 @@ public:
             if (i1 == 0) {
                 THROW_DIVZERO;
             }
-            return VMObjectInteger(i0/i1).clone();
+            return VMObjectInteger::create(i0/i1);
         } else if ( (machine()->is_float(arg0)) &&
              (machine()->is_float(arg1)) ) {
             auto f0 = machine()->get_float(arg0);
@@ -198,7 +198,7 @@ public:
             if (f1 == 0.0) {
                 THROW_DIVZERO;
             }
-            return VMObjectFloat(f0/f1).clone();
+            return VMObjectFloat::create(f0/f1);
         } else {
             THROW_BADARGS;
         }
@@ -218,7 +218,7 @@ public:
             if (i1 == 0) {
                 THROW_DIVZERO;
             }
-            return VMObjectInteger(i0%i1).clone();
+            return VMObjectInteger::create(i0%i1);
         } else {
             THROW_BADARGS;
         }
@@ -235,7 +235,7 @@ public:
              (machine()->is_integer(arg1)) ) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger(i0&i1).clone();
+            return VMObjectInteger::create(i0&i1);
         } else {
             THROW_BADARGS;
         }
@@ -252,7 +252,7 @@ public:
              (machine()->is_integer(arg1)) ) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger(i0|i1).clone();
+            return VMObjectInteger::create(i0|i1);
         } else {
             THROW_BADARGS;
         }
@@ -269,7 +269,7 @@ public:
              (machine()->is_integer(arg1)) ) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger(i0^i1).clone();
+            return VMObjectInteger::create(i0^i1);
         } else {
             THROW_BADARGS;
         }
@@ -284,7 +284,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if ( (machine()->is_integer(arg0)) ) {
             auto i0 = machine()->get_integer(arg0);
-            return VMObjectInteger(~i0).clone();
+            return VMObjectInteger::create(~i0);
         } else {
             THROW_BADARGS;
         }
@@ -301,7 +301,7 @@ public:
              (machine()->is_integer(arg1)) ) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger(i0<<i1).clone();
+            return VMObjectInteger::create(i0<<i1);
         } else {
             THROW_BADARGS;
         }
@@ -318,7 +318,7 @@ public:
              (machine()->is_integer(arg1)) ) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger(i0>>i1).clone();
+            return VMObjectInteger::create(i0>>i1);
         } else {
             THROW_BADARGS;
         }
@@ -586,8 +586,8 @@ public:
         _ref = ref.get_ref();
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new Reference(*this));
+    static VMObjectPtr create(VM* vm, const VMObjectPtr& ref) {
+        return VMObjectPtr(new Reference(vm, ref));
     }
 
     int compare(const VMObjectPtr& o) override {
@@ -613,7 +613,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto vm = machine();
-        auto r = Reference(vm, arg0).clone();
+        auto r = Reference::create(vm, arg0);
         return r;
     }
 };
@@ -703,7 +703,7 @@ public:
             a = aa[2];
         }
 
-        return VMObjectText(ss).clone();
+        return VMObjectText::create(ss);
     }
 };
 
@@ -716,7 +716,7 @@ public:
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             if (i < application_argc) {
-                return VMObjectText(application_argv[i]).clone();
+                return VMObjectText::create(application_argv[i]);
             } else {
                 auto none = machine()->create_none();
                 return none;
@@ -739,7 +739,7 @@ public:
             char* r = std::getenv(s);
             delete s;
             if (r != nullptr) {
-                return VMObjectText(r).clone(); // NOTE: don't call delete on r
+                return VMObjectText::create(r); // NOTE: don't call delete on r
             } else {
                 auto none = machine()->create_none();
                 return none;
@@ -885,7 +885,7 @@ public:
                 auto u = icu::UnicodeString(r.c_str());
                 delete fmt;
 
-                return VMObjectText(u).clone();
+                return VMObjectText::create(u);
             } else {
                 THROW_INVALID;
             }
@@ -898,76 +898,77 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     // throw combinator
-    oo.push_back(VMThrow(vm).clone());
+    oo.push_back(VMThrow::create(vm));
 
     // K, Id combinators
-    oo.push_back(K(vm).clone());
-    oo.push_back(Id(vm).clone());
+    oo.push_back(K::create(vm));
+    oo.push_back(Id::create(vm));
 
     // basic constants
-    oo.push_back(VMObjectData(vm, "System", "int").clone());
-    oo.push_back(VMObjectData(vm, "System", "float").clone());
-    oo.push_back(VMObjectData(vm, "System", "char").clone());
-    oo.push_back(VMObjectData(vm, "System", "text").clone());
-    oo.push_back(VMObjectData(vm, "System", "nil").clone());
-    oo.push_back(VMObjectData(vm, "System", "cons").clone());
-    oo.push_back(VMObjectData(vm, "System", "none").clone());
-    oo.push_back(VMObjectData(vm, "System", "true").clone());
-    oo.push_back(VMObjectData(vm, "System", "false").clone());
-    oo.push_back(VMObjectData(vm, "System", "tuple").clone());
-    oo.push_back(VMObjectData(vm, "System", "object").clone());
+    oo.push_back(VMObjectData::create(vm, "System", "int"));
+    oo.push_back(VMObjectData::create(vm, "System", "float"));
+    oo.push_back(VMObjectData::create(vm, "System", "char"));
+    oo.push_back(VMObjectData::create(vm, "System", "text"));
+    oo.push_back(VMObjectData::create(vm, "System", "nil"));
+    oo.push_back(VMObjectData::create(vm, "System", "cons"));
+    oo.push_back(VMObjectData::create(vm, "System", "none"));
+    oo.push_back(VMObjectData::create(vm, "System", "true"));
+    oo.push_back(VMObjectData::create(vm, "System", "false"));
+    oo.push_back(VMObjectData::create(vm, "System", "tuple"));
+    oo.push_back(VMObjectData::create(vm, "System", "object"));
 
     // operators
-    oo.push_back(MonMin(vm).clone());
-    oo.push_back(Add(vm).clone());
-    oo.push_back(Min(vm).clone());
-    oo.push_back(Mul(vm).clone());
-    oo.push_back(Div(vm).clone());
-    oo.push_back(Mod(vm).clone());
+    oo.push_back(MonMin::create(vm));
+    oo.push_back(Add::create(vm));
+    oo.push_back(Min::create(vm));
+    oo.push_back(Mul::create(vm));
+    oo.push_back(Div::create(vm));
+    oo.push_back(Mod::create(vm));
 
-    oo.push_back(Less(vm).clone());
-    oo.push_back(LessEq(vm).clone());
-    oo.push_back(Eq(vm).clone());
-    oo.push_back(NegEq(vm).clone());
+    oo.push_back(Less::create(vm));
+    oo.push_back(LessEq::create(vm));
+    oo.push_back(Eq::create(vm));
+    oo.push_back(NegEq::create(vm));
 
-    oo.push_back(BinAnd(vm).clone());
-    oo.push_back(BinOr(vm).clone());
-    oo.push_back(BinXOr(vm).clone());
-    oo.push_back(BinComplement(vm).clone());
-    oo.push_back(BinLeftShift(vm).clone());
-    oo.push_back(BinRightShift(vm).clone());
+    oo.push_back(BinAnd::create(vm));
+    oo.push_back(BinOr::create(vm));
+    oo.push_back(BinXOr::create(vm));
+    oo.push_back(BinComplement::create(vm));
+    oo.push_back(BinLeftShift::create(vm));
+    oo.push_back(BinRightShift::create(vm));
 
-    oo.push_back(Toint(vm).clone());
-    oo.push_back(Tofloat(vm).clone());
-    oo.push_back(Totext(vm).clone());
+    oo.push_back(Toint::create(vm));
+    oo.push_back(Tofloat::create(vm));
+    oo.push_back(Totext::create(vm));
 
     // move to string?
-    oo.push_back(Unpack(vm).clone());
-    oo.push_back(Pack(vm).clone());
+    oo.push_back(Unpack::create(vm));
+    oo.push_back(Pack::create(vm));
 
     // lazy operators
-    oo.push_back(LazyAnd(vm).clone());
-    oo.push_back(LazyOr(vm).clone());
+    oo.push_back(LazyAnd::create(vm));
+    oo.push_back(LazyOr::create(vm));
 
     // system info, override if sandboxed
-    oo.push_back(Arg(vm).clone());
-    oo.push_back(Getenv(vm).clone());
+    oo.push_back(Arg::create(vm));
+    oo.push_back(Getenv::create(vm));
 
     // the builtin print & getline, override if sandboxed
-    oo.push_back(Print(vm).clone());
-    oo.push_back(Getline(vm).clone());
-    oo.push_back(Format(vm).clone());
+    oo.push_back(Print::create(vm));
+    oo.push_back(Getline::create(vm));
+    oo.push_back(Format::create(vm));
 
     // references
-    oo.push_back(Reference(vm).clone());
-    oo.push_back(Ref(vm).clone());
-    oo.push_back(Setref(vm).clone());
-    oo.push_back(Getref(vm).clone());
+    //oo.push_back(Reference::create(vm)); // XXXX
+    oo.push_back(VMObjectStub::create(vm, "System::reference")); // XXXX
+    oo.push_back(Ref::create(vm));
+    oo.push_back(Setref::create(vm));
+    oo.push_back(Getref::create(vm));
 
     // OO fields
-    oo.push_back(GetField(vm).clone());
-    oo.push_back(SetField(vm).clone());
-    oo.push_back(ExtendField(vm).clone());
+    oo.push_back(GetField::create(vm));
+    oo.push_back(SetField::create(vm));
+    oo.push_back(ExtendField::create(vm));
 
     return oo;
 }

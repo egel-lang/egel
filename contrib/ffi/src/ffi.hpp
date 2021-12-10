@@ -122,7 +122,7 @@ public:
     ffi0<R>(const ffi0<R>& o) : ffi0<R>(o.machine(), o.symbol(), o._call) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr create() const {
         return VMObjectPtr(new ffi0<R>(*this));
     }
 
@@ -148,7 +148,7 @@ public:
     ffi1<R, A0>(const ffi1<R, A0>& o) : ffi1<R, A0>(o.machine(), o.symbol(), o._call) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr create() const {
         return VMObjectPtr(new ffi1(*this));
     }
 
@@ -176,7 +176,7 @@ public:
     ffi2<R, A0, A1>(const ffi2<R, A0, A1>& o) : ffi2<R, A0, A1>(o.machine(), o.symbol(), o._call) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr create() const {
         return VMObjectPtr(new ffi2(*this));
     }
 
@@ -206,7 +206,7 @@ public:
     ffi3<R, A0, A1, A2>(const ffi3<R, A0, A1, A2>& o) : ffi3<R, A0, A1, A2>(o.machine(), o.symbol(), o._call) {
     }
 
-    VMObjectPtr clone() const {
+    VMObjectPtr create() const {
         return VMObjectPtr(new ffi3(*this));
     }
 

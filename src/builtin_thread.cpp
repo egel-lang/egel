@@ -29,8 +29,8 @@ public:
         : VMObjectThreadResult(d.machine(), d.symbol(), d._tuple, d._pos) {
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new VMObjectThreadResult(*this));
+    static VMObjectPtr create(VM* m, const symbol_t s, const VMObjectPtr& tuple, int pos) {
+        return VMObjectPtr(new VMObjectThreadResult(m, s, tuple, pos));
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -57,8 +57,8 @@ public:
         : VMObjectThreadException(d.machine(), d.symbol(), d._tuple, d._pos) {
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new VMObjectThreadException(*this));
+    static VMObjectPtr create(VM* vm, const symbol_t s, const VMObjectPtr& tuple, int pos) {
+        return VMObjectPtr(new VMObjectThreadException(vm, s, tuple, pos));
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -92,26 +92,26 @@ public:
         tt.push_back(tuple);
         tt.push_back(nullptr);
         tt.push_back(nullptr);
-        auto result = VMObjectArray(tt).clone();
+        auto result = VMObjectArray::create(tt);
 
         VMObjectPtrs ll;
         ll.push_back(arg0);
         ll.push_back(none);
-        auto left = VMObjectArray(ll).clone();
+        auto left = VMObjectArray::create(ll);
 
         VMObjectPtrs rr;
         rr.push_back(arg1);
         rr.push_back(none);
-        auto right = VMObjectArray(rr).clone();
+        auto right = VMObjectArray::create(rr);
 
         auto vm = machine();
 
         std::thread first (runthread, vm, left, 
-                            VMObjectThreadResult(vm, sym, result, 1).clone(),
-                            VMObjectThreadException(vm, sym, result, 1).clone() );
+                            VMObjectThreadResult::create(vm, sym, result, 1),
+                            VMObjectThreadException::create(vm, sym, result, 1) );
         std::thread second (runthread, vm, right, 
-                            VMObjectThreadResult(vm, sym, result, 2).clone(),
-                            VMObjectThreadException(vm, sym, result, 2).clone() );
+                            VMObjectThreadResult::create(vm, sym, result, 2),
+                            VMObjectThreadException::create(vm, sym, result, 2) );
 
         first.join();
         second.join();
@@ -123,8 +123,8 @@ public:
 std::vector<VMObjectPtr> builtin_thread(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectData(vm, "System", "thread").clone());
-    oo.push_back(Par(vm).clone());
+    oo.push_back(VMObjectData::create(vm, "System", "thread"));
+    oo.push_back(Par::create(vm));
 
     return oo;
 

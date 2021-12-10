@@ -93,8 +93,6 @@ public:
     virtual ~Module() { // keep the compiler happy
     }
 
-    virtual ModulePtr clone() const = 0;
-
     void set_options(const OptionsPtr& o) {
         _options = o;
     }
@@ -177,8 +175,8 @@ public:
     ~VMModule() {
     }
 
-    VMObjectPtr clone() const override {
-        return VMObjectPtr(new VMModule(*this));
+    static VMObjectPtr create(VM* vm, ModulePtr p) {
+        return VMObjectPtr(new VMModule(vm, p));
     }
 
     ModulePtr value() const {
@@ -265,8 +263,8 @@ public:
             _handle(m._handle), _imports(m._imports), _exports(m._exports) {
     }
 
-    ModulePtr clone() const override {
-        return ModulePtr(new ModuleInternal(*this));
+    static ModulePtr create(const icu::UnicodeString& fn, VM* m, const exports_t handle) {
+        return ModulePtr(new ModuleInternal(fn, m, handle));
     }
 
     void load() override {
@@ -343,8 +341,8 @@ public:
         set_options(m.get_options());
     }
 
-    ModulePtr clone() const override {
-        return ModulePtr(new ModuleDynamic(*this));
+    static ModulePtr create(const icu::UnicodeString& p, const icu::UnicodeString& fn, VM* m) {
+        return ModulePtr(new ModuleDynamic(p, fn, m));
     }
 
     void load() override {
@@ -457,8 +455,8 @@ public:
         set_options(m.get_options());
     }
 
-    ModulePtr clone() const override {
-        return ModulePtr(new ModuleSource(*this));
+    static ModulePtr create(const icu::UnicodeString& path, const icu::UnicodeString& fn, VM* m) {
+        return ModulePtr(new ModuleSource(path, fn, m));
     }
 
     void load() override {
@@ -595,23 +593,23 @@ public:
         _modules(mm._modules), _loading(mm._loading) {
     }
 
-    ModuleManagerPtr clone() {
-        return ModuleManagerPtr(new ModuleManager(*this));
+    static ModuleManagerPtr create() {
+        return ModuleManagerPtr(new ModuleManager());
     }
 
     void init(const OptionsPtr& oo, VM* vm) {
-        NamespacePtr env = Namespace().clone();
+        NamespacePtr env = Namespace::create();
         set_options(oo);
         set_machine(vm);
         set_environment(env);
         // next code is slightly conceptually dirty, needs a better solution
-        auto sys = ModuleInternal("internal", vm, &builtin_system).clone();
-        auto mth = ModuleInternal("internal", vm, &builtin_math).clone();
-        auto str = ModuleInternal("internal", vm, &builtin_string).clone();
-        auto run = ModuleInternal("internal", vm, &builtin_runtime).clone();
-        auto thd = ModuleInternal("internal", vm, &builtin_thread).clone();
-        auto prc = ModuleInternal("internal", vm, &builtin_process).clone();
-        auto evl = ModuleInternal("internal", vm, &builtin_eval).clone();
+        auto sys = ModuleInternal::create("internal", vm, &builtin_system);
+        auto mth = ModuleInternal::create("internal", vm, &builtin_math);
+        auto str = ModuleInternal::create("internal", vm, &builtin_string);
+        auto run = ModuleInternal::create("internal", vm, &builtin_runtime);
+        auto thd = ModuleInternal::create("internal", vm, &builtin_thread);
+        auto prc = ModuleInternal::create("internal", vm, &builtin_process);
+        auto evl = ModuleInternal::create("internal", vm, &builtin_eval);
         sys->load(); mth->load(); str->load(); run->load(); thd->load(); prc->load(); evl->load();
         _loading.push_back(sys);
         _loading.push_back(mth);
@@ -715,13 +713,13 @@ protected:
             if (!already_loaded(find)) {
                 ModulePtr m = nullptr;
                 if (ModuleSource::filetype(fn)) {
-                    m = ModuleSource(find, fn, _machine).clone();
+                    m = ModuleSource::create(find, fn, _machine);
                 } else if (ModuleDynamic::filetype(fn)) {
-                    m = ModuleDynamic(find, fn, _machine).clone();
+                    m = ModuleDynamic::create(find, fn, _machine);
                 } else {
                     throw ErrorIO(p, "file \"" + fn + "\" has wrong extension");
                 }
-                m->set_options(Options().clone());//XXX check this
+                m->set_options(Options::create());//XXX check this
                 try {
                     m->load();
                 } catch (ErrorIO &e) {
