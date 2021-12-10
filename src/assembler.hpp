@@ -72,6 +72,10 @@ public:
 	os << std::dec;
     }
 
+    void switch_char(std::ostream& os) {
+	os << std::dec;
+    }
+
     void write_i8(std::ostream& os, const uint32_t n) {
 	switch_hex(os);
         os << std::setw(2) << (0xff & n);
@@ -110,8 +114,12 @@ public:
 	os << s;
     }
 
+    void write_char(std::ostream& os, char c) {
+	    os.put(c);
+    }
+
     void write_separator(std::ostream& os) {
-	os << SEPARATOR;
+	    os.put(SEPARATOR);
     }
 
     void data_push(const reg_t i, const VMObjectPtr& o) {
@@ -207,6 +215,27 @@ public:
         while(!data_end()) {
             write_separator(os);
             write_i32(os, data_index());
+            write_separator(os);
+            switch (data_object()->tag()) {
+                case VM_OBJECT_INTEGER:
+                    write_char(os, 'i');
+                break;
+                case VM_OBJECT_FLOAT:
+                    write_char(os, 'f');
+                break;
+                case VM_OBJECT_CHAR:
+                    write_char(os, 'c');
+                break;
+                case VM_OBJECT_TEXT:
+                    write_char(os, 't');
+                break;
+                case VM_OBJECT_COMBINATOR:
+                    write_char(os, 'o');
+                break;
+                default:
+                PANIC("cannot dis object")
+                break;
+            }
             write_separator(os);
             write_text(os, data_object()->to_text());
             data_skip();
