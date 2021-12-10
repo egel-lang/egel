@@ -1,0 +1,380 @@
+#ifndef ASSEMBLER_HPP
+#define ASSEMBLER_HPP
+
+#include "utils.hpp"
+#include "runtime.hpp"
+#include "bytecode.hpp"
+
+const int BYTECODEVERSION = 0x00;
+const int SEPARATOR       = ' ';
+
+class Disassembler {
+public:
+    Disassembler(const VMObjectPtr& o)
+        : _object(o), _pc(0) {
+    }
+
+    void reset() {
+        _pc = 0;
+    }
+
+    uint32_t pc() const {
+        return _pc;
+    }
+
+    bool is_end() const {
+        return _pc >= _code.size();
+    }
+
+    opcode_t look() const {
+        return (opcode_t) _code[_pc];
+    }
+
+    uint8_t fetch_i8() {
+        uint8_t n = _code[_pc];
+        _pc += 1;
+        return n;
+    }
+
+    uint16_t fetch_i16() {
+        uint16_t n = ( (_code[_pc] << 8) | _code[_pc+1] );
+        _pc += 2;
+        return n;
+    }
+
+    uint32_t fetch_i32() { // XXX: depends on size of machine register?
+        uint32_t n = ( (_code[_pc] << 24) | (_code[_pc+1] << 16) | (_code[_pc+2] << 8) |  _code[_pc+3] );
+        _pc += 4;
+        return n;
+    }
+
+    opcode_t fetch_op() {
+        return (opcode_t) fetch_i8();
+    }
+
+    reg_t fetch_index() {
+        return fetch_i16();
+    }
+
+    reg_t fetch_register() {
+        return fetch_i16();
+    }
+
+    label_t fetch_label() {
+        return fetch_i32();
+    }
+
+    void switch_hex(std::ostream& os) {
+        os << std::hex << std::noshowbase << std::setfill('0') << std::nouppercase;
+    }
+
+    void switch_dec(std::ostream& os) {
+	os << std::dec;
+    }
+
+    void write_i8(std::ostream& os, const uint32_t n) {
+	switch_hex(os);
+        os << std::setw(2) << (0xff & n);
+        switch_dec(os);
+    }
+
+    void write_i16(std::ostream& os, const uint32_t n) {
+	switch_hex(os);
+        os << std::setw(4) << (0xffff & n);
+        switch_dec(os);
+    }
+
+    void write_i32(std::ostream& os, const uint32_t n) {
+	switch_hex(os);
+        os << std::setw(8) << n;
+        switch_dec(os);
+    }
+
+    void write_op(std::ostream& os, const opcode_t n) {
+	write_i8(os, n);
+    }
+
+    void write_index(std::ostream& os, const reg_t n) {
+	write_i16(os, n);
+    }
+
+    void write_register(std::ostream& os, const reg_t n) {
+	write_i16(os, n);
+    }
+
+    void write_label(std::ostream& os, const label_t n) {
+	write_i32(os, n);
+    }
+
+    void write_text(std::ostream& os, const icu::UnicodeString& s) {
+	os << s;
+    }
+
+    void write_separator(std::ostream& os) {
+	os << SEPARATOR;
+    }
+
+    void data_push(const reg_t i, const VMObjectPtr& o) {
+	_data.push_back(data_tuple_t(i, o));
+    }
+
+    bool data_end() const {
+	return ( (unsigned int) _data_index >= (unsigned int) _data.size());
+    }
+
+    void data_skip() {
+	_data_index++;
+    }
+
+    reg_t data_index() const {
+	return std::get<0>(_data[_data_index]);
+    }
+
+    VMObjectPtr data_object() const {
+	return std::get<1>(_data[_data_index]);
+    }
+
+    void write_code(std::ostream& os, const Code& code, VM* vm) {
+	    _code       = code;
+        _data       = data_vector_t();
+        _data_index = 0;	
+	    _pc         = 0;
+
+        std::ios_base::fmtflags old_flags = os.flags();
+        std::streamsize         old_prec  = os.precision();
+        char                    old_fill  = os.fill();
+
+        os  << std::showbase << std::internal << std::setfill('0');
+
+        reset();
+        while (!is_end()) {
+            switch (look()) {
+            case OP_NIL:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                break;
+            case OP_MOV:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                break;
+            case OP_DATA:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                {
+                    auto i = fetch_i32();
+                    write_i32(os, i);
+                    data_push(i, vm->get_data(i));
+                }
+                break;
+            case OP_SET:
+            case OP_SPLIT:
+            case OP_ARRAY:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                break;
+            case OP_TAKEX:
+            case OP_CONCATX:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                write_index(os, fetch_index());
+                break;
+            case OP_TEST:
+            case OP_TAG:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                write_register(os, fetch_register());
+                break;
+            case OP_FAIL:
+                write_op(os, fetch_op());
+                write_label(os, fetch_label());
+                break;
+            case OP_RETURN:
+                write_op(os, fetch_op());
+                write_register(os, fetch_register());
+                break;
+            }
+        }
+
+        os.flags(old_flags);
+        os.precision(old_prec);
+        os.fill(old_fill);
+
+        while(!data_end()) {
+            write_separator(os);
+            write_i32(os, data_index());
+            write_separator(os);
+            write_text(os, data_object()->to_text());
+            data_skip();
+        }
+    }
+
+    void disassemble(std::ostream& os) {
+	    auto o = _object;
+        if (o->subtag_test(VM_SUB_BYTECODE)) {
+            auto b = VMObjectBytecode::cast(o);
+            write_i8(os, BYTECODEVERSION);
+		    write_separator(os);
+		    write_text(os, b->to_text());
+		    write_separator(os);
+		    write_code(os, b->code(), b->machine());
+        } else {
+            PANIC("disassemble failed");
+        }
+    }
+
+    icu::UnicodeString disassemble() {
+        std::stringstream ss;
+        disassemble(ss);
+        return char_to_unicode(ss.str().c_str());
+    }
+
+private:
+    VMObjectPtr   _object;
+    Code          _code;
+    uint32_t      _pc;
+    data_vector_t _data;
+    int		      _data_index;
+};
+
+
+class Assembler {
+public:
+    Assembler(VM* vm, const icu::UnicodeString s): 
+        _machine(vm), _source(s), _chars(nullptr), _pos(0) {
+    }
+
+    ~Assembler() {
+        if (_chars) free(_chars);
+    }
+
+    int look() const {
+        return look(0);
+    }
+
+    int look(int n) const {
+        return _chars[_pos+n];
+    }
+
+    bool look_at(int c) {
+        return look() == c;
+    }
+
+    void skip() {
+        _pos++;
+    }
+
+    void force(int n) {
+        if (look() == n) {
+            skip();
+        } else {
+            PANIC("failed to disassemble");
+        }
+    }
+
+    bool eol() const {
+        return look() == '\0';
+    }
+
+    bool is_separator() const {
+        return look() == SEPARATOR;
+    }
+
+    bool is_quote() const {
+        int c = look();
+        return (c == '\'') || (c == '\"');
+    }
+
+    char read_char() {
+        int c = look(); skip(); return c;
+    }
+
+    int char_to_val(int c) const {
+        return ((c >= '0') && (c <= '9'))? (c - '0'):
+                ((c >= 'a') && (c <= 'f'))? (c - 'a'):
+                ((c >= 'A') && (c <= 'F'))? (c - 'A'): c; 
+    }
+
+    int read_byte() {
+        if (is_separator()) return -1;
+        int c0 = read_char(); int c1 = read_char();
+        return (char_to_val(c0) << 16) | char_to_val(c1);
+    }
+
+    char* read_quoted() {
+        skip(); // XXX make this safe once
+        size_t cap = 4096;
+        size_t n = 0;
+        char* buffer = (char*) malloc(cap);
+        while (!is_quote()) {
+            if (n > cap - 4) {
+                buffer = (char*) realloc((void*)buffer, cap+4096);
+                cap += 4096;
+            }
+            if (look_at('\\')) {
+                buffer[n] = look(); n++; skip();
+                buffer[n] = look(); n++; skip();
+            } else {
+                buffer[n] = look(); n++; skip();
+            }
+        }
+        skip();
+        buffer[n] = '\0';
+        return buffer;
+    }
+
+    char* read_until_separator() {
+        size_t cap = 4096;
+        size_t n = 0;
+        char* buffer = (char*) malloc(cap);
+        while (!is_separator()) {
+            if (n > cap - 4) {
+                buffer = (char*) realloc((void*)buffer, cap+4096);
+                cap += 4096;
+            } 
+            buffer[n] = look(); n++; skip();
+        }
+        buffer[n] = '\0';
+        return buffer;
+    }
+
+    icu::UnicodeString read_combinator() {
+        auto cc = read_until_separator();
+        auto s = char_to_unicode(cc);
+        free(cc);
+        return s;
+    }
+
+    VMObjectPtr assemble() {
+        _chars = unicode_to_char(_source);
+        force(BYTECODEVERSION);
+        force(SEPARATOR);
+        auto s = read_combinator();
+
+        Code code;
+        while (!is_separator()) {
+            auto b = read_byte();
+            code.push_back(b);
+        }
+
+/*
+        while(is_separator()) {
+
+        }
+        */
+        free(_chars);
+        return VMObjectBytecode::create(_machine, code, s);
+    }
+
+private:
+    VM*                 _machine;
+    icu::UnicodeString  _source;
+    char*               _chars;
+    unsigned int        _pos;
+};
+
+#endif
