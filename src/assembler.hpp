@@ -217,27 +217,40 @@ public:
             write_i32(os, data_index());
             write_separator(os);
             switch (data_object()->tag()) {
-                case VM_OBJECT_INTEGER:
+                case VM_OBJECT_INTEGER: {
                     write_char(os, 'i');
+                    write_separator(os);
+                    write_text(os, data_object()->to_text());
+                }
                 break;
-                case VM_OBJECT_FLOAT:
+                case VM_OBJECT_FLOAT: {
                     write_char(os, 'f');
+                    write_separator(os);
+                    write_text(os, data_object()->to_text());
+                }
                 break;
-                case VM_OBJECT_CHAR:
+                case VM_OBJECT_CHAR: {
                     write_char(os, 'c');
+                    write_separator(os);
+                    write_text(os, data_object()->to_text());
+                }
                 break;
-                case VM_OBJECT_TEXT:
+                case VM_OBJECT_TEXT: {
                     write_char(os, 't');
+                    write_separator(os);
+                    write_text(os, data_object()->to_text());
+                }
                 break;
-                case VM_OBJECT_COMBINATOR:
+                case VM_OBJECT_COMBINATOR: {
                     write_char(os, 'o');
+                    write_separator(os);
+                    write_text(os, vm->symbol(data_object())); // output the combinator not {} or ()
+                }
                 break;
                 default:
                 PANIC("cannot dis object")
                 break;
             }
-            write_separator(os);
-            write_text(os, data_object()->to_text());
             data_skip();
         }
     }
@@ -274,52 +287,47 @@ private:
 class Assembler {
 public:
     Assembler(VM* vm, const icu::UnicodeString s): 
-        _machine(vm), _source(s), _chars(nullptr), _pos(0) {
+        _machine(vm), _source(s) {
     }
 
     ~Assembler() {
-        if (_chars) free(_chars);
     }
 
-    int look() const {
-        return look(0);
+    int look(std::istream& in) {
+        return in.peek();
     }
 
-    int look(int n) const {
-        return _chars[_pos+n];
+    bool look_at(std::istream& in, int c) {
+        return look(in) == c;
     }
 
-    bool look_at(int c) {
-        return look() == c;
+    void skip(std::istream& in) {
+        in.get();
     }
 
-    void skip() {
-        _pos++;
-    }
-
-    void force(int n) {
-        if (look() == n) {
-            skip();
+    void force(std::istream& in, int n) {
+        if (look(in) == n) {
+            skip(in);
         } else {
             PANIC("failed to disassemble");
         }
     }
 
-    bool eol() const {
-        return look() == '\0';
+    bool eol(std::istream& in) const {
+        return in.eof();
     }
 
-    bool is_separator() const {
-        return look() == SEPARATOR;
+    bool is_separator(std::istream& in) {
+        return look(in) == SEPARATOR;
     }
 
-    bool is_quote() const {
-        int c = look();
+    bool is_quote(std::istream& in) {
+        int c = look(in);
         return (c == '\'') || (c == '\"');
     }
 
-    char read_char() {
-        int c = look(); skip(); return c;
+    char read_char(std::istream& in) {
+        int c = look(in); skip(in); return c;
     }
 
     int char_to_val(int c) const {
@@ -328,82 +336,80 @@ public:
                 ((c >= 'A') && (c <= 'F'))? (c - 'A'): c; 
     }
 
-    int read_byte() {
-        if (is_separator()) return -1;
-        int c0 = read_char(); int c1 = read_char();
+    int read_byte(std::istream& in) {
+        if (is_separator(in)) return -1;
+        int c0 = read_char(in); int c1 = read_char(in);
         return (char_to_val(c0) << 16) | char_to_val(c1);
     }
 
-    char* read_quoted() {
-        skip(); // XXX make this safe once
+    char* read_quoted(std::istream& in) {
+        skip(in); // XXX make this safe once
         size_t cap = 4096;
         size_t n = 0;
         char* buffer = (char*) malloc(cap);
-        while (!is_quote()) {
+        while (!eol(in) && !is_quote(in)) {
             if (n > cap - 4) {
                 buffer = (char*) realloc((void*)buffer, cap+4096);
                 cap += 4096;
             }
-            if (look_at('\\')) {
-                buffer[n] = look(); n++; skip();
-                buffer[n] = look(); n++; skip();
+            if (look_at(in, '\\')) {
+                buffer[n] = look(in); n++; skip(in);
+                buffer[n] = look(in); n++; skip(in);
             } else {
-                buffer[n] = look(); n++; skip();
+                buffer[n] = look(in); n++; skip(in);
             }
         }
-        skip();
+        skip(in);
         buffer[n] = '\0';
         return buffer;
     }
 
-    char* read_until_separator() {
+    char* read_until_separator(std::istream& in) {
         size_t cap = 4096;
         size_t n = 0;
         char* buffer = (char*) malloc(cap);
-        while (!is_separator()) {
+        while (!eol(in) && !is_separator(in)) {
             if (n > cap - 4) {
                 buffer = (char*) realloc((void*)buffer, cap+4096);
                 cap += 4096;
             } 
-            buffer[n] = look(); n++; skip();
+            buffer[n] = look(in); n++; skip(in);
         }
         buffer[n] = '\0';
         return buffer;
     }
 
-    icu::UnicodeString read_combinator() {
-        auto cc = read_until_separator();
+    icu::UnicodeString read_combinator(std::istream& in) {
+        auto cc = read_until_separator(in);
         auto s = char_to_unicode(cc);
         free(cc);
         return s;
     }
 
     VMObjectPtr assemble() {
-        _chars = unicode_to_char(_source);
-        force(BYTECODEVERSION);
-        force(SEPARATOR);
-        auto s = read_combinator();
+        auto chars = unicode_to_char(_source);
+        std::string s(chars);
+        auto in = std::stringstream(s);
+        force(in, BYTECODEVERSION);
+        force(in, SEPARATOR);
+        auto c = read_combinator(in);
 
         Code code;
-        while (!is_separator()) {
-            auto b = read_byte();
+        while (!is_separator(in)) {
+            auto b = read_byte(in);
             code.push_back(b);
         }
 
-/*
-        while(is_separator()) {
-
+        while (!eol(in) && is_separator(in)) {
+// XXX
         }
-        */
-        free(_chars);
-        return VMObjectBytecode::create(_machine, code, s);
+        free(chars);
+        return VMObjectBytecode::create(_machine, code, c);
     }
 
 private:
     VM*                 _machine;
     icu::UnicodeString  _source;
-    char*               _chars;
-    unsigned int        _pos;
 };
 
 #endif
