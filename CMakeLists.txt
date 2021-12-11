@@ -44,7 +44,7 @@ message("egel version: ${PVERSION}")
 message("egel path: ${EGEL_PATH}")
 
 # add 'fallback' modules
-set(CMAKE_MODULE_PATH "contrib/cmake/modules;${CMAKE_MODULE_PATH}")
+# set(CMAKE_MODULE_PATH "contrib/cmake/modules;${CMAKE_MODULE_PATH}")
 
 # the Egel project
 project(Egel DESCRIPTION "The Egel interpreter"
