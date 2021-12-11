@@ -5,15 +5,15 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-+ file system path combinators
+* add a proper data segment to combinators
++ remote procedure calls (look at grpc)
++ cleanup internals regarding combinator declarations
 + rewrite the runtime to make the interpreter performant
 + module rework and compile into local module
-+ remote procedure calls (look at grpc)
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc?
 + add a literate scripting mode
 + add backtick `` `f`` as a shorthand for `quote "f"`
-+ cleanup internals regarding combinator declarations
 + generate C++ from .eg file (module compilation)
 + time and date
 + add import/export lists to using/namespace
@@ -22,6 +22,10 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+
+## v0.1.6 -- rolling on
+
+* internal cleaning
 * get rid of spurious macros
 + get rid of .clone() for class::create()
 * dictionary

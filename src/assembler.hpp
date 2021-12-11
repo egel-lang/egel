@@ -76,6 +76,11 @@ public:
 	os << std::dec;
     }
 
+    void write_int(std::ostream& os, const vm_int_t n) {
+	switch_dec(os);
+        os << n;
+    }
+
     void write_i8(std::ostream& os, const uint32_t n) {
 	switch_hex(os);
         os << std::setw(2) << (0xff & n);
@@ -214,7 +219,7 @@ public:
 
         while(!data_end()) {
             write_separator(os);
-            write_i32(os, data_index());
+            write_int(os, data_index());
             write_separator(os);
             switch (data_object()->tag()) {
                 case VM_OBJECT_INTEGER: {
@@ -326,7 +331,7 @@ public:
         return (c == '\'') || (c == '\"');
     }
 
-    char read_char(std::istream& in) {
+    char get_char(std::istream& in) {
         int c = look(in); skip(in); return c;
     }
 
@@ -338,7 +343,7 @@ public:
 
     int read_byte(std::istream& in) {
         if (is_separator(in)) return -1;
-        int c0 = read_char(in); int c1 = read_char(in);
+        int c0 = get_char(in); int c1 = get_char(in);
         return (char_to_val(c0) << 16) | char_to_val(c1);
     }
 
@@ -379,6 +384,32 @@ public:
         return buffer;
     }
 
+    vm_int_t read_int(std::istream& in) {
+        vm_int_t f;
+        in >> f;
+        return f;
+    }
+
+    vm_float_t read_float(std::istream& in) {
+        vm_float_t f;
+        in >> f;
+        return f;
+    }
+
+    vm_char_t read_char(std::istream& in) {
+        auto cc = read_until_separator(in);
+        auto s = char_to_unicode(cc);
+        free(cc);
+        return s.char32At(0);
+    }
+
+    icu::UnicodeString read_string(std::istream& in) {
+        auto cc = read_until_separator(in);
+        auto s = char_to_unicode(cc);
+        free(cc);
+        return s;
+    }
+
     icu::UnicodeString read_combinator(std::istream& in) {
         auto cc = read_until_separator(in);
         auto s = char_to_unicode(cc);
@@ -394,14 +425,42 @@ public:
         force(in, SEPARATOR);
         auto c = read_combinator(in);
 
+        // read in code section
         Code code;
         while (!is_separator(in)) {
             auto b = read_byte(in);
             code.push_back(b);
         }
 
+        // read in data section
         while (!eol(in) && is_separator(in)) {
-// XXX
+// XXX      switch
+            switch(look(in)) {
+            case 'i': {
+                skip(in); 
+            }
+            break;
+            case 'f': {
+                skip(in); 
+            }
+            break;
+            case 'c': {
+                skip(in); 
+            }
+            break;
+            case 't': {
+                skip(in); 
+            }
+            break;
+            case 'o': {
+                skip(in); 
+            }
+            break;
+            default: {
+                PANIC("canot decode data section");
+            }
+            break;
+            }
         }
         free(chars);
         return VMObjectBytecode::create(_machine, code, c);
