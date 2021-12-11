@@ -21,6 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        config:
         - {
             name: "Ubuntu_Latest_GCC",
             os: ubuntu-latest,
