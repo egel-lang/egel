@@ -47,7 +47,7 @@ namespace Gen (
     ## Gen::map f l - map a function over a list
     def map =
         [ F nil -> nil
-        | F (cons X XX) -> let Y = F X in cons Y (map F (XX none)) ]
+        | F (cons X XX) -> let Y = F X in cons Y  [_ -> (map F (XX none))] ]
 
     ## Gen::reverse l - reverse a list
     def reverse = 
@@ -77,6 +77,10 @@ namespace Gen (
     def drop =
         [ 0 XX -> XX
         | N (cons X XX) -> drop (N - 1) (XX none) ]
+
+    ## Gen::repeat n - infinite list of n
+    def repeat =
+        [ N -> cons N [ _ -> repeat N ] ]
 
     ## Gen::from min - list of numbers from min 
     def from =
@@ -127,5 +131,32 @@ namespace Gen (
     ## Gen::not_elem x l - inverse membership test
     def not_elem =
         [ X -> all ((/=) X) ]
+
+    ## Gen::from_lists l - convert a list of lists to generator of generators
+    def from_lists =
+        Gen::from_list . (List::map Gen::from_list)
+
+    ## Gen::to_lists c - convert generator of generators to list of lists
+    def to_lists =
+        (List::map Gen::to_list) . Gen::to_list
+
+    ## Gen::space - space, the final frontier
+    def space =
+        Gen::map [X -> Gen::map [ Y -> (X,Y) ] (Gen::from 0)] (Gen::from 0)
+
+    ## Gen::map_2d - map on a space
+    def map_2d =
+        [ F -> Gen::map [XX -> Gen::map F XX] ]
+
+    ## Gen::take_2d - take a block 
+    def take_2d =
+        [ X Y B -> Gen::take X (Gen::map [L -> Gen::take Y L] B) ]
+
+    ## Gen::zip_2d
+    def zip_2d =
+        [ nil nil         -> nil
+        | (cons X XX) nil -> nil
+        | nil (cons Y YY) -> nil
+        | (cons X XX) (cons Y YY) -> cons (Gen::zip X Y) [_ -> Gen::zip_2d (XX none) (YY none)] ]
 
 )

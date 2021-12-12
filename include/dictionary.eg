@@ -1,0 +1,24 @@
+# combinators to make dict more useful
+
+import "dict.ego"
+import "prelude.eg"
+import "generator.eg"
+
+namespace System ( # dict lives in the System space
+
+    using List
+ 
+    def dict_from_list =
+        foldl [D (K,V) -> dict_set D K V] dict
+
+    def dict_to_list =
+        [ D -> foldl [LL K -> cons (K, dict_get D K) LL] nil (dict_keys D) ]
+
+    def dict_update =
+        [ D K V -> if dict_has D K then dict_set D K V else D ]
+
+    def dict_lazy_update =
+        [ D K VF -> if dict_has D K then dict_set D K (VF none) else D ]
+
+)
+
