@@ -14,6 +14,9 @@ namespace System ( # dict lives in the System space
     def dict_to_list =
         [ D -> foldl [LL K -> cons (K, dict_get D K) LL] nil (dict_keys D) ]
 
+    def dict_copy =
+        dict_from_list . dict_to_list 
+
     def dict_update =
         [ D K V -> if dict_has D K then dict_set D K V else D ]
 
@@ -23,4 +26,6 @@ namespace System ( # dict lives in the System space
     def dict_map =
         [ F D -> foldl [D K -> dict_set D K (F (dict_get D K))] D (dict_keys D) ]
 
+    def dict_union =
+        [ D0 D1 -> dict_from_list ((dict_to_list D0) ++ (dict_to_list D1)) ]
 )
