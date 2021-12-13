@@ -802,6 +802,7 @@ public:
     }
 private:
     Code  _code;
+    //char* _code;
 };
 
 #endif
