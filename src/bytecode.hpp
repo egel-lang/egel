@@ -34,6 +34,7 @@ OP_RETURN,  //  x           return x
 } opcode_t;
 
 typedef std::vector<uint8_t>        Code;
+typedef std::vector<uint32_t>       Data; // XXX this is overkil after a change to a data section
 typedef std::map<label_t, uint32_t> Labels;
 
 #define OP_SIZE         1
@@ -213,7 +214,7 @@ public:
                 {
                     auto i = fetch_i32();
                     write_i32(os, i);
-                    os << "   ; " << vm->get_data(i);
+                    // os << "   ; " << get_data(i);
                 }
                 break;
             case OP_SET:
@@ -271,27 +272,51 @@ private:
     uint32_t    _pc;
 };
 
-typedef std::tuple<uint16_t, VMObjectPtr>  data_tuple_t;
-typedef std::vector<data_tuple_t>	   data_vector_t;
+class DataPrinter {
+public:
+    DataPrinter(const Data& d): _data(d) {
+    }
+
+    void write(std::ostream& os, VM* vm) {
+        for (unsigned int n = 0; n < _data.size(); n++) {
+            os << std::hex << std::setw(6) << n << std::dec << " ";
+            os << _data[n] << " " << vm->get_combinator_string(_data[n]) << std::endl;
+        }
+    }
+
+private:
+    Data _data;
+};
 
 class Coder {
 public:
-    Coder(): 
+    Coder(VM* m): 
+        _machine(m),
         _code(Code()),
+        _data(Data()),
         _label_counter(0),
         _register_counter(0),
         _index_counter(0),
         _labels(Labels()) {
     }
 
+    VM* machine() {
+        return _machine;
+    }
+
     Code code() {
         // can only be called once
-        relabel();
         return _code;
     }
 
+    Data data() {
+        return _data;
+    }
+
+
     void reset() {
         _code = Code();
+        _data = Data();
         _label_counter = 0;
         _register_counter = 0;
         _index_counter = 0;
@@ -439,6 +464,13 @@ public:
         _labels[l] = _code.size();
     }
 
+    uint32_t emit_data(const VMObjectPtr& o) {
+        auto d = machine()->enter_data(o);
+        _data.push_back(d);
+        // optimize once
+        return _data.size() - 1;
+    }
+
     void relabel() {
 
         uint32_t    pc = 0;
@@ -488,7 +520,9 @@ public:
     }
 
 private:
+    VM*         _machine;
     Code        _code;
+    Data        _data;
     int         _label_counter;
     int         _register_counter;
     int         _index_counter;
@@ -541,32 +575,32 @@ private:
 class VMObjectBytecode: public VMObjectCombinator {
 public:
 
-    VMObjectBytecode(VM* m, const Code& c, const symbol_t s)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, s), _code(c) {
+    VMObjectBytecode(VM* m, const Code& c, const Data& d, const symbol_t s)
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, s), _code(c), _data(d) {
     };
     
-    VMObjectBytecode(VM* m, const Code& c, const icu::UnicodeString& n)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, n), _code(c) {
+    VMObjectBytecode(VM* m, const Code& c, const Data& d, const icu::UnicodeString& n)
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, n), _code(c), _data(d) {
     };
     
-    VMObjectBytecode(VM* m, const Code& c, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, n0, n1), _code(c) {
+    VMObjectBytecode(VM* m, const Code& c, const Data& d, const icu::UnicodeString& n0, const icu::UnicodeString& n1)
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, n0, n1), _code(c), _data(d) {
     };
     
-    VMObjectBytecode(VM* m, const Code& c, const UnicodeStrings& nn, const icu::UnicodeString& n)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, nn, n), _code(c) {
+    VMObjectBytecode(VM* m, const Code& c, const Data& d, const UnicodeStrings& nn, const icu::UnicodeString& n)
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, nn, n), _code(c), _data(d) {
     };
     
     VMObjectBytecode(const VMObjectBytecode& d)
-        : VMObjectBytecode(d.machine(), d.code(), d.symbol()) {
+        : VMObjectBytecode(d.machine(), d.code(), d.data(), d.symbol()) {
     }
     
-    static VMObjectPtr create(VM* m, const Code& c, const UnicodeStrings& nn, const icu::UnicodeString& n) {
-        return VMObjectPtr(new VMObjectBytecode(m, c, nn, n));
+    static VMObjectPtr create(VM* m, const Code& c, const Data& d, const UnicodeStrings& nn, const icu::UnicodeString& n) {
+        return VMObjectPtr(new VMObjectBytecode(m, c, d, nn, n));
     }
 
-    static VMObjectPtr create(VM* m, const Code& c, const icu::UnicodeString& s) {
-        return VMObjectPtr(new VMObjectBytecode(m, c, s));
+    static VMObjectPtr create(VM* m, const Code& c, const Data& d, const icu::UnicodeString& s) {
+        return VMObjectPtr(new VMObjectBytecode(m, c, d, s));
     }
 
     static std::shared_ptr<VMObjectBytecode> cast(const VMObjectPtr& o) {
@@ -575,8 +609,12 @@ public:
 
     void debug(std::ostream& os) const override {
         os << text() << " (" << tag() << ", " << subtag() << ")" << std::endl << "begin" << std::endl;
+        os << "code" << std::endl;
         CodePrinter cp(_code);
         cp.write(os, machine());
+        os << "data" << std::endl;
+        DataPrinter dp(_data);
+        dp.write(os, machine());
         os << "end" << std::endl;
     }
 
@@ -584,9 +622,17 @@ public:
         return _code;
     }
 
-    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
-        Registers  reg;
+    Data data() const {
+        return _data;
+    }
 
+    data_t get_data(uint32_t n) const {
+        return _data[n];
+    }
+
+    VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
+        //debug(std::cout);
+        Registers  reg;
         uint32_t pc = 0;
         reg.set(0, thunk);
         bool flag = false;
@@ -618,7 +664,7 @@ public:
                 reg_t       x = FETCH_reg(_code,pc);
                 int32_t     i32 = FETCH_i32(_code,pc);
 
-                reg.set(x, machine()->get_data(i32));
+                reg.set(x, machine()->get_data(_data[i32]));
 
                 }
                 break;
@@ -802,7 +848,8 @@ public:
     }
 private:
     Code  _code;
-    //char* _code;
+    Data  _data;
+
 };
 
 #endif

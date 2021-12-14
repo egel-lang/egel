@@ -301,7 +301,7 @@ public:
 
     void define(const VMObjectPtr& o) override {
         // define an undefined symbol
-        auto s = o->to_text();  // XXX: usually works?
+        auto s = o->to_text();  // XXX: usually works? probably not for {}
         if (_symbols.member(s)) {
             throw create_text("redeclaration of " + s);
 

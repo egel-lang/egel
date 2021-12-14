@@ -59,7 +59,7 @@ class EmitCode: public Visit {
 public:
     void emit(VM* vm, const AstPtr& a) {
         _machine = vm;
-        _coder = std::unique_ptr<Coder>(new Coder());
+        _coder = std::unique_ptr<Coder>(new Coder(vm));
         visit(a);
     }
 
@@ -152,13 +152,14 @@ public:
     }
 
 
-    void visit_constant(const data_t& d) {
+    void visit_constant(const VMObjectPtr& o) {
         switch(get_state()) {
         case EMIT_PATTERN: {
             auto r = get_current_register();
             auto l = get_fail_label();
             auto ri = get_coder()->generate_register();
 
+            auto d = get_coder()->emit_data(o);
             get_coder()->emit_op_data(ri, d);
             get_coder()->emit_op_test(r, ri);
             get_coder()->emit_op_fail(l);
@@ -178,6 +179,8 @@ public:
             get_coder()->emit_op_mov(rti, get_register_rti());
             get_coder()->emit_op_mov(k, get_register_k());
             get_coder()->emit_op_mov(exc, get_register_exc());
+
+            auto d = get_coder()->emit_data(o);
             get_coder()->emit_op_data(c, d);
 
             get_coder()->emit_op_array(t, rt, c);
@@ -200,38 +203,37 @@ public:
 
     void visit_expr_integer(const Position& p, const icu::UnicodeString& v) override {
         if (v.startsWith("0x")) {
-            auto i = VMObjectInteger::create(convert_to_hexint(v));
-            auto d = machine()->enter_data(i);
-            visit_constant(d);
+            auto i = convert_to_hexint(v);
+            auto o = machine()->create_integer(i);
+            visit_constant(o);
         } else {
-            auto i = VMObjectInteger::create(convert_to_int(v));
-            auto d = machine()->enter_data(i);
-            visit_constant(d);
+            auto i = convert_to_int(v);
+            auto o = machine()->create_integer(i);
+            visit_constant(o);
         }
     }
 
     void visit_expr_float(const Position& p, const icu::UnicodeString& v) override {
-        auto i = VMObjectFloat::create(convert_to_float(v));
-        auto d = machine()->enter_data(i);
-        visit_constant(d);
+        auto f = convert_to_float(v);
+        auto o = machine()->create_float(f);
+        visit_constant(o);
     }
 
     void visit_expr_character(const Position& p, const icu::UnicodeString& v) override {
-        auto i = VMObjectChar::create(convert_to_char(v));
-        auto d = machine()->enter_data(i);
-        visit_constant(d);
+        auto c = convert_to_char(v);
+        auto o = machine()->create_char(c);
+        visit_constant(o);
     }
 
     void visit_expr_text(const Position& p, const icu::UnicodeString& v) override {
-        auto i = VMObjectText::create(convert_to_text(v));
-        auto d = machine()->enter_data(i);
-        visit_constant(d);
+        auto t = convert_to_text(v);
+        auto o = machine()->create_text(t);
+        visit_constant(o);
     }
 
     void visit_expr_combinator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
         auto c = machine()->get_combinator(nn, n);
-        auto d = machine()->enter_data(c);
-        visit_constant(d);
+        visit_constant(c);
     }
 
     void visit_expr_operator(const Position& p, const UnicodeStrings& nn, const icu::UnicodeString& n) override {
@@ -342,7 +344,7 @@ public:
             } else if (a->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(a, p, nn, n);
                 auto v = machine()->get_combinator(nn, n);
-                auto d = machine()->get_data(v);
+                auto d = get_coder()->emit_data(v);
                 get_coder()->emit_op_data(c, d);
                 head_flag = true;
             } else {
@@ -373,8 +375,8 @@ public:
 
             // generate thunks for nil fields
             if (!head_flag) {
-                auto i = VMObjectInteger::create(4);
-                auto d = machine()->enter_data(i);
+                auto i = machine()->create_integer(4);
+                auto d = get_coder()->emit_data(i);
                 get_coder()->emit_op_data(rti, d);
 
                 set_register_rt(rt);
@@ -384,8 +386,8 @@ public:
             }
 
             for (uint_t n = 1; n < sz; n++) {
-                auto i = VMObjectInteger::create(n+4);
-                auto d = machine()->enter_data(i);
+                auto i = machine()->create_integer(n+4);
+                auto d = get_coder()->emit_data(i);
                 reg_t q = get_coder()->generate_register();
                 get_coder()->emit_op_data(q, d);
 
@@ -415,7 +417,7 @@ public:
             if (t->tag() == AST_EXPR_COMBINATOR) {
                 AST_EXPR_COMBINATOR_SPLIT(t, p, nn, n);
                 auto o = machine()->get_combinator(nn, n);
-                auto d = machine()->get_data(o);
+                auto d = get_coder()->emit_data(o);
 
                 auto rt = get_coder()->generate_register();
 
@@ -525,8 +527,8 @@ public:
         // the catch thunk evaluates with the old exception and places its result in the
         // handler thunk as the combinator 
         auto new_exci = get_coder()->generate_register();
-        auto i = VMObjectInteger::create(4);
-        auto d = machine()->enter_data(i);
+        auto i = machine()->create_integer(4);
+        auto d = get_coder()->emit_data(i);
         get_coder()->emit_op_data(new_exci, d);
 
         set_register_exc(exc);
@@ -594,12 +596,15 @@ public:
         get_coder()->emit_op_set(rt, rti, r);
         get_coder()->emit_op_return(k);
 
+        get_coder()->relabel();
         auto code = get_coder()->code();
+        auto data = get_coder()->data();
+
         AST_EXPR_COMBINATOR_SPLIT(n, p0, ss, s);
-        auto b = VMObjectBytecode::create(machine(), code, ss, s);
+        auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
+        machine()->define_data(b);
 
         get_coder()->reset();
-        machine()->define_data(b);
     }
 
     // treat as a definition
@@ -640,12 +645,15 @@ public:
         get_coder()->emit_op_set(rt, rti, r);
         get_coder()->emit_op_return(k);
 
+        get_coder()->relabel();
         auto code = get_coder()->code();
+        auto data = get_coder()->data();
+
         AST_EXPR_OPERATOR_SPLIT(o, p0, ss, s);
-        auto b = VMObjectBytecode::create(machine(), code, ss, s);
+        auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
+        machine()->define_data(b);
 
         get_coder()->reset();
-        machine()->define_data(b);
     }
 
 private:

@@ -11,7 +11,7 @@ const int SEPARATOR       = ' ';
 class Disassembler {
 public:
     Disassembler(const VMObjectPtr& o)
-        : _object(o), _pc(0) {
+        : _object(o), _code(Code()), _data(Data()), _pc(0) {
     }
 
     void reset() {
@@ -127,30 +127,8 @@ public:
 	    os.put(SEPARATOR);
     }
 
-    void data_push(const reg_t i, const VMObjectPtr& o) {
-	_data.push_back(data_tuple_t(i, o));
-    }
-
-    bool data_end() const {
-	return ( (unsigned int) _data_index >= (unsigned int) _data.size());
-    }
-
-    void data_skip() {
-	_data_index++;
-    }
-
-    reg_t data_index() const {
-	return std::get<0>(_data[_data_index]);
-    }
-
-    VMObjectPtr data_object() const {
-	return std::get<1>(_data[_data_index]);
-    }
-
-    void write_code(std::ostream& os, const Code& code, VM* vm) {
-	    _code       = code;
-        _data       = data_vector_t();
-        _data_index = 0;	
+    void write_code(std::ostream& os, const Code& c, VM* vm) {
+	    _code       = c;
 	    _pc         = 0;
 
         std::ios_base::fmtflags old_flags = os.flags();
@@ -174,11 +152,7 @@ public:
             case OP_DATA:
                 write_op(os, fetch_op());
                 write_register(os, fetch_register());
-                {
-                    auto i = fetch_i32();
-                    write_i32(os, i);
-                    data_push(i, vm->get_data(i));
-                }
+                {auto i = fetch_i32(); write_i32(os, i);}
                 break;
             case OP_SET:
             case OP_SPLIT:
@@ -216,47 +190,50 @@ public:
         os.flags(old_flags);
         os.precision(old_prec);
         os.fill(old_fill);
+    }
 
-        while(!data_end()) {
+    void write_data(std::ostream& os, const Data& d, VM* vm) {
+	    _data       = d;
+        for(unsigned int n = 0; n < _data.size(); n++) {
             write_separator(os);
-            write_int(os, data_index());
+            write_int(os, n);
             write_separator(os);
-            switch (data_object()->tag()) {
+            auto o = vm->get_combinator(_data[n]);
+            switch (o->tag()) {
                 case VM_OBJECT_INTEGER: {
                     write_char(os, 'i');
                     write_separator(os);
-                    write_text(os, data_object()->to_text());
+                    write_text(os, o->to_text());
                 }
                 break;
                 case VM_OBJECT_FLOAT: {
                     write_char(os, 'f');
                     write_separator(os);
-                    write_text(os, data_object()->to_text());
+                    write_text(os, o->to_text());
                 }
                 break;
                 case VM_OBJECT_CHAR: {
                     write_char(os, 'c');
                     write_separator(os);
-                    write_text(os, data_object()->to_text());
+                    write_text(os, o->to_text());
                 }
                 break;
                 case VM_OBJECT_TEXT: {
                     write_char(os, 't');
                     write_separator(os);
-                    write_text(os, data_object()->to_text());
+                    write_text(os, o->to_text());
                 }
                 break;
                 case VM_OBJECT_COMBINATOR: {
                     write_char(os, 'o');
                     write_separator(os);
-                    write_text(os, vm->symbol(data_object())); // output the combinator not {} or ()
+                    write_text(os, vm->symbol(o)); // output the combinator not {} or ()
                 }
                 break;
                 default:
-                PANIC("cannot dis object")
+                PANIC("cannot dis data object")
                 break;
             }
-            data_skip();
         }
     }
 
@@ -269,6 +246,7 @@ public:
 		    write_text(os, b->to_text());
 		    write_separator(os);
 		    write_code(os, b->code(), b->machine());
+		    write_data(os, b->data(), b->machine());
         } else {
             PANIC("disassemble failed");
         }
@@ -283,9 +261,8 @@ public:
 private:
     VMObjectPtr   _object;
     Code          _code;
+    Data          _data;
     uint32_t      _pc;
-    data_vector_t _data;
-    int		      _data_index;
 };
 
 
@@ -433,6 +410,7 @@ public:
         }
 
         // read in data section
+        Data data;
         while (!eol(in) && is_separator(in)) {
 // XXX      switch
             switch(look(in)) {
@@ -463,7 +441,7 @@ public:
             }
         }
         free(chars);
-        return VMObjectBytecode::create(_machine, code, c);
+        return VMObjectBytecode::create(_machine, code, data, c);
     }
 
 private:
