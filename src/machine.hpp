@@ -579,6 +579,11 @@ public:
         return d.disassemble();
     }
 
+    VMObjectPtrs get_bytedata(const VMObjectPtr& o) override {
+        auto b = VMObjectBytecode::cast(o);
+        return b->get_data_list();
+    }
+
     VMObjectPtr create_bytecode(const icu::UnicodeString& s) override {
         Assembler a(this, s);
         return a.assemble();

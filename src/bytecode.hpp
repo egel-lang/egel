@@ -629,6 +629,14 @@ public:
     data_t get_data(uint32_t n) const {
         return _data[n];
     }
+    
+    VMObjectPtrs get_data_list() const {
+        VMObjectPtrs oo;
+        for (unsigned int n = 0; n < _data.size(); n++) {
+            oo.push_back(machine()->get_data(_data[n]));
+        }
+        return oo;
+    }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
         //debug(std::cout);

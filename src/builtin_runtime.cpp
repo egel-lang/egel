@@ -261,6 +261,20 @@ public:
     }
 };
 
+class GetBytedata: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetBytedata, "System", "get_bytedata");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_bytecode(arg0)) {
+            auto oo = machine()->get_bytedata(arg0);
+            return machine()->to_list(oo);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
 
 /*
 //## System::symbols - list all symbols in the runtime
@@ -357,5 +371,17 @@ std::vector<VMObjectPtr> builtin_runtime(VM* vm) {
     oo.push_back(QueryModuleExports::create(vm));
     oo.push_back(QueryModuleValues::create(vm));
 
+    oo.push_back(IsInteger::create(vm));
+    oo.push_back(IsFloat::create(vm));
+    oo.push_back(IsCharacter::create(vm));
+    oo.push_back(IsText::create(vm));
+    oo.push_back(IsCombinator::create(vm));
+    oo.push_back(IsOpaque::create(vm));
+    oo.push_back(IsArray::create(vm));
+    oo.push_back(IsBytecode::create(vm));
+
+    oo.push_back(GetArray::create(vm));
+    oo.push_back(GetBytecode::create(vm));
+    oo.push_back(GetBytedata::create(vm));
     return oo;
 }

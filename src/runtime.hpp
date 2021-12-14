@@ -487,6 +487,7 @@ public:
     virtual vm_text_t   symbol(const VMObjectPtr& o) = 0;
 
     virtual icu::UnicodeString get_bytecode(const VMObjectPtr& o) = 0;
+    virtual VMObjectPtrs get_bytedata(const VMObjectPtr& o) = 0;
     virtual VMObjectPtr create_bytecode(const icu::UnicodeString& s) = 0;
 
     virtual VMObjectPtr create_data(const icu::UnicodeString& s) = 0;
