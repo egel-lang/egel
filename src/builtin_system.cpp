@@ -664,7 +664,7 @@ public:
 
             VMObjectPtrs ss;
             int len = str.length();
-            for (int n = len-1; n >= 0; n--) {
+            for (int n = 0; n <len; n++) {
                 auto c  = machine()->create_char(str.char32At(n));
                 ss.push_back(c);
             }
