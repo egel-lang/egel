@@ -198,7 +198,7 @@ public:
             write_separator(os);
             write_int(os, n);
             write_separator(os);
-            auto o = vm->get_combinator(_data[n]);
+            auto o = vm->get_data(_data[n]);
             switch (o->tag()) {
                 case VM_OBJECT_INTEGER: {
                     write_char(os, 'i');
