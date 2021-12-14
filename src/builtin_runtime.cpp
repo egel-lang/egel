@@ -161,6 +161,107 @@ public:
     }
 };
 
+class IsInteger: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsInteger, "System", "is_integer");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_integer(arg0));
+    }
+};
+
+class IsFloat: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsFloat, "System", "is_float");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_float(arg0));
+    }
+};
+
+class IsCharacter: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsCharacter, "System", "is_character");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_char(arg0));
+    }
+};
+
+class IsText: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsText, "System", "is_text");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_text(arg0));
+    }
+};
+
+class IsCombinator: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsCombinator, "System", "is_combinator");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_combinator(arg0));
+    }
+};
+
+class IsOpaque: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsOpaque, "System", "is_opaque");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_opaque(arg0));
+    }
+};
+
+class IsArray: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsArray, "System", "is_array");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_array(arg0));
+    }
+};
+
+class IsBytecode: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsBytecode, "System", "is_bytecode");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        return machine()->create_bool(machine()->is_bytecode(arg0));
+    }
+};
+
+class GetArray: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetArray, "System", "get_array");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_array(arg0)) {
+            auto oo = machine()->get_array(arg0);
+            return machine()->to_list(oo);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+class GetBytecode: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetBytecode, "System", "get_bytecode");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_bytecode(arg0)) {
+            auto t = machine()->get_bytecode(arg0);
+            return machine()->create_text(t);
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+
 /*
 //## System::symbols - list all symbols in the runtime
 class Symbols: public Medadic {
