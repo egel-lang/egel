@@ -108,12 +108,20 @@ namespace List (
     ## List::take n l - take the first n elements of a list
     def take =
         [ 0 XX -> nil
+        | N nil -> nil
         | N (cons X XX) -> cons X (take (N - 1) XX) ]
 
     ## List::drop n l - drop the first n elements of a list
     def drop =
         [ 0 XX -> XX
+        | N nil -> nil
         | N (cons X XX) -> drop (N - 1) XX ]
+
+    ## List::chunks n l - list to list of chunks of given size
+    def chunks =
+        [ _ nil -> nil
+        | N L   -> if 0 < N then cons (take N L) (chunks N (drop N L))
+                   else nil ]
 
     ## List::from_to min max - list of numbers for min to max (exclusive)
     def from_to =
