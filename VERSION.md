@@ -5,7 +5,6 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-* add a proper data segment to combinators
 + remote procedure calls (look at grpc)
 + cleanup internals regarding combinator declarations
 + rewrite the runtime to make the interpreter performant
@@ -14,14 +13,17 @@ A list of all major changes between versions of the interpreter.
   when libfmt makes it into llvm and gcc?
 + add a literate scripting mode
 + add backtick `` `f`` as a shorthand for `quote "f"`
-+ generate C++ from .eg file (module compilation)
 + time and date
++ complex numbers
+* clean up ref (make it serializable)
++ generate C++ from .eg file (module compilation)
 + add import/export lists to using/namespace
 + target MSVC
-+ complex numbers
 
 ## The bleeding, cutting edge
 
+* introspection
+* add a proper data segment to combinators
 
 ## v0.1.6 -- rolling on
 

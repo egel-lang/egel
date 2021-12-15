@@ -231,7 +231,7 @@ public:
                 }
                 break;
                 default:
-                PANIC("cannot dis data object")
+                throw vm->create_text("weird data object");
                 break;
             }
         }
@@ -275,6 +275,10 @@ public:
     ~Assembler() {
     }
 
+    VM* machine() {
+        return _machine;
+    }
+
     int look(std::istream& in) {
         return in.peek();
     }
@@ -284,28 +288,33 @@ public:
     }
 
     void skip(std::istream& in) {
-        in.get();
+        if (!eol(in)) in.get();
     }
 
     void force(std::istream& in, int n) {
         if (look(in) == n) {
             skip(in);
         } else {
-            PANIC("failed to disassemble");
+            throw machine()->create_text(icu::UnicodeString(": expected '")+((char) n)+"'");
         }
     }
 
-    bool eol(std::istream& in) const {
-        return in.eof();
+    bool eol(std::istream& in) { // dude...
+        return in.peek() == std::istream::traits_type::eof();
     }
 
     bool is_separator(std::istream& in) {
-        return look(in) == SEPARATOR;
+        return (look(in) == SEPARATOR);
     }
 
     bool is_quote(std::istream& in) {
         int c = look(in);
         return (c == '\'') || (c == '\"');
+    }
+
+    bool is_digit(std::istream& in) {
+        int c = look(in);
+        return (c >= '0') || (c <= '9');
     }
 
     char get_char(std::istream& in) {
@@ -314,14 +323,17 @@ public:
 
     int char_to_val(int c) const {
         return ((c >= '0') && (c <= '9'))? (c - '0'):
-                ((c >= 'a') && (c <= 'f'))? (c - 'a'):
-                ((c >= 'A') && (c <= 'F'))? (c - 'A'): c; 
+                ((c >= 'a') && (c <= 'f'))? (10 + c - 'a'):
+                ((c >= 'A') && (c <= 'F'))? (10 + c - 'A'): c; 
     }
 
     int read_byte(std::istream& in) {
-        if (is_separator(in)) return -1;
         int c0 = get_char(in); int c1 = get_char(in);
-        return (char_to_val(c0) << 16) | char_to_val(c1);
+        return (char_to_val(c0) << 4) | char_to_val(c1);
+    }
+
+    void skip_white(std::istream& in) {
+        while (is_separator(in)) skip(in);
     }
 
     char* read_quoted(std::istream& in) {
@@ -380,7 +392,7 @@ public:
         return s.char32At(0);
     }
 
-    icu::UnicodeString read_string(std::istream& in) {
+    icu::UnicodeString read_text(std::istream& in) {
         auto cc = read_until_separator(in);
         auto s = char_to_unicode(cc);
         free(cc);
@@ -398,47 +410,81 @@ public:
         auto chars = unicode_to_char(_source);
         std::string s(chars);
         auto in = std::stringstream(s);
-        force(in, BYTECODEVERSION);
-        force(in, SEPARATOR);
+
+        auto version = read_byte(in);
+        if (version != BYTECODEVERSION) throw machine()->create_text("wrong bytecode version");
+
+        skip_white(in);
         auto c = read_combinator(in);
 
         // read in code section
         Code code;
-        while (!is_separator(in)) {
+        skip_white(in);
+        while (!eol(in) && !is_separator(in)) {
             auto b = read_byte(in);
             code.push_back(b);
         }
 
         // read in data section
         Data data;
-        while (!eol(in) && is_separator(in)) {
-// XXX      switch
+        skip_white(in);
+        vm_int_t z;
+        while (!eol(in) && is_digit(in)) { // I hate this
+            in >> z;
+            if (data.size() != (unsigned long) z) throw machine()->create_text(icu::UnicodeString("wrong data entry count ") + convert_from_int(z));
+            skip_white(in); 
             switch(look(in)) {
             case 'i': {
                 skip(in); 
+                skip(in); 
+                auto n = read_int(in);
+                auto o = machine()->create_integer(n);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
             }
             break;
             case 'f': {
                 skip(in); 
+                skip(in); 
+                auto f = read_float(in);
+                auto o = machine()->create_float(f);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
             }
             break;
             case 'c': {
                 skip(in); 
+                skip(in); 
+                auto c = read_char(in);
+                auto o = machine()->create_char(c);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
             }
             break;
             case 't': {
                 skip(in); 
+                skip(in); 
+                auto t = read_text(in);
+                auto o = machine()->create_text(t);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
             }
             break;
             case 'o': {
                 skip(in); 
+                skip(in); 
+                auto t = read_combinator(in);
+                auto o = machine()->get_combinator(t);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
             }
             break;
             default: {
-                PANIC("canot decode data section");
+                throw machine()->create_text("panic: cannot decode data");
             }
             break;
             }
+            skip_white(in);
         }
         free(chars);
         return VMObjectBytecode::create(_machine, code, data, c);
