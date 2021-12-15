@@ -22,6 +22,9 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+## v0.1.7 -- fine, keep your house Stroustrup
+
+* dis and asm should work again
 * introspection
 * add a proper data segment to combinators
 
