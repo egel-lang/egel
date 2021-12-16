@@ -835,6 +835,11 @@ public:
         throw create_text("stub");
     }
 
+    int compare(const VMObjectPtr& o0, const VMObjectPtr& o1) override {
+        CompareVMObjectPtr compare;
+        return compare(o0,o1);
+    }
+
 private:
     SymbolTable     _symbols;
     DataTable       _data;

@@ -558,6 +558,8 @@ public:
     // machine state
     virtual VMObjectPtr query_symbols() = 0;
     virtual VMObjectPtr query_data()    = 0;
+
+    virtual int         compare(const VMObjectPtr& o0, const VMObjectPtr& o1) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -173,6 +173,12 @@ add_library(dict MODULE ${DICT_LIST})
 target_link_libraries(dict ICU::uc ICU::i18n ICU::io)
 set_target_properties(dict PROPERTIES PREFIX "" SUFFIX ".ego")
 
+# pqueue.ego
+file(GLOB DICT_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/pqueue/*.cpp")
+add_library(pqueue MODULE ${DICT_LIST})
+target_link_libraries(pqueue ICU::uc ICU::i18n ICU::io)
+set_target_properties(pqueue PROPERTIES PREFIX "" SUFFIX ".ego")
+
 # installation
 include(GNUInstallDirs)
 
@@ -194,7 +200,7 @@ install(FILES ${INCLUDE_LIST}
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 
-install(TARGETS os fs regex random dict
+install(TARGETS os fs regex random dict pqueue
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 
