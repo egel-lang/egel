@@ -37,6 +37,11 @@ namespace System (
     def @@ =
         [ SELF NAME -> (get NAME SELF) SELF ]
 
+    ## System::min x y - minimum
+    def min = [X Y -> if X < Y then X else Y ]
+
+    ## System::max x y - maximum
+    def max = [X Y -> if X < Y then Y else X ]
 )
 
 namespace Option (
@@ -213,4 +218,15 @@ namespace List (
         | XX -> let L = length XX in
                 merge (sort (take (L/2) XX)) (sort (drop (L/2) XX)) ]
 
+    # List::sum - summation of list
+    def sum = foldl (+) 0
+
+    # List::product - product of list
+    def product = foldl (*) 1
+
+    # List::maximum - maximum of list
+    def maximum = foldl System::max min_int 
+
+    # List::minimum - minimum of list
+    def minimum = foldl System::min max_int 
 )

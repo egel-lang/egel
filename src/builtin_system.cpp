@@ -67,6 +67,26 @@ public:
     }
 };
 
+//## System:min_int - maximum for integers
+class MinInt: public Medadic {
+public:
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MinInt, "System", "min_int");
+
+    VMObjectPtr apply() const override {
+        return machine()->create_integer(std::numeric_limits<vm_int_t>::min());
+    }
+};
+//## System::max_int - maximum for integers
+class MaxInt: public Medadic {
+public:
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MaxInt, "System", "max_int");
+
+    VMObjectPtr apply() const override {
+        return machine()->create_integer(std::numeric_limits<vm_int_t>::max());
+    }
+};
+
+
 //## System::!- x - monadic minus
 class MonMin: public Monadic {
 public:
@@ -918,7 +938,9 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(VMObjectData::create(vm, "System", "object"));
 
     // operators
-    oo.push_back(MonMin::create(vm));
+
+    oo.push_back(MinInt::create(vm));
+    oo.push_back(MaxInt::create(vm));
     oo.push_back(Add::create(vm));
     oo.push_back(Min::create(vm));
     oo.push_back(Mul::create(vm));

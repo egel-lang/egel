@@ -98,13 +98,13 @@ namespace Search (
     
     ## Search::one p - one time p and return a singleton result
     def one =
-        [ P -> P <@> [A -> cons A nil ] ]
+        [ P -> P <@> [A -> {A} ] ]
 
     ## Search::plus p - one or more p and return a list result
     def plus =
         [ P ->
-            one P </> \L0 ->
-            plus P <@> \L1 -> L0 ++ L1 ]
+            (one P) </> \L0 ->
+            (plus P) <@> \L1 -> L0 ++ L1 ]
 
     ## Search::star p - zero or more p and return a list result
     def star =
