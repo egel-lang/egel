@@ -34,6 +34,9 @@ namespace System (
     ## System::snd (x, y) - proj1 on pair
     def snd = [ (X,Y) -> Y ]
 
+    ## System::$ - a very mysterious operator
+    def $ = [F X -> F X]
+
     def @@ =
         [ SELF NAME -> (get NAME SELF) SELF ]
 
