@@ -133,7 +133,7 @@ public:
         if (m->is_opaque(arg0) && m->symbol(arg0) == "System::pqueue") {
             auto d = PQueue::cast(arg0);
             d->pop();
-            return m->create_none();
+            return arg0;
         } else {
             THROW_BADARGS;
         }
