@@ -5,7 +5,7 @@ project(EgelRpc C CXX)
 include(../cmake/common.cmake)
 
 # Proto file
-get_filename_component(egel_proto "../../protos/egel_rpc.proto" ABSOLUTE)
+get_filename_component(egel_proto "src/egel_rpc.proto" ABSOLUTE)
 get_filename_component(egel_proto_path "${egel_proto}" PATH)
 
 # Generated sources
