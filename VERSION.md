@@ -7,6 +7,7 @@ A list of all major changes between versions of the interpreter.
 
 + remote procedure calls (look at grpc)
 + BADARGS should report the arguments
++ add local combinator definitions
 + cleanup internals regarding combinator declarations
 + rewrite the runtime to make the interpreter performant
 + module rework and compile into local module
