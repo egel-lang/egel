@@ -9,10 +9,12 @@
 
 typedef std::map<VMObjectPtr, VMObjectPtr,LessVMObjectPtr> dict_t;
 
-//## System::dictionary - a dictionary
+const icu::UnicodeString STRING_DICT = "Dict";
+
+//## Dict::dictionary - a dictionary
 class Dictionary: public Opaque {
 public:
-    OPAQUE_PREAMBLE(VM_SUB_EGO, Dictionary, "System", "dictionary");
+    OPAQUE_PREAMBLE(VM_SUB_EGO, Dictionary, STRING_DICT, "dictionary");
 
     Dictionary(VM* m, const dict_t& d): Dictionary(m) {
         _value = d;
@@ -53,6 +55,10 @@ public:
         _value[key] = value;
     }
 
+    void erase(const VMObjectPtr& key) {
+        _value.erase(key);
+    }
+
     VMObjectPtrs keys() const {
         VMObjectPtrs oo;
         for (auto&k : _value) {
@@ -65,24 +71,24 @@ protected:
     dict_t _value;
 };
 
-//## System::dict - create a dict object
+//## Dict::dict - create a dict object
 class Dict: public Medadic {
 public:
-    MEDADIC_PREAMBLE(VM_SUB_EGO, Dict, "System", "dict");
+    MEDADIC_PREAMBLE(VM_SUB_EGO, Dict, STRING_DICT, "dict");
 
     VMObjectPtr apply() const override {
         return Dictionary::create(machine(), dict_t());
     }
 };
 
-//## System::dict_has d k - check for key
+//## Dict::has d k - check for key
 class DictHas: public Dyadic {
 public:
-    DYADIC_PREAMBLE(VM_SUB_EGO, DictHas, "System", "dict_has");
+    DYADIC_PREAMBLE(VM_SUB_EGO, DictHas, STRING_DICT, "has");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
             auto d = Dictionary::cast(arg0);
             return m->create_bool(d->has(arg1));
         } else {
@@ -91,14 +97,14 @@ public:
     }
 };
 
-//## System::dict_get d k - get a value by key
+//## Dict::get d k - get a value by key
 class DictGet: public Dyadic {
 public:
-    DYADIC_PREAMBLE(VM_SUB_EGO, DictGet, "System", "dict_get");
+    DYADIC_PREAMBLE(VM_SUB_EGO, DictGet, STRING_DICT, "get");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
             auto d = Dictionary::cast(arg0);
             return d->get(arg1);
         } else {
@@ -107,14 +113,14 @@ public:
     }
 };
 
-//## System::dict_set d k v - set a value by key
+//## Dict::set d k v - set a value by key
 class DictSet: public Ternary {
 public:
-    TERNARY_PREAMBLE(VM_SUB_EGO, DictSet, "System", "dict_set");
+    TERNARY_PREAMBLE(VM_SUB_EGO, DictSet, STRING_DICT, "set");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
             auto d = Dictionary::cast(arg0);
             d->set(arg1, arg2);
             return arg0;
@@ -124,14 +130,31 @@ public:
     }
 };
 
-//## System::dict_keys d - dictionary keys as list
+//## Dict::erase d k - erase a value by key
+class DictErase: public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_EGO, DictErase, STRING_DICT, "erase");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        auto m = machine();
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
+            auto d = Dictionary::cast(arg0);
+            d->erase(arg1);
+            return d;
+        } else {
+            THROW_BADARGS;
+        }
+    }
+};
+
+//## Dict::keys d - dictionary keys as list
 class DictKeys: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, DictKeys, "System", "dict_keys");
+    MONADIC_PREAMBLE(VM_SUB_EGO, DictKeys, STRING_DICT, "keys");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "System::dictionary") {
+        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
             auto d = Dictionary::cast(arg0);
             auto oo = d->keys();
             return m->to_list(oo);
@@ -153,6 +176,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(DictHas::create(vm));
     oo.push_back(DictGet::create(vm));
     oo.push_back(DictSet::create(vm));
+    oo.push_back(DictErase::create(vm));
     oo.push_back(DictKeys::create(vm));
 
     return oo;

@@ -4,31 +4,32 @@ import "dict.ego"
 import "prelude.eg"
 import "generator.eg"
 
-namespace System ( # dict lives in the System space
+namespace Dict ( 
 
     using List
+    using System
  
-    def dict_from_list =
-        foldl [D (K,V) -> dict_set D K V] dict
+    def from_list =
+        foldl [D (K,V) -> Dict::set D K V] dict
 
-    def dict_to_list =
-        [ D -> foldl [LL K -> cons (K, dict_get D K) LL] nil (dict_keys D) ]
+    def to_list =
+        [ D -> foldl [LL K -> cons (K, Dict::get D K) LL] nil (Dict::keys D) ]
 
-    def dict_nth =
-        [ V D K -> if dict_has D K then dict_get D K else V ]
+    def nth =
+        [ V D K -> if Dict::has D K then Dict::get D K else V ]
 
-    def dict_copy =
-        dict_from_list . dict_to_list 
+    def copy =
+        Dict::from_list . Dict::to_list 
 
-    def dict_update =
-        [ D K V -> if dict_has D K then dict_set D K V else D ]
+    def update =
+        [ D K V -> if Dict::has D K then Dict::set D K V else D ]
 
-    def dict_lazy_update =
-        [ D K VF -> if dict_has D K then dict_set D K (VF none) else D ]
+    def lazy_update =
+        [ D K VF -> if Dict::has D K then Dict::set D K (VF none) else D ]
 
-    def dict_map =
-        [ F D -> foldl [D K -> dict_set D K (F (dict_get D K))] D (dict_keys D) ]
+    def map =
+        [ F D -> foldl [D K -> Dict::set D K (F (Dict::get D K))] D (Dict::keys D) ]
 
-    def dict_union =
-        [ D0 D1 -> dict_from_list ((dict_to_list D0) ++ (dict_to_list D1)) ]
+    def union =
+        [ D0 D1 -> Dict::from_list ((Dict::to_list D0) ++ (Dict::to_list D1)) ]
 )

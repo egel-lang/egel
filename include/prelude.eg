@@ -35,7 +35,7 @@ namespace System (
     def snd = [ (X,Y) -> Y ]
 
     ## System::$ - a very mysterious operator
-    def $ = [F X -> F X]
+    #def $ = [F X -> F X]
 
     def @@ =
         [ SELF NAME -> (get NAME SELF) SELF ]

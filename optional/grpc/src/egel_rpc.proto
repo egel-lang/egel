@@ -1,17 +1,13 @@
-syntax = "proto3"
+syntax = "proto3";
 
-package egelrpc;
+package egel_rpc;
 
-// interface of a server
 service EgelRpc {
-    rpc EgelCall(EgelTerm) returns (EgelTerm) {}
-
-    rpc EgelStream(stream EgelTerm) returns (stream EgelTerm) {}
-
-    rpc EgelNodeInfo() returns (EgelTerm) {}
+    rpc EgelCall(EgelText) returns (EgelText) {}
+    rpc EgelStream(stream EgelText) returns (stream EgelText) {}
+    rpc EgelNodeInfo(EgelText) returns (EgelText) {}
 }
 
-
-message EgelTerm {
+message EgelText {
     string term = 1;
 }
