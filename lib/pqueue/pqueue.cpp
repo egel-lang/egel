@@ -7,8 +7,21 @@
 #include <utility>
 #include <string>
 #include <map>
+#include <queue>
 
-typedef std::vector<std::pair<VMObjectPtr, VMObjectPtr>> pqueue_t;
+struct Greater {
+    bool operator() (const std::pair<VMObjectPtr, VMObjectPtr>& p0, 
+                     const std::pair<VMObjectPtr, VMObjectPtr>& p1) const {
+        CompareVMObjectPtr compare;
+        auto c = compare(p0.first, p1.first);
+        return c == 1;
+    }
+};
+
+typedef std::priority_queue<
+        std::pair<VMObjectPtr, VMObjectPtr>,
+        std::vector<std::pair<VMObjectPtr,VMObjectPtr>>,
+        Greater> pqueue_t;
 
 //## System::pqueue - a pqueue
 class PQueue: public Opaque {
@@ -47,7 +60,7 @@ public:
     }
 
     VMObjectPtr top() {
-        auto p = _value[0];
+        auto p = _value.top();
 
         VMObjectPtrs tt;
         tt.push_back(p.first);
@@ -57,24 +70,11 @@ public:
     }
 
     void pop() {
-        _value.erase(_value.begin());
+        _value.pop();
     }
 
     void push(const VMObjectPtr& k, const VMObjectPtr& v) {
-        auto it = _value.begin();
-
-        bool found = false;
-        unsigned int n = 0;
-        while(!found && (n < _value.size())) {
-            auto key = _value[n].first;
-            if (machine()->compare(k, key) == -1) {
-                found = true;
-            } else {
-                n++;
-            }
-        }
-
-        _value.insert(it+n, std::pair<VMObjectPtr, VMObjectPtr>(k, v));
+        _value.push(std::pair<VMObjectPtr, VMObjectPtr>(k, v));
     }
 
 protected:
