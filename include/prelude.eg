@@ -15,6 +15,16 @@ namespace System (
         [ true  -> false
         | X     -> true ]
 
+    ## System::|| p q - 'lazy' or
+    def || = 
+        [ false F -> F none
+        | true  F -> true ]
+
+    ## System::&& p q - 'lazy' and
+    def && = 
+        [ true F -> F none
+        | false F -> false ]
+
     ## System::. f g - function composition
     def . =
         [ F G X -> F (G X) ]
@@ -39,6 +49,9 @@ namespace System (
 
     def @@ =
         [ SELF NAME -> (get NAME SELF) SELF ]
+
+    ## System::abs x - absolute
+    def abs = [X -> if X < 0 then 0 - X else X ]
 
     ## System::min x y - minimum
     def min = [X Y -> if X < Y then X else Y ]
@@ -221,6 +234,12 @@ namespace List (
         | XX -> let L = length XX in
                 merge (sort (take (L/2) XX)) (sort (drop (L/2) XX)) ]
 
+    ## List::nub l - remove consecutive duplicates
+    def nub =
+        [ nil -> nil | (cons X nil) -> cons X nil
+        | (cons X (cons Y YY)) -> if X == Y then nub (cons Y YY)
+                                  else (cons X (nub (cons Y YY))) ]
+
     # List::sum - summation of list
     def sum = foldl (+) 0
 
@@ -232,4 +251,17 @@ namespace List (
 
     # List::minimum - minimum of list
     def minimum = foldl System::min max_int 
+
+    ## List::range l f - iterate over elements (reverse map
+    def range =
+        [ XX F -> map F XX ]
+
+    ## List::range2 l0 l1 f - iterate over elements of two lists
+    def range2 =
+        [ XG YG F -> flatten (range XG [X -> range YG [Y -> F X Y]]) ]
+
+    ## List::range3 l0 l1 l2 f - iterate over elements of three lists
+    def range3 =
+        [ XG YG ZG F -> flatten (range XG [X -> range2 YG ZG [Y Z  -> F X Y Z]]) ]
+
 )

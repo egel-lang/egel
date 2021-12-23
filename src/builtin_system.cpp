@@ -770,7 +770,7 @@ public:
     }
 };
 
-//## System::&& - short-circuited and
+//## System::&& - short-circuited and (deprecated)
 class LazyAnd: public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyAnd, "System", "&&");
@@ -791,7 +791,7 @@ public:
     }
 };
 
-//## System::|| - short-circuited or
+//## System::|| - short-circuited or (deprecated)
 class LazyOr: public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyOr, "System", "||");
@@ -968,8 +968,8 @@ std::vector<VMObjectPtr> builtin_system(VM* vm) {
     oo.push_back(Pack::create(vm));
 
     // lazy operators
-    oo.push_back(LazyAnd::create(vm));
-    oo.push_back(LazyOr::create(vm));
+//    oo.push_back(LazyAnd::create(vm));
+//    oo.push_back(LazyOr::create(vm));
 
     // system info, override if sandboxed
     oo.push_back(Arg::create(vm));

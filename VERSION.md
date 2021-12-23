@@ -6,8 +6,10 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + remote procedure calls (look at grpc)
++ vs code syntax highlighting
 + BADARGS should report the arguments
-+ add local combinator definitions
++ add local combinator definitions (`where`)
++ dynamic dispatch
 + cleanup internals regarding combinator declarations
 + rewrite the runtime to make the interpreter performant
 + module rework and compile into local module
