@@ -1636,27 +1636,27 @@ public:
     virtual VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const = 0;
         
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
-        auto tt  = VM_OBJECT_ARRAY_VALUE(thunk);
-        auto rt  = tt[0];
-        auto rti = tt[1];
-        auto k   = tt[2];
+        auto m = machine();
+        auto rt  = m->array_get(thunk, 0);
+        auto rti = m->array_get(thunk, 1);
+        auto k   = m->array_get(thunk, 2);
 
         VMObjectPtr r;
-        if (tt.size() > 6) {
-            auto arg0 = tt[5];
-            auto arg1 = tt[6];
+        if (m->array_size(thunk) > 6) {
+            auto arg0 = m->array_get(thunk, 5);
+            auto arg1 = m->array_get(thunk, 6);
 
             try {
                 r = apply(arg0, arg1);
                 if (r == nullptr) {
                     VMObjectPtrs rr;
-                    for (unsigned int i = 4; i<tt.size(); i++) {
-                        rr.push_back(tt[i]);
+                    for (unsigned int i = 4; i < (unsigned int) m->array_size(thunk); i++) {
+                        rr.push_back(m->array_get(thunk,i));
                     }
                     r = VMObjectArray::create(rr);
                 }
             } catch (VMObjectPtr e) {
-                auto exc   = tt[3];
+                auto exc   = m->array_get(thunk,3);
                 auto ee    = VM_OBJECT_ARRAY_VALUE(exc);
 
                 VMObjectPtrs rr;
@@ -1671,18 +1671,18 @@ public:
             }
         } else {
             VMObjectPtrs rr;
-            for (unsigned int i = 4; i<tt.size(); i++) {
-                rr.push_back(tt[i]);
+            for (unsigned int i = 4; i<(unsigned int) m->array_size(thunk); i++) {
+                rr.push_back(m->array_get(thunk,i));
             }
             r = VMObjectArray::create(rr);
         }
 
         // also return spurious arguments
-        if (tt.size() > 7) {
+        if (m->array_size(thunk) > 7) {
             VMObjectPtrs rr;
             rr.push_back(r);
-            for (unsigned int i = 7; i<tt.size(); i++) {
-                rr.push_back(tt[i]);
+            for (unsigned int i = 7; i<(unsigned int) m->array_size(thunk); i++) {
+                rr.push_back(m->array_get(thunk,i));
             }
             r = VMObjectArray::create(rr);
         }

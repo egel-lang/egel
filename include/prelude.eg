@@ -58,6 +58,9 @@ namespace System (
 
     ## System::max x y - maximum
     def max = [X Y -> if X < Y then Y else X ]
+
+    ## System::** x y - power (temporary)
+    def ** = [ N 0 -> 1 | N M -> N * (N ** (M - 1)) ]
 )
 
 namespace Option (
