@@ -16,7 +16,7 @@
 #include <limits>
 #include <functional>
 
-#include "unicode/unistr.h"
+#include "unicode/ustring.h"
 #include "unicode/ustdio.h"
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
@@ -473,8 +473,9 @@ public:
     //virtual void         array_append(VMObjectPtr aa, const VMObjectPtr a) = 0;
 
     virtual VMObjectPtr  create_array(const VMObjectPtrs& oo) = 0;
+    virtual VMObjectPtr  create_array(const unsigned int size) = 0;
     virtual bool         is_array(const VMObjectPtr& o) = 0;
-    virtual int          array_size(const VMObjectPtr& o) = 0;
+    virtual unsigned int array_size(const VMObjectPtr& o) = 0;
     virtual VMObjectPtr  array_get(const VMObjectPtr& o, int n) = 0;
     virtual void         array_set(VMObjectPtr& o, int n, const VMObjectPtr& e) = 0;
     virtual VMObjectPtrs get_array(const VMObjectPtr& o) = 0;

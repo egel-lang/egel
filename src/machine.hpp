@@ -538,11 +538,15 @@ public:
         return VMObjectArray::create(oo);
     }
 
+    VMObjectPtr create_array(const unsigned int size) override {
+        return VMObjectArray::create(size);
+    }
+ 
     bool is_array(const VMObjectPtr& o) override {
         return VM_OBJECT_ARRAY_TEST(o);
     }
 
-    int array_size(const VMObjectPtr& o) override {
+    unsigned int array_size(const VMObjectPtr& o) override {
         return VM_OBJECT_ARRAY_CAST(o)->size();
     }
 

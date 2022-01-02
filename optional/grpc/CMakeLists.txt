@@ -1,16 +1,25 @@
-PROJECT(egelrpc)
-CMAKE_MINIMUM_REQUIRED (VERSION 3.5)
-SET(CMAKE_CXX_FLAGS "-g -Wall -Werror -std=c++11")
+project(egel_rpc)
+cmake_minimum_required(VERSION 3.5)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-g -Wall -Werror -fmodules-ts")
 
-INCLUDE(FindProtobuf)
-FIND_PACKAGE(Protobuf REQUIRED)
-INCLUDE_DIRECTORIES(${PROTOBUF_INCLUDE_DIR})
-PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER src/egel_rpc.proto)
-ADD_LIBRARY(egelrpc ${PROTO_HEADER} ${PROTO_SRC})
+find_package(Protobuf REQUIRED)
+find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 
+protobuf_generate_cpp(PROTO_SRC PROTO_HEADER src/egel_rpc.proto)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-#ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}_add add_person.cc)
-#ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}_list list_people.cc)
-#TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME}_add proto ${PROTOBUF_LIBRARY})
-#TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME}_list proto ${PROTOBUF_LIBRARY})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${PROTOBUF_INCLUDE_DIR})
+include_directories(/usr/local/include)
+include_directories(${ICU_INCLUDE_DIRS})
+message( ${ICU_INCLUDE_DIRS} )
+
+add_library(egel_rpc MODULE ${PROTO_HEADER} ${PROTO_SRC} src/egel_rpc.cpp)
+target_link_libraries(egel_rpc proto ${PROTOBUF_LIBRARY})
+target_link_libraries(egel_rpc ICU::uc ICU::i18n ICU::io)
+set_target_properties(egel_rpc PROPERTIES PREFIX "" SUFFIX ".ego")
+
+include(GNUInstallDirs)
+install(TARGETS egel_rpc
+    DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
+)

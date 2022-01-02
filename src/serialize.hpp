@@ -300,7 +300,7 @@ inline SerialObjectPtrs to_dag(VM* m, const VMObjectPtr& o) {
             work1.push(o);
             if (m->is_array(o)) {
                 auto n = m->array_size(o);
-                for (auto i=0; i<n; i++) {
+                for (unsigned int i=0; i<n; i++) {
                     auto o0 = m->array_get(o, i);
                     work0.push(o0);
                 }

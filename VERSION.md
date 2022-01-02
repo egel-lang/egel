@@ -5,7 +5,13 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
++ don't reduce literals or variables
++ move to C++20 (modules, egel namespace, modern syntax)
+  when libfmt makes it into llvm and gcc?
 + remote procedure calls (look at grpc)
++ integer move instruction in bytecode
++ generators to prelude, generator for dict
++ lowercase namespace, reintroduction of monadic min
 + vs code syntax highlighting
 + BADARGS should report the arguments
 + add local combinator definitions (`where`)
@@ -13,8 +19,6 @@ A list of all major changes between versions of the interpreter.
 + cleanup internals regarding combinator declarations
 + rewrite the runtime to make the interpreter performant
 + module rework and compile into local module
-+ move to C++20 (modules, egel namespace, modern syntax)
-  when libfmt makes it into llvm and gcc?
 + add a literate scripting mode
 + add backtick `` `f`` as a shorthand for `quote "f"`
 + time and date
