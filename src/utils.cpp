@@ -240,7 +240,7 @@ namespace fs = std::filesystem;
 
 fs::path string_to_path(const icu::UnicodeString& s) {
     char* cc = unicode_to_char(s);
-    fs::path p = fs::u8path(cc);
+    fs::path p(cc);
     delete[] cc;
     return p;
 }
