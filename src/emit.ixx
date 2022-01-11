@@ -3,9 +3,10 @@ export module emit;
 export void emit_data(VM *vm, const AstPtr &a);
 export void emit_code(VM *vm, const AstPtr &a);
 
-import<vector> import<memory>
+import<vector>;
+import<memory>;
 
-    import ast;
+import ast;
 import transform;
 import environment;
 import bytecode;

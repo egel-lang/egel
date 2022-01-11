@@ -1,211 +1,215 @@
 export module constants;
 
-#define CHAR_BEL '\a'
-#define CHAR_BS '\b'
-#define CHAR_HT '\t'
-#define CHAR_LF '\n'
-#define CHAR_VT '\v'
-#define CHAR_FF '\f'
-#define CHAR_CR '\n'
-#define CHAR_BB '\\'
-#define CHAR_SQ '\''
-#define CHAR_DQ '"'
-#define CHAR_BQ '`'
+export {
 
-#define CHAR_SPACE ' '
-#define CHAR_BREAK '\n'
+constexpr auto CHAR_BEL = '\a';
+constexpr auto CHAR_BS = '\b';
+constexpr auto CHAR_HT = '\t';
+constexpr auto CHAR_LF = '\n';
+constexpr auto CHAR_VT = '\v';
+constexpr auto CHAR_FF = '\f';
+constexpr auto CHAR_CR = '\n';
+constexpr auto CHAR_BB = '\\';
+constexpr auto CHAR_SQ = '\'';
+constexpr auto CHAR_DQ = '"';
+constexpr auto CHAR_BQ = '`';
 
-#define CHAR_SQUOTE '\''
-#define CHAR_DQUOTE '"'
+constexpr auto CHAR_SPACE = ' ';
+constexpr auto CHAR_BREAK = '\n';
+
+constexpr auto CHAR_SQUOTE = '\'';
+constexpr auto CHAR_DQUOTE = '"';
 
 // quotes
 
-#define SQUOTE "'"
-#define DQUOTE "\""
-#define BQUOTE "`"
-#define BACKSLASH "\\"
+constexpr auto SQUOTE = "'";
+constexpr auto DQUOTE = "\"";
+constexpr auto BQUOTE = "`";
+constexpr auto BACKSLASH = "\\";
 
 // commments
 
-#define COMMENT_LINE "//"
-#define COMMENT_START "/*"
-#define COMMENT_END "*/"
+constexpr auto COMMENT_LINE = "//";
+constexpr auto COMMENT_START = "/*";
+constexpr auto COMMENT_END = "*/";
 
 // seperators
 
-#define STRING_COLON ":"
-#define STRING_DCOLON "::"
-#define STRING_SEMICOLON ";"
-#define STRING_DSEMICOLON ";;"
-#define STRING_DOT "."
-#define STRING_COMMA ","
-#define STRING_BAR "|"
-#define STRING_HASH "#"
-#define STRING_UNDER "_"
+constexpr auto STRING_COLON = ":";
+constexpr auto STRING_DCOLON = "::";
+constexpr auto STRING_SEMICOLON = ";";
+constexpr auto STRING_DSEMICOLON = ";;";
+constexpr auto STRING_DOT = ".";
+constexpr auto STRING_COMMA = ",";
+constexpr auto STRING_BAR = "|";
+constexpr auto STRING_HASH = "#";
+constexpr auto STRING_UNDER = "_";
 
-#define STRING_LPAREN "("
-#define STRING_RPAREN ")"
-#define STRING_LSQUARE "["
-#define STRING_RSQUARE "]"
-#define STRING_LCURLY "{"
-#define STRING_RCURLY "}"
+constexpr auto STRING_LPAREN = "(";
+constexpr auto STRING_RPAREN = ")";
+constexpr auto STRING_LSQUARE = "[";
+constexpr auto STRING_RSQUARE = "]";
+constexpr auto STRING_LCURLY = "{";
+constexpr auto STRING_RCURLY = "}";
 
 // expressions
 
-#define STRING_EQUAL "="
-#define STRING_ASSIGN "<-"
-#define STRING_LAMBDA "\\"
-#define STRING_ARROW "->"
-#define STRING_DARROW "=>"
-#define STRING_STAR "*"
-#define STRING_PLUS "+"
-#define STRING_QUESTION "?"
-#define STRING_BANG "!"
-#define STRING_SLASH "/"
+constexpr auto STRING_EQUAL = "=";
+constexpr auto STRING_ASSIGN = "<-";
+constexpr auto STRING_LAMBDA = "\\";
+constexpr auto STRING_ARROW = "->";
+constexpr auto STRING_DARROW = "=>";
+constexpr auto STRING_STAR = "*";
+constexpr auto STRING_PLUS = "+";
+constexpr auto STRING_QUESTION = "?";
+constexpr auto STRING_BANG = "!";
+constexpr auto STRING_SLASH = "/";
 
 // namespaces
 
-#define STRING_IMPORT "import"
-#define STRING_NAMESPACE "namespace"
-#define STRING_USING "using"
+constexpr auto STRING_IMPORT = "import";
+constexpr auto STRING_NAMESPACE = "namespace";
+constexpr auto STRING_USING = "using";
 
 // declarations
 
-#define STRING_DEF "def"
-#define STRING_VAL "val"
-#define STRING_DATA "data"
+constexpr auto STRING_DEF = "def";
+constexpr auto STRING_VAL = "val";
+constexpr auto STRING_DATA = "data";
 
 // expressions
-#define STRING_IF "if"
-#define STRING_THEN "then"
-#define STRING_ELSE "else"
-#define STRING_LET "let"
-#define STRING_IN "in"
-#define STRING_THROW "throw"
-#define STRING_TRY "try"
-#define STRING_CATCH "catch"
-#define STRING_LET "let"
-#define STRING_IN "in"
-#define STRING_VAL "val"
+constexpr auto STRING_IF = "if";
+constexpr auto STRING_THEN = "then";
+constexpr auto STRING_ELSE = "else";
+constexpr auto STRING_LET = "let";
+constexpr auto STRING_IN = "in";
+constexpr auto STRING_THROW = "throw";
+constexpr auto STRING_TRY = "try";
+constexpr auto STRING_CATCH = "catch";
+constexpr auto STRING_LET = "let";
+constexpr auto STRING_IN = "in";
+constexpr auto STRING_VAL = "val";
 
 // names, combinators, ..
 
-#define STRING_PART "part"
-#define STRING_LOWERCASE "lowercase"
-#define STRING_UPPERCASE "uppercase"
-#define STRING_NAME "name"
-#define STRING_VARIABLE "variable"
-#define STRING_IDENTIFIER "identifier"
-#define STRING_COMBINATOR "combinator"
-#define STRING_OPERATOR "operator"
+constexpr auto STRING_PART = "part";
+constexpr auto STRING_LOWERCASE = "lowercase";
+constexpr auto STRING_UPPERCASE = "uppercase";
+constexpr auto STRING_NAME = "name";
+constexpr auto STRING_VARIABLE = "variable";
+constexpr auto STRING_IDENTIFIER = "identifier";
+constexpr auto STRING_COMBINATOR = "combinator";
+constexpr auto STRING_OPERATOR = "operator";
 
 // basic types
 
-#define STRING_UNIT "unit"
-#define STRING_NONE "none"
+constexpr auto STRING_UNIT = "unit";
+constexpr auto STRING_NONE = "none";
 
-#define STRING_BOOL "bool"
-#define STRING_TRUE "true"
-#define STRING_FALSE "false"
+constexpr auto STRING_BOOL = "bool";
+constexpr auto STRING_TRUE = "true";
+constexpr auto STRING_FALSE = "false";
 
-#define STRING_INT "int"
-#define STRING_FLOAT "float"
-#define STRING_LONG "long"
-#define STRING_CHAR "char"
-#define STRING_STRING "string"
-#define STRING_DOUBLE "double"
-#define STRING_PTR "ptr"
+constexpr auto STRING_INT = "int";
+constexpr auto STRING_FLOAT = "float";
+constexpr auto STRING_LONG = "long";
+constexpr auto STRING_CHAR = "char";
+constexpr auto STRING_STRING = "string";
+constexpr auto STRING_DOUBLE = "double";
+constexpr auto STRING_PTR = "ptr";
 
-#define STRING_TEXT "text"
+constexpr auto STRING_TEXT = "text";
 
-#define STRING_LIST "list"
-#define STRING_NIL "nil"
-#define STRING_CONS "cons"
+constexpr auto STRING_LIST = "list";
+constexpr auto STRING_NIL = "nil";
+constexpr auto STRING_CONS = "cons";
 
-#define STRING_TUPLE "tuple"
-#define STRING_CLASS "class"
-#define STRING_OBJECT "object"
-#define STRING_EXTEND "extend"    // this is the combinator
-#define STRING_EXTENDS "extends"  // this is the keyword
-#define STRING_WITH "with"
+constexpr auto STRING_TUPLE = "tuple";
+constexpr auto STRING_CLASS = "class";
+constexpr auto STRING_OBJECT = "object";
+constexpr auto STRING_EXTEND = "extend";    // this is the combinator
+constexpr auto STRING_EXTENDS = "extends";  // this is the keyword
+constexpr auto STRING_WITH = "with";
 
-#define STRING_FAIL "fail"
+constexpr auto STRING_FAIL = "fail";
 
 // System
 
-#define STRING_SYSTEM "System"
-#define STRING_K "k"
-#define STRING_ID "id"
+constexpr auto STRING_SYSTEM = "System";
+constexpr auto STRING_K = "k";
+constexpr auto STRING_ID = "id";
 
 // main section
 
-#define STRING_MAIN "main"
+constexpr auto STRING_MAIN = "main";
 
 // compiler phases
 
-#define STRING_INTERNAL "internal"
-#define STRING_IO "input/output"
-#define STRING_LEXICAL "lexical"
-#define STRING_IDENTIFICATION "identification"
-#define STRING_SYNTACTICAL "syntactical"
-#define STRING_SEMANTICAL "semantical"
-#define STRING_LINKER "linker"
-#define STRING_CODEGEN "code"
+constexpr auto STRING_INTERNAL = "internal";
+constexpr auto STRING_IO = "input/output";
+constexpr auto STRING_LEXICAL = "lexical";
+constexpr auto STRING_IDENTIFICATION = "identification";
+constexpr auto STRING_SYNTACTICAL = "syntactical";
+constexpr auto STRING_SEMANTICAL = "semantical";
+constexpr auto STRING_LINKER = "linker";
+constexpr auto STRING_CODEGEN = "code";
 
 // compiler errors
 
-#define STRING_ERROR_REDECLARE "redeclaration"
-#define STRING_ERROR_UNDECLARED "undeclared"
-#define STRING_ERROR_DECLARED "declared"
-#define STRING_ERROR_NOPATTERN "pattern expected"
-#define STRING_ERROR_NODEF "definition expected"
-#define STRING_ERROR_NOEXPR "expression expected"
-#define STRING_ERROR_NODECL "declaration expected"
+constexpr auto STRING_ERROR_REDECLARE = "redeclaration";
+constexpr auto STRING_ERROR_UNDECLARED = "undeclared";
+constexpr auto STRING_ERROR_DECLARED = "declared";
+constexpr auto STRING_ERROR_NOPATTERN = "pattern expected";
+constexpr auto STRING_ERROR_NODEF = "definition expected";
+constexpr auto STRING_ERROR_NOEXPR = "expression expected";
+constexpr auto STRING_ERROR_NODECL = "declaration expected";
 
 // lambda
-#define STRING_CONST "const"
-#define STRING_EMBED "embed"
-#define STRING_CALL "call"
-#define STRING_SELECT "select"
+constexpr auto STRING_CONST = "const";
+constexpr auto STRING_EMBED = "embed";
+constexpr auto STRING_CALL = "call";
+constexpr auto STRING_SELECT = "select";
 
 // readable text for token types
-#define STRING_EOF "end of file"
-#define STRING_ERROR "error"
-#define STRING_NAME "name"
-#define STRING_EQ "="
-#define STRING_INTEGER "integer"
-#define STRING_HEXINTEGER "hexadecimal integer"
-#define STRING_DARROW "=>"
+constexpr auto STRING_EOF = "end of file";
+constexpr auto STRING_ERROR = "error";
+constexpr auto STRING_NAME = "name";
+constexpr auto STRING_EQ = "=";
+constexpr auto STRING_INTEGER = "integer";
+constexpr auto STRING_HEXINTEGER = "hexadecimal integer";
+constexpr auto STRING_DARROW = "=>";
 
 // human readable byte opcodes
-#define STRING_OP_ASSIGN "assign"
-#define STRING_OP_INC "inc"
-#define STRING_OP_ADD "add"
-#define STRING_OP_SUB "sub"
-#define STRING_OP_MUL "mul"
-#define STRING_OP_DIV "div"
-#define STRING_OP_MOD "mod"
-#define STRING_OP_LEN "len"
-#define STRING_OP_EQ "eq"
-#define STRING_OP_LT "lt"
-#define STRING_OP_LE "le"
-#define STRING_OP_NIL "nil"
-#define STRING_OP_MOV "mov"
-#define STRING_OP_LOAD "load"
-#define STRING_OP_DATA "data"
-#define STRING_OP_TAKE "take"
-#define STRING_OP_SPLIT "split"
-#define STRING_OP_TAKEX "takex"
-#define STRING_OP_SPLITX "splitx"
-#define STRING_OP_COMBINE "combine"
-#define STRING_OP_CONCAT "concat"
-#define STRING_OP_CONCATX "concatx"
-#define STRING_OP_TEST "test"
-#define STRING_OP_TAG "tag"
-#define STRING_OP_JMP "jmp"
-#define STRING_OP_BRANCH "branch"
+constexpr auto STRING_OP_ASSIGN = "assign";
+constexpr auto STRING_OP_INC = "inc";
+constexpr auto STRING_OP_ADD = "add";
+constexpr auto STRING_OP_SUB = "sub";
+constexpr auto STRING_OP_MUL = "mul";
+constexpr auto STRING_OP_DIV = "div";
+constexpr auto STRING_OP_MOD = "mod";
+constexpr auto STRING_OP_LEN = "len";
+constexpr auto STRING_OP_EQ = "eq";
+constexpr auto STRING_OP_LT = "lt";
+constexpr auto STRING_OP_LE = "le";
+constexpr auto STRING_OP_NIL = "nil";
+constexpr auto STRING_OP_MOV = "mov";
+constexpr auto STRING_OP_LOAD = "load";
+constexpr auto STRING_OP_DATA = "data";
+constexpr auto STRING_OP_TAKE = "take";
+constexpr auto STRING_OP_SPLIT = "split";
+constexpr auto STRING_OP_TAKEX = "takex";
+constexpr auto STRING_OP_SPLITX = "splitx";
+constexpr auto STRING_OP_COMBINE = "combine";
+constexpr auto STRING_OP_CONCAT = "concat";
+constexpr auto STRING_OP_CONCATX = "concatx";
+constexpr auto STRING_OP_TEST = "test";
+constexpr auto STRING_OP_TAG = "tag";
+constexpr auto STRING_OP_JMP = "jmp";
+constexpr auto STRING_OP_BRANCH = "branch";
 
 // local and a magic marker for local definitions
-#define STRING_LOCAL "Local"
-#define STRING_MAGIC_START "[["
-#define STRING_MAGIC_END "]]"
+constexpr auto STRING_LOCAL = "Local";
+constexpr auto STRING_MAGIC_START = "[[";
+constexpr auto STRING_MAGIC_END = "]]";
+
+}
