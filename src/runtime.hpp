@@ -594,7 +594,7 @@ public:
     }
 
     static VMObjectPtr create(const vm_int_t v) {
-        return VMObjectPtr(new VMObjectInteger(v));
+        return std::make_shared<VMObjectInteger>(v);
     }
 
 
@@ -635,7 +635,7 @@ public:
     }
 
     static VMObjectPtr create(const vm_float_t v) {
-        return VMObjectPtr(new VMObjectFloat(v));
+        return std::make_shared<VMObjectFloat>(v);
     }
 
     symbol_t symbol() const override {
@@ -679,7 +679,7 @@ public:
     }
 
     static VMObjectPtr create(const vm_char_t v) {
-        return VMObjectPtr(new VMObjectChar(v));
+        return std::make_shared<VMObjectChar>(v);
     }
 
     symbol_t symbol() const override {
@@ -727,11 +727,11 @@ public:
     }
 
     static VMObjectPtr create(const icu::UnicodeString& v) {
-        return VMObjectPtr(new VMObjectText(v));
+        return std::make_shared<VMObjectText>(v);
     }
 
     static VMObjectPtr create(const char* v) {
-        return VMObjectPtr(new VMObjectText(v));
+        return std::make_shared<VMObjectText>(v);
     }
 
     symbol_t symbol() const override {
@@ -794,14 +794,14 @@ public:
     }
 
     static VMObjectPtr create(int size) {
-        return VMObjectPtr(new VMObjectArray(size));
+        return std::make_shared<VMObjectArray>(size);
     }
 
     static VMObjectPtr create(const VMObjectPtrs& pp) {
         if (pp.size() == 1) {
             return pp[0];
         } else {
-            return VMObjectPtr(new VMObjectArray(pp));
+            return std::make_shared<VMObjectArray>(pp);
         }
     }
 
@@ -1112,7 +1112,7 @@ public:
     }
 
     static VMObjectPtr create(VM* vm, const symbol_t s) {
-        return VMObjectPtr(new VMObjectData(vm, s));
+        return std::make_shared<VMObjectData>(vm, s);
     }
 
     static VMObjectPtr create(VM* vm, const icu::UnicodeString& s) {
@@ -1286,11 +1286,11 @@ public:
      }
 
      static VMObjectPtr create(VM* m, const symbol_t s) {
-         return std::shared_ptr<VMObjectStub>(new VMObjectStub(m, s));
+         return std::make_shared<VMObjectStub>(m, s);
      }
 
      static VMObjectPtr create(VM* m, const UnicodeString& s) {
-         return std::shared_ptr<VMObjectStub>(new VMObjectStub(m, s));
+         return std::make_shared<VMObjectStub>(m, s);
      }
 
      VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -1313,7 +1313,7 @@ public:
     }
 
     static VMObjectPtr create(VM* m) {
-         return std::shared_ptr<VMThrow>(new VMThrow(m));
+         return std::make_shared<VMThrow>(m);
     }
 
     VMObjectPtr reduce(const VMObjectPtr& thunk) const override {
@@ -1454,6 +1454,8 @@ public:
     } 
 
     static VMObjectPtr create(VM* m, const symbol_t s, std::function<VMObjectPtr()> f) {
+        //return std::make_shared<MedadicCallback>(m, s, f);
+       
         return VMObjectPtr( (VMObject*) new MedadicCallback(m, s, f));
     }
 
