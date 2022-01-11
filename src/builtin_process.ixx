@@ -41,9 +41,13 @@ public:
         return -1;  // XXX: fix this once
     }
 
-    void set_program(VMObjectPtr &p) { _program = p; }
+    void set_program(VMObjectPtr &p) {
+        _program = p;
+    }
 
-    VMObjectPtr program() const { return _program; }
+    VMObjectPtr program() const {
+        return _program;
+    }
 
     void in_push(const VMObjectPtr &o) {
         _lock.lock();
@@ -79,7 +83,9 @@ public:
         return o;
     }
 
-    reducer_state_t get_state() const { return _state; }
+    reducer_state_t get_state() const {
+        return _state;
+    }
 
     void set_state(reducer_state_t s) {
         if (_state != HALTED) {  // XXX: do I need to lock here?

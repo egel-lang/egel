@@ -24,11 +24,16 @@ public:
         // e->position();
     }
 
-    ~Error() {}
+    ~Error() {
+    }
 
-    Position position() const { return _position; }
+    Position position() const {
+        return _position;
+    }
 
-    icu::UnicodeString message() const { return _message; }
+    icu::UnicodeString message() const {
+        return _message;
+    }
 
     icu::UnicodeString error() const {
         icu::UnicodeString s = "";
@@ -73,40 +78,48 @@ private:
 class ErrorIO : public Error {
 public:
     ErrorIO(const Position &p, const icu::UnicodeString &m)
-        : Error(ERROR_IO, p, m) {}
+        : Error(ERROR_IO, p, m) {
+    }
 
-    ErrorIO(const icu::UnicodeString &m) : Error(ERROR_IO, Position(), m) {}
+    ErrorIO(const icu::UnicodeString &m) : Error(ERROR_IO, Position(), m) {
+    }
 };
 
 class ErrorLexical : public Error {
 public:
     ErrorLexical(const Position &p, const icu::UnicodeString &m)
-        : Error(ERROR_LEXICAL, p, m) {}
+        : Error(ERROR_LEXICAL, p, m) {
+    }
 };
 
 class ErrorSyntactical : public Error {
 public:
     ErrorSyntactical(const Position &p, const icu::UnicodeString &m)
-        : Error(ERROR_SYNTACTICAL, p, m) {}
+        : Error(ERROR_SYNTACTICAL, p, m) {
+    }
 };
 
 class ErrorIdentification : public Error {
 public:
     ErrorIdentification(const Position &p, const icu::UnicodeString &m)
-        : Error(ERROR_IDENTIFICATION, p, m) {}
+        : Error(ERROR_IDENTIFICATION, p, m) {
+    }
 };
 
 class ErrorSemantical : public Error {
 public:
     ErrorSemantical(const Position &p, const icu::UnicodeString &m)
-        : Error(ERROR_SEMANTICAL, p, m) {}
+        : Error(ERROR_SEMANTICAL, p, m) {
+    }
 
     ErrorSemantical(const icu::UnicodeString &m)
-        : Error(ERROR_SEMANTICAL, Position(), m) {}
+        : Error(ERROR_SEMANTICAL, Position(), m) {
+    }
 };
 
 class ErrorInternal : public Error {
 public:
     ErrorInternal(const icu::UnicodeString &m)
-        : Error(ERROR_INTERNAL, Position(), m) {}
+        : Error(ERROR_INTERNAL, Position(), m) {
+    }
 };

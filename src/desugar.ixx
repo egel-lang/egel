@@ -18,7 +18,9 @@ public:
         return rewrite(a);
     }
 
-    uint_t tick() { return _tick++; }
+    uint_t tick() {
+        return _tick++;
+    }
 
     AstPtr rewrite_expr_wildcard(const Position &p,
                                  const icu::UnicodeString &v) override {
@@ -38,7 +40,9 @@ AstPtr pass_wildcard(const AstPtr &a) {
 
 class RewriteCondition : public Rewrite {
 public:
-    AstPtr condition(const AstPtr &a) { return rewrite(a); }
+    AstPtr condition(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F(if i then t else e) -> ([ true -> F(t) | _ -> F(e) ] F(i))
     AstPtr rewrite_expr_if(const Position &p, const AstPtr &i, const AstPtr &t,
@@ -76,7 +80,9 @@ AstPtr pass_condition(const AstPtr &a) {
 
 class RewriteTuple : public Rewrite {
 public:
-    AstPtr tuple(const AstPtr &a) { return rewrite(a); }
+    AstPtr tuple(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F( (e0, .., en) ) -> ( tuple F(e0) .. F(en) )
     AstPtr rewrite_expr_tuple(const Position &p, const AstPtrs &ee) override {
@@ -96,7 +102,9 @@ AstPtr pass_tuple(const AstPtr &a) {
 
 class RewriteList : public Rewrite {
 public:
-    AstPtr list(const AstPtr &a) { return rewrite(a); }
+    AstPtr list(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F( {e0, .., en|ee} ) -> (cons F(e0) (.. (cons F(en) F(ee) ))) )
     AstPtr rewrite_expr_list(const Position &p, const AstPtrs &ee,
@@ -121,7 +129,9 @@ AstPtr pass_list(const AstPtr &a) {
 
 class RewriteStatement : public Rewrite {
 public:
-    AstPtr stat(const AstPtr &a) { return rewrite(a); }
+    AstPtr stat(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F( r; l ) ) -> ( let _ = F(r) in F(l) )
     AstPtr rewrite_expr_statement(const Position &p, const AstPtr &r,
@@ -146,7 +156,9 @@ AstPtr pass_statement(const AstPtr &a) {
 
 class RewriteLambda : public Rewrite {
 public:
-    AstPtr lambda(const AstPtr &a) { return rewrite(a); }
+    AstPtr lambda(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F( (\v0, .., vn -> e) ) -> ( [ v0, .., vn ->  F(e) ] )
     AstPtr rewrite_expr_lambda(const Position &p, const AstPtr &m) override {
@@ -164,7 +176,9 @@ AstPtr pass_lambda(const AstPtr &a) {
 
 class RewriteLet : public Rewrite {
 public:
-    AstPtr let(const AstPtr &a) { return rewrite(a); }
+    AstPtr let(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F( (let l = r in b) ) -> ( [ l -> F(b) ] (F(r)) )
     AstPtr rewrite_expr_let(const Position &p, const AstPtrs &ll,
@@ -189,7 +203,9 @@ AstPtr pass_let(const AstPtr &a) {
 
 class RewriteObject : public Rewrite {
 public:
-    AstPtr object(const AstPtr &a) { return rewrite(a); }
+    AstPtr object(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     AstPtr rewrite_decl_definition(const Position &p, const AstPtr &c,
                                    const AstPtr &e) override {
@@ -252,7 +268,9 @@ AstPtr pass_object(const AstPtr &a) {
 
 class RewriteThrow : public Rewrite {
 public:
-    AstPtr dethrow(const AstPtr &a) { return rewrite(a); }
+    AstPtr dethrow(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F( throw e ) -> ( (System.throw e) )
     AstPtr rewrite_expr_throw(const Position &p, const AstPtr &e) override {
@@ -270,7 +288,9 @@ AstPtr pass_throw(const AstPtr &a) {
 
 class RewriteTry : public Rewrite {
 public:
-    AstPtr idtry(const AstPtr &a) { return rewrite(a); }
+    AstPtr idtry(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     //  F( throw e ) -> ( (System.throw e) )
     AstPtr rewrite_expr_try(const Position &p, const AstPtr &t,
@@ -292,7 +312,9 @@ AstPtr pass_try(const AstPtr &a) {
 
 class RewriteMonmin : public Rewrite {
 public:
-    AstPtr monmin(const AstPtr &a) { return rewrite(a); }
+    AstPtr monmin(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     AstPtr lambdify(const AstPtr &e) {
         auto p = e->position();
@@ -335,7 +357,9 @@ AstPtr pass_monmin(const AstPtr &a) {
 
 class RewriteLazyOp : public Rewrite {
 public:
-    AstPtr lazyop(const AstPtr &a) { return rewrite(a); }
+    AstPtr lazyop(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     AstPtr lambdify(const AstPtr &e) {
         auto p = e->position();

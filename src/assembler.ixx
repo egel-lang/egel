@@ -10,15 +10,24 @@ const int SEPARATOR = ' ';
 class Disassembler {
 public:
     Disassembler(const VMObjectPtr &o)
-        : _object(o), _code(Code()), _data(Data()), _pc(0) {}
+        : _object(o), _code(Code()), _data(Data()), _pc(0) {
+    }
 
-    void reset() { _pc = 0; }
+    void reset() {
+        _pc = 0;
+    }
 
-    uint32_t pc() const { return _pc; }
+    uint32_t pc() const {
+        return _pc;
+    }
 
-    bool is_end() const { return _pc >= _code.size(); }
+    bool is_end() const {
+        return _pc >= _code.size();
+    }
 
-    opcode_t look() const { return (opcode_t)_code[_pc]; }
+    opcode_t look() const {
+        return (opcode_t)_code[_pc];
+    }
 
     uint8_t fetch_i8() {
         uint8_t n = _code[_pc];
@@ -39,22 +48,34 @@ public:
         return n;
     }
 
-    opcode_t fetch_op() { return (opcode_t)fetch_i8(); }
+    opcode_t fetch_op() {
+        return (opcode_t)fetch_i8();
+    }
 
-    reg_t fetch_index() { return fetch_i16(); }
+    reg_t fetch_index() {
+        return fetch_i16();
+    }
 
-    reg_t fetch_register() { return fetch_i16(); }
+    reg_t fetch_register() {
+        return fetch_i16();
+    }
 
-    label_t fetch_label() { return fetch_i32(); }
+    label_t fetch_label() {
+        return fetch_i32();
+    }
 
     void switch_hex(std::ostream &os) {
         os << std::hex << std::noshowbase << std::setfill('0')
            << std::nouppercase;
     }
 
-    void switch_dec(std::ostream &os) { os << std::dec; }
+    void switch_dec(std::ostream &os) {
+        os << std::dec;
+    }
 
-    void switch_char(std::ostream &os) { os << std::dec; }
+    void switch_char(std::ostream &os) {
+        os << std::dec;
+    }
 
     void write_int(std::ostream &os, const vm_int_t n) {
         switch_dec(os);
@@ -79,19 +100,33 @@ public:
         switch_dec(os);
     }
 
-    void write_op(std::ostream &os, const opcode_t n) { write_i8(os, n); }
+    void write_op(std::ostream &os, const opcode_t n) {
+        write_i8(os, n);
+    }
 
-    void write_index(std::ostream &os, const reg_t n) { write_i16(os, n); }
+    void write_index(std::ostream &os, const reg_t n) {
+        write_i16(os, n);
+    }
 
-    void write_register(std::ostream &os, const reg_t n) { write_i16(os, n); }
+    void write_register(std::ostream &os, const reg_t n) {
+        write_i16(os, n);
+    }
 
-    void write_label(std::ostream &os, const label_t n) { write_i32(os, n); }
+    void write_label(std::ostream &os, const label_t n) {
+        write_i32(os, n);
+    }
 
-    void write_text(std::ostream &os, const icu::UnicodeString &s) { os << s; }
+    void write_text(std::ostream &os, const icu::UnicodeString &s) {
+        os << s;
+    }
 
-    void write_char(std::ostream &os, char c) { os.put(c); }
+    void write_char(std::ostream &os, char c) {
+        os.put(c);
+    }
 
-    void write_separator(std::ostream &os) { os.put(SEPARATOR); }
+    void write_separator(std::ostream &os) {
+        os.put(SEPARATOR);
+    }
 
     void write_code(std::ostream &os, const Code &c, VM *vm) {
         _code = c;
@@ -233,15 +268,23 @@ private:
 
 class Assembler {
 public:
-    Assembler(VM *vm, const icu::UnicodeString s) : _machine(vm), _source(s) {}
+    Assembler(VM *vm, const icu::UnicodeString s) : _machine(vm), _source(s) {
+    }
 
-    ~Assembler() {}
+    ~Assembler() {
+    }
 
-    VM *machine() { return _machine; }
+    VM *machine() {
+        return _machine;
+    }
 
-    int look(std::istream &in) { return in.peek(); }
+    int look(std::istream &in) {
+        return in.peek();
+    }
 
-    bool look_at(std::istream &in, int c) { return look(in) == c; }
+    bool look_at(std::istream &in, int c) {
+        return look(in) == c;
+    }
 
     void skip(std::istream &in) {
         if (!eol(in)) in.get();
@@ -260,7 +303,9 @@ public:
         return in.peek() == std::istream::traits_type::eof();
     }
 
-    bool is_separator(std::istream &in) { return (look(in) == SEPARATOR); }
+    bool is_separator(std::istream &in) {
+        return (look(in) == SEPARATOR);
+    }
 
     bool is_quote(std::istream &in) {
         int c = look(in);

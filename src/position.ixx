@@ -19,13 +19,20 @@ public:
         _column = column;
     }
 
-    ~Position() {}
+    ~Position() {
+    }
 
-    icu::UnicodeString resource() const { return _resource; }
+    icu::UnicodeString resource() const {
+        return _resource;
+    }
 
-    int32_t row() const { return _row; }
+    int32_t row() const {
+        return _row;
+    }
 
-    int32_t column() const { return _column; }
+    int32_t column() const {
+        return _column;
+    }
 
     icu::UnicodeString to_text() {
         std::stringstream ss;

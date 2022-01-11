@@ -55,14 +55,18 @@ typedef std::map<icu::UnicodeString, NamespacePtr> NamespaceMap;
 
 class Namespace : public Scope {
 public:
-    Namespace() {}
+    Namespace() {
+    }
 
-    Namespace(const Namespace &nn) : _embeds(nn._embeds) {}
+    Namespace(const Namespace &nn) : _embeds(nn._embeds) {
+    }
 
     virtual ~Namespace() {  // keep the compiler happy
     }
 
-    static NamespacePtr create() { return NamespacePtr(new Namespace()); }
+    static NamespacePtr create() {
+        return NamespacePtr(new Namespace());
+    }
 
     NamespacePtr create_namespace(const icu::UnicodeString &n) {
         if (_embeds.count(n) > 0) {
@@ -112,16 +116,23 @@ typedef std::vector<NamespacePtr> Uses;
 
 class Range : public Scope {
 public:
-    Range(RangePtr r) : _embeds(r) {}
+    Range(RangePtr r) : _embeds(r) {
+    }
 
     virtual ~Range() {  // keep the compiler happy
     }
 
-    void add_namespace(const NamespacePtr &n) { _uses.push_back(n); }
+    void add_namespace(const NamespacePtr &n) {
+        _uses.push_back(n);
+    }
 
-    Uses uses() const { return _uses; }
+    Uses uses() const {
+        return _uses;
+    }
 
-    RangePtr embeds() const { return _embeds; }
+    RangePtr embeds() const {
+        return _embeds;
+    }
 
     void render(std::ostream &os, uint_t indent) const override {
         for (auto const &sym : _symbols) {
@@ -150,7 +161,9 @@ private:
 
 // the Namespace ADT
 
-inline NamespacePtr namespace_nil() { return std::make_shared<Namespace>(); }
+inline NamespacePtr namespace_nil() {
+    return std::make_shared<Namespace>();
+}
 
 inline void declare(const NamespacePtr &p, const UnicodeStrings &nn,
                     const icu::UnicodeString &n, const icu::UnicodeString &v) {
@@ -203,7 +216,9 @@ inline RangePtr enter_range(const RangePtr &p) {
     return std::make_shared<Range>(p);
 }
 
-inline RangePtr leave_range(const RangePtr &p) { return p->embeds(); }
+inline RangePtr leave_range(const RangePtr &p) {
+    return p->embeds();
+}
 
 inline void declare(const RangePtr &p, const icu::UnicodeString &k,
                     const icu::UnicodeString &v) {

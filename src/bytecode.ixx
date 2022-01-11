@@ -66,7 +66,8 @@ typedef struct {
 
 class CodePrinter {
 public:
-    CodePrinter(const Code &code) : _code(code), _pc(0) {}
+    CodePrinter(const Code &code) : _code(code), _pc(0) {
+    }
 
     const char *opcode_to_text(const opcode_t op) {
         static constexpr opcode_text_t opcode_text_table[]{
@@ -129,13 +130,21 @@ public:
         return nullptr;
     }
 
-    void reset() { _pc = 0; }
+    void reset() {
+        _pc = 0;
+    }
 
-    uint32_t pc() const { return _pc; }
+    uint32_t pc() const {
+        return _pc;
+    }
 
-    bool is_end() const { return _pc >= _code.size(); }
+    bool is_end() const {
+        return _pc >= _code.size();
+    }
 
-    opcode_t look() const { return (opcode_t)_code[_pc]; }
+    opcode_t look() const {
+        return (opcode_t)_code[_pc];
+    }
 
     uint8_t fetch_i8() {
         uint8_t n = _code[_pc];
@@ -156,31 +165,49 @@ public:
         return n;
     }
 
-    opcode_t fetch_op() { return (opcode_t)fetch_i8(); }
+    opcode_t fetch_op() {
+        return (opcode_t)fetch_i8();
+    }
 
-    reg_t fetch_index() { return fetch_i16(); }
+    reg_t fetch_index() {
+        return fetch_i16();
+    }
 
-    reg_t fetch_register() { return fetch_i16(); }
+    reg_t fetch_register() {
+        return fetch_i16();
+    }
 
-    label_t fetch_label() { return fetch_i32(); }
+    label_t fetch_label() {
+        return fetch_i32();
+    }
 
-    void write_space(std::ostream &os) { os << ' '; }
+    void write_space(std::ostream &os) {
+        os << ' ';
+    }
 
-    void write_newline(std::ostream &os) { os << std::endl; }
+    void write_newline(std::ostream &os) {
+        os << std::endl;
+    }
 
     void write_op(std::ostream &os, const opcode_t op) {
         os << opcode_to_text(op);
     }
 
-    void write_i32(std::ostream &os, const uint32_t n) { os << n; }
+    void write_i32(std::ostream &os, const uint32_t n) {
+        os << n;
+    }
 
     void write_0xi32(std::ostream &os, const uint32_t n) {
         os << std::hex << std::setw(6) << n << std::dec;
     }
 
-    void write_index(std::ostream &os, const index_t i) { os << 'i' << i; }
+    void write_index(std::ostream &os, const index_t i) {
+        os << 'i' << i;
+    }
 
-    void write_register(std::ostream &os, const reg_t i) { os << 'r' << i; }
+    void write_register(std::ostream &os, const reg_t i) {
+        os << 'r' << i;
+    }
 
     void write_label(std::ostream &os, const label_t l) {
         write_0xi32(os, (uint32_t)l);
@@ -279,7 +306,8 @@ private:
 
 class DataPrinter {
 public:
-    DataPrinter(const Data &d) : _data(d) {}
+    DataPrinter(const Data &d) : _data(d) {
+    }
 
     void write(std::ostream &os, VM *vm) {
         for (unsigned int n = 0; n < _data.size(); n++) {
@@ -302,16 +330,21 @@ public:
           _label_counter(0),
           _register_counter(0),
           _index_counter(0),
-          _labels(Labels()) {}
+          _labels(Labels()) {
+    }
 
-    VM *machine() { return _machine; }
+    VM *machine() {
+        return _machine;
+    }
 
     Code code() {
         // can only be called once
         return _code;
     }
 
-    Data data() { return _data; }
+    Data data() {
+        return _data;
+    }
 
     void reset() {
         _code = Code();
@@ -340,12 +373,18 @@ public:
         return r;
     }
 
-    reg_t peek_register() const { return _register_counter; }
+    reg_t peek_register() const {
+        return _register_counter;
+    }
 
-    void restore_register(reg_t r) { _register_counter = r; }
+    void restore_register(reg_t r) {
+        _register_counter = r;
+    }
 
     // primitive byte emit
-    void emit_i8(uint8_t b) { _code.push_back(b); }
+    void emit_i8(uint8_t b) {
+        _code.push_back(b);
+    }
 
     void emit_i16(uint16_t n) {
         // don't use typecasts, this is portable
@@ -360,13 +399,21 @@ public:
         _code.push_back(n & 0xFF);
     }
 
-    void emit_op(const opcode_t op) { emit_i8(op); }
+    void emit_op(const opcode_t op) {
+        emit_i8(op);
+    }
 
-    void emit_reg(const reg_t r) { emit_i16(r); }
+    void emit_reg(const reg_t r) {
+        emit_i16(r);
+    }
 
-    void emit_lbl(const label_t l) { emit_i32(l); }
+    void emit_lbl(const label_t l) {
+        emit_i32(l);
+    }
 
-    void emit_idx(const index_t i) { emit_i16((uint16_t)i); }
+    void emit_idx(const index_t i) {
+        emit_i16((uint16_t)i);
+    }
 
     // bytecode emit
     void emit_op_nil(const reg_t x) {
@@ -447,7 +494,9 @@ public:
         emit_reg(x);
     }
 
-    void emit_label(const label_t l) { _labels[l] = _code.size(); }
+    void emit_label(const label_t l) {
+        _labels[l] = _code.size();
+    }
 
     uint32_t emit_data(const VMObjectPtr &o) {
         auto d = machine()->enter_data(o);
@@ -551,7 +600,9 @@ public:
         }
     }
 
-    const VMObjectPtr operator[](const reg_t n) { return get(n); }
+    const VMObjectPtr operator[](const reg_t n) {
+        return get(n);
+    }
 
 private:
     static const int MAX_REGISTERS = 64;
@@ -578,7 +629,8 @@ public:
         : VMObjectCombinator(VM_SUB_BYTECODE, m, nn, n), _code(c), _data(d){};
 
     VMObjectBytecode(const VMObjectBytecode &d)
-        : VMObjectBytecode(d.machine(), d.code(), d.data(), d.symbol()) {}
+        : VMObjectBytecode(d.machine(), d.code(), d.data(), d.symbol()) {
+    }
 
     static VMObjectPtr create(VM *m, const Code &c, const Data &d,
                               const UnicodeStrings &nn,
@@ -607,11 +659,17 @@ public:
         os << "end" << std::endl;
     }
 
-    Code code() const { return _code; }
+    Code code() const {
+        return _code;
+    }
 
-    Data data() const { return _data; }
+    Data data() const {
+        return _data;
+    }
 
-    data_t get_data(uint32_t n) const { return _data[n]; }
+    data_t get_data(uint32_t n) const {
+        return _data[n];
+    }
 
     VMObjectPtrs get_data_list() const {
         VMObjectPtrs oo;

@@ -49,7 +49,9 @@ public:
         }
     }
 
-    UnicodeString result(const VMObjectPtr &o) { return o->to_text(); }
+    UnicodeString result(const VMObjectPtr &o) {
+        return o->to_text();
+    }
 };
 
 std::vector<VMObjectPtr> builtin_eval(VM *vm) {

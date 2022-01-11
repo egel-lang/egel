@@ -21,7 +21,8 @@ public:
     }
 
     void visit_directive_import(const Position &p,
-                                const icu::UnicodeString &i) override {}
+                                const icu::UnicodeString &i) override {
+    }
 
     void visit_expr_combinator(const Position &p, const UnicodeStrings &nn,
                                const icu::UnicodeString &n) override {
@@ -35,15 +36,18 @@ public:
 
     // cut
     void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {}
+                               const AstPtr &e) override {
+    }
 
     // cut
     void visit_decl_value(const Position &p, const AstPtr &n,
-                          const AstPtr &e) override {}
+                          const AstPtr &e) override {
+    }
 
     // cut
     void visit_decl_operator(const Position &p, const AstPtr &c,
-                             const AstPtr &e) override {}
+                             const AstPtr &e) override {
+    }
 
 private:
     VM *_machine;
@@ -69,45 +73,85 @@ public:
         visit(a);
     }
 
-    void set_state(const emit_state_t s) { _state = s; }
+    void set_state(const emit_state_t s) {
+        _state = s;
+    }
 
-    emit_state_t get_state() const { return _state; }
+    emit_state_t get_state() const {
+        return _state;
+    }
 
-    VM *machine() const { return _machine; }
+    VM *machine() const {
+        return _machine;
+    }
 
-    Coder *get_coder() { return _coder.get(); }
+    Coder *get_coder() {
+        return _coder.get();
+    }
 
-    void set_register_frame(reg_t r) { _register_frame = r; }
+    void set_register_frame(reg_t r) {
+        _register_frame = r;
+    }
 
-    reg_t get_register_frame() const { return _register_frame; }
+    reg_t get_register_frame() const {
+        return _register_frame;
+    }
 
-    void set_register_rt(reg_t r) { _register_rt = r; }
+    void set_register_rt(reg_t r) {
+        _register_rt = r;
+    }
 
-    reg_t get_register_rt() const { return _register_rt; }
+    reg_t get_register_rt() const {
+        return _register_rt;
+    }
 
-    void set_register_rti(reg_t r) { _register_rti = r; }
+    void set_register_rti(reg_t r) {
+        _register_rti = r;
+    }
 
-    reg_t get_register_rti() const { return _register_rti; }
+    reg_t get_register_rti() const {
+        return _register_rti;
+    }
 
-    void set_register_k(reg_t r) { _register_k = r; }
+    void set_register_k(reg_t r) {
+        _register_k = r;
+    }
 
-    reg_t get_register_k() const { return _register_k; }
+    reg_t get_register_k() const {
+        return _register_k;
+    }
 
-    void set_register_exc(reg_t r) { _register_exc = r; }
+    void set_register_exc(reg_t r) {
+        _register_exc = r;
+    }
 
-    reg_t get_register_exc() const { return _register_exc; }
+    reg_t get_register_exc() const {
+        return _register_exc;
+    }
 
-    void set_current_register(reg_t r) { _current_reg = r; }
+    void set_current_register(reg_t r) {
+        _current_reg = r;
+    }
 
-    reg_t get_current_register() const { return _current_reg; }
+    reg_t get_current_register() const {
+        return _current_reg;
+    }
 
-    void set_fail_label(label_t l) { _fail = l; }
+    void set_fail_label(label_t l) {
+        _fail = l;
+    }
 
-    label_t get_fail_label() const { return _fail; }
+    label_t get_fail_label() const {
+        return _fail;
+    }
 
-    void set_arity(uint_t a) { _arity = a; }
+    void set_arity(uint_t a) {
+        _arity = a;
+    }
 
-    uint_t get_arity() { return _arity; }
+    uint_t get_arity() {
+        return _arity;
+    }
 
     void add_variable_binding(const icu::UnicodeString &v, const reg_t t) {
         _variables[v] = t;
@@ -514,7 +558,8 @@ public:
     }
 
     void visit_directive_import(const Position &p,
-                                const icu::UnicodeString &i) override {}
+                                const icu::UnicodeString &i) override {
+    }
 
     void visit_decl_data(const Position &p, const AstPtrs &nn) override {
         for (auto n : nn) {

@@ -47,10 +47,12 @@ typedef std::shared_ptr<ModuleManager> ModuleManagerPtr;
 // modules may define imports or values
 class QualifiedString {
 public:
-    QualifiedString() : _position(Position()), _string("") {}
+    QualifiedString() : _position(Position()), _string("") {
+    }
 
     QualifiedString(const Position &p, const icu::UnicodeString &s)
-        : _position(p), _string(s) {}
+        : _position(p), _string(s) {
+    }
 
     /*
         QualifiedString(const QualifiedString& i):
@@ -58,9 +60,13 @@ public:
         }
     */
 
-    Position position() const { return _position; }
+    Position position() const {
+        return _position;
+    }
 
-    icu::UnicodeString string() const { return _string; }
+    icu::UnicodeString string() const {
+        return _string;
+    }
 
 private:
     Position _position;
@@ -79,22 +85,35 @@ class Module {
 public:
     Module(const module_tag_t t, const icu::UnicodeString &p,
            const icu::UnicodeString &fn, VM *m)
-        : _tag(t), _path(p), _filename(fn), _machine(m) {}
+        : _tag(t), _path(p), _filename(fn), _machine(m) {
+    }
 
     virtual ~Module() {  // keep the compiler happy
     }
 
-    void set_options(const OptionsPtr &o) { _options = o; }
+    void set_options(const OptionsPtr &o) {
+        _options = o;
+    }
 
-    OptionsPtr get_options() const { return _options; }
+    OptionsPtr get_options() const {
+        return _options;
+    }
 
-    icu::UnicodeString get_path() const { return _path; }
+    icu::UnicodeString get_path() const {
+        return _path;
+    }
 
-    icu::UnicodeString get_filename() const { return _filename; }
+    icu::UnicodeString get_filename() const {
+        return _filename;
+    }
 
-    module_tag_t tag() const { return _tag; }
+    module_tag_t tag() const {
+        return _tag;
+    }
 
-    VM *machine() const { return _machine; }
+    VM *machine() const {
+        return _machine;
+    }
 
     virtual void load() = 0;
 
@@ -144,17 +163,22 @@ typedef std::shared_ptr<VMModule> VMModulePtr;
 class VMModule : public Opaque {
 public:
     VMModule(VM *vm, ModulePtr p)
-        : Opaque(VM_SUB_MODULE, vm, STRING_SYSTEM, "module"), _value(p) {}
+        : Opaque(VM_SUB_MODULE, vm, STRING_SYSTEM, "module"), _value(p) {
+    }
 
-    VMModule(const VMModule &m) : VMModule(m.machine(), m.value()) {}
+    VMModule(const VMModule &m) : VMModule(m.machine(), m.value()) {
+    }
 
-    ~VMModule() {}
+    ~VMModule() {
+    }
 
     static VMObjectPtr create(VM *vm, ModulePtr p) {
         return VMObjectPtr(new VMModule(vm, p));
     }
 
-    ModulePtr value() const { return _value; }
+    ModulePtr value() const {
+        return _value;
+    }
 
     int compare(const VMObjectPtr &o) override {
         if (is_module(o)) {
@@ -227,13 +251,15 @@ typedef std::vector<VMObjectPtr> (*exports_t)(VM *);
 class ModuleInternal : public Module {
 public:
     ModuleInternal(const icu::UnicodeString &fn, VM *m, const exports_t handle)
-        : Module(MODULE_INTERNAL, fn, fn, m), _handle(handle) {}
+        : Module(MODULE_INTERNAL, fn, fn, m), _handle(handle) {
+    }
 
     ModuleInternal(const ModuleInternal &m)
         : Module(MODULE_INTERNAL, m.get_path(), m.get_filename(), m.machine()),
           _handle(m._handle),
           _imports(m._imports),
-          _exports(m._exports) {}
+          _exports(m._exports) {
+    }
 
     static ModulePtr create(const icu::UnicodeString &fn, VM *m,
                             const exports_t handle) {
@@ -246,13 +272,20 @@ public:
         _exports = (*_handle)(machine());
     }
 
-    void unload() override {}
+    void unload() override {
+    }
 
-    QualifiedStrings imports() override { return _imports; }
+    QualifiedStrings imports() override {
+        return _imports;
+    }
 
-    QualifiedStrings values() override { return _values; }
+    QualifiedStrings values() override {
+        return _values;
+    }
 
-    VMObjectPtrs exports() override { return _exports; }
+    VMObjectPtrs exports() override {
+        return _exports;
+    }
 
     void declarations(NamespacePtr &env) override {
         for (auto &o : _exports) {
@@ -301,7 +334,8 @@ public:
         : Module(MODULE_DYNAMIC, p, fn, m),
           _handle(0),
           _imports(0),
-          _exports(0) {}
+          _exports(0) {
+    }
 
     ModuleDynamic(const ModuleDynamic &m)
         : Module(MODULE_DYNAMIC, m.get_path(), m.get_filename(), m.machine()),
@@ -362,13 +396,21 @@ public:
         _exports = (*egel_exports)(machine());
     }
 
-    void unload() override { dlclose(_handle); }
+    void unload() override {
+        dlclose(_handle);
+    }
 
-    QualifiedStrings imports() override { return _imports; }
+    QualifiedStrings imports() override {
+        return _imports;
+    }
 
-    QualifiedStrings values() override { return _values; }
+    QualifiedStrings values() override {
+        return _values;
+    }
 
-    VMObjectPtrs exports() override { return _exports; }
+    VMObjectPtrs exports() override {
+        return _exports;
+    }
 
     void declarations(NamespacePtr &env) override {
         for (auto &o : _exports) {
@@ -410,7 +452,8 @@ class ModuleSource : public Module {
 public:
     ModuleSource(const icu::UnicodeString &path, const icu::UnicodeString &fn,
                  VM *m)
-        : Module(MODULE_SOURCE, path, fn, m), _source(""), _ast(0) {}
+        : Module(MODULE_SOURCE, path, fn, m), _source(""), _ast(0) {
+    }
 
     ModuleSource(const ModuleSource &m)
         : Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
@@ -432,7 +475,8 @@ public:
         };
     }
 
-    void unload() override {}
+    void unload() override {
+    }
 
     QualifiedStrings imports() override {
         auto aa = ::imports(_ast);
@@ -486,7 +530,9 @@ public:
         _ast = a;
     }
 
-    void declarations(NamespacePtr &env) override { declare(env, _ast); }
+    void declarations(NamespacePtr &env) override {
+        declare(env, _ast);
+    }
 
     void semantical(NamespacePtr &env) override {
         _ast = ::identify(env, _ast);
@@ -517,7 +563,9 @@ public:
         };
     }
 
-    void datagen(VM *vm) override { ::emit_data(vm, _ast); }
+    void datagen(VM *vm) override {
+        ::emit_data(vm, _ast);
+    }
 
     void codegen(VM *vm) override {
         ::emit_code(vm, _ast);
@@ -544,14 +592,16 @@ typedef std::vector<ModulePtr> ModulePtrs;
 
 class ModuleManager {
 public:
-    ModuleManager() {}
+    ModuleManager() {
+    }
 
     ModuleManager(const ModuleManager &mm)
         : _options(mm._options),
           _machine(mm._machine),
           _environment(mm._environment),
           _modules(mm._modules),
-          _loading(mm._loading) {}
+          _loading(mm._loading) {
+    }
 
     static ModuleManagerPtr create() {
         return ModuleManagerPtr(new ModuleManager());
@@ -588,19 +638,33 @@ public:
         flush();
     }
 
-    void set_options(const OptionsPtr &oo) { _options = oo; }
+    void set_options(const OptionsPtr &oo) {
+        _options = oo;
+    }
 
-    OptionsPtr get_options() const { return _options; }
+    OptionsPtr get_options() const {
+        return _options;
+    }
 
-    void set_machine(VM *vm) { _machine = vm; }
+    void set_machine(VM *vm) {
+        _machine = vm;
+    }
 
-    VM *machine() const { return _machine; }
+    VM *machine() const {
+        return _machine;
+    }
 
-    void set_environment(const NamespacePtr &env) { _environment = env; }
+    void set_environment(const NamespacePtr &env) {
+        _environment = env;
+    }
 
-    NamespacePtr get_environment() const { return _environment; }
+    NamespacePtr get_environment() const {
+        return _environment;
+    }
 
-    ModulePtrs get_modules() const { return _modules; }
+    ModulePtrs get_modules() const {
+        return _modules;
+    }
 
     // implements incremental loading for interactive mode
     void load(const Position &p, const icu::UnicodeString &fn) {

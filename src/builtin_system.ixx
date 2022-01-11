@@ -63,7 +63,9 @@ class Id : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Id, "System", "id");
 
-    VMObjectPtr apply(const VMObjectPtr &arg0) const override { return arg0; }
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        return arg0;
+    }
 };
 
 //## System:min_int - maximum for integers
@@ -613,9 +615,13 @@ public:
         return -1;  // XXX: fix this once
     }
 
-    VMObjectPtr get_ref() const { return _ref; }
+    VMObjectPtr get_ref() const {
+        return _ref;
+    }
 
-    void set_ref(const VMObjectPtr &r) { _ref = r; }
+    void set_ref(const VMObjectPtr &r) {
+        _ref = r;
+    }
 
 protected:
     VMObjectPtr _ref = nullptr;

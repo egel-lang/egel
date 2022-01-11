@@ -80,19 +80,31 @@ icu::UnicodeString token_text(token_t t);
 class Token {
 public:
     Token(token_t tag, const Position &position, const icu::UnicodeString &text)
-        : _tag(tag), _position(position), _text(text) {}
+        : _tag(tag), _position(position), _text(text) {
+    }
 
-    ~Token() {}
+    ~Token() {
+    }
 
-    bool is_tag(token_t tag) const { return _tag == tag; }
+    bool is_tag(token_t tag) const {
+        return _tag == tag;
+    }
 
-    token_t tag() const { return _tag; }
+    token_t tag() const {
+        return _tag;
+    }
 
-    void set_tag(token_t t) { _tag = t; }
+    void set_tag(token_t t) {
+        _tag = t;
+    }
 
-    Position position() const { return _position; }
+    Position position() const {
+        return _position;
+    }
 
-    icu::UnicodeString text() const { return _text; }
+    icu::UnicodeString text() const {
+        return _text;
+    }
 
     friend std::ostream &operator<<(std::ostream &os, const Token &t) {
         os << "[" << t.position() << ", :" << token_text(t.tag()) << ": "
@@ -131,7 +143,9 @@ public:
 
 class TokenVector : public TokenReader, public TokenWriter {
 public:
-    TokenVector() { _index = 0; }
+    TokenVector() {
+        _index = 0;
+    }
 
     TokenVector(const TokenVector &v) {
         _index = 0;
@@ -149,13 +163,21 @@ public:
         }
     }
 
-    void skip() { _index++; }
+    void skip() {
+        _index++;
+    }
 
-    uint_t get_cursor() { return _index; }
+    uint_t get_cursor() {
+        return _index;
+    }
 
-    void set_cursor(uint_t c) { _index = c; }
+    void set_cursor(uint_t c) {
+        _index = c;
+    }
 
-    void push(const Token &t) { _tokens.push_back(t); }
+    void push(const Token &t) {
+        _tokens.push_back(t);
+    }
 
     TokenReaderPtr clone_reader() const {
         return TokenReaderPtr(new TokenVector(*this));
@@ -179,39 +201,73 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader);
 
 // character classes
 
-bool is_whitespace(UChar32 c) { return (bool)u_isUWhiteSpace(c); }
+bool is_whitespace(UChar32 c) {
+    return (bool)u_isUWhiteSpace(c);
+}
 
-bool is_eol(UChar32 c) { return (c == (UChar32)'\n'); }
+bool is_eol(UChar32 c) {
+    return (c == (UChar32)'\n');
+}
 
-bool is_hash(UChar32 c) { return (c == (UChar32)'#'); }
+bool is_hash(UChar32 c) {
+    return (c == (UChar32)'#');
+}
 
-bool is_dot(UChar32 c) { return (c == (UChar32)'.'); }
+bool is_dot(UChar32 c) {
+    return (c == (UChar32)'.');
+}
 
-bool is_comma(UChar32 c) { return (c == (UChar32)','); }
+bool is_comma(UChar32 c) {
+    return (c == (UChar32)',');
+}
 
-bool is_eq(UChar32 c) { return (c == (UChar32)'='); }
+bool is_eq(UChar32 c) {
+    return (c == (UChar32)'=');
+}
 
-bool is_lparen(UChar32 c) { return (c == (UChar32)'('); }
+bool is_lparen(UChar32 c) {
+    return (c == (UChar32)'(');
+}
 
-bool is_rparen(UChar32 c) { return (c == (UChar32)')'); }
+bool is_rparen(UChar32 c) {
+    return (c == (UChar32)')');
+}
 
-bool is_lsquare(UChar32 c) { return (c == (UChar32)'['); }
+bool is_lsquare(UChar32 c) {
+    return (c == (UChar32)'[');
+}
 
-bool is_rsquare(UChar32 c) { return (c == (UChar32)']'); }
+bool is_rsquare(UChar32 c) {
+    return (c == (UChar32)']');
+}
 
-bool is_lcurly(UChar32 c) { return (c == (UChar32)'{'); }
+bool is_lcurly(UChar32 c) {
+    return (c == (UChar32)'{');
+}
 
-bool is_rcurly(UChar32 c) { return (c == (UChar32)'}'); }
+bool is_rcurly(UChar32 c) {
+    return (c == (UChar32)'}');
+}
 
-bool is_colon(UChar32 c) { return (c == (UChar32)':'); }
+bool is_colon(UChar32 c) {
+    return (c == (UChar32)':');
+}
 
-bool is_semicolon(UChar32 c) { return (c == (UChar32)';'); }
+bool is_semicolon(UChar32 c) {
+    return (c == (UChar32)';');
+}
 
-bool is_bar(UChar32 c) { return (c == (UChar32)'|'); }
+bool is_bar(UChar32 c) {
+    return (c == (UChar32)'|');
+}
 
-bool is_underscore(UChar32 c) { return (c == (UChar32)'_'); }
+bool is_underscore(UChar32 c) {
+    return (c == (UChar32)'_');
+}
 
-bool is_digit(UChar32 c) { return (bool)u_isdigit(c); }
+bool is_digit(UChar32 c) {
+    return (bool)u_isdigit(c);
+}
 
 bool is_hexdigit(UChar32 c) {
     return (bool)((u_isdigit(c)) || (c == (UChar32)'a') ||
@@ -220,22 +276,34 @@ bool is_hexdigit(UChar32 c) {
                   (c == (UChar32)'f'));
 }
 
-bool is_lowercase(UChar32 c) { return (bool)u_isULowercase(c); }
+bool is_lowercase(UChar32 c) {
+    return (bool)u_isULowercase(c);
+}
 
-bool is_uppercase(UChar32 c) { return (bool)u_isUUppercase(c); }
+bool is_uppercase(UChar32 c) {
+    return (bool)u_isUUppercase(c);
+}
 
 bool is_letter(UChar32 c) {
     return (bool)(is_uppercase(c) || is_lowercase(c) || is_digit(c) ||
                   (c == (UChar32)'_'));
 }
 
-bool is_quote(UChar32 c) { return (c == (UChar32)'\''); }
+bool is_quote(UChar32 c) {
+    return (c == (UChar32)'\'');
+}
 
-bool is_dquote(UChar32 c) { return (c == (UChar32)'"'); }
+bool is_dquote(UChar32 c) {
+    return (c == (UChar32)'"');
+}
 
-bool is_backslash(UChar32 c) { return (c == (UChar32)'\\'); }
+bool is_backslash(UChar32 c) {
+    return (c == (UChar32)'\\');
+}
 
-bool is_minus(UChar32 c) { return (c == (UChar32)'-'); }
+bool is_minus(UChar32 c) {
+    return (c == (UChar32)'-');
+}
 
 bool is_exponent(UChar32 c) {
     return ((c == (UChar32)'e') || (c == (UChar32)'E'));

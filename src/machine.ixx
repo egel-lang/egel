@@ -18,10 +18,11 @@ class SymbolTable {
 public:
     SymbolTable()
         : _to(std::vector<icu::UnicodeString>()),
-          _from(std::map<icu::UnicodeString, symbol_t>()) {}
+          _from(std::map<icu::UnicodeString, symbol_t>()) {
+    }
 
-    SymbolTable(const SymbolTable &other)
-        : _to(other._to), _from(other._from) {}
+    SymbolTable(const SymbolTable &other) : _to(other._to), _from(other._from) {
+    }
 
     bool member(const icu::UnicodeString &s) const {
         return (_from.count(s) > 0);
@@ -52,9 +53,13 @@ public:
         return enter(s);
     }
 
-    int size() const { return _to.size(); }
+    int size() const {
+        return _to.size();
+    }
 
-    icu::UnicodeString get(const symbol_t &s) { return _to[s]; }
+    icu::UnicodeString get(const symbol_t &s) {
+        return _to[s];
+    }
 
     void render(std::ostream &os) {
         for (uint_t t = 0; t < _to.size(); t++) {
@@ -73,9 +78,11 @@ public:
         // _from(std::map<VMObjectPtr, data_t, LessVMObjectPtr>()) {
     }
 
-    DataTable(const DataTable &other) : _to(other._to), _from(other._from) {}
+    DataTable(const DataTable &other) : _to(other._to), _from(other._from) {
+    }
 
-    void initialize() {}
+    void initialize() {
+    }
 
     data_t enter(const VMObjectPtr &s) {
         if (_from.count(s) == 0) {
@@ -88,7 +95,9 @@ public:
         }
     }
 
-    data_t size() { return _to.size(); }
+    data_t size() {
+        return _to.size();
+    }
 
     data_t define(const VMObjectPtr &s) {
         if (_from.count(s) == 0) {
@@ -100,9 +109,13 @@ public:
         }
     }
 
-    VMObjectPtr get(const data_t &s) { return _to[s]; }
+    VMObjectPtr get(const data_t &s) {
+        return _to[s];
+    }
 
-    data_t get(const VMObjectPtr &o) { return _from[o]; }
+    data_t get(const VMObjectPtr &o) {
+        return _from[o];
+    }
 
     void render(std::ostream &os) {
         for (uint_t t = 0; t < _to.size(); t++) {
@@ -125,7 +138,8 @@ public:
           _exception(exc){};
 
     VMObjectResult(const VMObjectResult &d)
-        : VMObjectResult(d.machine(), d.symbol(), d._result, d._exception) {}
+        : VMObjectResult(d.machine(), d.symbol(), d._result, d._exception) {
+    }
 
     static VMObjectPtr create(VM *m, const symbol_t s, VMReduceResult *r,
                               const bool exc) {
@@ -148,9 +162,12 @@ private:
 
 class Machine : public VM {
 public:
-    Machine() { populate(); }
+    Machine() {
+        populate();
+    }
 
-    virtual ~Machine() {}
+    virtual ~Machine() {
+    }
 
     static VMPtr create() {
         return VMPtr(new Machine());  // XXX: use a copy constructor once
@@ -235,22 +252,30 @@ public:
         return _symbols.enter(nn, n);
     }
 
-    virtual int get_combinators_size() override { return _symbols.size(); }
+    virtual int get_combinators_size() override {
+        return _symbols.size();
+    }
 
     icu::UnicodeString get_combinator_string(symbol_t s) override {
         return _symbols.get(s);
     }
 
     // data table manipulation
-    data_t enter_data(const VMObjectPtr &o) override { return _data.enter(o); }
+    data_t enter_data(const VMObjectPtr &o) override {
+        return _data.enter(o);
+    }
 
     data_t define_data(const VMObjectPtr &o) override {
         return _data.define(o);
     }
 
-    data_t get_data(const VMObjectPtr &o) override { return _data.get(o); }
+    data_t get_data(const VMObjectPtr &o) override {
+        return _data.get(o);
+    }
 
-    VMObjectPtr get_data(const data_t d) override { return _data.get(d); }
+    VMObjectPtr get_data(const data_t d) override {
+        return _data.get(d);
+    }
 
     // convenience
     VMObjectPtr get_combinator(const symbol_t s) override {
@@ -370,9 +395,13 @@ public:
         return reduce(f, &run);
     }
 
-    void lock() override { _mutex.lock(); }
+    void lock() override {
+        _mutex.lock();
+    }
 
-    void unlock() override { _mutex.unlock(); }
+    void unlock() override {
+        _mutex.unlock();
+    }
 
     void render(std::ostream &os) override {
         os << "SYMBOLS: " << std::endl;
@@ -381,11 +410,17 @@ public:
         _data.render(os);
     }
 
-    void *get_context() const override { return _context; }
+    void *get_context() const override {
+        return _context;
+    }
 
-    void set_context(void *m) override { _context = m; }
+    void set_context(void *m) override {
+        _context = m;
+    }
 
-    vm_tag_t get_tag(const VMObjectPtr &o) override { return o->tag(); }
+    vm_tag_t get_tag(const VMObjectPtr &o) override {
+        return o->tag();
+    }
 
     vm_subtag_t get_subtag(const VMObjectPtr &o) override {
         return o->subtag();
@@ -440,11 +475,17 @@ public:
         return VM_OBJECT_TEXT_VALUE(o);
     }
 
-    VMObjectPtr create_none() override { return get_data(SYMBOL_NONE); }
+    VMObjectPtr create_none() override {
+        return get_data(SYMBOL_NONE);
+    }
 
-    VMObjectPtr create_true() override { return get_data(SYMBOL_TRUE); }
+    VMObjectPtr create_true() override {
+        return get_data(SYMBOL_TRUE);
+    }
 
-    VMObjectPtr create_false() override { return get_data(SYMBOL_FALSE); }
+    VMObjectPtr create_false() override {
+        return get_data(SYMBOL_FALSE);
+    }
 
     // predefined constants
     VMObjectPtr create_bool(const bool b) override {
@@ -455,11 +496,17 @@ public:
         }
     }
 
-    VMObjectPtr create_nil() override { return _nil; }
+    VMObjectPtr create_nil() override {
+        return _nil;
+    }
 
-    VMObjectPtr create_cons() override { return _cons; }
+    VMObjectPtr create_cons() override {
+        return _cons;
+    }
 
-    VMObjectPtr create_tuple() override { return _tuple; }
+    VMObjectPtr create_tuple() override {
+        return _tuple;
+    }
 
     bool is_none(const VMObjectPtr &o) override {
         return (VM_OBJECT_NONE_TEST(o));
@@ -745,9 +792,13 @@ public:
         _eval->eval_command(l);
     }
 
-    void eval_main() override { _eval->eval_main(); }
+    void eval_main() override {
+        _eval->eval_main();
+    }
 
-    void eval_interactive() override { _eval->eval_interactive(); }
+    void eval_interactive() override {
+        _eval->eval_interactive();
+    }
 
     bool is_module(const VMObjectPtr &m) override {
         return VMModule::is_module(m);
@@ -803,9 +854,13 @@ public:
         return to_list(oo);
     }
 
-    VMObjectPtr query_symbols() override { throw create_text("stub"); }
+    VMObjectPtr query_symbols() override {
+        throw create_text("stub");
+    }
 
-    VMObjectPtr query_data() override { throw create_text("stub"); }
+    VMObjectPtr query_data() override {
+        throw create_text("stub");
+    }
 
     int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) override {
         CompareVMObjectPtr compare;

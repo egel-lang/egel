@@ -7,7 +7,8 @@ import ast;
 
 class Transform {
 public:
-    Transform() {}
+    Transform() {
+    }
 
     virtual AstPtrs transforms(const AstPtrs &aa) {
         AstPtrs _aa;
@@ -18,7 +19,8 @@ public:
         return _aa;
     }
 
-    virtual void transform_pre(const AstPtr &a) {}
+    virtual void transform_pre(const AstPtr &a) {
+    }
 
     virtual AstPtr transform_expr_integer(const AstPtr &a, const Position &p,
                                           const icu::UnicodeString &v) {
@@ -390,7 +392,8 @@ public:
 
 class Rewrite {
 public:
-    Rewrite() {}
+    Rewrite() {
+    }
 
     virtual AstPtrs rewrites(const AstPtrs &aa) {
         AstPtrs _aa;
@@ -401,7 +404,8 @@ public:
         return _aa;
     }
 
-    virtual void rewrite_pre(const AstPtr &a) {}
+    virtual void rewrite_pre(const AstPtr &a) {
+    }
 
     // literals
     virtual AstPtr rewrite_expr_integer(const Position &p,
@@ -766,9 +770,11 @@ public:
 
 class Visit {
 public:
-    Visit() {}
+    Visit() {
+    }
 
-    virtual void visit_pre(const AstPtr &a) {}
+    virtual void visit_pre(const AstPtr &a) {
+    }
 
     void visits(const AstPtrs &dd) {
         for (auto &d : dd) {
@@ -777,33 +783,42 @@ public:
     }
 
     virtual void visit_expr_integer(const Position &p,
-                                    const icu::UnicodeString &v) {}
+                                    const icu::UnicodeString &v) {
+    }
 
     virtual void visit_expr_hexinteger(const Position &p,
-                                       const icu::UnicodeString &v) {}
+                                       const icu::UnicodeString &v) {
+    }
 
     virtual void visit_expr_float(const Position &p,
-                                  const icu::UnicodeString &v) {}
+                                  const icu::UnicodeString &v) {
+    }
 
     virtual void visit_expr_character(const Position &p,
-                                      const icu::UnicodeString &v) {}
+                                      const icu::UnicodeString &v) {
+    }
 
     virtual void visit_expr_text(const Position &p,
-                                 const icu::UnicodeString &v) {}
+                                 const icu::UnicodeString &v) {
+    }
 
     virtual void visit_expr_variable(const Position &p,
-                                     const icu::UnicodeString &n) {}
+                                     const icu::UnicodeString &n) {
+    }
 
     virtual void visit_expr_wildcard(const Position &p,
-                                     const icu::UnicodeString &n) {}
+                                     const icu::UnicodeString &n) {
+    }
 
     virtual void visit_expr_combinator(const Position &p,
                                        const UnicodeStrings &nn,
-                                       const icu::UnicodeString &n) {}
+                                       const icu::UnicodeString &n) {
+    }
 
     virtual void visit_expr_operator(const Position &p,
                                      const UnicodeStrings &nn,
-                                     const icu::UnicodeString &n) {}
+                                     const icu::UnicodeString &n) {
+    }
 
     virtual void visit_expr_tuple(const Position &p, const AstPtrs &tt) {
         visits(tt);
@@ -875,10 +890,12 @@ public:
     }
 
     virtual void visit_directive_import(const Position &p,
-                                        const icu::UnicodeString &i) {}
+                                        const icu::UnicodeString &i) {
+    }
 
     virtual void visit_directive_using(const Position &p,
-                                       const UnicodeStrings &nn) {}
+                                       const UnicodeStrings &nn) {
+    }
 
     virtual void visit_decl_data(const Position &p, const AstPtrs &nn) {
         visits(nn);
@@ -1195,13 +1212,21 @@ public:
         return _fv;
     }
 
-    void set_state(freevars_state_t s) { _state = s; }
+    void set_state(freevars_state_t s) {
+        _state = s;
+    }
 
-    freevars_state_t get_state() { return _state; }
+    freevars_state_t get_state() {
+        return _state;
+    }
 
-    void insert(const AstPtr &a) { _fv.insert(a); }
+    void insert(const AstPtr &a) {
+        _fv.insert(a);
+    }
 
-    void remove(const AstPtr &a) { _fv.erase(a); }
+    void remove(const AstPtr &a) {
+        _fv.erase(a);
+    }
 
     void visit_expr_variable(const Position &p,
                              const icu::UnicodeString &n) override {

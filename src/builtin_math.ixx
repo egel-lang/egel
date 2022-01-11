@@ -81,7 +81,9 @@ class Euler : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Euler, "Math", "e");
 
-    VMObjectPtr apply() const override { return machine()->create_float(M_E); }
+    VMObjectPtr apply() const override {
+        return machine()->create_float(M_E);
+    }
 };
 
 //## Math::ln2 - Natural logarithm of 2, approximately 0.693
@@ -130,7 +132,9 @@ class Pi : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Pi, "Math", "pi");
 
-    VMObjectPtr apply() const override { return machine()->create_float(M_PI); }
+    VMObjectPtr apply() const override {
+        return machine()->create_float(M_PI);
+    }
 };
 
 //## Math::sqrt1_2 - square root of 1/2; equivalently, 1 over the square root

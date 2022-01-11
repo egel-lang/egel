@@ -21,18 +21,26 @@ typedef std::shared_ptr<SerialObject> SerialObjectPtr;
 
 class SerialObject {
 public:
-    SerialObject(const vm_tag_t tag) : _tag(tag), _id(0) {}
+    SerialObject(const vm_tag_t tag) : _tag(tag), _id(0) {
+    }
 
-    SerialObject(const vm_tag_t tag, const objectid_t id)
-        : _tag(tag), _id(id) {}
+    SerialObject(const vm_tag_t tag, const objectid_t id) : _tag(tag), _id(id) {
+    }
 
-    virtual ~SerialObject() {}
+    virtual ~SerialObject() {
+    }
 
-    vm_tag_t get_tag() const { return _tag; }
+    vm_tag_t get_tag() const {
+        return _tag;
+    }
 
-    objectid_t get_id() const { return _id; }
+    objectid_t get_id() const {
+        return _id;
+    }
 
-    void set_id(const objectid_t id) { _id = id; }
+    void set_id(const objectid_t id) {
+        _id = id;
+    }
 
     static bool is_integer(const SerialObjectPtr &o) {
         return o->get_tag() == VM_OBJECT_INTEGER;
@@ -94,16 +102,20 @@ private:
 class SerialInteger : public SerialObject {
 public:
     SerialInteger(const objectid_t id, const vm_int_t n)
-        : SerialObject(VM_OBJECT_INTEGER, id), _value(n) {}
+        : SerialObject(VM_OBJECT_INTEGER, id), _value(n) {
+    }
 
     SerialInteger(const SerialInteger &s)
-        : SerialInteger(s.get_id(), s.get_value()) {}
+        : SerialInteger(s.get_id(), s.get_value()) {
+    }
 
     static SerialObjectPtr create(const objectid_t id, const vm_int_t n) {
         return SerialObjectPtr(new SerialInteger(id, n));
     }
 
-    vm_int_t get_value() const { return _value; }
+    vm_int_t get_value() const {
+        return _value;
+    }
 
 private:
     vm_int_t _value;
@@ -121,16 +133,19 @@ inline SerialObjectPtr SerialObject::create_integer(const objectid_t id,
 class SerialFloat : public SerialObject {
 public:
     SerialFloat(const objectid_t id, const vm_float_t f)
-        : SerialObject(VM_OBJECT_FLOAT, id), _value(f) {}
+        : SerialObject(VM_OBJECT_FLOAT, id), _value(f) {
+    }
 
-    SerialFloat(const SerialFloat &s)
-        : SerialFloat(s.get_id(), s.get_value()) {}
+    SerialFloat(const SerialFloat &s) : SerialFloat(s.get_id(), s.get_value()) {
+    }
 
     static SerialObjectPtr create(const objectid_t id, const vm_float_t f) {
         return SerialObjectPtr(new SerialFloat(id, f));
     }
 
-    vm_float_t get_value() const { return _value; }
+    vm_float_t get_value() const {
+        return _value;
+    }
 
 private:
     vm_float_t _value;
@@ -148,15 +163,19 @@ inline SerialObjectPtr SerialObject::create_float(const objectid_t id,
 class SerialChar : public SerialObject {
 public:
     SerialChar(const objectid_t id, const vm_char_t c)
-        : SerialObject(VM_OBJECT_CHAR, id), _value(c) {}
+        : SerialObject(VM_OBJECT_CHAR, id), _value(c) {
+    }
 
-    SerialChar(const SerialChar &s) : SerialChar(s.get_id(), s.get_value()) {}
+    SerialChar(const SerialChar &s) : SerialChar(s.get_id(), s.get_value()) {
+    }
 
     static SerialObjectPtr create(const objectid_t id, const vm_char_t c) {
         return SerialObjectPtr(new SerialChar(id, c));
     }
 
-    vm_char_t get_value() const { return _value; }
+    vm_char_t get_value() const {
+        return _value;
+    }
 
 private:
     vm_char_t _value;
@@ -174,15 +193,19 @@ inline SerialObjectPtr SerialObject::create_char(const objectid_t id,
 class SerialText : public SerialObject {
 public:
     SerialText(const objectid_t id, const vm_text_t c)
-        : SerialObject(VM_OBJECT_TEXT, id), _value(c) {}
+        : SerialObject(VM_OBJECT_TEXT, id), _value(c) {
+    }
 
-    SerialText(const SerialText &s) : SerialText(s.get_id(), s.get_value()) {}
+    SerialText(const SerialText &s) : SerialText(s.get_id(), s.get_value()) {
+    }
 
     static SerialObjectPtr create(const objectid_t id, const vm_text_t c) {
         return SerialObjectPtr(new SerialText(id, c));
     }
 
-    vm_text_t get_value() const { return _value; }
+    vm_text_t get_value() const {
+        return _value;
+    }
 
 private:
     vm_text_t _value;
@@ -200,17 +223,20 @@ inline SerialObjectPtr SerialObject::create_text(const objectid_t id,
 class SerialArray : public SerialObject {
 public:
     SerialArray(const objectid_t id, const std::vector<objectid_t> &c)
-        : SerialObject(VM_OBJECT_ARRAY, id), _value(c) {}
+        : SerialObject(VM_OBJECT_ARRAY, id), _value(c) {
+    }
 
-    SerialArray(const SerialArray &s)
-        : SerialArray(s.get_id(), s.get_value()) {}
+    SerialArray(const SerialArray &s) : SerialArray(s.get_id(), s.get_value()) {
+    }
 
     static SerialObjectPtr create(const objectid_t id,
                                   const std::vector<objectid_t> &c) {
         return SerialObjectPtr(new SerialArray(id, c));
     }
 
-    std::vector<objectid_t> get_value() const { return _value; }
+    std::vector<objectid_t> get_value() const {
+        return _value;
+    }
 
 private:
     std::vector<objectid_t> _value;
@@ -229,17 +255,21 @@ inline SerialObjectPtr SerialObject::create_array(
 class SerialCombinator : public SerialObject {
 public:
     SerialCombinator(const objectid_t id, const icu::UnicodeString &c)
-        : SerialObject(VM_OBJECT_COMBINATOR, id), _value(c) {}
+        : SerialObject(VM_OBJECT_COMBINATOR, id), _value(c) {
+    }
 
     SerialCombinator(const SerialCombinator &s)
-        : SerialCombinator(s.get_id(), s.get_value()) {}
+        : SerialCombinator(s.get_id(), s.get_value()) {
+    }
 
     static SerialObjectPtr create(const objectid_t id,
                                   const icu::UnicodeString &c) {
         return SerialObjectPtr(new SerialCombinator(id, c));
     }
 
-    vm_text_t get_value() const { return _value; }
+    vm_text_t get_value() const {
+        return _value;
+    }
 
 private:
     vm_text_t _value;
@@ -439,8 +469,12 @@ inline bool is_char(std::istream &is, char c) {
     return p == c;
 };
 
-inline int get_char(std::istream &is) { return is.get(); };
-inline void skip_char(std::istream &is) { get_char(is); };
+inline int get_char(std::istream &is) {
+    return is.get();
+};
+inline void skip_char(std::istream &is) {
+    get_char(is);
+};
 
 inline void forced_char(VM *m, std::istream &is, char c) {
     if (is_char(is, c)) {

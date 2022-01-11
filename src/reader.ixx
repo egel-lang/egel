@@ -28,9 +28,13 @@ public:
         fill_buffer();
     }
 
-    Position position() override { return Position(_resource, _row, _column); }
+    Position position() override {
+        return Position(_resource, _row, _column);
+    }
 
-    icu::UnicodeString content() { return _content; }
+    icu::UnicodeString content() {
+        return _content;
+    }
 
     UChar32 look() override {
         if (end()) return '\0';

@@ -62,14 +62,19 @@ int compare_ast(const AstPtr &a0, const AstPtr &a1);
 
 class Ast {
 public:
-    Ast(ast_tag_t t, const Position &p) : _tag(t), _position(p) {}
+    Ast(ast_tag_t t, const Position &p) : _tag(t), _position(p) {
+    }
 
     virtual ~Ast() {  // keep the compiler happy
     }
 
-    Position position() const { return _position; }
+    Position position() const {
+        return _position;
+    }
 
-    ast_tag_t tag() const { return _tag; }
+    ast_tag_t tag() const {
+        return _tag;
+    }
 
     friend std::ostream &operator<<(std::ostream &os, const AstPtr &a) {
         a->render(os, 0);
@@ -123,15 +128,23 @@ typedef std::set<AstPtr, LessAstPtr> AstPtrSet;
 
 class AstEmpty : public Ast {
 public:
-    AstEmpty() : Ast(AST_EMPTY, Position(icu::UnicodeString(""), 0, 0)) {}
+    AstEmpty() : Ast(AST_EMPTY, Position(icu::UnicodeString(""), 0, 0)) {
+    }
 
-    AstEmpty(const AstEmpty &) : AstEmpty() {}
+    AstEmpty(const AstEmpty &) : AstEmpty() {
+    }
 
-    static AstPtr create() { return AstPtr(new AstEmpty()); }
+    static AstPtr create() {
+        return AstPtr(new AstEmpty());
+    }
 
-    uint_t approximate_length(uint_t indent) const { return indent; }
+    uint_t approximate_length(uint_t indent) const {
+        return indent;
+    }
 
-    void render(std::ostream &os, uint_t) const { os << "(XX)"; }
+    void render(std::ostream &os, uint_t) const {
+        os << "(XX)";
+    }
 };
 
 typedef std::shared_ptr<AstEmpty> AstEmptyPtr;
@@ -142,15 +155,20 @@ typedef std::shared_ptr<AstEmpty> AstEmptyPtr;
 class AstAtom : public Ast {
 public:
     AstAtom(ast_tag_t t, const Position &p, const icu::UnicodeString &n)
-        : Ast(t, p), _text(n) {}
+        : Ast(t, p), _text(n) {
+    }
 
-    icu::UnicodeString text() const { return _text; }
+    icu::UnicodeString text() const {
+        return _text;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         return (indent + text().length());
     }
 
-    void render(std::ostream &os, uint_t) const { os << text(); }
+    void render(std::ostream &os, uint_t) const {
+        os << text();
+    }
 
 private:
     icu::UnicodeString _text;
@@ -164,7 +182,8 @@ public:
         : AstAtom(AST_EXPR_INTEGER, p, text){};
 
     AstExprInteger(const AstExprInteger &l)
-        : AstExprInteger(l.position(), l.text()) {}
+        : AstExprInteger(l.position(), l.text()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprInteger(p, text));
@@ -184,7 +203,8 @@ public:
         : AstAtom(AST_EXPR_HEXINTEGER, p, text){};
 
     AstExprHexInteger(const AstExprHexInteger &l)
-        : AstExprHexInteger(l.position(), l.text()) {}
+        : AstExprHexInteger(l.position(), l.text()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &hex) {
         return AstPtr(new AstExprHexInteger(p, hex));
@@ -204,8 +224,8 @@ public:
     AstExprFloat(const Position &p, const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_FLOAT, p, text){};
 
-    AstExprFloat(const AstExprFloat &l)
-        : AstExprFloat(l.position(), l.text()) {}
+    AstExprFloat(const AstExprFloat &l) : AstExprFloat(l.position(), l.text()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprFloat(p, text));
@@ -225,7 +245,8 @@ public:
         : AstAtom(AST_EXPR_CHARACTER, p, text){};
 
     AstExprCharacter(const AstExprCharacter &l)
-        : AstExprCharacter(l.position(), l.text()) {}
+        : AstExprCharacter(l.position(), l.text()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprCharacter(p, text));
@@ -244,7 +265,8 @@ public:
     AstExprText(const Position &p, const icu::UnicodeString &text)
         : AstAtom(AST_EXPR_TEXT, p, text){};
 
-    AstExprText(const AstExprFloat &l) : AstExprText(l.position(), l.text()) {}
+    AstExprText(const AstExprFloat &l) : AstExprText(l.position(), l.text()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprText(p, text));
@@ -266,7 +288,8 @@ public:
         : AstAtom(AST_EXPR_VARIABLE, p, text){};
 
     AstExprVariable(const AstExprVariable &l)
-        : AstExprVariable(l.position(), l.text()) {}
+        : AstExprVariable(l.position(), l.text()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprVariable(p, text));
@@ -286,7 +309,8 @@ public:
         : AstAtom(AST_EXPR_WILDCARD, p, text){};
 
     AstExprWildcard(const AstExprWildcard &l)
-        : AstExprWildcard(l.position(), l.text()) {}
+        : AstExprWildcard(l.position(), l.text()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprWildcard(p, text));
@@ -303,18 +327,24 @@ typedef std::shared_ptr<AstExprWildcard> AstExprWildcardPtr;
 class AstExprTag : public Ast {
 public:
     AstExprTag(const Position &p, const AstPtr &e, const AstPtr &t)
-        : Ast(AST_EXPR_TAG, p), _expression(e), _tag(t) {}
+        : Ast(AST_EXPR_TAG, p), _expression(e), _tag(t) {
+    }
 
     AstExprTag(const AstExprTag &a)
-        : AstExprTag(a.position(), a.expression(), a.tag()) {}
+        : AstExprTag(a.position(), a.expression(), a.tag()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &e, const AstPtr &t) {
         return AstPtr(new AstExprTag(p, e, t));
     }
 
-    AstPtr expression() const { return _expression; }
+    AstPtr expression() const {
+        return _expression;
+    }
 
-    AstPtr tag() const { return _tag; }
+    AstPtr tag() const {
+        return _tag;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -373,7 +403,8 @@ public:
     };
 
     AstExprCombinator(const AstExprCombinator &c)
-        : AstExprCombinator(c.position(), c.path(), c.combinator()) {}
+        : AstExprCombinator(c.position(), c.path(), c.combinator()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &c) {
         return AstPtr(new AstExprCombinator(p, c));
@@ -389,9 +420,13 @@ public:
         return AstPtr(new AstExprCombinator(p, n, c));
     }
 
-    UnicodeStrings path() const { return _path; }
+    UnicodeStrings path() const {
+        return _path;
+    }
 
-    icu::UnicodeString combinator() const { return _combinator; }
+    icu::UnicodeString combinator() const {
+        return _combinator;
+    }
 
     icu::UnicodeString to_text() const override {
         icu::UnicodeString str = "";  // XXX: change to some other datatype
@@ -412,7 +447,9 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t) const override { os << to_text(); }
+    void render(std::ostream &os, uint_t) const override {
+        os << to_text();
+    }
 
     bool is_local() const {
         return ((_path.size() > 0) && (_path.back() == STRING_LOCAL));
@@ -447,7 +484,8 @@ public:
     };
 
     AstExprOperator(const AstExprOperator &c)
-        : AstExprOperator(c.position(), c.path(), c.combinator()) {}
+        : AstExprOperator(c.position(), c.path(), c.combinator()) {
+    }
 
     static AstPtr create(const Position &p, const UnicodeStrings &pp,
                          const icu::UnicodeString &c) {
@@ -459,9 +497,13 @@ public:
         return AstPtr(new AstExprOperator(p, n, c));
     }
 
-    UnicodeStrings path() const { return _path; }
+    UnicodeStrings path() const {
+        return _path;
+    }
 
-    icu::UnicodeString combinator() const { return _combinator; }
+    icu::UnicodeString combinator() const {
+        return _combinator;
+    }
 
     icu::UnicodeString text() const {
         icu::UnicodeString str = "";
@@ -484,7 +526,9 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t) const { os << text(); }
+    void render(std::ostream &os, uint_t) const {
+        os << text();
+    }
 
 private:
     UnicodeStrings _path;
@@ -504,13 +548,16 @@ typedef std::shared_ptr<AstExprOperator> AstExprOperatorPtr;
 class AstExprList : public Ast {
 public:
     AstExprList(const Position &p, const AstPtrs &c)
-        : Ast(AST_EXPR_LIST, p), _content(c), _tail(nullptr) {}
+        : Ast(AST_EXPR_LIST, p), _content(c), _tail(nullptr) {
+    }
 
     AstExprList(const Position &p, const AstPtrs &c, const AstPtr &tl)
-        : Ast(AST_EXPR_LIST, p), _content(c), _tail(tl) {}
+        : Ast(AST_EXPR_LIST, p), _content(c), _tail(tl) {
+    }
 
     AstExprList(const AstExprList &c)
-        : AstExprList(c.position(), c.content(), c.tail()) {}
+        : AstExprList(c.position(), c.content(), c.tail()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtrs &c) {
         return AstPtr(new AstExprList(p, c));
@@ -521,9 +568,13 @@ public:
         return AstPtr(new AstExprList(p, c, tl));
     }
 
-    AstPtrs content() const { return _content; }
+    AstPtrs content() const {
+        return _content;
+    }
 
-    AstPtr tail() const { return _tail; }
+    AstPtr tail() const {
+        return _tail;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -594,16 +645,20 @@ typedef std::shared_ptr<AstExprList> AstExprListPtr;
 class AstExprTuple : public Ast {
 public:
     AstExprTuple(const Position &p, const AstPtrs &c)
-        : Ast(AST_EXPR_TUPLE, p), _content(c) {}
+        : Ast(AST_EXPR_TUPLE, p), _content(c) {
+    }
 
     AstExprTuple(const AstExprTuple &c)
-        : AstExprTuple(c.position(), c.content()) {}
+        : AstExprTuple(c.position(), c.content()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtrs &c) {
         return AstPtr(new AstExprTuple(p, c));
     }
 
-    AstPtrs content() const { return _content; }
+    AstPtrs content() const {
+        return _content;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -662,7 +717,8 @@ typedef std::shared_ptr<AstExprTuple> AstExprTuplePtr;
 class AstExprApplication : public Ast {
 public:
     AstExprApplication(const Position &p, const AstPtrs &aa)
-        : Ast(AST_EXPR_APPLICATION, p), _arguments(aa) {}
+        : Ast(AST_EXPR_APPLICATION, p), _arguments(aa) {
+    }
 
     AstExprApplication(const Position &p, const AstPtr &l, const AstPtr &r)
         : Ast(AST_EXPR_APPLICATION, p) {
@@ -690,7 +746,8 @@ public:
     }
 
     AstExprApplication(const AstExprApplication &a)
-        : AstExprApplication(a.position(), a.arguments()) {}
+        : AstExprApplication(a.position(), a.arguments()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtrs &aa) {
         return AstPtr(new AstExprApplication(p, aa));
@@ -705,7 +762,9 @@ public:
         return AstPtr(new AstExprApplication(p, op, e0, e1));
     }
 
-    AstPtrs arguments() const { return _arguments; }
+    AstPtrs arguments() const {
+        return _arguments;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -764,23 +823,33 @@ class AstExprMatch : public Ast {
 public:
     AstExprMatch(const Position &p, const AstPtrs &pp, const AstPtr &g,
                  const AstPtr &r)
-        : Ast(AST_EXPR_MATCH, p), _patterns(pp), _guard(g), _result(r) {}
+        : Ast(AST_EXPR_MATCH, p), _patterns(pp), _guard(g), _result(r) {
+    }
 
     AstExprMatch(const AstExprMatch &c)
-        : AstExprMatch(c.position(), c.patterns(), c.guard(), c.result()) {}
+        : AstExprMatch(c.position(), c.patterns(), c.guard(), c.result()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtrs &pp, const AstPtr &g,
                          const AstPtr &r) {
         return AstPtr(new AstExprMatch(p, pp, g, r));
     }
 
-    AstPtrs patterns() const { return _patterns; }
+    AstPtrs patterns() const {
+        return _patterns;
+    }
 
-    AstPtr guard() const { return _guard; }
+    AstPtr guard() const {
+        return _guard;
+    }
 
-    AstPtr result() const { return _result; }
+    AstPtr result() const {
+        return _result;
+    }
 
-    uint_t arity() const { return _patterns.size(); }
+    uint_t arity() const {
+        return _patterns.size();
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -853,7 +922,8 @@ typedef std::shared_ptr<AstExprMatch> AstExprMatchPtr;
 class AstExprBlock : public Ast {
 public:
     AstExprBlock(const Position &p, const AstPtrs &mm)
-        : Ast(AST_EXPR_BLOCK, p), _matches(mm) {}
+        : Ast(AST_EXPR_BLOCK, p), _matches(mm) {
+    }
 
     AstExprBlock(const Position &p, const AstPtr &m) : Ast(AST_EXPR_BLOCK, p) {
         AstPtrs mm;
@@ -862,7 +932,8 @@ public:
     }
 
     AstExprBlock(const AstExprBlock &c)
-        : AstExprBlock(c.position(), c.matches()) {}
+        : AstExprBlock(c.position(), c.matches()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &m) {
         return AstPtr(new AstExprBlock(p, m));
@@ -872,7 +943,9 @@ public:
         return AstPtr(new AstExprBlock(p, mm));
     }
 
-    AstPtrs matches() const { return _matches; }
+    AstPtrs matches() const {
+        return _matches;
+    }
 
     uint_t arity() const {
         if ((_matches.size() > 0) && (_matches[0]->tag() == AST_EXPR_MATCH)) {
@@ -938,16 +1011,20 @@ typedef std::shared_ptr<AstExprBlock> AstExprBlockPtr;
 class AstExprLambda : public Ast {
 public:
     AstExprLambda(const Position &p, const AstPtr &m)
-        : Ast(AST_EXPR_LAMBDA, p), _match(m) {}
+        : Ast(AST_EXPR_LAMBDA, p), _match(m) {
+    }
 
     AstExprLambda(const AstExprLambda &c)
-        : AstExprLambda(c.position(), c.match()) {}
+        : AstExprLambda(c.position(), c.match()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &m) {
         return AstPtr(new AstExprLambda(p, m));
     }
 
-    AstPtr match() const { return _match; }
+    AstPtr match() const {
+        return _match;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -978,22 +1055,30 @@ class AstExprLet : public Ast {
 public:
     AstExprLet(const Position &p, const AstPtrs &ee, const AstPtr &e1,
                const AstPtr e2)
-        : Ast(AST_EXPR_LET, p), _lhs(ee), _rhs(e1), _expression(e2) {}
+        : Ast(AST_EXPR_LET, p), _lhs(ee), _rhs(e1), _expression(e2) {
+    }
 
     AstExprLet(const AstExprLet &a)
         : AstExprLet(a.position(), a.left_hand_side(), a.right_hand_side(),
-                     a.expression()) {}
+                     a.expression()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtrs &ee, const AstPtr &e1,
                          const AstPtr e2) {
         return AstPtr(new AstExprLet(p, ee, e1, e2));
     }
 
-    AstPtrs left_hand_side() const { return _lhs; }
+    AstPtrs left_hand_side() const {
+        return _lhs;
+    }
 
-    AstPtr right_hand_side() const { return _rhs; }
+    AstPtr right_hand_side() const {
+        return _rhs;
+    }
 
-    AstPtr expression() const { return _expression; }
+    AstPtr expression() const {
+        return _expression;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1052,19 +1137,25 @@ typedef std::shared_ptr<AstExprLet> AstExprLetPtr;
 class AstExprTry : public Ast {
 public:
     AstExprTry(const Position &p, const AstPtr &e0, const AstPtr &e1)
-        : Ast(AST_EXPR_TRY, p), _try(e0), _catch(e1) {}
+        : Ast(AST_EXPR_TRY, p), _try(e0), _catch(e1) {
+    }
 
     AstExprTry(const AstExprTry &a)
-        : AstExprTry(a.position(), a.try0(), a.catch0()) {}
+        : AstExprTry(a.position(), a.try0(), a.catch0()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &e0,
                          const AstPtr &e1) {
         return AstPtr(new AstExprTry(p, e0, e1));
     }
 
-    AstPtr try0() const { return _try; }
+    AstPtr try0() const {
+        return _try;
+    }
 
-    AstPtr catch0() const { return _catch; }
+    AstPtr catch0() const {
+        return _catch;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1114,16 +1205,20 @@ typedef std::shared_ptr<AstExprTry> AstExprTryPtr;
 class AstExprThrow : public Ast {
 public:
     AstExprThrow(const Position &p, const AstPtr &e0)
-        : Ast(AST_EXPR_THROW, p), _throw(e0) {}
+        : Ast(AST_EXPR_THROW, p), _throw(e0) {
+    }
 
     AstExprThrow(const AstExprThrow &a)
-        : AstExprThrow(a.position(), a.throw0()) {}
+        : AstExprThrow(a.position(), a.throw0()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &e0) {
         return AstPtr(new AstExprThrow(p, e0));
     }
 
-    AstPtr throw0() const { return _throw; }
+    AstPtr throw0() const {
+        return _throw;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1160,21 +1255,29 @@ class AstExprIf : public Ast {
 public:
     AstExprIf(const Position &p, const AstPtr &e0, const AstPtr &e1,
               const AstPtr &e2)
-        : Ast(AST_EXPR_IF, p), _if(e0), _then(e1), _else(e2) {}
+        : Ast(AST_EXPR_IF, p), _if(e0), _then(e1), _else(e2) {
+    }
 
     AstExprIf(const AstExprIf &a)
-        : AstExprIf(a.position(), a.if0(), a.then0(), a.else0()) {}
+        : AstExprIf(a.position(), a.if0(), a.then0(), a.else0()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1,
                          const AstPtr &e2) {
         return AstPtr(new AstExprIf(p, e0, e1, e2));
     }
 
-    AstPtr if0() const { return _if; }
+    AstPtr if0() const {
+        return _if;
+    }
 
-    AstPtr then0() const { return _then; }
+    AstPtr then0() const {
+        return _then;
+    }
 
-    AstPtr else0() const { return _else; }
+    AstPtr else0() const {
+        return _else;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1231,19 +1334,25 @@ typedef std::shared_ptr<AstExprIf> AstExprIfPtr;
 class AstExprStatement : public Ast {
 public:
     AstExprStatement(const Position &p, const AstPtr &e0, const AstPtr &e1)
-        : Ast(AST_EXPR_STATEMENT, p), _lhs(e0), _rhs(e1) {}
+        : Ast(AST_EXPR_STATEMENT, p), _lhs(e0), _rhs(e1) {
+    }
 
     AstExprStatement(const AstExprStatement &a)
-        : AstExprStatement(a.position(), a.lhs(), a.rhs()) {}
+        : AstExprStatement(a.position(), a.lhs(), a.rhs()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &e0,
                          const AstPtr &e1) {
         return AstPtr(new AstExprStatement(p, e0, e1));
     }
 
-    AstPtr lhs() const { return _lhs; }
+    AstPtr lhs() const {
+        return _lhs;
+    }
 
-    AstPtr rhs() const { return _rhs; }
+    AstPtr rhs() const {
+        return _rhs;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1287,21 +1396,29 @@ class AstDeclNamespace : public Ast {
 public:
     AstDeclNamespace(const Position &p, const UnicodeStrings &name,
                      const AstPtrs &c)
-        : Ast(AST_DECL_NAMESPACE, p), _name(name), _content(c) {}
+        : Ast(AST_DECL_NAMESPACE, p), _name(name), _content(c) {
+    }
 
     AstDeclNamespace(const AstDeclNamespace &c)
-        : AstDeclNamespace(c.position(), c.name(), c.content()) {}
+        : AstDeclNamespace(c.position(), c.name(), c.content()) {
+    }
 
     static AstPtr create(const Position &p, const UnicodeStrings &name,
                          const AstPtrs &c) {
         return AstPtr(new AstDeclNamespace(p, name, c));
     }
 
-    UnicodeStrings name() const { return _name; }
+    UnicodeStrings name() const {
+        return _name;
+    }
 
-    AstPtrs content() const { return _content; }
+    AstPtrs content() const {
+        return _content;
+    }
 
-    uint_t approximate_length(uint_t indent) const { return indent; }
+    uint_t approximate_length(uint_t indent) const {
+        return indent;
+    }
 
     void render(std::ostream &os, uint_t indent) const {
         skip(os, indent);
@@ -1336,15 +1453,19 @@ typedef std::shared_ptr<AstDeclNamespace> AstDeclNamespacePtr;
 class AstDeclData : public Ast {
 public:
     AstDeclData(const Position &p, const AstPtrs &nn)
-        : Ast(AST_DECL_DATA, p), _names(nn) {}
+        : Ast(AST_DECL_DATA, p), _names(nn) {
+    }
 
-    AstDeclData(const AstDeclData &a) : AstDeclData(a.position(), a.names()) {}
+    AstDeclData(const AstDeclData &a) : AstDeclData(a.position(), a.names()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtrs &nn) {
         return AstPtr(new AstDeclData(p, nn));
     }
 
-    AstPtrs names() const { return _names; }
+    AstPtrs names() const {
+        return _names;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1402,18 +1523,24 @@ typedef std::shared_ptr<AstDeclData> AstDeclDataPtr;
 class AstDeclDefinition : public Ast {
 public:
     AstDeclDefinition(const Position &p, const AstPtr &n, const AstPtr &e)
-        : Ast(AST_DECL_DEFINITION, p), _name(n), _expression(e) {}
+        : Ast(AST_DECL_DEFINITION, p), _name(n), _expression(e) {
+    }
 
     AstDeclDefinition(const AstDeclDefinition &a)
-        : AstDeclDefinition(a.position(), a.name(), a.expression()) {}
+        : AstDeclDefinition(a.position(), a.name(), a.expression()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &n, const AstPtr &e) {
         return AstPtr(new AstDeclDefinition(p, n, e));
     }
 
-    AstPtr name() const { return _name; }
+    AstPtr name() const {
+        return _name;
+    }
 
-    AstPtr expression() const { return _expression; }
+    AstPtr expression() const {
+        return _expression;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1459,19 +1586,25 @@ typedef std::shared_ptr<AstDeclDefinition> AstDeclDefinitionPtr;
 class AstDeclValue : public Ast {
 public:
     AstDeclValue(const Position &p, const AstPtr &e0, const AstPtr &e1)
-        : Ast(AST_DECL_VALUE, p), _name(e0), _expression(e1) {}
+        : Ast(AST_DECL_VALUE, p), _name(e0), _expression(e1) {
+    }
 
     AstDeclValue(const AstDeclValue &a)
-        : AstDeclValue(a.position(), a.name(), a.expression()) {}
+        : AstDeclValue(a.position(), a.name(), a.expression()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &e0,
                          const AstPtr &e1) {
         return AstPtr(new AstDeclValue(p, e0, e1));
     }
 
-    AstPtr name() const { return _name; }
+    AstPtr name() const {
+        return _name;
+    }
 
-    AstPtr expression() const { return _expression; }
+    AstPtr expression() const {
+        return _expression;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1516,18 +1649,24 @@ typedef std::shared_ptr<AstDeclValue> AstDeclValuePtr;
 class AstDeclOperator : public Ast {
 public:
     AstDeclOperator(const Position &p, const AstPtr &c, const AstPtr &e)
-        : Ast(AST_DECL_OPERATOR, p), _combinator(c), _expression(e) {}
+        : Ast(AST_DECL_OPERATOR, p), _combinator(c), _expression(e) {
+    }
 
     AstDeclOperator(const AstDeclOperator &a)
-        : AstDeclOperator(a.position(), a.combinator(), a.expression()) {}
+        : AstDeclOperator(a.position(), a.combinator(), a.expression()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &c, const AstPtr &e) {
         return AstPtr(new AstDeclOperator(p, c, e));
     }
 
-    AstPtr combinator() const { return _combinator; }
+    AstPtr combinator() const {
+        return _combinator;
+    }
 
-    AstPtr expression() const { return _expression; }
+    AstPtr expression() const {
+        return _expression;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1579,26 +1718,38 @@ public:
           _name(n),
           _variables(vv),
           _fields(ff),
-          _extends(ee) {}
+          _extends(ee) {
+    }
 
     AstDeclObject(const AstDeclObject &a)
         : AstDeclObject(a.position(), a.name(), a.variables(), a.fields(),
-                        a.extends()) {}
+                        a.extends()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtr &n, const AstPtrs &vv,
                          const AstPtrs &ff, const AstPtrs &ee) {
         return AstPtr(new AstDeclObject(p, n, vv, ff, ee));
     }
 
-    AstPtr name() const { return _name; }
+    AstPtr name() const {
+        return _name;
+    }
 
-    AstPtrs variables() const { return _variables; }
+    AstPtrs variables() const {
+        return _variables;
+    }
 
-    AstPtrs fields() const { return _fields; }
+    AstPtrs fields() const {
+        return _fields;
+    }
 
-    AstPtrs extends() const { return _extends; }
+    AstPtrs extends() const {
+        return _extends;
+    }
 
-    uint_t approximate_length(uint_t indent) const { return indent; }
+    uint_t approximate_length(uint_t indent) const {
+        return indent;
+    }
 
     void render(std::ostream &os, uint_t indent) const {
         skip(os, indent);
@@ -1650,16 +1801,20 @@ typedef std::shared_ptr<AstDeclObject> AstDeclObjectPtr;
 class AstDirectImport : public Ast {
 public:
     AstDirectImport(const Position &p, const icu::UnicodeString &v)
-        : Ast(AST_DIRECT_IMPORT, p), _import(v) {}
+        : Ast(AST_DIRECT_IMPORT, p), _import(v) {
+    }
 
     AstDirectImport(const AstDirectImport &c)
-        : AstDirectImport(c.position(), c.import()) {}
+        : AstDirectImport(c.position(), c.import()) {
+    }
 
     static AstPtr create(const Position &p, const icu::UnicodeString &v) {
         return AstPtr(new AstDirectImport(p, v));
     }
 
-    icu::UnicodeString import() const { return _import; }
+    icu::UnicodeString import() const {
+        return _import;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent + 6;
@@ -1686,16 +1841,20 @@ typedef std::shared_ptr<AstDirectImport> AstDirectImportPtr;
 class AstDirectUsing : public Ast {
 public:
     AstDirectUsing(const Position &p, const UnicodeStrings &v)
-        : Ast(AST_DIRECT_USING, p), _using(v) {}
+        : Ast(AST_DIRECT_USING, p), _using(v) {
+    }
 
     AstDirectUsing(const AstDirectUsing &c)
-        : AstDirectUsing(c.position(), c.using0()) {}
+        : AstDirectUsing(c.position(), c.using0()) {
+    }
 
     static AstPtr create(const Position &p, const UnicodeStrings &v) {
         return AstPtr(new AstDirectUsing(p, v));
     }
 
-    UnicodeStrings using0() const { return _using; }
+    UnicodeStrings using0() const {
+        return _using;
+    }
 
     uint_t approximate_length(uint_t indent) const {
         uint_t l = indent;
@@ -1731,17 +1890,23 @@ typedef std::shared_ptr<AstDirectUsing> AstDirectUsingPtr;
 class AstWrapper : public Ast {
 public:
     AstWrapper(const Position &p, const AstPtrs &c)
-        : Ast(AST_WRAPPER, p), _content(c) {}
+        : Ast(AST_WRAPPER, p), _content(c) {
+    }
 
-    AstWrapper(const AstWrapper &c) : AstWrapper(c.position(), c.content()) {}
+    AstWrapper(const AstWrapper &c) : AstWrapper(c.position(), c.content()) {
+    }
 
     static AstPtr create(const Position &p, const AstPtrs &c) {
         return AstPtr(new AstWrapper(p, c));
     }
 
-    AstPtrs content() const { return _content; }
+    AstPtrs content() const {
+        return _content;
+    }
 
-    uint_t approximate_length(uint_t indent) const { return indent; }
+    uint_t approximate_length(uint_t indent) const {
+        return indent;
+    }
 
     void render(std::ostream &os, uint_t indent) const {
         for (auto e : content()) {

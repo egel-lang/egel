@@ -12,13 +12,16 @@ public:
         : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _callback(call){};
 
     EvalResult(const EvalResult &d)
-        : EvalResult(d.machine(), d.symbol(), d.callback()) {}
+        : EvalResult(d.machine(), d.symbol(), d.callback()) {
+    }
 
     static VMObjectPtr create(VM *m, const symbol_t s, const callback_t call) {
         return VMObjectPtr(new EvalResult(m, s, call));
     }
 
-    callback_t callback() const { return _callback; }
+    callback_t callback() const {
+        return _callback;
+    }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         auto tt = machine()->get_array(thunk);
@@ -46,10 +49,12 @@ inline void default_exception_callback(VM *vm, const VMObjectPtr &e) {
 class VarCombinator : public VMObjectCombinator {
 public:
     VarCombinator(VM *m, const symbol_t s, const VMReduceResult &r)
-        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _result(r) {}
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _result(r) {
+    }
 
     VarCombinator(const VarCombinator &c)
-        : VarCombinator(c.machine(), c.symbol(), c.result()) {}
+        : VarCombinator(c.machine(), c.symbol(), c.result()) {
+    }
 
     static VMObjectPtr create(VM *m, const symbol_t s,
                               const VMReduceResult &r) {
@@ -67,7 +72,9 @@ public:
         }
     }
 
-    VMReduceResult result() const { return _result; }
+    VMReduceResult result() const {
+        return _result;
+    }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         auto tt = machine()->get_array(thunk);
@@ -99,26 +106,38 @@ typedef std::shared_ptr<Eval> EvalPtr;
 
 class Eval {
 public:
-    Eval() {}
+    Eval() {
+    }
 
-    Eval(ModuleManagerPtr mm) : _manager(mm), _usings(AstPtrs()) {}
+    Eval(ModuleManagerPtr mm) : _manager(mm), _usings(AstPtrs()) {
+    }
 
-    Eval(const Eval &e) : Eval(e.get_manager()) {}
+    Eval(const Eval &e) : Eval(e.get_manager()) {
+    }
 
-    ~Eval() {}
+    ~Eval() {
+    }
 
-    static EvalPtr create() { return EvalPtr(new Eval()); }
+    static EvalPtr create() {
+        return EvalPtr(new Eval());
+    }
 
     void init(ModuleManagerPtr mm) {
         _manager = mm;
         _usings = AstPtrs();
     }
 
-    ModuleManagerPtr get_manager() const { return _manager; }
+    ModuleManagerPtr get_manager() const {
+        return _manager;
+    }
 
-    VM *machine() { return _manager->machine(); }
+    VM *machine() {
+        return _manager->machine();
+    }
 
-    AstPtrs get_usings() { return _usings; }
+    AstPtrs get_usings() {
+        return _usings;
+    }
 
     /*
      * Batch evaluation.
@@ -198,7 +217,9 @@ public:
         }
     }
 
-    void handle_using(const AstPtr &a) { _usings.push_back(a); }
+    void handle_using(const AstPtr &a) {
+        _usings.push_back(a);
+    }
 
     void handle_definition(const AstPtr &d) {
         auto vm = machine();

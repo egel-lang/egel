@@ -25,7 +25,8 @@ public:
         : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos){};
 
     VMObjectThreadResult(const VMObjectThreadResult &d)
-        : VMObjectThreadResult(d.machine(), d.symbol(), d._tuple, d._pos) {}
+        : VMObjectThreadResult(d.machine(), d.symbol(), d._tuple, d._pos) {
+    }
 
     static VMObjectPtr create(VM *m, const symbol_t s, const VMObjectPtr &tuple,
                               int pos) {
@@ -54,7 +55,8 @@ public:
         : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos){};
 
     VMObjectThreadException(const VMObjectThreadException &d)
-        : VMObjectThreadException(d.machine(), d.symbol(), d._tuple, d._pos) {}
+        : VMObjectThreadException(d.machine(), d.symbol(), d._tuple, d._pos) {
+    }
 
     static VMObjectPtr create(VM *vm, const symbol_t s,
                               const VMObjectPtr &tuple, int pos) {

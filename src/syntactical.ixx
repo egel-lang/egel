@@ -9,18 +9,26 @@ import operators;
 
 class Parser {
 public:
-    Parser(TokenReaderPtr &r) { _tokenreader = r; }
+    Parser(TokenReaderPtr &r) {
+        _tokenreader = r;
+    }
 
-    Token look(uint_t n = 0) { return _tokenreader->look(n); }
+    Token look(uint_t n = 0) {
+        return _tokenreader->look(n);
+    }
 
     void skip() {
         // std::cout << "skipped: " << look() << std::endl;
         _tokenreader->skip();
     }
 
-    Position position() { return _tokenreader->look().position(); }
+    Position position() {
+        return _tokenreader->look().position();
+    }
 
-    token_t tag(uint_t n = 0) { return _tokenreader->look(n).tag(); }
+    token_t tag(uint_t n = 0) {
+        return _tokenreader->look(n).tag();
+    }
 
     void check_token(token_t t) {
         if (tag() != t) {
@@ -72,9 +80,13 @@ public:
 
     // parse (qualified) names or operators
 
-    bool is_variable() { return look().tag() == TOKEN_UPPERCASE; }
+    bool is_variable() {
+        return look().tag() == TOKEN_UPPERCASE;
+    }
 
-    bool is_wildcard() { return look().text().compare("_") == 0; }
+    bool is_wildcard() {
+        return look().text().compare("_") == 0;
+    }
 
     bool is_combinator() {
         uint_t i = 0;
@@ -94,7 +106,9 @@ public:
         return look(i).tag() == TOKEN_OPERATOR;
     }
 
-    bool is_namespace() { return look().tag() == TOKEN_UPPERCASE; }
+    bool is_namespace() {
+        return look().tag() == TOKEN_UPPERCASE;
+    }
 
     icu::UnicodeString peek_operator() {
         // (uppercase '.')* operator
@@ -915,7 +929,8 @@ private:
 
 class LineParser : public Parser {
 public:
-    LineParser(TokenReaderPtr &r) : Parser(r) {}
+    LineParser(TokenReaderPtr &r) : Parser(r) {
+    }
 
     AstPtr parse_command() {
         if (is_directive()) {
@@ -971,16 +986,20 @@ public:
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const AstPtrs &nn) override {}
+    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    }
 
     void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {}
+                               const AstPtr &e) override {
+    }
 
     void visit_decl_value(const Position &p, const AstPtr &n,
-                          const AstPtr &e) override {}
+                          const AstPtr &e) override {
+    }
 
     void visit_decl_operator(const Position &p, const AstPtr &c,
-                             const AstPtr &e) override {}
+                             const AstPtr &e) override {
+    }
 
 private:
     AstPtrs _imports;
@@ -1004,13 +1023,16 @@ public:
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const AstPtrs &nn) override {}
+    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    }
 
     void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {}
+                               const AstPtr &e) override {
+    }
 
     void visit_decl_operator(const Position &p, const AstPtr &c,
-                             const AstPtr &e) override {}
+                             const AstPtr &e) override {
+    }
 
 private:
     AstPtrs _values;

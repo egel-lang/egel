@@ -71,7 +71,9 @@ icu::UnicodeString operator_char_translation(int i) {
     return icu::UnicodeString(operators[i].translation);
 }
 
-attr_t operator_char_attributes(int i) { return operators[i].attribute; }
+attr_t operator_char_attributes(int i) {
+    return operators[i].attribute;
+}
 
 int operator_char_compare(const UChar32 c0, const UChar32 c1) {
     int i0 = operator_char_entry(c0);

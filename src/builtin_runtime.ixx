@@ -75,7 +75,9 @@ class Modules : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Modules, "System", "modules");
 
-    VMObjectPtr apply() const override { return machine()->query_modules(); }
+    VMObjectPtr apply() const override {
+        return machine()->query_modules();
+    }
 };
 
 //## System::is_module m - check we have a module

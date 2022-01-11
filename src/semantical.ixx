@@ -30,7 +30,8 @@ typedef enum {
 
 class VisitDeclare : public Visit {
 public:
-    VisitDeclare() {}
+    VisitDeclare() {
+    }
 
     void declare(NamespacePtr &env, const AstPtr &a) {
         _spaces = env;
@@ -39,15 +40,25 @@ public:
     }
 
     // state manipulation
-    void set_declare_state(declare_state_t s) { _declare_state = s; }
+    void set_declare_state(declare_state_t s) {
+        _declare_state = s;
+    }
 
-    declare_state_t get_declare_state() { return _declare_state; }
+    declare_state_t get_declare_state() {
+        return _declare_state;
+    }
 
-    void clear_qualifications() { _qualifications.clear(); }
+    void clear_qualifications() {
+        _qualifications.clear();
+    }
 
-    UnicodeStrings get_qualifications() { return _qualifications; }
+    UnicodeStrings get_qualifications() {
+        return _qualifications;
+    }
 
-    void set_qualifications(UnicodeStrings qq) { _qualifications = qq; }
+    void set_qualifications(UnicodeStrings qq) {
+        _qualifications = qq;
+    }
 
     // helper functions
     icu::UnicodeString qualified(const UnicodeStrings &nn,
@@ -167,9 +178,13 @@ public:
     }
 
     // state
-    void set_identify_state(identify_state_t s) { _identify_state = s; }
+    void set_identify_state(identify_state_t s) {
+        _identify_state = s;
+    }
 
-    identify_state_t get_identify_state() { return _identify_state; }
+    identify_state_t get_identify_state() {
+        return _identify_state;
+    }
 
     // range manipulation
     void declare(const Position &p, const icu::UnicodeString &k,
@@ -205,21 +220,35 @@ public:
         }
     }
 
-    void enter_range() { _range = ::enter_range(_range); }
+    void enter_range() {
+        _range = ::enter_range(_range);
+    }
 
-    void leave_range() { _range = ::leave_range(_range); }
+    void leave_range() {
+        _range = ::leave_range(_range);
+    }
 
-    void add_using(const UnicodeStrings &nn) { ::add_using(_range, nn); }
+    void add_using(const UnicodeStrings &nn) {
+        ::add_using(_range, nn);
+    }
 
     // namespaces
-    UnicodeStrings get_namespace() { return _namespace; }
+    UnicodeStrings get_namespace() {
+        return _namespace;
+    }
 
-    void set_namespace(UnicodeStrings n) { _namespace = n; }
+    void set_namespace(UnicodeStrings n) {
+        _namespace = n;
+    }
 
     // push/pop declarations
-    void push_declaration(const AstPtr &d) { _declarations.push_back(d); }
+    void push_declaration(const AstPtr &d) {
+        _declarations.push_back(d);
+    }
 
-    AstPtrs pop_declarations() { return _declarations; }
+    AstPtrs pop_declarations() {
+        return _declarations;
+    }
 
     // rewrites
     AstPtr rewrite_expr_variable(const Position &p,

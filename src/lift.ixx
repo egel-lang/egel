@@ -11,7 +11,9 @@ export AstPtr lift(const AstPtr &a);
 
 class RewriteEta : public Rewrite {
 public:
-    AstPtr eta(const AstPtr &a) { return rewrite(a); }
+    AstPtr eta(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     AstPtr push_fv_front(const AstPtrs &fv, const AstPtr &m) {
         switch (m->tag()) {
@@ -79,7 +81,9 @@ AstPtr pass_eta(const AstPtr &a) {
 // but what a horrible name
 class RewriteDeapply : public Rewrite {
 public:
-    AstPtr deapply(const AstPtr &a) { return rewrite(a); }
+    AstPtr deapply(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     AstPtr rewrite_expr_application(const Position &p,
                                     const AstPtrs &aa) override {
@@ -106,7 +110,9 @@ AstPtr pass_deapply(const AstPtr &a) {
 
 class RewriteLift : public Rewrite {
 public:
-    AstPtr lift(const AstPtr &a) { return rewrite(a); }
+    AstPtr lift(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     void set_scope(const AstPtr &a) {
         AstPtrs aa;
@@ -115,13 +121,21 @@ public:
         _lifted = aa;
     }
 
-    AstPtr get_scope() { return _scope; }
+    AstPtr get_scope() {
+        return _scope;
+    }
 
-    void add_lifted(const AstPtr &a) { _lifted.push_back(a); }
+    void add_lifted(const AstPtr &a) {
+        _lifted.push_back(a);
+    }
 
-    AstPtrs get_lifted() { return _lifted; }
+    AstPtrs get_lifted() {
+        return _lifted;
+    }
 
-    uint_t tick() { return _counter++; }
+    uint_t tick() {
+        return _counter++;
+    }
 
     UnicodeStrings localize(UnicodeStrings ss) {
         UnicodeStrings ss0;
@@ -262,7 +276,9 @@ AstPtr pass_lift(const AstPtr &a) {
 
 class RewriteRelambda : public Rewrite {
 public:
-    AstPtr relambda(const AstPtr &a) { return rewrite(a); }
+    AstPtr relambda(const AstPtr &a) {
+        return rewrite(a);
+    }
 
     AstPtr rewrite_decl_definition(const Position &p, const AstPtr &c,
                                    const AstPtr &e) override {
