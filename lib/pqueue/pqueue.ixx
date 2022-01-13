@@ -1,38 +1,38 @@
-#include "../../src/runtime.hpp"
-
 #include <stdlib.h>
-#include <iostream>
-#include <fstream>
 
-#include <utility>
-#include <string>
+#include <fstream>
+#include <iostream>
 #include <map>
 #include <queue>
+#include <string>
+#include <utility>
+
+#include "../../src/runtime.hpp"
 
 struct Greater {
-    bool operator() (const std::pair<VMObjectPtr, VMObjectPtr>& p0, 
-                     const std::pair<VMObjectPtr, VMObjectPtr>& p1) const {
+    bool operator()(const std::pair<VMObjectPtr, VMObjectPtr>& p0,
+                    const std::pair<VMObjectPtr, VMObjectPtr>& p1) const {
         CompareVMObjectPtr compare;
         auto c = compare(p0.first, p1.first);
         return c == 1;
     }
 };
 
-typedef std::priority_queue<
-        std::pair<VMObjectPtr, VMObjectPtr>,
-        std::vector<std::pair<VMObjectPtr,VMObjectPtr>>,
-        Greater> pqueue_t;
+typedef std::priority_queue<std::pair<VMObjectPtr, VMObjectPtr>,
+                            std::vector<std::pair<VMObjectPtr, VMObjectPtr>>,
+                            Greater>
+    pqueue_t;
 
 //## System::pqueue - a pqueue
-class PQueue: public Opaque {
+class PQueue : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, PQueue, "System", "pqueue");
 
-    PQueue(VM* m, const pqueue_t& d): PQueue(m) {
+    PQueue(VM* m, const pqueue_t& d) : PQueue(m) {
         _value = d;
     }
 
-    PQueue(const PQueue& d): PQueue(d.machine(), d.value()) {
+    PQueue(const PQueue& d) : PQueue(d.machine(), d.value()) {
     }
 
     static VMObjectPtr create(VM* m, const pqueue_t& d) {
@@ -44,7 +44,7 @@ public:
     }
 
     int compare(const VMObjectPtr& o) override {
-        return -1; // XXX: for later
+        return -1;  // XXX: for later
     }
 
     pqueue_t value() const {
@@ -56,7 +56,7 @@ public:
     }
 
     bool empty() const {
-         return _value.size() == 0;
+        return _value.size() == 0;
     }
 
     VMObjectPtr top() {
@@ -82,7 +82,7 @@ protected:
 };
 
 //## System::pqueue - create a pqueue object
-class APQueue: public Medadic {
+class APQueue : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, APQueue, "System", "pqueue");
 
@@ -92,7 +92,7 @@ public:
 };
 
 //## System::pqueue_has d k - check for key
-class PQueueEmpty: public Monadic {
+class PQueueEmpty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, PQueueEmpty, "System", "pqueue_empty");
 
@@ -108,7 +108,7 @@ public:
 };
 
 //## System::pqueue_get d k - get a value by key
-class PQueueTop: public Monadic {
+class PQueueTop : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, PQueueTop, "System", "pqueue_top");
 
@@ -124,7 +124,7 @@ public:
 };
 
 //## System::pqueue_keys d - pqueue keys as list
-class PQueuePop: public Monadic {
+class PQueuePop : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, PQueuePop, "System", "pqueue_pop");
 
@@ -141,11 +141,12 @@ public:
 };
 
 //## System::pqueue_set d k v - set a value by key
-class PQueuePush: public Ternary {
+class PQueuePush : public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_EGO, PQueuePush, "System", "pqueue_push");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1, const VMObjectPtr& arg2) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
+                      const VMObjectPtr& arg2) const override {
         auto m = machine();
         if (m->is_opaque(arg0) && m->symbol(arg0) == "System::pqueue") {
             auto d = PQueue::cast(arg0);
@@ -156,7 +157,6 @@ public:
         }
     }
 };
-
 
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();

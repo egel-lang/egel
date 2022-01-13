@@ -1,10 +1,11 @@
-#include "../../src/runtime.hpp"
-
-#include <stdlib.h>
 #include <math.h>
-#include <thread>
-#include <random>
+#include <stdlib.h>
+
 #include <mutex>
+#include <random>
+#include <thread>
+
+#include "../../src/runtime.hpp"
 
 /**
  * Start of a simplistic uniform random prng library which synchronizes
@@ -13,7 +14,8 @@
 
 class random {
 private:
-    random() {}
+    random() {
+    }
 
 public:
     static random& get() {
@@ -22,22 +24,23 @@ public:
     }
 
     vm_int_t between(const vm_int_t& min, const vm_int_t& max) {
-        std::uniform_int_distribution<vm_int_t> distribution(min,max);
+        std::uniform_int_distribution<vm_int_t> distribution(min, max);
         std::lock_guard<std::mutex> lock(_lock);
         return distribution(_generator);
     }
 
 private:
-    std::mutex      _lock;
-    std::mt19937    _generator;
+    std::mutex _lock;
+    std::mt19937 _generator;
 };
 
 //## Math::between min max - return a random number between min and max
-class Random: public Dyadic {
+class Random : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Random, "Math", "between");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
@@ -59,5 +62,4 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Random::create(vm));
 
     return oo;
-
 }
