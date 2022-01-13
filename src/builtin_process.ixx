@@ -34,7 +34,7 @@ public:
     }
 
     static VMObjectPtr create(VM *vm, const VMObjectPtr &f) {
-        return VMObjectPtr(new Process(vm, f));
+        return std::make_shared<Process>(vm, f);
     }
 
     int compare(const VMObjectPtr &o) override {

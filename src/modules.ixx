@@ -173,7 +173,7 @@ public:
     }
 
     static VMObjectPtr create(VM *vm, ModulePtr p) {
-        return VMObjectPtr(new VMModule(vm, p));
+        return std::make_shared<VMModule>(vm, p);
     }
 
     ModulePtr value() const {
@@ -263,7 +263,7 @@ public:
 
     static ModulePtr create(const icu::UnicodeString &fn, VM *m,
                             const exports_t handle) {
-        return ModulePtr(new ModuleInternal(fn, m, handle));
+        return std::make_shared<ModuleInternal>(fn, m, handle);
     }
 
     void load() override {
@@ -347,7 +347,7 @@ public:
 
     static ModulePtr create(const icu::UnicodeString &p,
                             const icu::UnicodeString &fn, VM *m) {
-        return ModulePtr(new ModuleDynamic(p, fn, m));
+        return std::make_shared<ModuleDynamic>(p, fn, m);
     }
 
     void load() override {
@@ -464,7 +464,7 @@ public:
 
     static ModulePtr create(const icu::UnicodeString &path,
                             const icu::UnicodeString &fn, VM *m) {
-        return ModulePtr(new ModuleSource(path, fn, m));
+        return std::make_shared<ModuleSource>(path, fn, m);
     }
 
     void load() override {
@@ -604,7 +604,7 @@ public:
     }
 
     static ModuleManagerPtr create() {
-        return ModuleManagerPtr(new ModuleManager());
+        return std::make_shared<ModuleManager>();
     }
 
     void init(const OptionsPtr &oo, VM *vm) {

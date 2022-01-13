@@ -16,7 +16,7 @@ public:
     }
 
     static VMObjectPtr create(VM *m, const symbol_t s, const callback_t call) {
-        return VMObjectPtr(new EvalResult(m, s, call));
+        return std::make_shared<EvalResult>(m, s, call);
     }
 
     callback_t callback() const {
@@ -58,7 +58,7 @@ public:
 
     static VMObjectPtr create(VM *m, const symbol_t s,
                               const VMReduceResult &r) {
-        return VMObjectPtr(new VarCombinator(m, s, r));
+        return std::make_shared<VarCombinator>(m, s, r);
     }
 
     static VMObjectPtr create(VM *vm, const VMObjectPtr &o,
@@ -119,7 +119,7 @@ public:
     }
 
     static EvalPtr create() {
-        return EvalPtr(new Eval());
+        return std::make_shared<Eval>();
     }
 
     void init(ModuleManagerPtr mm) {

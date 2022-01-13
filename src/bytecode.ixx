@@ -635,12 +635,12 @@ public:
     static VMObjectPtr create(VM *m, const Code &c, const Data &d,
                               const UnicodeStrings &nn,
                               const icu::UnicodeString &n) {
-        return VMObjectPtr(new VMObjectBytecode(m, c, d, nn, n));
+        return std::make_shared<VMObjectBytecode>(m, c, d, nn, n);
     }
 
     static VMObjectPtr create(VM *m, const Code &c, const Data &d,
                               const icu::UnicodeString &s) {
-        return VMObjectPtr(new VMObjectBytecode(m, c, d, s));
+        return std::make_shared<VMObjectBytecode>(m, c, d, s);
     }
 
     static std::shared_ptr<VMObjectBytecode> cast(const VMObjectPtr &o) {

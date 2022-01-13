@@ -30,7 +30,7 @@ public:
 
     static VMObjectPtr create(VM *m, const symbol_t s, const VMObjectPtr &tuple,
                               int pos) {
-        return VMObjectPtr(new VMObjectThreadResult(m, s, tuple, pos));
+        return std::make_shared<VMObjectThreadResult>(m, s, tuple, pos);
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
@@ -60,7 +60,7 @@ public:
 
     static VMObjectPtr create(VM *vm, const symbol_t s,
                               const VMObjectPtr &tuple, int pos) {
-        return VMObjectPtr(new VMObjectThreadException(vm, s, tuple, pos));
+        return std::make_shared<VMObjectThreadException>(vm, s, tuple, pos);
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {

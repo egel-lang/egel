@@ -65,7 +65,7 @@ public:
     }
 
     static NamespacePtr create() {
-        return NamespacePtr(new Namespace());
+        return std::make_shared<Namespace>();
     }
 
     NamespacePtr create_namespace(const icu::UnicodeString &n) {
