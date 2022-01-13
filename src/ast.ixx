@@ -138,6 +138,10 @@ public:
         return AstPtr(new AstEmpty());
     }
 
+    static std::shared_ptr<AstEmpty> cast(const AstPtr& o) {
+        return std::static_pointer_cast<AstEmptyPtr>(a)
+    }
+
     uint_t approximate_length(uint_t indent) const {
         return indent;
     }
@@ -188,6 +192,10 @@ public:
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprInteger(p, text));
     }
+
+    static std::shared_ptr<AstExprInteger> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprInteger>(a);
+    }
 };
 
 using AstExprIntegerPtr = std::shared_ptr<AstExprInteger>;
@@ -208,6 +216,10 @@ public:
 
     static AstPtr create(const Position &p, const icu::UnicodeString &hex) {
         return AstPtr(new AstExprHexInteger(p, hex));
+    }
+
+    static std::shared_ptr<AstExprHexInteger> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprHexInteger>(a);
     }
 };
 
@@ -230,6 +242,10 @@ public:
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprFloat(p, text));
     }
+
+    static std::shared_ptr<AstExprFloat> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprFloat>(a);
+    }
 };
 
 using AstExprFloatPtr = std::shared_ptr<AstExprFloat>;
@@ -251,6 +267,10 @@ public:
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprCharacter(p, text));
     }
+
+    static std::shared_ptr<AstExprCharacter> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprCharacter>(a);
+    }
 };
 
 using AstExprCharacterPtr = std::shared_ptr<AstExprCharacter>;
@@ -270,6 +290,10 @@ public:
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprText(p, text));
+    }
+
+    static std::shared_ptr<AstExprText> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprText>(a);
     }
 };
 
@@ -294,6 +318,10 @@ public:
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprVariable(p, text));
     }
+
+    static std::shared_ptr<AstExprVariable> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprVariable>(a);
+    }
 };
 
 using AstExprVariablePtr = std::shared_ptr<AstExprVariable>;
@@ -314,6 +342,10 @@ public:
 
     static AstPtr create(const Position &p, const icu::UnicodeString &text) {
         return AstPtr(new AstExprWildcard(p, text));
+    }
+
+    static std::shared_ptr<AstExprWildcard> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprWildcard>(a);
     }
 };
 
@@ -336,6 +368,10 @@ public:
 
     static AstPtr create(const Position &p, const AstPtr &e, const AstPtr &t) {
         return AstPtr(new AstExprTag(p, e, t));
+    }
+
+    static std::shared_ptr<AstExprTag> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprTag>(a);
     }
 
     AstPtr expression() const {
@@ -420,6 +456,10 @@ public:
         return AstPtr(new AstExprCombinator(p, n, c));
     }
 
+    static std::shared_ptr<AstExprCombinator> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprCombinator>(a);
+    }
+
     UnicodeStrings path() const {
         return _path;
     }
@@ -497,6 +537,10 @@ public:
         return AstPtr(new AstExprOperator(p, n, c));
     }
 
+    static std::shared_ptr<AstExprOperator> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprOperator>(a);
+    }
+
     UnicodeStrings path() const {
         return _path;
     }
@@ -566,6 +610,10 @@ public:
     static AstPtr create(const Position &p, const AstPtrs &c,
                          const AstPtr &tl) {
         return AstPtr(new AstExprList(p, c, tl));
+    }
+
+    static std::shared_ptr<AstExprList> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprList>(a);
     }
 
     AstPtrs content() const {
@@ -654,6 +702,10 @@ public:
 
     static AstPtr create(const Position &p, const AstPtrs &c) {
         return AstPtr(new AstExprTuple(p, c));
+    }
+
+    static std::shared_ptr<AstExprTuple> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprTuple>(a);
     }
 
     AstPtrs content() const {
@@ -762,6 +814,10 @@ public:
         return AstPtr(new AstExprApplication(p, op, e0, e1));
     }
 
+    static std::shared_ptr<AstExprApplication> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprApplication>(a);
+    }
+
     AstPtrs arguments() const {
         return _arguments;
     }
@@ -833,6 +889,10 @@ public:
     static AstPtr create(const Position &p, const AstPtrs &pp, const AstPtr &g,
                          const AstPtr &r) {
         return AstPtr(new AstExprMatch(p, pp, g, r));
+    }
+
+    static std::shared_ptr<AstExprMatch> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprMatch>(a);
     }
 
     AstPtrs patterns() const {
@@ -943,6 +1003,10 @@ public:
         return AstPtr(new AstExprBlock(p, mm));
     }
 
+    static std::shared_ptr<AstExprBlock> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprBlock>(a);
+    }
+
     AstPtrs matches() const {
         return _matches;
     }
@@ -1022,6 +1086,10 @@ public:
         return AstPtr(new AstExprLambda(p, m));
     }
 
+    static std::shared_ptr<AstExprLambda> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprLambda>(a);
+    }
+
     AstPtr match() const {
         return _match;
     }
@@ -1066,6 +1134,10 @@ public:
     static AstPtr create(const Position &p, const AstPtrs &ee, const AstPtr &e1,
                          const AstPtr e2) {
         return AstPtr(new AstExprLet(p, ee, e1, e2));
+    }
+
+    static std::shared_ptr<AstExprLet> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprLet>(a);
     }
 
     AstPtrs left_hand_side() const {
@@ -1149,6 +1221,10 @@ public:
         return AstPtr(new AstExprTry(p, e0, e1));
     }
 
+    static std::shared_ptr<AstExprTry> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprTry>(a);
+    }
+
     AstPtr try0() const {
         return _try;
     }
@@ -1216,6 +1292,10 @@ public:
         return AstPtr(new AstExprThrow(p, e0));
     }
 
+    static std::shared_ptr<AstExprThrow> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprThrow>(a);
+    }
+
     AstPtr throw0() const {
         return _throw;
     }
@@ -1265,6 +1345,10 @@ public:
     static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1,
                          const AstPtr &e2) {
         return AstPtr(new AstExprIf(p, e0, e1, e2));
+    }
+
+    static std::shared_ptr<AstExprIf> cast(const AstPtr& a) {
+        return std:static_pointer_cast<AstExprIf>(a);
     }
 
     AstPtr if0() const {
@@ -1346,6 +1430,10 @@ public:
         return AstPtr(new AstExprStatement(p, e0, e1));
     }
 
+    static std::shared_ptr<AstExprStatement> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstExprStatement>(a);
+    }
+
     AstPtr lhs() const {
         return _lhs;
     }
@@ -1408,6 +1496,10 @@ public:
         return AstPtr(new AstDeclNamespace(p, name, c));
     }
 
+    static std::shared_ptr<AstDeclNamespace> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDeclNamespace>(a);
+    }
+
     UnicodeStrings name() const {
         return _name;
     }
@@ -1461,6 +1553,10 @@ public:
 
     static AstPtr create(const Position &p, const AstPtrs &nn) {
         return AstPtr(new AstDeclData(p, nn));
+    }
+
+    static std::shared_ptr<AstDeclData> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDeclData>(a);
     }
 
     AstPtrs names() const {
@@ -1534,6 +1630,10 @@ public:
         return AstPtr(new AstDeclDefinition(p, n, e));
     }
 
+    static std::shared_ptr<AstDeclDefinition> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDeclDefinition>(a);
+    }
+
     AstPtr name() const {
         return _name;
     }
@@ -1598,6 +1698,10 @@ public:
         return AstPtr(new AstDeclValue(p, e0, e1));
     }
 
+    static std::shared_ptr<AstDeclValue> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDeclValue>(a);
+    }
+
     AstPtr name() const {
         return _name;
     }
@@ -1658,6 +1762,10 @@ public:
 
     static AstPtr create(const Position &p, const AstPtr &c, const AstPtr &e) {
         return AstPtr(new AstDeclOperator(p, c, e));
+    }
+
+    static std::shared_ptr<AstDeclOperator> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDeclOperator>(a);
     }
 
     AstPtr combinator() const {
@@ -1729,6 +1837,10 @@ public:
     static AstPtr create(const Position &p, const AstPtr &n, const AstPtrs &vv,
                          const AstPtrs &ff, const AstPtrs &ee) {
         return AstPtr(new AstDeclObject(p, n, vv, ff, ee));
+    }
+
+    static std::shared_ptr<AstDeclObject> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDeclObject>(a);
     }
 
     AstPtr name() const {
@@ -1812,6 +1924,10 @@ public:
         return AstPtr(new AstDirectImport(p, v));
     }
 
+    static std::shared_ptr<AstDirectImport> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDirectImport>(a);
+    }
+
     icu::UnicodeString import() const {
         return _import;
     }
@@ -1850,6 +1966,10 @@ public:
 
     static AstPtr create(const Position &p, const UnicodeStrings &v) {
         return AstPtr(new AstDirectUsing(p, v));
+    }
+
+    static std::shared_ptr<AstDirectUsing> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstDirectUsing>(a);
     }
 
     UnicodeStrings using0() const {
@@ -1898,6 +2018,10 @@ public:
 
     static AstPtr create(const Position &p, const AstPtrs &c) {
         return AstPtr(new AstWrapper(p, c));
+    }
+
+    static std::shared_ptr<AstWrapper> cast(const AstPtr& a) {
+        return std::static_pointer_cast<AstWrapper>(a);
     }
 
     AstPtrs content() const {
