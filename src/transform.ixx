@@ -1199,10 +1199,10 @@ AstPtr substitute(const AstPtr &term, const AstPtr &s0, const AstPtr &s1) {
     return subs.substitute(term, s0, s1);
 }
 
-typedef enum {
+enum freevars_state_t {
     FREEVARS_INSERT,
     FREEVARS_REMOVE,
-} freevars_state_t;
+};
 
 class FreeVars : public Visit {
 public:

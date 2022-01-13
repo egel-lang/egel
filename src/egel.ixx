@@ -25,20 +25,20 @@ import modules;
 
 #define EGEL_PATH "/usr/local/lib/egel"
 
-typedef enum {
+enum arg_t {
     OPTION_NONE,
     OPTION_FILE,
     OPTION_DIR,
     OPTION_NUMBER,
     OPTION_TEXT,
-} arg_t;
+};
 
-typedef struct {
+struct option_t {
     char const *shortname;
     char const *longname;
     arg_t argument;
     char const *description;
-} option_t;
+};
 
 static option_t options[] = {
     {
@@ -111,8 +111,7 @@ static option_t options[] = {
 
 #define OPTIONS_SIZE (sizeof(options) / sizeof(option_t))
 
-typedef std::vector<std::pair<icu::UnicodeString, icu::UnicodeString>>
-    StringPairs;
+using StringPairs = std::vector<std::pair<icu::UnicodeString, icu::UnicodeString>>;
 
 StringPairs parse_options(int argc, char *argv[]) {
     StringPairs pp;

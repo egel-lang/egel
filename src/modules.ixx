@@ -39,10 +39,10 @@ inline icu::UnicodeString second(const icu::UnicodeString &s) {
 }
 
 class Module;
-typedef std::shared_ptr<Module> ModulePtr;
+using ModulePtr = std::shared_ptr<Module>;
 
 class ModuleManager;
-typedef std::shared_ptr<ModuleManager> ModuleManagerPtr;
+using ModuleManagerPtr = std::shared_ptr<ModuleManager>;
 
 // modules may define imports or values
 class QualifiedString {
@@ -73,13 +73,13 @@ private:
     icu::UnicodeString _string;
 };
 
-typedef std::vector<QualifiedString> QualifiedStrings;
+using QualifiedStrings = std::vector<QualifiedString>;
 
-typedef enum {
+enum module_tag_t {
     MODULE_SOURCE,
     MODULE_INTERNAL,
     MODULE_DYNAMIC,
-} module_tag_t;
+};
 
 class Module {
 public:
@@ -158,7 +158,7 @@ private:
 };
 
 class VMModule;
-typedef std::shared_ptr<VMModule> VMModulePtr;
+using VMModulePtr = std::shared_ptr<VMModule>;
 
 class VMModule : public Opaque {
 public:
@@ -246,7 +246,7 @@ private:
     ModulePtr _value;
 };
 
-typedef std::vector<VMObjectPtr> (*exports_t)(VM *);
+using exports_t = std::vector<VMObjectPtr> (*)(VM *);
 
 class ModuleInternal : public Module {
 public:
@@ -588,7 +588,7 @@ private:
     AstPtr _ast;
 };
 
-typedef std::vector<ModulePtr> ModulePtrs;
+using ModulePtrs = std::vector<ModulePtr>;
 
 class ModuleManager {
 public:

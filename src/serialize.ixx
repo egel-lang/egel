@@ -14,10 +14,10 @@ import modules;
 // hierarchy of the runtime in order not to taint runtimes
 // when serialized objects are shipped.
 
-typedef unsigned int objectid_t;
+using objectid_t = unsigned int;
 
 class SerialObject;
-typedef std::shared_ptr<SerialObject> SerialObjectPtr;
+using SerialObjectPtr = std::shared_ptr<SerialObject>;
 
 class SerialObject {
 public:
@@ -284,12 +284,12 @@ inline SerialObjectPtr SerialObject::create_combinator(
     return SerialCombinator::create(id, n);
 };
 
-typedef std::vector<SerialObjectPtr> SerialObjectPtrs;
+using SerialObjectPtrs = std::vector<SerialObjectPtr>;
 
-typedef std::vector<VMObjectPtr> VMObjectsTo;
-typedef std::map<VMObjectPtr, objectid_t> VMObjectsFrom;
-typedef std::stack<VMObjectPtr> VMObjectsStack;
-typedef std::set<VMObjectPtr> VMObjectsSet;
+using VMObjectsTo = std::vector<VMObjectPtr>;
+using VMObjectsFrom = std::map<VMObjectPtr, objectid_t>;
+using VMObjectsStack = std::stack<VMObjectPtr>;
+using VMObjectsSet = std::set<VMObjectPtr>;
 
 inline SerialObjectPtrs to_dag(VM *m, const VMObjectPtr &o) {
     VMObjectsStack work0;

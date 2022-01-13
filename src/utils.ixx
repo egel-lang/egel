@@ -15,7 +15,7 @@ import "unicode/unistr.h";
 import "unicode/ustream.h";
 import "unicode/stringpiece.h";
 
-typedef unsigned int uint_t;
+using uint_t = unsigned int;
 
 // debugging macros
 
@@ -47,7 +47,7 @@ void panic_fail(const char *message, const char *file, uint_t line);
 #define DEBUG_ASSERT(_e) ((void)0);
 #endif
 
-typedef std::vector<icu::UnicodeString> UnicodeStrings;
+using UnicodeStrings = std::vector<icu::UnicodeString>;
 // unicode routines
 
 /**

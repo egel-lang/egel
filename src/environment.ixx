@@ -5,10 +5,10 @@ import<memory>;
 
 import error;
 
-typedef std::map<icu::UnicodeString, icu::UnicodeString> Table;
+using Table = std::map<icu::UnicodeString, icu::UnicodeString>;
 
 class Scope;
-typedef std::shared_ptr<Scope> ScopePtr;
+using ScopePtr = std::shared_ptr<Scope>;
 
 class Scope {
 public:
@@ -50,8 +50,8 @@ protected:
 };
 
 class Namespace;
-typedef std::shared_ptr<Namespace> NamespacePtr;
-typedef std::map<icu::UnicodeString, NamespacePtr> NamespaceMap;
+using NamespacePtr = std::shared_ptr<Namespace>;
+using NamespaceMap = std::map<icu::UnicodeString, NamespacePtr>;
 
 class Namespace : public Scope {
 public:
@@ -111,8 +111,8 @@ private:
 };
 
 class Range;
-typedef std::shared_ptr<Range> RangePtr;
-typedef std::vector<NamespacePtr> Uses;
+using RangePtr = std::shared_ptr<Range>;
+using Uses = std::vector<NamespacePtr>;
 
 class Range : public Scope {
 public:

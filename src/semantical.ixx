@@ -23,10 +23,10 @@ UnicodeStrings concat(const UnicodeStrings &qq0, const UnicodeStrings &qq1) {
     return qq;
 }
 
-typedef enum {
+enum declare_state_t {
     STATE_DECLARE_GLOBAL,
     STATE_DECLARE_FIELD,
-} declare_state_t;
+};
 
 class VisitDeclare : public Visit {
 public:
@@ -149,11 +149,11 @@ void declare(NamespacePtr env, const AstPtr &a) {
     declare.declare(env, a);
 }
 
-typedef enum {
+enum identify_state_t {
     STATE_IDENTIFY_USE,
     STATE_IDENTIFY_PATTERN,
     STATE_IDENTIFY_FIELD,
-} identify_state_t;
+};
 
 /*
  * Stuff this pass does:

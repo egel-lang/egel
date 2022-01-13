@@ -28,13 +28,13 @@ export icu::UnicodeString operator_to_ascii(const icu::UnicodeString &o);
 #define POSTFIX (1 << 4)
 #define INFIX (1 << 5)
 
-typedef uint8_t attr_t;
+using attr_t = uint8_t;
 
-typedef struct {
+struct operator_t {
     UChar32 name;
     const char *translation;
     attr_t attribute;
-} operator_t;
+};
 
 #define OPERATORS_SIZE (sizeof(operators) / sizeof(operator_t))
 

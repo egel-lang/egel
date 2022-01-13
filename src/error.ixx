@@ -6,14 +6,14 @@ import utils;
 import position;
 import constants;
 
-typedef enum {
+enum error_tag_t {
     ERROR_IO,
     ERROR_LEXICAL,
     ERROR_SYNTACTICAL,
     ERROR_IDENTIFICATION,
     ERROR_SEMANTICAL,
     ERROR_INTERNAL,
-} error_tag_t;
+};
 
 class Error : public std::exception {
 public:

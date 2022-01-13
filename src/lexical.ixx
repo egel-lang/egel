@@ -8,7 +8,7 @@ import position;
 import error;
 import reader;
 
-typedef enum {
+enum token_t {
     TOKEN_ERROR = 0,
     TOKEN_EOF,
 
@@ -73,7 +73,7 @@ typedef enum {
     TOKEN_USING,
     TOKEN_IMPORT,
 
-} token_t;
+};
 
 icu::UnicodeString token_text(token_t t);
 
@@ -119,7 +119,7 @@ private:
 };
 
 class TokenReader;
-typedef std::shared_ptr<TokenReader> TokenReaderPtr;
+using TokenReaderPtr = std::shared_ptr<TokenReader>;
 
 class TokenReader {
 public:
@@ -133,7 +133,7 @@ public:
 };
 
 class TokenWriter;
-typedef std::shared_ptr<TokenWriter> TokenWriterPtr;
+using TokenWriterPtr = std::shared_ptr<TokenWriter>;
 
 class TokenWriter {
 public:
@@ -345,10 +345,10 @@ bool is_operator(UChar32 c) {
                   (c == (UChar32)'>') || (c == (UChar32)'.'));
 }
 
-typedef struct {
+struct token_text_t {
     token_t tag;
     const char *text;
-} token_text_t;
+};
 
 static token_text_t token_text_table[]{
     {
@@ -568,10 +568,10 @@ icu::UnicodeString token_text(token_t t) {
     return icu::UnicodeString();
 }
 
-typedef struct {
+struct reserved_t {
     token_t tag;
     const char *text;
-} reserved_t;
+};
 
 static reserved_t reserved_table[]{
     {

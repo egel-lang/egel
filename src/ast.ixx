@@ -12,7 +12,7 @@ import error;
 
 // AST tags are enumerated as a manner to implement switches conveniently
 
-typedef enum {
+enum ast_tag_t {
     AST_EMPTY,
     // literals
     AST_EXPR_INTEGER,
@@ -53,10 +53,10 @@ typedef enum {
     AST_WRAPPER,
     // set
     AST_DECL_VALUE,
-} ast_tag_t;
+};
 
 class Ast;
-typedef std::shared_ptr<Ast> AstPtr;
+using AstPtr = std::shared_ptr<Ast>;
 
 int compare_ast(const AstPtr &a0, const AstPtr &a1);
 
@@ -121,8 +121,8 @@ struct LessAstPtr {
     }
 };
 
-typedef std::vector<AstPtr> AstPtrs;
-typedef std::set<AstPtr, LessAstPtr> AstPtrSet;
+using AstPtrs = std::vector<AstPtr>;
+using AstPtrSet = std::set<AstPtr, LessAstPtr>;
 
 // filler for optional cases
 
@@ -147,7 +147,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstEmpty> AstEmptyPtr;
+using AstEmptyPtr = std::shared_ptr<AstEmpty>;
 #define AST_EMPTY_CAST(a) std::static_pointer_cast<AstEmptyPtr>(a)
 
 // the atom class is a convenience base class for simple text representations
@@ -190,7 +190,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstExprInteger> AstExprIntegerPtr;
+using AstExprIntegerPtr = std::shared_ptr<AstExprInteger>;
 #define AST_EXPR_INTEGER_CAST(a) std::static_pointer_cast<AstExprInteger>(a)
 #define AST_EXPR_INTEGER_SPLIT(a, p, t)   \
     auto _##a = AST_EXPR_INTEGER_CAST(a); \
@@ -211,7 +211,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstExprHexInteger> AstExprHexIntegerPtr;
+using AstExprHexIntegerPtr = std::shared_ptr<AstExprHexInteger>;
 #define AST_EXPR_HEXINTEGER_CAST(a) \
     std::static_pointer_cast<AstExprHexInteger>(a)
 #define AST_EXPR_HEXINTEGER_SPLIT(a, p, t)   \
@@ -232,7 +232,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstExprFloat> AstExprFloatPtr;
+using AstExprFloatPtr = std::shared_ptr<AstExprFloat>;
 #define AST_EXPR_FLOAT_CAST(a) std::static_pointer_cast<AstExprFloat>(a)
 #define AST_EXPR_FLOAT_SPLIT(a, p, t)   \
     auto _##a = AST_EXPR_FLOAT_CAST(a); \
@@ -253,7 +253,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstExprCharacter> AstExprCharacterPtr;
+using AstExprCharacterPtr = std::shared_ptr<AstExprCharacter>;
 #define AST_EXPR_CHARACTER_CAST(a) std::static_pointer_cast<AstExprCharacter>(a)
 #define AST_EXPR_CHARACTER_SPLIT(a, p, t)   \
     auto _##a = AST_EXPR_CHARACTER_CAST(a); \
@@ -273,7 +273,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstExprText> AstExprTextPtr;
+using AstExprTextPtr = std::shared_ptr<AstExprText>;
 #define AST_EXPR_TEXT_CAST(a) std::static_pointer_cast<AstExprText>(a)
 #define AST_EXPR_TEXT_SPLIT(a, p, t)   \
     auto _##a = AST_EXPR_TEXT_CAST(a); \
@@ -296,7 +296,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstExprVariable> AstExprVariablePtr;
+using AstExprVariablePtr = std::shared_ptr<AstExprVariable>;
 #define AST_EXPR_VARIABLE_CAST(a) std::static_pointer_cast<AstExprVariable>(a)
 #define AST_EXPR_VARIABLE_SPLIT(a, p, t)   \
     auto _##a = AST_EXPR_VARIABLE_CAST(a); \
@@ -317,7 +317,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<AstExprWildcard> AstExprWildcardPtr;
+using AstExprWildcardPtr = std::shared_ptr<AstExprWildcard>;
 #define AST_EXPR_WILDCARD_CAST(a) std::static_pointer_cast<AstExprWildcard>(a)
 #define AST_EXPR_WILDCARD_SPLIT(a, p, t)   \
     auto _##a = AST_EXPR_WILDCARD_CAST(a); \
@@ -374,7 +374,7 @@ private:
     AstPtr _tag;
 };
 
-typedef std::shared_ptr<AstExprTag> AstExprTagPtr;
+using AstExprTagPtr = std::shared_ptr<AstExprTag>;
 #define AST_EXPR_TAG_CAST(a) std::static_pointer_cast<AstExprTag>(a)
 #define AST_EXPR_TAG_SPLIT(a, p, e, t) \
     auto _##a = AST_EXPR_TAG_CAST(a);  \
@@ -460,7 +460,7 @@ private:
     icu::UnicodeString _combinator;
 };
 
-typedef std::shared_ptr<AstExprCombinator> AstExprCombinatorPtr;
+using AstExprCombinatorPtr = std::shared_ptr<AstExprCombinator>;
 #define AST_EXPR_COMBINATOR_CAST(a) \
     std::static_pointer_cast<AstExprCombinator>(a)
 #define AST_EXPR_COMBINATOR_SPLIT(a, p, pp, c) \
@@ -535,7 +535,7 @@ private:
     icu::UnicodeString _combinator;
 };
 
-typedef std::shared_ptr<AstExprOperator> AstExprOperatorPtr;
+using AstExprOperatorPtr = std::shared_ptr<AstExprOperator>;
 #define AST_EXPR_OPERATOR_CAST(a) std::static_pointer_cast<AstExprOperator>(a)
 #define AST_EXPR_OPERATOR_SPLIT(a, p, pp, c) \
     auto _##a = AST_EXPR_OPERATOR_CAST(a);   \
@@ -634,7 +634,7 @@ private:
     AstPtr _tail;
 };
 
-typedef std::shared_ptr<AstExprList> AstExprListPtr;
+using AstExprListPtr = std::shared_ptr<AstExprList>;
 #define AST_EXPR_LIST_CAST(a) std::static_pointer_cast<AstExprList>(a)
 #define AST_EXPR_LIST_SPLIT(a, p, dd, tl) \
     auto _##a = AST_EXPR_LIST_CAST(a);    \
@@ -705,7 +705,7 @@ private:
     AstPtrs _content;
 };
 
-typedef std::shared_ptr<AstExprTuple> AstExprTuplePtr;
+using AstExprTuplePtr = std::shared_ptr<AstExprTuple>;
 #define AST_EXPR_TUPLE_CAST(a) std::static_pointer_cast<AstExprTuple>(a)
 #define AST_EXPR_TUPLE_SPLIT(a, p, dd)  \
     auto _##a = AST_EXPR_TUPLE_CAST(a); \
@@ -811,7 +811,7 @@ private:
     AstPtrs _arguments;
 };
 
-typedef std::shared_ptr<AstExprApplication> AstExprApplicationPtr;
+using AstExprApplicationPtr = std::shared_ptr<AstExprApplication>;
 #define AST_EXPR_APPLICATION_CAST(a) \
     std::static_pointer_cast<AstExprApplication>(a)
 #define AST_EXPR_APPLICATION_SPLIT(a, p, aa)  \
@@ -910,7 +910,7 @@ private:
     AstPtr _result;
 };
 
-typedef std::shared_ptr<AstExprMatch> AstExprMatchPtr;
+using AstExprMatchPtr = std::shared_ptr<AstExprMatch>;
 #define AST_EXPR_MATCH_CAST(a) std::static_pointer_cast<AstExprMatch>(a)
 #define AST_EXPR_MATCH_SPLIT(a, p, pp, g, r) \
     auto _##a = AST_EXPR_MATCH_CAST(a);      \
@@ -1001,7 +1001,7 @@ private:
     AstPtrs _matches;
 };
 
-typedef std::shared_ptr<AstExprBlock> AstExprBlockPtr;
+using AstExprBlockPtr = std::shared_ptr<AstExprBlock>;
 #define AST_EXPR_BLOCK_CAST(a) std::static_pointer_cast<AstExprBlock>(a)
 #define AST_EXPR_BLOCK_SPLIT(a, p, mm)  \
     auto _##a = AST_EXPR_BLOCK_CAST(a); \
@@ -1044,7 +1044,7 @@ private:
     AstPtr _match;
 };
 
-typedef std::shared_ptr<AstExprLambda> AstExprLambdaPtr;
+using AstExprLambdaPtr = std::shared_ptr<AstExprLambda>;
 #define AST_EXPR_LAMBDA_CAST(a) std::static_pointer_cast<AstExprLambda>(a)
 #define AST_EXPR_LAMBDA_SPLIT(a, p, m)   \
     auto _##a = AST_EXPR_LAMBDA_CAST(a); \
@@ -1125,7 +1125,7 @@ private:
     AstPtr _expression;
 };
 
-typedef std::shared_ptr<AstExprLet> AstExprLetPtr;
+using AstExprLetPtr = std::shared_ptr<AstExprLet>;
 #define AST_EXPR_LET_CAST(a) std::static_pointer_cast<AstExprLet>(a)
 #define AST_EXPR_LET_SPLIT(a, p, l, r, e) \
     auto _##a = AST_EXPR_LET_CAST(a);     \
@@ -1194,7 +1194,7 @@ private:
     AstPtr _catch;
 };
 
-typedef std::shared_ptr<AstExprTry> AstExprTryPtr;
+using AstExprTryPtr = std::shared_ptr<AstExprTry>;
 #define AST_EXPR_TRY_CAST(a) std::static_pointer_cast<AstExprTry>(a)
 #define AST_EXPR_TRY_SPLIT(a, p, t, c) \
     auto _##a = AST_EXPR_TRY_CAST(a);  \
@@ -1244,7 +1244,7 @@ private:
     AstPtr _throw;
 };
 
-typedef std::shared_ptr<AstExprThrow> AstExprThrowPtr;
+using AstExprThrowPtr = std::shared_ptr<AstExprThrow>;
 #define AST_EXPR_THROW_CAST(a) std::static_pointer_cast<AstExprThrow>(a)
 #define AST_EXPR_THROW_SPLIT(a, p, e)   \
     auto _##a = AST_EXPR_THROW_CAST(a); \
@@ -1322,7 +1322,7 @@ private:
     AstPtr _else;
 };
 
-typedef std::shared_ptr<AstExprIf> AstExprIfPtr;
+using AstExprIfPtr = std::shared_ptr<AstExprIf>;
 #define AST_EXPR_IF_CAST(a) std::static_pointer_cast<AstExprIf>(a)
 #define AST_EXPR_IF_SPLIT(a, p, i, t, e) \
     auto _##a = AST_EXPR_IF_CAST(a);     \
@@ -1383,7 +1383,7 @@ private:
     AstPtr _rhs;
 };
 
-typedef std::shared_ptr<AstExprStatement> AstExprStatementPtr;
+using AstExprStatementPtr = std::shared_ptr<AstExprStatement>;
 #define AST_EXPR_STATEMENT_CAST(a) std::static_pointer_cast<AstExprStatement>(a)
 #define AST_EXPR_STATEMENT_SPLIT(a, p, l, r) \
     auto _##a = AST_EXPR_STATEMENT_CAST(a);  \
@@ -1442,7 +1442,7 @@ private:
     AstPtrs _content;
 };
 
-typedef std::shared_ptr<AstDeclNamespace> AstDeclNamespacePtr;
+using AstDeclNamespacePtr = std::shared_ptr<AstDeclNamespace>;
 #define AST_DECL_NAMESPACE_CAST(a) std::static_pointer_cast<AstDeclNamespace>(a)
 #define AST_DECL_NAMESPACE_SPLIT(a, p, n, dd) \
     auto _##a = AST_DECL_NAMESPACE_CAST(a);   \
@@ -1513,7 +1513,7 @@ private:
     AstPtrs _names;
 };
 
-typedef std::shared_ptr<AstDeclData> AstDeclDataPtr;
+using AstDeclDataPtr = std::shared_ptr<AstDeclData>;
 #define AST_DECL_DATA_CAST(a) std::static_pointer_cast<AstDeclData>(a)
 #define AST_DECL_DATA_SPLIT(a, p, nn)  \
     auto _##a = AST_DECL_DATA_CAST(a); \
@@ -1574,7 +1574,7 @@ private:
     AstPtr _expression;
 };
 
-typedef std::shared_ptr<AstDeclDefinition> AstDeclDefinitionPtr;
+using AstDeclDefinitionPtr = std::shared_ptr<AstDeclDefinition>;
 #define AST_DECL_DEFINITION_CAST(a) \
     std::static_pointer_cast<AstDeclDefinition>(a)
 #define AST_DECL_DEFINITION_SPLIT(a, p, n, e) \
@@ -1638,7 +1638,7 @@ private:
     AstPtr _expression;
 };
 
-typedef std::shared_ptr<AstDeclValue> AstDeclValuePtr;
+using AstDeclValuePtr = std::shared_ptr<AstDeclValue>;
 #define AST_DECL_VALUE_CAST(a) std::static_pointer_cast<AstDeclValue>(a)
 #define AST_DECL_VALUE_SPLIT(a, p, l, r) \
     auto _##a = AST_DECL_VALUE_CAST(a);  \
@@ -1702,7 +1702,7 @@ private:
     AstPtr _expression;
 };
 
-typedef std::shared_ptr<AstDeclOperator> AstDeclOperatorPtr;
+using AstDeclOperatorPtr = std::shared_ptr<AstDeclOperator>;
 #define AST_DECL_OPERATOR_CAST(a) std::static_pointer_cast<AstDeclOperator>(a)
 #define AST_DECL_OPERATOR_SPLIT(a, p, c, e) \
     auto _##a = AST_DECL_OPERATOR_CAST(a);  \
@@ -1788,7 +1788,7 @@ private:
     AstPtrs _extends;
 };
 
-typedef std::shared_ptr<AstDeclObject> AstDeclObjectPtr;
+using AstDeclObjectPtr = std::shared_ptr<AstDeclObject>;
 #define AST_DECL_OBJECT_CAST(a) std::static_pointer_cast<AstDeclObject>(a)
 #define AST_DECL_OBJECT_SPLIT(a, p, n, vv, ff, ee) \
     auto _##a = AST_DECL_OBJECT_CAST(a);           \
@@ -1831,7 +1831,7 @@ private:
     icu::UnicodeString _import;
 };
 
-typedef std::shared_ptr<AstDirectImport> AstDirectImportPtr;
+using AstDirectImportPtr = std::shared_ptr<AstDirectImport>;
 #define AST_DIRECT_IMPORT_CAST(a) std::static_pointer_cast<AstDirectImport>(a)
 #define AST_DIRECT_IMPORT_SPLIT(a, p, i)   \
     auto _##a = AST_DIRECT_IMPORT_CAST(a); \
@@ -1880,7 +1880,7 @@ private:
     UnicodeStrings _using;
 };
 
-typedef std::shared_ptr<AstDirectUsing> AstDirectUsingPtr;
+using AstDirectUsingPtr = std::shared_ptr<AstDirectUsing>;
 #define AST_DIRECT_USING_CAST(a) std::static_pointer_cast<AstDirectUsing>(a)
 #define AST_DIRECT_USING_SPLIT(a, p, u)   \
     auto _##a = AST_DIRECT_USING_CAST(a); \
@@ -1918,7 +1918,7 @@ private:
     AstPtrs _content;
 };
 
-typedef std::shared_ptr<AstWrapper> AstWrapperPtr;
+using AstWrapperPtr = std::shared_ptr<AstWrapper>;
 #define AST_WRAPPER_CAST(a) std::static_pointer_cast<AstWrapper>(a)
 #define AST_WRAPPER_SPLIT(a, p, dd)  \
     auto _##a = AST_WRAPPER_CAST(a); \

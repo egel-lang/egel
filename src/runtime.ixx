@@ -131,7 +131,7 @@ const int SYMBOL_CONS = 9;
 /**
  * VM objects can have subtypes which are _unique_ 'magic' numbers.
  */
-typedef unsigned int vm_subtag_t;
+using vm_subtag_t = unsigned int;
 
 const vm_subtag_t VM_SUB_DATA = 0x00;      // a combinator data object
 const vm_subtag_t VM_SUB_BUILTIN = 0x01;   // a combinator internally defined
@@ -145,19 +145,19 @@ const vm_subtag_t VM_SUB_MODULE = 0x0a;  // opaque module combinator
 const vm_subtag_t VM_SUB_PYTHON_OBJECT = 0xfe;      // Python values
 const vm_subtag_t VM_SUB_PYTHON_COMBINATOR = 0xff;  // Python combinators
 
-typedef bool vm_bool_t;
-typedef int64_t vm_int_t;
-typedef double vm_float_t;
-typedef UChar32 vm_char_t;
-typedef icu::UnicodeString vm_text_t;
-typedef void *vm_ptr_t;
+using vm_bool_t = bool;
+using vm_int_t  = int64_t;
+using vm_float_t = double;
+using vm_char_t = UChar32;
+using vm_text_t = icu::UnicodeString;
+using vm_ptr_t = (void *);
 
-typedef uint32_t symbol_t;
-typedef uint32_t data_t;
+using symbol_t = uint32_t;
+using data_t =uint32_t;
 
 class VMObject;
-typedef std::shared_ptr<VMObject> VMObjectPtr;
-typedef std::weak_ptr<VMObject> VMWeakObjectPtr;
+using VMObjectPtr = std::shared_ptr<VMObject>;
+using VMWeakObjectPtr = std::weak_ptr<VMObject>;
 
 // forward declarations for pretty printing
 inline void render_tuple(const VMObjectPtr &tt, std::ostream &os);
@@ -217,13 +217,13 @@ private:
     vm_subtag_t _subtag;
 };
 
-typedef std::vector<VMObjectPtr> VMObjectPtrs;
-typedef std::vector<icu::UnicodeString> UnicodeStrings;
+using VMObjectPtrs = std::vector<VMObjectPtr>;
+using UnicodeStrings = std::vector<icu::UnicodeString>;
 
 // the virtual machine
 
 class Options;
-typedef std::shared_ptr<Options> OptionsPtr;
+using OptionsPtr = std::shared_ptr<Options>;
 
 class Options {
 public:
@@ -390,12 +390,12 @@ struct VMReduceResult {
     bool exception;
 };
 
-typedef enum { RUNNING, SLEEPING, HALTED } reducer_state_t;
+enum reducer_state_t { RUNNING, SLEEPING, HALTED };
 
 class VM;
-typedef std::shared_ptr<VM> VMPtr;
+using VMPtr = std::shared_ptr<VM>;
 
-typedef std::function<void(VM *vm, const VMObjectPtr &)> callback_t;
+using callback_t = std::function<void(VM *vm, const VMObjectPtr &)>;
 
 class VM {
 public:
@@ -659,7 +659,7 @@ private:
     vm_int_t _value;
 };
 
-typedef std::shared_ptr<VMObjectInteger> VMObjectIntegerPtr;
+using VMObjectIntegerPtr = std::shared_ptr<VMObjectInteger>;
 #define VM_OBJECT_IS_INTEGER(a) (a->tag() == VM_OBJECT_INTEGER)
 #define VM_OBJECT_INTEGER_TEST(a) (a->tag() == VM_OBJECT_INTEGER)
 #define VM_OBJECT_INTEGER_CAST(a) std::static_pointer_cast<VMObjectInteger>(a)
@@ -696,7 +696,7 @@ private:
     vm_float_t _value;
 };
 
-typedef std::shared_ptr<VMObjectFloat> VMObjectFloatPtr;
+using VMObjectFloatPtr = std::shared_ptr<VMObjectFloat>;
 #define VM_OBJECT_FLOAT_TEST(a) (a->tag() == VM_OBJECT_FLOAT)
 #define VM_OBJECT_FLOAT_CAST(a) std::static_pointer_cast<VMObjectFloat>(a)
 #define VM_OBJECT_FLOAT_SPLIT(a, v)      \
@@ -734,7 +734,7 @@ private:
     vm_char_t _value;
 };
 
-typedef std::shared_ptr<VMObjectChar> VMObjectCharPtr;
+using VMObjectCharPtr = std::shared_ptr<VMObjectChar>;
 #define VM_OBJECT_CHAR_TEST(a) (a->tag() == VM_OBJECT_CHAR)
 #define VM_OBJECT_CHAR_CAST(a) std::static_pointer_cast<VMObjectChar>(a)
 #define VM_OBJECT_CHAR_SPLIT(a, v)      \
@@ -788,7 +788,7 @@ private:
     icu::UnicodeString _value;
 };
 
-typedef std::shared_ptr<VMObjectText> VMObjectTextPtr;
+using VMObjectTextPtr = std::shared_ptr<VMObjectText>;
 #define VM_OBJECT_TEXT_TEST(a) (a->tag() == VM_OBJECT_TEXT)
 #define VM_OBJECT_TEXT_CAST(a) std::static_pointer_cast<VMObjectText>(a)
 #define VM_OBJECT_TEXT_SPLIT(a, v)      \
@@ -907,7 +907,7 @@ private:
     VMObjectPtrs _value;
 };
 
-typedef std::shared_ptr<VMObjectArray> VMObjectArrayPtr;
+using VMObjectArrayPtr = std::shared_ptr<VMObjectArray>;
 #define VM_OBJECT_ARRAY_TEST(a) (a->tag() == VM_OBJECT_ARRAY)
 #define VM_OBJECT_ARRAY_CAST(a) std::static_pointer_cast<VMObjectArray>(a)
 #define VM_OBJECT_ARRAY_SPLIT(a, v)      \
@@ -1055,7 +1055,7 @@ private:
     symbol_t _symbol;
 };
 
-typedef std::shared_ptr<VMObjectOpaque> VMObjectOpaquePtr;
+using VMObjectOpaquePtr = std::shared_ptr<VMObjectOpaque>;
 #define VM_OBJECT_OPAQUE_TEST(a) (a->tag() == VM_OBJECT_OPAQUE)
 #define VM_OBJECT_OPAQUE_CAST(a) std::static_pointer_cast<VMObjectOpaque>(a)
 #define VM_OBJECT_OPAQUE_COMPARE(o0, o1) \
@@ -1181,9 +1181,9 @@ public:
         return k;
     }
 };
-typedef std::shared_ptr<VMObjectData> VMObjectDataPtr;
+using VMObjectDataPtr = std::shared_ptr<VMObjectData>;
 
-typedef std::shared_ptr<VMObjectCombinator> VMObjectCombinatorPtr;
+using VMObjectCombinatorPtr = std::shared_ptr<VMObjectCombinator>;
 #define VM_OBJECT_COMBINATOR_TEST(a) (a->tag() == VM_OBJECT_COMBINATOR)
 #define VM_OBJECT_COMBINATOR_CAST(a) \
     std::static_pointer_cast<VMObjectCombinator>(a)
@@ -1297,7 +1297,7 @@ struct LessVMObjectPtr {
         return (compare(a0, a1) == -1);
     }
 };
-typedef std::set<VMObjectPtr, LessVMObjectPtr> VMObjectPtrSet;
+using VMObjectPtrSet = std::set<VMObjectPtr, LessVMObjectPtr>;
 
 // a stub is used for finding objects by their string or symbol
 // and for opaque default members

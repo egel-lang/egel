@@ -102,7 +102,7 @@ private:
 };
 
 class Eval;
-typedef std::shared_ptr<Eval> EvalPtr;
+using EvalPtr = std::shared_ptr<Eval>;
 
 class Eval {
 public:

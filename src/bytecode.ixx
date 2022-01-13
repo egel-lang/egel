@@ -11,14 +11,14 @@ import runtime;
 
 class VMObjectBytecode;
 
-typedef uint16_t reg_t;
-typedef uint16_t index_t;
-typedef uint32_t label_t;
+using reg_t = uint16_t;
+using index_t = uint16_t;
+using label_t = uint32_t;
 
 /*----------------------------------------------------------------------
 name            args	    description
 ----------------------------------------------------------------------*/
-typedef enum {
+enum opcode_t {
     OP_NIL,      //  x           x := null
     OP_MOV,      //  x y         x := y
     OP_DATA,     //  x i32       x := data(i32)
@@ -31,12 +31,12 @@ typedef enum {
     OP_TAG,      //  x y         flag := (x, or x[0], == y)
     OP_FAIL,     //  l           pc := l, if flag
     OP_RETURN,   //  x           return x
-} opcode_t;
+};
 
-typedef std::vector<uint8_t> Code;
-typedef std::vector<uint32_t>
-    Data;  // XXX this is overkil after a change to a data section
-typedef std::map<label_t, uint32_t> Labels;
+using Code = std::vector<uint8_t> Code;
+using Data = std::vector<uint32_t>; // XXX this is overkil after a change to a data section
+
+using Labels = std::map<label_t, uint32_t>;
 
 #define OP_SIZE 1
 #define OP_REG_SIZE (sizeof(reg_t))
@@ -44,10 +44,10 @@ typedef std::map<label_t, uint32_t> Labels;
 #define OP_LABEL_SIZE (sizeof(label_t))
 #define OP_INDEX_SIZE (sizeof(index_t))
 
-typedef struct {
+struct opcode_text_t {
     opcode_t op;
     const char *text;
-} opcode_text_t;
+};
 
 #define STRING_OP_NIL "nil"
 #define STRING_OP_MOV "mov"

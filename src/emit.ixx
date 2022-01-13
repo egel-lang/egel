@@ -11,8 +11,8 @@ import transform;
 import environment;
 import bytecode;
 
-typedef std::map<icu::UnicodeString, reg_t> RegisterMap;
-typedef std::unique_ptr<Coder> CoderPtr;
+using RegisterMap = std::map<icu::UnicodeString, reg_t>;
+using CoderPtr = std::unique_ptr<Coder>;
 
 class EmitData : public Visit {
 public:
@@ -59,12 +59,12 @@ void emit_data(VM *m, const AstPtr &a) {
     emit.emit(m, a);
 }
 
-typedef enum {
+enum emit_state_t {
     EMIT_PATTERN,
     EMIT_EXPR,
     EMIT_EXPR_ROOT,
     //    EMIT_EXPR_CONSTANT, // XXX constant optimization not implemented yet
-} emit_state_t;
+};
 
 class EmitCode : public Visit {
 public:
