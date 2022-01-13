@@ -2,7 +2,7 @@ export module operators;
 
 import utils;
 
-#define OPERATOR_BOTTOM "="
+constexpr auto OPERATOR_BOTTOM "="
 
 export int operator_compare(const icu::UnicodeString &o0,
                             const icu::UnicodeString &o1);
@@ -17,16 +17,12 @@ export bool operator_is_not_associative(const icu::UnicodeString &o);
 
 export icu::UnicodeString operator_to_ascii(const icu::UnicodeString &o);
 
-#endif
-#include "operators.hpp"
-#include "utils.hpp"
-
-#define LEFT_ASSOC (1 << 0)
-#define RIGHT_ASSOC (1 << 1)
-#define NONE_ASSOC (1 << 2)
-#define PREFIX (1 << 3)
-#define POSTFIX (1 << 4)
-#define INFIX (1 << 5)
+constexpr auto LEFT_ASSOC = (1 << 0);
+constexpr auto RIGHT_ASSOC = (1 << 1);
+constexpr auto NONE_ASSOC = (1 << 2);
+constexpr auto PREFIX = (1 << 3);
+constexpr auto POSTFIX = (1 << 4);
+constexpr auto INFIX = (1 << 5);
 
 using attr_t = uint8_t;
 
@@ -36,7 +32,7 @@ struct operator_t {
     attr_t attribute;
 };
 
-#define OPERATORS_SIZE (sizeof(operators) / sizeof(operator_t))
+constexpr auto OPERATORS_SIZE = (sizeof(operators) / sizeof(operator_t));
 
 static operator_t operators[] = {
     {'=', "eq", NONE_ASSOC | INFIX},
