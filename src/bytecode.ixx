@@ -38,29 +38,29 @@ using Data = std::vector<uint32_t>; // XXX this is overkil after a change to a d
 
 using Labels = std::map<label_t, uint32_t>;
 
-#define OP_SIZE 1
-#define OP_REG_SIZE (sizeof(reg_t))
-#define OP_INT_SIZE (sizeof(uint32_t))
-#define OP_LABEL_SIZE (sizeof(label_t))
-#define OP_INDEX_SIZE (sizeof(index_t))
+constexpr auto OP_SIZE = 1;
+constexpr auto OP_REG_SIZE = (sizeof(reg_t));
+constexpr auto OP_INT_SIZE = (sizeof(uint32_t));
+constexpr auto OP_LABEL_SIZE = (sizeof(label_t));
+constexpr auto OP_INDEX_SIZE = (sizeof(index_t));
 
 struct opcode_text_t {
     opcode_t op;
     const char *text;
 };
 
-#define STRING_OP_NIL "nil"
-#define STRING_OP_MOV "mov"
-#define STRING_OP_DATA "data"
-#define STRING_OP_SET "set"
-#define STRING_OP_TAKEX "takex"
-#define STRING_OP_SPLIT "split"
-#define STRING_OP_ARRAY "array"
-#define STRING_OP_CONCATX "concatx"
-#define STRING_OP_TEST "test"
-#define STRING_OP_TAG "tag"
-#define STRING_OP_FAIL "fail"
-#define STRING_OP_RETURN "return"
+constexpr auto STRING_OP_NIL = "nil";
+constexpr auto STRING_OP_MOV = "mov";
+constexpr auto STRING_OP_DATA = "data";
+constexpr auto STRING_OP_SET = "set";
+constexpr auto STRING_OP_TAKEX = "takex";
+constexpr auto STRING_OP_SPLIT = "split";
+constexpr auto STRING_OP_ARRAY = "array";
+constexpr auto STRING_OP_CONCATX = "concatx";
+constexpr auto STRING_OP_TEST = "test";
+constexpr auto STRING_OP_TAG = "tag";
+constexpr auto STRING_OP_FAIL = "fail";
+constexpr auto STRING_OP_RETURN = "return";
 
 #define VM_OBJECT_BYTECODE_CAST(o) std::static_pointer_cast<VMObjectBytecode>(o)
 
