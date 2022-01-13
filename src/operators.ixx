@@ -4,8 +4,9 @@ import utils;
 
 constexpr auto OPERATOR_BOTTOM "="
 
-export int operator_compare(const icu::UnicodeString &o0,
-                            const icu::UnicodeString &o1);
+    export int
+    operator_compare(const icu::UnicodeString &o0,
+                     const icu::UnicodeString &o1);
 
 export bool operator_is_infix(const icu::UnicodeString &o);
 export bool operator_is_prefix(const icu::UnicodeString &o);

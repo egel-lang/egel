@@ -1,13 +1,13 @@
 export module utils;
 
-import <stdio.h>;
-import <stdlib.h>;
-import <unistd.h>;
-import <iostream>;
-import <vector>;
-import <sstream>;
-import <string.h>;
-import <filesystem>;
+import<stdio.h>;
+import<stdlib.h>;
+import<unistd.h>;
+import<iostream>;
+import<vector>;
+import<sstream>;
+import<string.h>;
+import<filesystem>;
 
 import "unicode/ustdio.h";
 import "unicode/uchar.h";
@@ -85,7 +85,6 @@ char *unicode_to_char(const icu::UnicodeString &str) {
     return cc1;
 }
 
-
 /**
  ** Converts a character array to a Unicode string.
  **
@@ -116,7 +115,6 @@ UChar *unicode_to_uchar(const icu::UnicodeString &str) {
     return buffer;
 }
 
-
 /**
  ** Converts an unsigned int to Unicode.
  **
@@ -130,7 +128,6 @@ icu::UnicodeString unicode_convert_uint(uint_t n) {
     icu::UnicodeString u(ss.str().c_str());
     return u;
 }
-
 
 /**
  ** Concatenate two unicode strings
@@ -212,7 +209,6 @@ icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
     return s1;
 }
 
-
 /**
  ** Unescape certain characters in a Unicode string.
  **
@@ -223,7 +219,6 @@ icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
 icu::UnicodeString unicode_unescape(const icu::UnicodeString &s) {
     return s.unescape();
 }
-
 
 /**
  ** Determine if a string ends with a certain suffix.
@@ -237,7 +232,6 @@ bool unicode_endswith(const icu::UnicodeString &s,
                       const icu::UnicodeString &suffix) {
     return s.endsWith(suffix);
 }
-
 
 // convenience routines text to, and from, literals
 
@@ -254,7 +248,6 @@ int64_t convert_to_int(const icu::UnicodeString &s) {
     delete[] buf;
     return i;
 }
-
 
 /**
  ** Parse and convert a hexadecimal integer. like 0xa3.
@@ -282,7 +275,6 @@ int64_t convert_to_hexint(const icu::UnicodeString &s) {
     return n;
 }
 
-
 /**
  ** Parse and convert a float. like 3.14.
  **
@@ -297,7 +289,6 @@ double convert_to_float(const icu::UnicodeString &s) {
     return f;
 }
 
-
 /**
  ** Parse and convert a char string. like 'a'.
  **
@@ -310,7 +301,6 @@ UChar32 convert_to_char(const icu::UnicodeString &s) {
     auto s1 = unicode_unescape(s0);
     return s1.char32At(0);
 }
-
 
 /**
  ** Parse and convert an integer. like 42.
@@ -326,7 +316,6 @@ icu::UnicodeString convert_from_int(const int64_t &n) {
     return u;
 }
 
-
 /**
  ** Parse and convert a float. like 3.14.
  **
@@ -340,7 +329,6 @@ icu::UnicodeString convert_from_float(const double &f) {
     icu::UnicodeString u(ss.str().c_str());
     return u;
 }
-
 
 /**
  ** Parse and convert a char string. like 'a'.
@@ -357,7 +345,6 @@ icu::UnicodeString convert_from_char(const UChar32 &c) {
     return u1;
 }
 
-
 /**
  ** Parse and convert a text string. like "hello!".
  **
@@ -370,7 +357,6 @@ icu::UnicodeString convert_to_text(const icu::UnicodeString &s) {
     auto s1 = unicode_unescape(s0);
     return s1;
 }
-
 
 // convenience io-routines
 
@@ -390,7 +376,6 @@ icu::UnicodeString file_read(const icu::UnicodeString &filename) {
     return str;
 }
 
-
 /**
  ** Convenience. Writes a string to a file.
  **
@@ -405,7 +390,6 @@ void file_write(const icu::UnicodeString &filename,
     delete[] fn;
     delete[] s;
 }
-
 
 /**
  ** Convenience. Checks whether a given file exists. (Note the possible race
@@ -448,7 +432,6 @@ icu::UnicodeString path_absolute(const icu::UnicodeString &s) {
     return path_to_string(p1);
 }
 
-
 /**
  ** Convenience. Combine two paths into a new path. OS specific.
  **
@@ -464,9 +447,6 @@ icu::UnicodeString path_combine(const icu::UnicodeString &s0,
     p0 /= p1;
     return path_to_string(p0);
 }
-
-
-
 
 UChar *read_utf8_file(const char *filename) {
     // FIXME: discard BOM when encountered?
@@ -513,5 +493,3 @@ icu::UnicodeString convert_from_text(const icu::UnicodeString &s) {
     auto s1 = unicode_escape(s);
     return s1;
 }
-
-

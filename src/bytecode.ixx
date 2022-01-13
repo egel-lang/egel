@@ -34,7 +34,8 @@ enum opcode_t {
 };
 
 using Code = std::vector<uint8_t> Code;
-using Data = std::vector<uint32_t>; // XXX this is overkil after a change to a data section
+using Data = std::vector<uint32_t>;  // XXX this is overkil after a change to a
+                                     // data section
 
 using Labels = std::map<label_t, uint32_t>;
 

@@ -138,9 +138,8 @@ public:
         return std::make_shared<AstEmpty>();
     }
 
-    static std::shared_ptr<AstEmpty> cast(const AstPtr& o) {
-        return std::static_pointer_cast<AstEmptyPtr>(a)
-    }
+    static std::shared_ptr<AstEmpty> cast(const AstPtr &o){
+        return std::static_pointer_cast<AstEmptyPtr>(a)}
 
     uint_t approximate_length(uint_t indent) const {
         return indent;
@@ -193,7 +192,7 @@ public:
         return std::make_shared<AstExprInteger>(p, text);
     }
 
-    static std::shared_ptr<AstExprInteger> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprInteger> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprInteger>(a);
     }
 };
@@ -218,7 +217,7 @@ public:
         return std::make_shared<AstExprHexInteger>(p, hex);
     }
 
-    static std::shared_ptr<AstExprHexInteger> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprHexInteger> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprHexInteger>(a);
     }
 };
@@ -243,7 +242,7 @@ public:
         return std::make_shared<AstExprFloat>(p, text);
     }
 
-    static std::shared_ptr<AstExprFloat> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprFloat> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprFloat>(a);
     }
 };
@@ -268,7 +267,7 @@ public:
         return std::make_shared<AstExprCharacter>(p, text);
     }
 
-    static std::shared_ptr<AstExprCharacter> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprCharacter> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprCharacter>(a);
     }
 };
@@ -292,7 +291,7 @@ public:
         return std::make_shared<AstExprText>(p, text);
     }
 
-    static std::shared_ptr<AstExprText> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprText> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprText>(a);
     }
 };
@@ -319,7 +318,7 @@ public:
         return std::make_shared<AstExprVariable>(p, text);
     }
 
-    static std::shared_ptr<AstExprVariable> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprVariable> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprVariable>(a);
     }
 };
@@ -344,7 +343,7 @@ public:
         return std::make_shared<AstExprWildcard>(p, text);
     }
 
-    static std::shared_ptr<AstExprWildcard> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprWildcard> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprWildcard>(a);
     }
 };
@@ -370,7 +369,7 @@ public:
         return std::make_shared<AstExprTag>(p, e, t);
     }
 
-    static std::shared_ptr<AstExprTag> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprTag> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprTag>(a);
     }
 
@@ -456,7 +455,7 @@ public:
         return std::make_shared<AstExprCombinator>(p, n, c);
     }
 
-    static std::shared_ptr<AstExprCombinator> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprCombinator> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprCombinator>(a);
     }
 
@@ -537,7 +536,7 @@ public:
         return std::make_shared<AstExprOperator>(p, n, c);
     }
 
-    static std::shared_ptr<AstExprOperator> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprOperator> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprOperator>(a);
     }
 
@@ -612,7 +611,7 @@ public:
         return std::make_shared<AstExprList>(p, c, tl);
     }
 
-    static std::shared_ptr<AstExprList> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprList> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprList>(a);
     }
 
@@ -704,7 +703,7 @@ public:
         return std::make_shared<AstExprTuple>(p, c);
     }
 
-    static std::shared_ptr<AstExprTuple> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprTuple> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprTuple>(a);
     }
 
@@ -814,7 +813,7 @@ public:
         return std::make_shared<AstExprApplication>(p, op, e0, e1);
     }
 
-    static std::shared_ptr<AstExprApplication> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprApplication> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprApplication>(a);
     }
 
@@ -891,7 +890,7 @@ public:
         return std::make_shared<AstExprMatch>(p, pp, g, r);
     }
 
-    static std::shared_ptr<AstExprMatch> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprMatch> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprMatch>(a);
     }
 
@@ -1003,7 +1002,7 @@ public:
         return std::make_shared<AstExprBlock>(p, mm);
     }
 
-    static std::shared_ptr<AstExprBlock> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprBlock> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprBlock>(a);
     }
 
@@ -1086,7 +1085,7 @@ public:
         return std::make_shared<AstExprLambda>(p, m);
     }
 
-    static std::shared_ptr<AstExprLambda> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprLambda> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprLambda>(a);
     }
 
@@ -1136,7 +1135,7 @@ public:
         return std::make_shared<AstExprLet>(p, ee, e1, e2);
     }
 
-    static std::shared_ptr<AstExprLet> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprLet> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprLet>(a);
     }
 
@@ -1221,7 +1220,7 @@ public:
         return std::make_shared<AstExprTry>(p, e0, e1);
     }
 
-    static std::shared_ptr<AstExprTry> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprTry> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprTry>(a);
     }
 
@@ -1292,7 +1291,7 @@ public:
         return std::make_shared<AstExprThrow>(p, e0);
     }
 
-    static std::shared_ptr<AstExprThrow> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprThrow> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprThrow>(a);
     }
 
@@ -1347,8 +1346,8 @@ public:
         return std::make_shared<AstExprIf>(p, e0, e1, e2);
     }
 
-    static std::shared_ptr<AstExprIf> cast(const AstPtr& a) {
-        return std:static_pointer_cast<AstExprIf>(a);
+    static std::shared_ptr<AstExprIf> cast(const AstPtr &a) {
+        return std : static_pointer_cast<AstExprIf>(a);
     }
 
     AstPtr if0() const {
@@ -1430,7 +1429,7 @@ public:
         return std::make_shared<AstExprStatement>(p, e0, e1);
     }
 
-    static std::shared_ptr<AstExprStatement> cast(const AstPtr& a) {
+    static std::shared_ptr<AstExprStatement> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprStatement>(a);
     }
 
@@ -1496,7 +1495,7 @@ public:
         return std::make_shared<AstDeclNamespace>(p, name, c);
     }
 
-    static std::shared_ptr<AstDeclNamespace> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDeclNamespace> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclNamespace>(a);
     }
 
@@ -1555,7 +1554,7 @@ public:
         return std::make_shared<AstDeclData>(p, nn);
     }
 
-    static std::shared_ptr<AstDeclData> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDeclData> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclData>(a);
     }
 
@@ -1630,7 +1629,7 @@ public:
         return std::make_shared<AstDeclDefinition>(p, n, e);
     }
 
-    static std::shared_ptr<AstDeclDefinition> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDeclDefinition> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclDefinition>(a);
     }
 
@@ -1698,7 +1697,7 @@ public:
         return std::make_shared<AstDeclValue>(p, e0, e1);
     }
 
-    static std::shared_ptr<AstDeclValue> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDeclValue> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclValue>(a);
     }
 
@@ -1764,7 +1763,7 @@ public:
         return std::make_shared<AstDeclOperator>(p, c, e);
     }
 
-    static std::shared_ptr<AstDeclOperator> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDeclOperator> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclOperator>(a);
     }
 
@@ -1839,7 +1838,7 @@ public:
         return std::make_shared<AstDeclObject>(p, n, vv, ff, ee);
     }
 
-    static std::shared_ptr<AstDeclObject> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDeclObject> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclObject>(a);
     }
 
@@ -1924,7 +1923,7 @@ public:
         return std::make_shared<AstDirectImport>(p, v);
     }
 
-    static std::shared_ptr<AstDirectImport> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDirectImport> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDirectImport>(a);
     }
 
@@ -1968,7 +1967,7 @@ public:
         return std::make_shared<AstDirectUsing>(p, v);
     }
 
-    static std::shared_ptr<AstDirectUsing> cast(const AstPtr& a) {
+    static std::shared_ptr<AstDirectUsing> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDirectUsing>(a);
     }
 
@@ -2020,7 +2019,7 @@ public:
         return std::make_shared<AstWrapper>(p, c);
     }
 
-    static std::shared_ptr<AstWrapper> cast(const AstPtr& a) {
+    static std::shared_ptr<AstWrapper> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstWrapper>(a);
     }
 

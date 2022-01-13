@@ -111,7 +111,8 @@ static option_t options[] = {
 
 #define OPTIONS_SIZE (sizeof(options) / sizeof(option_t))
 
-using StringPairs = std::vector<std::pair<icu::UnicodeString, icu::UnicodeString>>;
+using StringPairs =
+    std::vector<std::pair<icu::UnicodeString, icu::UnicodeString>>;
 
 StringPairs parse_options(int argc, char *argv[]) {
     StringPairs pp;

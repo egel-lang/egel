@@ -146,14 +146,14 @@ const vm_subtag_t VM_SUB_PYTHON_OBJECT = 0xfe;      // Python values
 const vm_subtag_t VM_SUB_PYTHON_COMBINATOR = 0xff;  // Python combinators
 
 using vm_bool_t = bool;
-using vm_int_t  = int64_t;
+using vm_int_t = int64_t;
 using vm_float_t = double;
 using vm_char_t = UChar32;
 using vm_text_t = icu::UnicodeString;
 using vm_ptr_t = (void *);
 
 using symbol_t = uint32_t;
-using data_t =uint32_t;
+using data_t = uint32_t;
 
 class VMObject;
 using VMObjectPtr = std::shared_ptr<VMObject>;
