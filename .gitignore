@@ -58,3 +58,6 @@ optional/*/.vscode/*
 
 # ignore pycache
 python/examples/__pycache__/*
+
+# c++20 provisional stuff
+src/gcm.cache/*

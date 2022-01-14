@@ -80,14 +80,11 @@ export {
     constexpr auto STRING_IF = "if";
     constexpr auto STRING_THEN = "then";
     constexpr auto STRING_ELSE = "else";
-    constexpr auto STRING_LET = "let";
-    constexpr auto STRING_IN = "in";
     constexpr auto STRING_THROW = "throw";
     constexpr auto STRING_TRY = "try";
     constexpr auto STRING_CATCH = "catch";
     constexpr auto STRING_LET = "let";
     constexpr auto STRING_IN = "in";
-    constexpr auto STRING_VAL = "val";
 
     // names, combinators, ..
 
@@ -172,11 +169,9 @@ export {
     // readable text for token types
     constexpr auto STRING_EOF = "end of file";
     constexpr auto STRING_ERROR = "error";
-    constexpr auto STRING_NAME = "name";
     constexpr auto STRING_EQ = "=";
     constexpr auto STRING_INTEGER = "integer";
     constexpr auto STRING_HEXINTEGER = "hexadecimal integer";
-    constexpr auto STRING_DARROW = "=>";
 
     // human readable byte opcodes
     constexpr auto STRING_OP_ASSIGN = "assign";
