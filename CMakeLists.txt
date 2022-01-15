@@ -21,13 +21,6 @@ message("CMAKE_CXX_SOURCE_FILE_EXTENSIONS ${CMAKE_CXX_SOURCE_FILE_EXTENSIONS}")
 
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 
-#if(TARGET ICU::io) # prefer target
-	#list(APPEND VT_XLIBS Freetype::Freetype)
-#else() # fall back to variables
-	#list(APPEND VT_XLIBS_INCLUDE_DIRS "${FREETYPE_INCLUDE_DIRS}")
-	#list(APPEND VT_XLIBS ${FREETYPE_LIBRARIES})
-#endif()
-
 include_directories(
     src
 )
@@ -37,6 +30,7 @@ include_directories(
 add_executable(egel
     src/constants.ixx
     src/utils.ixx
+    src/position.ixx
 )
 target_link_libraries(egel ICU::uc ICU::i18n )
 

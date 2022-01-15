@@ -5,9 +5,9 @@ module;
 #include <sstream>
 #include <filesystem>
 
+#include "unicode/unistr.h"
 #include "unicode/ustdio.h"
 #include "unicode/uchar.h"
-#include "unicode/unistr.h"
 #include "unicode/ustream.h"
 #include "unicode/stringpiece.h"
 

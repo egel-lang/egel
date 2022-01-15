@@ -1,11 +1,14 @@
+module;
+
+#include <iostream>
+#include <sstream>
+
+#include "unicode/unistr.h"
+#include "unicode/ustream.h"
+
 export module position;
 
-import<iostream>;
-import<sstream>;
-
-import utils;
-
-class Position {
+export class Position {
 public:
     Position() {
         _resource = icu::UnicodeString("");
