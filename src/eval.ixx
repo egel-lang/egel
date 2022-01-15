@@ -1,6 +1,8 @@
-export module eval;
+module;
 
-import<functional>;
+#include <functional>
+
+export module eval;
 
 import utils;
 import runtime;
