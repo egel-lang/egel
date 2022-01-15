@@ -1,19 +1,25 @@
+module;
+
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <filesystem>
+
+#include "unicode/ustdio.h"
+#include "unicode/uchar.h"
+#include "unicode/unistr.h"
+#include "unicode/ustream.h"
+#include "unicode/stringpiece.h"
+
 export module utils;
 
-import<stdio.h>;
-import<stdlib.h>;
-import<unistd.h>;
-import<iostream>;
-import<vector>;
-import<sstream>;
-import<string.h>;
-import<filesystem>;
+//import <stdio.h>;
+//import <stdlib.h>;
+//import <unistd.h>;
+//import <string.h>;
 
-import "unicode/ustdio.h";
-import "unicode/uchar.h";
-import "unicode/unistr.h";
-import "unicode/ustream.h";
-import "unicode/stringpiece.h";
+//#if _MSC_VER
+
 
 using uint_t = unsigned int;
 

@@ -1,0 +1,5 @@
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=C:/Qt/5.7/msvc2015"
+    ]
+}

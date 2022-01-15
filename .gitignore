@@ -4,9 +4,10 @@
 *.o
 *.obj
 
-# Precompiled Headers
+# Precompiled headers or modules
 *.gch
 *.pch
+*.ifc
 
 # Compiled Dynamic libraries
 *.so
@@ -53,7 +54,7 @@ optional/*/_debug/*
 .DS_Store
 
 # ignore vscode
-.vscode/*
+#.vscode/*
 optional/*/.vscode/*
 
 # ignore pycache
