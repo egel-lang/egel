@@ -17,23 +17,33 @@ project(
 # It is always easier to navigate in an IDE when projects are organized in folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+message("CMAKE_CXX_SOURCE_FILE_EXTENSIONS ${CMAKE_CXX_SOURCE_FILE_EXTENSIONS}")
+
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
+
+#if(TARGET ICU::io) # prefer target
+	#list(APPEND VT_XLIBS Freetype::Freetype)
+#else() # fall back to variables
+	#list(APPEND VT_XLIBS_INCLUDE_DIRS "${FREETYPE_INCLUDE_DIRS}")
+	#list(APPEND VT_XLIBS ${FREETYPE_LIBRARIES})
+#endif()
 
 include_directories(
     src
 )
 
-message("CMAKE_CXX_SOURCE_FILE_EXTENSIONS ${CMAKE_CXX_SOURCE_FILE_EXTENSIONS}")
 
 
 add_executable(egel
     src/constants.ixx
     src/utils.ixx
 )
+target_link_libraries(egel ICU::uc ICU::i18n )
 
 # Only support statically linking for now.
 target_compile_definitions(egel PRIVATE
                             SEQUENTIAL_PROCESSING=0)
+
 
 # Require c++20, this is better than setting CMAKE_CXX_STANDARD since it won't pollute other targets
 # note : cxx_std_* features were added in CMake 3.8.2

@@ -13,26 +13,25 @@ module;
 
 export module utils;
 
+namespace fs = std::filesystem;
+using UnicodeStrings = std::vector<icu::UnicodeString>;
 //import <stdio.h>;
 //import <stdlib.h>;
 //import <unistd.h>;
-//import <string.h>;
-
-//#if _MSC_VER
-
-
-using uint_t = unsigned int;
+#include <string.h>
 
 // debugging macros
 
 // C routines
-void assert_fail(const char *assertion, const char *file, uint_t line) {
+export {
+
+void assert_fail(const char *assertion, const char *file, unsigned int line) {
     std::cerr << file << ':' << line << ": assertion failed " << assertion
               << '\n';
     abort();
 }
 
-void panic_fail(const char *message, const char *file, uint_t line) {
+void panic_fail(const char *message, const char *file, unsigned int line) {
     std::cerr << file << ':' << line << ": panic " << message << '\n';
     abort();
 }
@@ -62,8 +61,6 @@ void panic_fail(const char *message, const char *file, uint_t line) {
 #define DEBUG_ASSERT(_e) ((void)0);
 #endif
 
-using UnicodeStrings = std::vector<icu::UnicodeString>;
-namespace fs = std::filesystem;
 // unicode routines
 
 /**
@@ -74,20 +71,12 @@ namespace fs = std::filesystem;
  ** @return a character array (heap allocated)
  **/
 char *unicode_to_char(const icu::UnicodeString &str) {
-    /* old code - no utf8 conversion
-    const unsigned int STRING_MAX_SIZE = 65536; // XXX: get rid of constants
-    auto len = str.extract(0, STRING_MAX_SIZE, nullptr, (uint32_t) 0);
-    auto buffer = new char[len+1];
-    str.extract(0, STRING_MAX_SIZE, buffer, len+1);
-    return buffer;
-    */
-
     std::string utf8;
     str.toUTF8String(utf8);
     auto cc0 = utf8.c_str();
     auto len = strlen(cc0);
     auto cc1 = (char *)malloc(len + 1);
-    strncpy(cc1, cc0, len + 1);
+    strncpy_s(cc1, len + 1, cc0, len + 1);
     return cc1;
 }
 
@@ -128,7 +117,7 @@ UChar *unicode_to_uchar(const icu::UnicodeString &str) {
  **
  ** @return a Unicode string
  **/
-icu::UnicodeString unicode_convert_uint(uint_t n) {
+icu::UnicodeString unicode_convert_uint(unsigned int n) {
     std::stringstream ss;
     ss << n;
     icu::UnicodeString u(ss.str().c_str());
@@ -289,8 +278,8 @@ int64_t convert_to_hexint(const icu::UnicodeString &s) {
  ** @return the integer recognized
  **/
 double convert_to_float(const icu::UnicodeString &s) {
-    char *buf = unicode_to_char(s);
-    auto f = atof(buf);
+    char *buf = unicode_to_char(s); 
+    auto f = atof(buf); // XXX: use stream
     delete[] buf;
     return f;
 }
@@ -366,6 +355,8 @@ icu::UnicodeString convert_to_text(const icu::UnicodeString &s) {
 
 // convenience io-routines
 
+UChar *read_utf8_file(const char *filename);
+void write_utf8_file(const char *filename, UChar *str);
 /**
  ** Convenience. Reads a file into a string from a given filename.
  **
@@ -397,6 +388,18 @@ void file_write(const icu::UnicodeString &filename,
     delete[] s;
 }
 
+fs::path string_to_path(const icu::UnicodeString &s) {
+    char *cc = unicode_to_char(s);
+    fs::path p = fs::path(cc);
+    delete[] cc;
+    return p;
+}
+
+icu::UnicodeString path_to_string(const fs::path &p) {
+    icu::UnicodeString s(p.c_str());  // XXX: utf8
+    return s;
+}
+
 /**
  ** Convenience. Checks whether a given file exists. (Note the possible race
  *conditions.)
@@ -407,24 +410,12 @@ void file_write(const icu::UnicodeString &filename,
  **/
 bool file_exists(const icu::UnicodeString &filename) {
     char *fn = unicode_to_char(filename);
-    bool b = exists_file(fn);
+    bool b = fs::exists(fn);
     delete[] fn;
     return b;
 }
 
 // helpers
-fs::path string_to_path(const icu::UnicodeString &s) {
-    char *cc = unicode_to_char(s);
-    fs::path p = fs::u8path(cc);
-    delete[] cc;
-    return p;
-}
-
-icu::UnicodeString path_to_string(const fs::path &p) {
-    icu::UnicodeString s(p.c_str());  // XXX: utf8
-    return s;
-}
-
 /**
  ** Convenience. Get the absolute path. OS specific.
  **
@@ -488,14 +479,11 @@ void write_utf8_file(const char *filename, UChar *str) {
     u_fclose(f);
 }
 
-bool exists_file(const char *filename) {
-    // note race conditions when files are created/deleted. whatever...
-    return (access(filename, F_OK) != -1);
-}
-
-// Unicode routines
-
+/*
 icu::UnicodeString convert_from_text(const icu::UnicodeString &s) {
     auto s1 = unicode_escape(s);
     return s1;
 }
+*/
+
+} // end export
