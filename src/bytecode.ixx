@@ -1,11 +1,13 @@
-export module bytecode;
+module;
 
-import<iostream>;
-import<sstream>;
-import<iomanip>;
-import<map>;
-import<vector>;
-import<tuple>;
+#define <iostream>
+#define <sstream>
+#define <iomanip>
+#define <map>
+#define <vector>
+#define <tuple>
+
+export module bytecode;
 
 import runtime;
 
