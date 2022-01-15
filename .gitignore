@@ -8,6 +8,8 @@
 *.gch
 *.pch
 *.ifc
+*.pcm.d
+*.pcm.ii
 
 # Compiled Dynamic libraries
 *.so

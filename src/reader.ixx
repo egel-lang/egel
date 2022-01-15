@@ -1,9 +1,16 @@
+module;
+
+#include <vector>
+
+#include "unicode/unistr.h"
+#include "unicode/ustream.h"
+
 export module reader;
 
 import utils;
 import position;
 
-class CharReader {
+export class CharReader {
 public:
     virtual UChar32 look() = 0;
     virtual UChar32 look(int n) = 0;
@@ -16,7 +23,7 @@ public:
     virtual Position position() = 0;
 };
 
-class StringCharReader : public CharReader {
+export class StringCharReader : public CharReader {
 public:
     StringCharReader(const icu::UnicodeString &resource,
                      const icu::UnicodeString &content) {

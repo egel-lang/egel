@@ -1,3 +1,7 @@
+module;
+
+#include <functional>
+
 export module buitin_eval;
 
 import runtime;
@@ -11,7 +15,6 @@ import machine;
 import modules;
 import eval;
 
-import<functional>;
 
 //## namespace System - the `eval` combinator
 

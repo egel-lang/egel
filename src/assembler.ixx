@@ -1,3 +1,7 @@
+module;
+
+#include <vector>
+
 export module assembler;
 
 import utils;

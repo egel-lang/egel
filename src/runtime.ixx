@@ -1,26 +1,25 @@
+module;
+
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <sstream>
+#include <vector>
+#include <set>
+#include <limits>
+#include <functional>
+
+#include "unicode/ustring.h"
+#include "unicode/ustdio.h"
+#include "unicode/uchar.h"
+#include "unicode/unistr.h"
+#include "unicode/ustream.h"
+
 export module runtime;
 
 // this is one stand-alone interface file external libraries can link against.
 // it must be self contained except for standard c++ and unicode (which should
 // be phased out).
-
-import<stdio.h>;
-import<stdlib.h>;
-import<unistd.h>;
-import<iostream>;
-import<vector>;
-import<memory>;
-import<sstream>;
-import<vector>;
-import<set>;
-import<limits>;
-import<functional>;
-
-import "unicode/ustring.h";
-import "unicode/ustdio.h";
-import "unicode/uchar.h";
-import "unicode/unistr.h";
-import "unicode/ustream.h";
 
 using namespace icu;  // use stable namespace
 
@@ -2527,5 +2526,3 @@ inline void render_cons(const VMObjectPtr &c, std::ostream &os) {
     render_cons_elements(c, os);
     os << "}";
 };
-
-#endif

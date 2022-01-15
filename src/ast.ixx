@@ -1,9 +1,11 @@
-export module ast;
+module;
 
-import<memory>;
-import<sstream>;
-import<vector>;
-import<set>;
+#include <memory>;
+#include <sstream>;
+#include <vector>;
+#include <set>;
+
+export module ast;
 
 import utils;
 import constants;

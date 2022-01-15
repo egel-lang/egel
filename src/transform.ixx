@@ -1,8 +1,10 @@
+module;
+
+#include <vector>
+
 export module transform;
 
-import<vector>
-
-    import error;
+import error;
 import ast;
 
 class Transform {
