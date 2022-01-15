@@ -1,10 +1,12 @@
-export module serialize;
+module;
 
-import<map>;
-import<vector>;
-import<stack>;
-import<functional>;
-import<iostream>;
+#include <map>
+#include <vector>
+#include <stack>
+#include <functional>
+#include <iostream>
+
+export module serialize;
 
 import utils;
 import runtime;

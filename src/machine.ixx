@@ -1,13 +1,15 @@
-export module machine;
+module;
 
-import<memory>;
-import<sstream>;
-import<vector>;
-import<map>;
-import<set>;
-import<iomanip>;
-import<tuple>;
-import<mutex>;
+#include <memory>
+#include <sstream>
+#include <vector>
+#include <map>
+#include <set>
+#include <iomanip>
+#include <tuple>
+#include <mutex>
+
+export module machine;
 
 import runtime;
 import modules;
