@@ -1,12 +1,18 @@
-export module error;
+module;
 
-import<exception>;
+#include <exception>
+
+#include "unicode/unistr.h"
+#include "unicode/ustdio.h"
+#include "unicode/ustream.h"
+
+export module error;
 
 import utils;
 import position;
 import constants;
 
-enum error_tag_t {
+export enum error_tag_t {
     ERROR_IO,
     ERROR_LEXICAL,
     ERROR_SYNTACTICAL,
@@ -15,7 +21,7 @@ enum error_tag_t {
     ERROR_INTERNAL,
 };
 
-class Error : public std::exception {
+export class Error : public std::exception {
 public:
     Error(error_tag_t t, const Position &p, const icu::UnicodeString &m)
         : _tag(t), _position(p), _message(m) {
@@ -75,7 +81,7 @@ private:
     icu::UnicodeString _message;
 };
 
-class ErrorIO : public Error {
+export class ErrorIO : public Error {
 public:
     ErrorIO(const Position &p, const icu::UnicodeString &m)
         : Error(ERROR_IO, p, m) {
@@ -85,28 +91,28 @@ public:
     }
 };
 
-class ErrorLexical : public Error {
+export class ErrorLexical : public Error {
 public:
     ErrorLexical(const Position &p, const icu::UnicodeString &m)
         : Error(ERROR_LEXICAL, p, m) {
     }
 };
 
-class ErrorSyntactical : public Error {
+export class ErrorSyntactical : public Error {
 public:
     ErrorSyntactical(const Position &p, const icu::UnicodeString &m)
         : Error(ERROR_SYNTACTICAL, p, m) {
     }
 };
 
-class ErrorIdentification : public Error {
+export class ErrorIdentification : public Error {
 public:
     ErrorIdentification(const Position &p, const icu::UnicodeString &m)
         : Error(ERROR_IDENTIFICATION, p, m) {
     }
 };
 
-class ErrorSemantical : public Error {
+export class ErrorSemantical : public Error {
 public:
     ErrorSemantical(const Position &p, const icu::UnicodeString &m)
         : Error(ERROR_SEMANTICAL, p, m) {
@@ -117,7 +123,7 @@ public:
     }
 };
 
-class ErrorInternal : public Error {
+export class ErrorInternal : public Error {
 public:
     ErrorInternal(const icu::UnicodeString &m)
         : Error(ERROR_INTERNAL, Position(), m) {
