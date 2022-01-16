@@ -98,7 +98,7 @@ public:
             auto i = machine()->get_integer(arg0);
             vm_int_t res;
             if (mul_overflow((vm_int_t)-1, i, &res)) {
-                THROW_OVERFLOW;
+		throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -123,7 +123,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (add_overflow(i0, i1, &res)) {
-                THROW_OVERFLOW;
+		throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -153,8 +153,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (sub_overflow(i0, i1, &res)) {
-                THROW_OVERFLOW;
-                throw VMObjectInteger::create(res);
+		throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -180,7 +179,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (mul_overflow(i0, i1, &res)) {
-                THROW_OVERFLOW;
+		throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -205,14 +204,14 @@ public:
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
             if (i1 == 0) {
-                THROW_DIVZERO;
+		throw machine()->bad(this, "divide by zero");
             }
             return VMObjectInteger::create(i0 / i1);
         } else if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             if (f1 == 0.0) {
-                THROW_DIVZERO;
+		throw machine()->bad(this, "divide by zero");
             }
             return VMObjectFloat::create(f0 / f1);
         } else {
@@ -232,7 +231,7 @@ public:
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
             if (i1 == 0) {
-                THROW_DIVZERO;
+		throw machine()->bad(this, "divide by zero");
             }
             return VMObjectInteger::create(i0 % i1);
         } else {
