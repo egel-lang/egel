@@ -31,17 +31,8 @@ using namespace icu;  // use stable namespace
     }
 #endif
 
-#define EGEL_FLOAT_PRECISION \
+constexpr unsigned int EGEL_FLOAT_PRECISION =
     16  // XXX: dbl::maxdigit doesn't seem to be defined on my system?
-
-// handle different exceptional states within combinators
-#define THROW_OVERFLOW throw VMObjectText::create(to_text() + " overflow")
-#define THROW_DIVZERO throw VMObjectText::create(to_text() + " divide by zero")
-#define THROW_BADARGS throw VMObjectText::create(to_text() + " bad arguments")
-#define THROW_INVALID \
-    throw VMObjectText::create(to_text() + " invalid arguments")
-#define THROW_STUB \
-    throw VMObjectText::create(to_text() + " not yet implemented")
 
 // libicu doesn't provide escaping..
 
@@ -609,6 +600,11 @@ public:
     virtual VMObjectPtr query_data() = 0;
 
     virtual int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) = 0;
+
+    virtual VMObjectPtr bad(const VMObjectPtr &o, const icu::UnicodeString &e) = 0;
+    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0) = 0;
+    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1) = 0;
+    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1, const VMObjectPtr& a2) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -48,7 +48,7 @@ public:
                 return nullptr;
             }
         } else {
-            THROW_BADARGS;
+	    throw badargs(this, arg0);
         }
     }
 

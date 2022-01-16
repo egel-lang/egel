@@ -21,7 +21,7 @@ public:
             auto s = machine()->get_bytecode(arg0);
             return machine()->create_text(s);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -36,7 +36,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_bytecode(s);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -65,7 +65,7 @@ public:
             auto o = deserialize_from_string(m, s);
             return o;
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -100,7 +100,7 @@ public:
         if (machine()->is_module(arg0)) {
             return machine()->query_module_name(arg0);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -115,7 +115,7 @@ public:
         if (machine()->is_module(arg0)) {
             return machine()->query_module_path(arg0);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -130,7 +130,7 @@ public:
         if (machine()->is_module(arg0)) {
             return machine()->query_module_imports(arg0);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -145,7 +145,7 @@ public:
         if (machine()->is_module(arg0)) {
             return machine()->query_module_exports(arg0);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -160,7 +160,7 @@ public:
         if (machine()->is_module(arg0)) {
             return machine()->query_module_values(arg0);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -246,7 +246,7 @@ public:
             auto oo = machine()->get_array(arg0);
             return machine()->to_list(oo);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -260,7 +260,7 @@ public:
             auto t = machine()->get_bytecode(arg0);
             return machine()->create_text(t);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -274,7 +274,7 @@ public:
             auto oo = machine()->get_bytedata(arg0);
             return machine()->to_list(oo);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -305,10 +305,10 @@ public:
     }
 };
 
-//## System::get_type s - get the type of symbol s
-class GetType: public Monadic {
+//## System::get_tag s - get the type of symbol s
+class GetTag: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetType, "System", "get_type");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetTag, "System", "get_tag");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -317,7 +317,7 @@ public:
 
             return VMObjectText::create("stub");
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -334,7 +334,7 @@ public:
             machine()->define_data(c);
             return c;
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -350,7 +350,7 @@ override { if (machine()->is_text(arg0)) { auto s = machine()->get_text(arg0);
 
             return VMObjectText::create("stub");
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };

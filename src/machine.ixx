@@ -708,6 +708,38 @@ public:
        ss, s, f);
         }
     */
+
+    VMObjectPtr bad(const VMObjectPtr &o, const icu::UnicodeString &s) override {
+        VMObjectPtrs tt;
+	tt.push_back(o);
+	tt.push_back(create_text(s));
+	return create_array(tt);
+    }
+
+    VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0) override {
+        VMObjectPtrs tt;
+	tt.push_back(o);
+	tt.push_back(a0);
+	return create_array(tt);
+    }
+
+    VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1) override {
+        VMObjectPtrs tt;
+	tt.push_back(o);
+	tt.push_back(a0);
+	tt.push_back(a1);
+	return create_array(tt);
+    }
+
+    VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1, const VMObjectPtr &a2) override {
+        VMObjectPtrs tt;
+	tt.push_back(o);
+	tt.push_back(a0);
+	tt.push_back(a1);
+	tt.push_back(a2);
+	return create_array(tt);
+    }
+
     VMObjectPtr to_tuple(const VMObjectPtrs &oo) override {
         VMObjectPtrs tt;
         tt.push_back(create_tuple());

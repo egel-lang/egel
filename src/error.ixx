@@ -48,22 +48,22 @@ public:
         }
         switch (_tag) {
             case ERROR_IO:
-                s += STRING_IO;
+                s += Constants::STRING_IO;
                 break;
             case ERROR_LEXICAL:
-                s += STRING_LEXICAL;
+                s += Constants::STRING_LEXICAL;
                 break;
             case ERROR_SYNTACTICAL:
-                s += STRING_SYNTACTICAL;
+                s += Constants::STRING_SYNTACTICAL;
                 break;
             case ERROR_IDENTIFICATION:
-                s += STRING_IDENTIFICATION;
+                s += Constants::STRING_IDENTIFICATION;
                 break;
             case ERROR_SEMANTICAL:
-                s += STRING_SEMANTICAL;
+                s += Constants::STRING_SEMANTICAL;
                 break;
             case ERROR_INTERNAL:
-                s += STRING_INTERNAL;
+                s += Constants::STRING_INTERNAL;
                 break;
         }
         s += ":" + message();

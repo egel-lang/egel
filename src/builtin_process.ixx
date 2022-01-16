@@ -195,7 +195,7 @@ public:
             process->in_push(arg1);
             return machine()->create_none();
         } else {
-            THROW_BADARGS;
+	    throw machine()->badargs(this, arg0, arg1);
         }
     }
 };
@@ -216,7 +216,7 @@ public:
             }
             return msg;
         } else {
-            THROW_BADARGS;
+	    throw machine()->badargs(this, arg0);
         }
     }
 };
@@ -234,7 +234,7 @@ public:
             process->set_state(HALTED);
             return machine()->create_none();
         } else {
-            THROW_BADARGS;
+	    throw machine()->badargs(this, arg0);
         }
     }
 };

@@ -77,6 +77,7 @@ public:
         return machine()->create_integer(std::numeric_limits<vm_int_t>::min());
     }
 };
+
 //## System::max_int - maximum for integers
 class MaxInt : public Medadic {
 public:
@@ -105,7 +106,7 @@ public:
             auto f = machine()->get_float(arg0);
             return VMObjectFloat::create(-f);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -135,7 +136,7 @@ public:
             auto f1 = machine()->get_text(arg1);
             return VMObjectText::create(f0 + f1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -162,7 +163,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return VMObjectFloat::create(f0 - f1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -188,7 +189,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return VMObjectFloat::create(f0 * f1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -215,7 +216,7 @@ public:
             }
             return VMObjectFloat::create(f0 / f1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -235,7 +236,7 @@ public:
             }
             return VMObjectInteger::create(i0 % i1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -252,7 +253,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 & i1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -269,7 +270,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 | i1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -286,7 +287,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 ^ i1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -301,7 +302,7 @@ public:
             auto i0 = machine()->get_integer(arg0);
             return VMObjectInteger::create(~i0);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -318,7 +319,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 << i1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -335,7 +336,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 >> i1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -433,7 +434,7 @@ public:
                 THROW_INVALID;
             }
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -468,10 +469,10 @@ public:
                 arr->set(n + 1, arg1);
                 return arg0;
             } else {
-                THROW_INVALID;
+	    	throw machine()->bad(this, "invalid");
             }
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -515,7 +516,7 @@ public:
 
             return machine()->create_array(oo);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -540,7 +541,7 @@ public:
             auto i = convert_to_int(s);
             return machine()->create_integer(i);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -561,7 +562,7 @@ public:
             auto i = convert_to_float(s);
             return machine()->create_float(i);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -587,7 +588,7 @@ public:
         } else if (machine()->is_text(arg0)) {
             return arg0;
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -651,7 +652,7 @@ public:
             auto r = std::static_pointer_cast<Reference>(arg0);
             return r->get_ref();
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -670,7 +671,7 @@ public:
             r->set_ref(arg1);
             return arg0;
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -692,7 +693,7 @@ public:
             }
             return machine()->to_list(ss);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -745,7 +746,7 @@ public:
                 return none;
             }
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -769,7 +770,7 @@ public:
                 return none;
             }
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -791,7 +792,7 @@ public:
             thunk.push_back(machine()->create_none());
             return machine()->create_array(thunk);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -813,7 +814,7 @@ public:
             thunk.push_back(machine()->create_none());
             return machine()->create_array(thunk);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -905,14 +906,14 @@ public:
                 try {
                     r = fmt::vformat(fmt, store);
                 } catch (std::runtime_error &e) {
-                    THROW_INVALID;
+		    throw machine()->bad(this, "invalid");
                 }
                 auto u = icu::UnicodeString(r.c_str());
                 delete fmt;
 
                 return VMObjectText::create(u);
             } else {
-                THROW_INVALID;
+		throw machine()->bad(this, "format");
             }
         }
     }

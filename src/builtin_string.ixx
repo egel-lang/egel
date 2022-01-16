@@ -23,7 +23,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s0 == s1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -40,7 +40,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s0 != s1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -57,7 +57,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s0 > s1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -74,7 +74,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s0 < s1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -91,7 +91,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s0 >= s1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -108,7 +108,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s0 <= s1);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -126,7 +126,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_integer(s0.compare(s1));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -145,7 +145,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_integer(s0.compareCodePointOrder(s1));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -164,7 +164,7 @@ public:
             return machine()->create_integer(
                 s0.caseCompare(s1, U_FOLD_CASE_DEFAULT));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -182,7 +182,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s1.startsWith(s0));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -200,7 +200,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_bool(s1.endsWith(s0));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -218,7 +218,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_integer(s1.indexOf(s0));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -236,7 +236,7 @@ public:
             auto s1 = machine()->get_text(arg1);
             return machine()->create_integer(s1.lastIndexOf(s0));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -254,7 +254,7 @@ public:
             auto s = machine()->get_text(arg1);
             return machine()->create_char(s.char32At(n));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -274,7 +274,7 @@ public:
             auto s = machine()->get_text(arg2);
             return machine()->create_integer(s.moveIndex32(n, d));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -289,7 +289,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_integer(s.countChar32());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -304,7 +304,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_bool(s.isEmpty());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -319,7 +319,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_integer(s.hashCode());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -334,7 +334,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_bool(s.isBogus());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -355,7 +355,7 @@ public:
             auto c = machine()->get_char(arg1);
             return machine()->create_text(s0.append(c));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -375,7 +375,7 @@ public:
             auto s1 = machine()->get_text(arg2);
             return machine()->create_text(s1.insert(n, s0));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -395,7 +395,7 @@ public:
             auto s2 = machine()->get_text(arg2);
             return machine()->create_text(s2.findAndReplace(s0, s1));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -415,7 +415,7 @@ public:
             auto s0 = machine()->get_text(arg2);
             return machine()->create_text(s0.removeBetween(n0, n1));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -435,7 +435,7 @@ public:
             auto s0 = machine()->get_text(arg2);
             return machine()->create_text(s0.retainBetween(n0, n1));
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -450,7 +450,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_text(s.trim());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -465,7 +465,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_text(s.reverse());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -481,7 +481,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_text(s.toUpper());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -497,7 +497,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_text(s.toLower());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -512,7 +512,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_text(s.foldCase());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -528,7 +528,7 @@ public:
             auto s = machine()->get_text(arg0);
             return machine()->create_text(s.unescape());
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -543,7 +543,7 @@ public:
             auto c = machine()->get_char(arg0);
             return machine()->create_integer(c);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -558,7 +558,7 @@ public:
             auto n = machine()->get_integer(arg0);
             return machine()->create_char(n);
         } else {
-            THROW_BADARGS;
+	    throw machine()->bad_args(this, arg0);
         }
     }
 };
