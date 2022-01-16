@@ -1,5 +1,6 @@
 module;
 
+#include <cstring>
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -18,7 +19,7 @@ using UnicodeStrings = std::vector<icu::UnicodeString>;
 //import <stdio.h>;
 //import <stdlib.h>;
 //import <unistd.h>;
-#include <string.h>
+//#include <string.h>
 
 // debugging macros
 
@@ -73,11 +74,9 @@ void panic_fail(const char *message, const char *file, unsigned int line) {
 char *unicode_to_char(const icu::UnicodeString &str) {
     std::string utf8;
     str.toUTF8String(utf8);
-    auto cc0 = utf8.c_str();
-    auto len = strlen(cc0);
-    auto cc1 = (char *)malloc(len + 1);
-    strncpy_s(cc1, len + 1, cc0, len + 1);
-    return cc1;
+    char *cstr = new char [utf8.length()+1];
+    std::strcpy (cstr, utf8.c_str());
+    return cstr;
 }
 
 /**
