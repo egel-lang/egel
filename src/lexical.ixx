@@ -1,9 +1,15 @@
+module;
+
+#include <vector>
+#include <iostream>
+#include <memory>
+
+#include "unicode/unistr.h"
+#include "unicode/ustdio.h"
+
 export module lexical;
 
-import<vector>;
-import<iostream>;
-import<memory>;
-
+import constants;
 import position;
 import error;
 import reader;
@@ -195,10 +201,6 @@ private:
 icu::UnicodeString token_text(token_t t);
 TokenReaderPtr tokenize_from_reader(CharReader &reader);
 
-#endif
-#include "constants.hpp"
-#include "lexical.hpp"
-
 // character classes
 
 bool is_whitespace(UChar32 c) {
@@ -353,204 +355,204 @@ struct token_text_t {
 static token_text_t token_text_table[]{
     {
         TOKEN_ERROR,
-        STRING_ERROR,
+        Constants::STRING_ERROR,
     },
     {
         TOKEN_EOF,
-        STRING_EOF,
+        Constants::STRING_EOF,
     },
 
     //  delimiters
     {
         TOKEN_DOT,
-        STRING_DOT,
+        Constants::STRING_DOT,
     },
     {
         TOKEN_COMMA,
-        STRING_COMMA,
+        Constants::STRING_COMMA,
     },
     {
         TOKEN_EQ,
-        STRING_EQ,
+        Constants::STRING_EQ,
     },
     {
         TOKEN_ASSIGN,
-        STRING_ASSIGN,
+        Constants::STRING_ASSIGN,
     },
     {
         TOKEN_LPAREN,
-        STRING_LPAREN,
+        Constants::STRING_LPAREN,
     },
     {
         TOKEN_RPAREN,
-        STRING_RPAREN,
+        Constants::STRING_RPAREN,
     },
     {
         TOKEN_LSQUARE,
-        STRING_LSQUARE,
+        Constants::STRING_LSQUARE,
     },
     {
         TOKEN_RSQUARE,
-        STRING_RSQUARE,
+        Constants::STRING_RSQUARE,
     },
     {
         TOKEN_LCURLY,
-        STRING_LCURLY,
+        Constants::STRING_LCURLY,
     },
     {
         TOKEN_RCURLY,
-        STRING_RCURLY,
+        Constants::STRING_RCURLY,
     },
     {
         TOKEN_COLON,
-        STRING_COLON,
+        Constants::STRING_COLON,
     },
     {
         TOKEN_DCOLON,
-        STRING_DCOLON,
+        Constants::STRING_DCOLON,
     },
     {
         TOKEN_SEMICOLON,
-        STRING_SEMICOLON,
+        Constants::STRING_SEMICOLON,
     },
     {
         TOKEN_DSEMICOLON,
-        STRING_DSEMICOLON,
+        Constants::STRING_DSEMICOLON,
     },
     {
         TOKEN_HASH,
-        STRING_HASH,
+        Constants::STRING_HASH,
     },
     {
         TOKEN_BAR,
-        STRING_BAR,
+        Constants::STRING_BAR,
     },
     {
         TOKEN_QUESTION,
-        STRING_QUESTION,
+        Constants::STRING_QUESTION,
     },
 
     //  operators, and lowercase and uppercase identifiers
     {
         TOKEN_OPERATOR,
-        STRING_OPERATOR,
+        Constants::STRING_OPERATOR,
     },
     {
         TOKEN_LOWERCASE,
-        STRING_LOWERCASE,
+        Constants::STRING_LOWERCASE,
     },
     {
         TOKEN_UPPERCASE,
-        STRING_UPPERCASE,
+        Constants::STRING_UPPERCASE,
     },
 
     //  literals
     {
         TOKEN_INTEGER,
-        STRING_INTEGER,
+        Constants::STRING_INTEGER,
     },
     {
         TOKEN_HEXINTEGER,
-        STRING_HEXINTEGER,
+        Constants::STRING_HEXINTEGER,
     },
     {
         TOKEN_FLOAT,
-        STRING_FLOAT,
+        Constants::STRING_FLOAT,
     },
     {
         TOKEN_CHAR,
-        STRING_CHAR,
+        Constants::STRING_CHAR,
     },
     {
         TOKEN_TEXT,
-        STRING_TEXT,
+        Constants::STRING_TEXT,
     },
 
     //  special symbols
     {
         TOKEN_LAMBDA,
-        STRING_LAMBDA,
+        Constants::STRING_LAMBDA,
     },
     {
         TOKEN_CLASS,
-        STRING_CLASS,
+        Constants::STRING_CLASS,
     },
     {
         TOKEN_EXTENDS,
-        STRING_EXTENDS,
+        Constants::STRING_EXTENDS,
     },
     {
         TOKEN_WITH,
-        STRING_WITH,
+        Constants::STRING_WITH,
     },
 
     //  compound expressions
     {
         TOKEN_IF,
-        STRING_IF,
+        Constants::STRING_IF,
     },
     {
         TOKEN_THEN,
-        STRING_THEN,
+        Constants::STRING_THEN,
     },
     {
         TOKEN_ELSE,
-        STRING_ELSE,
+        Constants::STRING_ELSE,
     },
 
     {
         TOKEN_LET,
-        STRING_LET,
+        Constants::STRING_LET,
     },
     {
         TOKEN_IN,
-        STRING_IN,
+        Constants::STRING_IN,
     },
 
     {
         TOKEN_TRY,
-        STRING_TRY,
+        Constants::STRING_TRY,
     },
     {
         TOKEN_CATCH,
-        STRING_CATCH,
+        Constants::STRING_CATCH,
     },
     {
         TOKEN_THROW,
-        STRING_THROW,
+        Constants::STRING_THROW,
     },
     {
         TOKEN_ARROW,
-        STRING_ARROW,
+        Constants::STRING_ARROW,
     },
 
     {
         TOKEN_VAL,
-        STRING_VAL,
+        Constants::STRING_VAL,
     },
 
     // directives
     {
         TOKEN_USING,
-        STRING_USING,
+        Constants::STRING_USING,
     },
     {
         TOKEN_IMPORT,
-        STRING_IMPORT,
+        Constants::STRING_IMPORT,
     },
 
     //  declarations
     {
         TOKEN_DATA,
-        STRING_DATA,
+        Constants::STRING_DATA,
     },
     {
         TOKEN_DEF,
-        STRING_DEF,
+        Constants::STRING_DEF,
     },
     {
         TOKEN_NAMESPACE,
-        STRING_NAMESPACE,
+        Constants::STRING_NAMESPACE,
     },
 };
 
@@ -576,95 +578,95 @@ struct reserved_t {
 static reserved_t reserved_table[]{
     {
         TOKEN_BAR,
-        STRING_BAR,
+        Constants::STRING_BAR,
     },
     {
         TOKEN_EQ,
-        STRING_EQ,
+        Constants::STRING_EQ,
     },
     {
         TOKEN_ASSIGN,
-        STRING_ASSIGN,
+        Constants::STRING_ASSIGN,
     },
     {
         TOKEN_QUESTION,
-        STRING_QUESTION,
+        Constants::STRING_QUESTION,
     },
     {
         TOKEN_LAMBDA,
-        STRING_LAMBDA,
+        Constants::STRING_LAMBDA,
     },
     {
         TOKEN_CLASS,
-        STRING_CLASS,
+        Constants::STRING_CLASS,
     },
     {
         TOKEN_EXTENDS,
-        STRING_EXTENDS,
+        Constants::STRING_EXTENDS,
     },
     {
         TOKEN_WITH,
-        STRING_WITH,
+        Constants::STRING_WITH,
     },
     {
         TOKEN_IF,
-        STRING_IF,
+        Constants::STRING_IF,
     },
     {
         TOKEN_THEN,
-        STRING_THEN,
+        Constants::STRING_THEN,
     },
     {
         TOKEN_ELSE,
-        STRING_ELSE,
+        Constants::STRING_ELSE,
     },
     {
         TOKEN_LET,
-        STRING_LET,
+        Constants::STRING_LET,
     },
     {
         TOKEN_IN,
-        STRING_IN,
+        Constants::STRING_IN,
     },
     {
         TOKEN_TRY,
-        STRING_TRY,
+        Constants::STRING_TRY,
     },
     {
         TOKEN_CATCH,
-        STRING_CATCH,
+        Constants::STRING_CATCH,
     },
     {
         TOKEN_THROW,
-        STRING_THROW,
+        Constants::STRING_THROW,
     },
     {
         TOKEN_ARROW,
-        STRING_ARROW,
+        Constants::STRING_ARROW,
     },
     {
         TOKEN_IMPORT,
-        STRING_IMPORT,
+        Constants::STRING_IMPORT,
     },
     {
         TOKEN_USING,
-        STRING_USING,
+        Constants::STRING_USING,
     },
     {
         TOKEN_DATA,
-        STRING_DATA,
+        Constants::STRING_DATA,
     },
     {
         TOKEN_DEF,
-        STRING_DEF,
+        Constants::STRING_DEF,
     },
     {
         TOKEN_NAMESPACE,
-        STRING_NAMESPACE,
+        Constants::STRING_NAMESPACE,
     },
     {
         TOKEN_VAL,
-        STRING_VAL,
+        Constants::STRING_VAL,
     },
 };
 

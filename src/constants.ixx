@@ -1,5 +1,6 @@
 export module constants;
 
+// work around unimplemented feature
 export class Constants {
 public:
      static constexpr auto CHAR_BEL = '\a';
