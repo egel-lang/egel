@@ -418,8 +418,8 @@ public:
             auto ff = machine()->get_array(arg1);
             auto sz = ff.size();
             // check head is an object
-            if (sz == 0) THROW_INVALID;
-            if (ff[0]->symbol() != object) THROW_INVALID;
+            if (sz == 0) machine()->bad(this, "invalid");
+            if (ff[0]->symbol() != object) machine()->bad(this, "invalid");
             // search for field
             CompareVMObjectPtr compare;
             unsigned int n;
@@ -430,7 +430,7 @@ public:
             if ((n + 1) < sz) {
                 return ff[n + 1];
             } else {
-                THROW_INVALID;
+                machine()->bad(this, "invalid");
             }
         } else {
 	    throw machine()->bad_args(this, arg0, arg1);
@@ -452,8 +452,8 @@ public:
             auto ff = machine()->get_array(arg2);
             auto sz = ff.size();
             // check head is an object
-            if (sz == 0) THROW_INVALID;
-            if (ff[0]->symbol() != object) THROW_INVALID;
+            if (sz == 0) machine()->bad(this, "invalid");
+            if (ff[0]->symbol() != object) machine()->bad(this, "invalid");
             // search field
             CompareVMObjectPtr compare;
             unsigned int n;
@@ -492,10 +492,10 @@ public:
             auto object = machine()->get_combinator("System", "object");
 
             // check head is an object
-            if (sz0 == 0) THROW_INVALID;
-            if (ff0[0] != object) THROW_INVALID;
-            if (sz1 == 0) THROW_INVALID;
-            if (ff1[0] != object) THROW_INVALID;
+            if (sz0 == 0) machine()->bad(this, "invalid");
+            if (ff0[0] != object) machine()->bad(this, "invalid");
+            if (sz1 == 0) machine()->bad(this, "invalid");
+            if (ff1[0] != object) machine()->bad(this, "invalid");
             // create field union
             unsigned int n;
             std::map<VMObjectPtr, VMObjectPtr> fields;
@@ -714,9 +714,9 @@ public:
 
         while ((machine()->is_array(a))) {
             auto aa = machine()->get_array(a);
-            if (aa.size() != 3) THROW_INVALID;
-            if (aa[0]->symbol() != _cons) THROW_INVALID;
-            if (aa[1]->tag() != VM_OBJECT_CHAR) THROW_INVALID;
+            if (aa.size() != 3) machine()->bad(this, "invalid");
+            if (aa[0]->symbol() != _cons) machine()->bad(this, "invalid");
+            if (aa[1]->tag() != VM_OBJECT_CHAR) machine()->bad(this, "invalid");
 
             auto c = machine()->get_char(aa[1]);
 
