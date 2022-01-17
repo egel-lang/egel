@@ -1,16 +1,14 @@
-module;
+#pragma once
 
 #include <memory>;
 #include <sstream>;
 #include <vector>;
 #include <set>;
 
-export module ast;
-
-import utils;
-import constants;
-import position;
-import error;
+#include "utils.hpp"
+#include "constants.hpp"
+#include "position.hpp"
+#include "error.hpp"
 
 // AST tags are enumerated as a manner to implement switches conveniently
 

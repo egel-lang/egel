@@ -1,12 +1,10 @@
-module;
+#pragma once
 
 #include <functional>
 
-export module eval;
-
-import utils;
-import runtime;
-import modules;
+#include "utils.hpp"
+#include "runtime.hpp"
+#include "modules.hpp"
 
 class EvalResult : public VMObjectCombinator {
 public:

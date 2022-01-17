@@ -1,4 +1,4 @@
-module;
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -14,8 +14,6 @@ module;
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
-
-export module runtime;
 
 // this is one stand-alone interface file external libraries can link against.
 // it must be self contained except for standard c++ and unicode (which should

@@ -1,9 +1,9 @@
-export module builtin_math;
+#pragma once
 
-import runtime;
+#include <stdlib.h>
+#include <math.h>
 
-import<stdlib.h>;
-import<math.h>;
+#include "runtime.hpp"
 
 /**
  * Egel's math built-ins.

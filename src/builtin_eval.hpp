@@ -1,20 +1,16 @@
-module;
+#pragma once
 
 #include <functional>
 
-export module buitin_eval;
-
-import runtime;
-
-import utils;
-import position;
-import reader;
-import lexical;
-import syntactical;
-import machine;
-import modules;
-import eval;
-
+#include "runtime.hpp"
+#include "utils.hpp"
+#include "position.hpp"
+#include "reader.hpp"
+#include "lexical.hpp"
+#include "syntactical.hpp"
+#include "machine.hpp"
+#include "modules.hpp"
+#include "eval.hpp"
 
 //## namespace System - the `eval` combinator
 
@@ -57,7 +53,7 @@ public:
     }
 };
 
-std::vector<VMObjectPtr> builtin_eval(VM *vm) {
+inline std::vector<VMObjectPtr> builtin_eval(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Evaluate::create(vm));

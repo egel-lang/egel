@@ -1,4 +1,4 @@
-module;
+#pragma once
 
 #include <exception>
 
@@ -6,11 +6,9 @@ module;
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
 
-export module error;
-
-import utils;
-import position;
-import constants;
+#include "utils.hpp"
+#include "position.hpp"
+#include "constants.hpp"
 
 export enum error_tag_t {
     ERROR_IO,

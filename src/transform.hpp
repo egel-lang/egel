@@ -1,11 +1,9 @@
-module;
+#pragma once
 
 #include <vector>
 
-export module transform;
-
-import error;
-import ast;
+#include "error.hpp"
+#include "ast.hpp"
 
 class Transform {
 public:

@@ -1,4 +1,4 @@
-module;
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -6,15 +6,14 @@ module;
 
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
+#include "unicode/ustream.h"
 
-export module lexical;
+#include "constants.hpp"
+#include "position.hpp"
+#include "error.hpp"
+#include "reader.hpp"
 
-import constants;
-import position;
-import error;
-import reader;
-
-enum token_t {
+export enum token_t {
     TOKEN_ERROR = 0,
     TOKEN_EOF,
 
@@ -83,7 +82,7 @@ enum token_t {
 
 icu::UnicodeString token_text(token_t t);
 
-class Token {
+export class Token {
 public:
     Token(token_t tag, const Position &position, const icu::UnicodeString &text)
         : _tag(tag), _position(position), _text(text) {
@@ -127,13 +126,13 @@ private:
 class TokenReader;
 using TokenReaderPtr = std::shared_ptr<TokenReader>;
 
-class TokenReader {
+export class TokenReader {
 public:
-    virtual Token look(uint_t n = 0) = 0;
+    virtual Token look(unsigned int n = 0) = 0;
     virtual void skip() = 0;
 
-    virtual uint_t get_cursor() = 0;
-    virtual void set_cursor(uint_t c) = 0;
+    virtual unsigned int get_cursor() = 0;
+    virtual void set_cursor(unsigned int c) = 0;
 
     virtual TokenReaderPtr clone_reader() const = 0;
 };
@@ -141,13 +140,13 @@ public:
 class TokenWriter;
 using TokenWriterPtr = std::shared_ptr<TokenWriter>;
 
-class TokenWriter {
+export class TokenWriter {
 public:
     virtual void push(const Token &token) = 0;
     virtual TokenReaderPtr clone_reader() const = 0;
 };
 
-class TokenVector : public TokenReader, public TokenWriter {
+export class TokenVector : public TokenReader, public TokenWriter {
 public:
     TokenVector() {
         _index = 0;
@@ -161,7 +160,7 @@ public:
     virtual ~TokenVector() {  // keep the compiler happy
     }
 
-    Token look(uint_t n = 0) {
+    Token look(unsigned int n = 0) {
         if (_index + n < _tokens.size()) {
             return _tokens[_index + n];
         } else {
@@ -173,11 +172,11 @@ public:
         _index++;
     }
 
-    uint_t get_cursor() {
+    unsigned int get_cursor() {
         return _index;
     }
 
-    void set_cursor(uint_t c) {
+    void set_cursor(unsigned int c) {
         _index = c;
     }
 
@@ -195,11 +194,14 @@ public:
 
 private:
     std::vector<Token> _tokens;
-    uint_t _index;
+    unsigned int _index;
 };
 
+export TokenReaderPtr tokenize_from_reader(CharReader &reader);
+
+// XXX: everything below this should be module private
+
 icu::UnicodeString token_text(token_t t);
-TokenReaderPtr tokenize_from_reader(CharReader &reader);
 
 // character classes
 
@@ -352,7 +354,7 @@ struct token_text_t {
     const char *text;
 };
 
-static token_text_t token_text_table[]{
+static constexpr token_text_t token_text_table[]{
     {
         TOKEN_ERROR,
         Constants::STRING_ERROR,
@@ -556,16 +558,14 @@ static token_text_t token_text_table[]{
     },
 };
 
-#define TOKEN_TEXT_TABLE_SIZE sizeof(token_text_table) / sizeof(token_text_t)
-
 icu::UnicodeString token_text(token_t t) {
-    for (uint_t i = 0; i < TOKEN_TEXT_TABLE_SIZE; i++) {
-        if (t == token_text_table[i].tag) {
-            return icu::UnicodeString(token_text_table[i].text);
-        }
+    for (auto &tt : token_text_table) {
+	if (t = tt.tag) {
+            return icu::UnicodeString(tt.text);
+	}
     }
-
-    PANIC("Uknkown token.");
+    //panic_fail("unknown token", __FILE__, __LINE__);
+    //PANIC("unknown token");
     // surpress warnings
     return icu::UnicodeString();
 }
@@ -670,14 +670,12 @@ static reserved_t reserved_table[]{
     },
 };
 
-#define RESERVED_TABLE_SIZE sizeof(reserved_table) / sizeof(reserved_t)
-
 Token adjust_reserved(Token &&t) {
-    for (uint_t i = 0; i < RESERVED_TABLE_SIZE; i++) {
-        if (t.text() == reserved_table[i].text) {
-            t.set_tag(reserved_table[i].tag);
+    for (auto &tt : reserved_table) {
+	if (t.text() == tt.text) {
+            t.set_tag(tt.tag);
             return t;
-        }
+	}
     }
     return t;
 }
@@ -719,7 +717,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             c = reader.look();
             if (is_colon(c)) {
                 reader.skip();
-                token_writer.push(Token(TOKEN_DCOLON, p, STRING_DCOLON));
+                token_writer.push(Token(TOKEN_DCOLON, p, Constants::STRING_DCOLON));
             } else {
                 token_writer.push(Token(TOKEN_COLON, p, c));
             }
@@ -729,7 +727,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             if (is_semicolon(c)) {
                 reader.skip();
                 token_writer.push(
-                    Token(TOKEN_DSEMICOLON, p, STRING_DSEMICOLON));
+                    Token(TOKEN_DSEMICOLON, p, Constants::STRING_DSEMICOLON));
             } else {
                 token_writer.push(Token(TOKEN_SEMICOLON, p, c));
             }
@@ -814,7 +812,8 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             //        is_digit(reader.look(1)))) { // no longer lex a leading
             //        minus
         } else if (is_digit(
-                       c)) {  // XXX: LL(2), to be solved by swapping skip/look
+                       c) || (is_minus(c) && is_digit(reader.look(1)))) {  
+		// XXX: LL(2), to be solved by swapping skip/look
             /* This code handles numbers which are integers and floats. Integer
              * and float regular expressions are simplistic and overlap on their
              * prefixes.

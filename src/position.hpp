@@ -1,4 +1,4 @@
-module;
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -6,9 +6,7 @@ module;
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
-export module position;
-
-export class Position {
+class Position {
 public:
     Position() {
         _resource = icu::UnicodeString("");

@@ -1,4 +1,4 @@
-module;
+#pragma once
 
 #include <map>
 #include <vector>
@@ -6,11 +6,9 @@ module;
 #include <functional>
 #include <iostream>
 
-export module serialize;
-
-import utils;
-import runtime;
-import modules;
+#include "utils.hpp"
+#include "runtime.hpp"
+#include "modules.hpp"
 
 // unfortunately it looks better to copy the entire object
 // hierarchy of the runtime in order not to taint runtimes

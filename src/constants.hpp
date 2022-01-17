@@ -1,7 +1,7 @@
-export module constants;
+#pragma once
 
-// work around unimplemented feature
-export class Constants {
+// at the time of writing gcc doesn't export constexpr from a module
+class Constants {
 public:
      static constexpr auto CHAR_BEL = '\a';
      static constexpr auto CHAR_BS = '\b';

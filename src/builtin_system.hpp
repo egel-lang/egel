@@ -1,17 +1,21 @@
-export module builtin_system;
+#pragma once
 
-import runtime;
-import utils;
-import bytecode;
+#include <stdlib.h>
+#include <iostream> 
+#include <map> 
+#include <math.h>
+#include <fmt/core.h>
+#if __has_include(<fmt/args.h>)
+        #include<fmt/args.h>
+#endif
+
+#include "runtime.hpp"
+#include "utils.hpp"
+#include "bytecode.hpp"
 
 extern int application_argc;  // XXX: get rid of this
 extern char **application_argv;
 
-import<stdlib.h> import<iostream> import<map> import<math.h>
-    import<fmt / core.h>
-#if __has_include(<fmt/args.h>)
-        import<fmt / args.h>
-#endif
 
     bool add_overflow(long int a, long int b, long int *c) {
     return __builtin_saddl_overflow(a, b, c);
@@ -918,7 +922,7 @@ public:
     }
 };
 
-std::vector<VMObjectPtr> builtin_system(VM *vm) {
+inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
     // throw combinator
@@ -946,6 +950,7 @@ std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(MinInt::create(vm));
     oo.push_back(MaxInt::create(vm));
     oo.push_back(Add::create(vm));
+    oo.push_back(MonMin::create(vm)); // the dreaded operator
     oo.push_back(Min::create(vm));
     oo.push_back(Mul::create(vm));
     oo.push_back(Div::create(vm));

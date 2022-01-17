@@ -1,22 +1,22 @@
-export module operators;
+#pragma once
 
-import utils;
+#include "utils.hpp"
 
 constexpr auto OPERATOR_BOTTOM "="
 
-    export int
+    inline int
     operator_compare(const icu::UnicodeString &o0,
                      const icu::UnicodeString &o1);
 
-export bool operator_is_infix(const icu::UnicodeString &o);
-export bool operator_is_prefix(const icu::UnicodeString &o);
-export bool operator_is_postfix(const icu::UnicodeString &o);
+inline bool operator_is_infix(const icu::UnicodeString &o);
+inline bool operator_is_prefix(const icu::UnicodeString &o);
+inline bool operator_is_postfix(const icu::UnicodeString &o);
 
-export bool operator_is_left_associative(const icu::UnicodeString &o);
-export bool operator_is_right_associative(const icu::UnicodeString &o);
-export bool operator_is_not_associative(const icu::UnicodeString &o);
+inline bool operator_is_left_associative(const icu::UnicodeString &o);
+inline bool operator_is_right_associative(const icu::UnicodeString &o);
+inline bool operator_is_not_associative(const icu::UnicodeString &o);
 
-export icu::UnicodeString operator_to_ascii(const icu::UnicodeString &o);
+inline icu::UnicodeString operator_to_ascii(const icu::UnicodeString &o);
 
 constexpr auto LEFT_ASSOC = (1 << 0);
 constexpr auto RIGHT_ASSOC = (1 << 1);

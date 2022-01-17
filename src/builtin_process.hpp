@@ -1,12 +1,12 @@
-export module builtin_process;
+#pragma once
 
-import runtime;
+#include <stdlib.h>
+#include <mutex>
+#include <thread>
+#include <chrono>
+#include <queue>
 
-import<stdlib.h>;
-import<mutex>;
-import<thread>;
-import<chrono>;
-import<queue>;
+#include "runtime.hpp"
 
 /**
  * Egel's process implementation.
@@ -239,7 +239,7 @@ public:
     }
 };
 
-std::vector<VMObjectPtr> builtin_process(VM *vm) {
+inline std::vector<VMObjectPtr> builtin_process(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
     // oo.push_back(Process::create(vm)); // XXX: I always forget whether this

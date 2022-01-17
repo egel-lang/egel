@@ -1,26 +1,26 @@
-export module modules;
+#pragma once
 
-import<vector>;
+#include <vector>
 
-import constants;
-import error;
-import ast;
-import environment;
-import lexical;
-import syntactical;
-import semantical;
-import desugar;
-import lift;
-import runtime;
-import emit;
+#include "constants.hpp"
+#include "error.hpp"
+#include "ast.hpp"
+#include "environment.hpp"
+#include "lexical.hpp"
+#include "syntactical.hpp"
+#include "semantical.hpp"
+#include "desugar.hpp"
+#include "lift.hpp"
+#include "runtime.hpp"
+#include "emit.hpp"
 
-import builtin_system;
-import builtin_math;
-import builtin_string;
-import builtin_runtime;
-import builtin_thread;
-import builtin_process;
-import builtin_eval;
+#include "builtin_system.hpp"
+#include "builtin_math.hpp"
+#include "builtin_string.hpp"
+#include "builtin_runtime.hpp"
+#include "builtin_thread.hpp"
+#include "builtin_process.hpp"
+#include "builtin_eval.hpp"
 
 // extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward
 // declaration

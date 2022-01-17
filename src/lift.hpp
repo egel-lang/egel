@@ -1,10 +1,10 @@
-export module lift;
+#pragma once
 
-import position;
-import error;
-import ast;
-import transform;
-import environment;
+#include "position.hpp"
+#include "error.hpp"
+#include "ast.hpp"
+#include "transform.hpp"
+#include "environment.hpp"
 
 // combinator lifting
 export AstPtr lift(const AstPtr &a);

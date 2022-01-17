@@ -1,14 +1,12 @@
-export module egel;
-
-import utils;
-import position;
-import reader;
-import lexical;
-import syntactical;
-import runtime;
-import machine;
-import eval;
-import modules;
+#include "utils.hpp"
+#include "position.hpp"
+#include "reader.hpp"
+#include "lexical.hpp"
+#include "syntactical.hpp"
+#include "runtime.hpp"
+#include "machine.hpp"
+#include "eval.hpp"
+#include "modules.hpp"
 
 #define EXECUTABLE_NAME "egel"
 

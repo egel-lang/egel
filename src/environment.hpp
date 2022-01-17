@@ -1,9 +1,9 @@
-export module environment;
+#pragma once
 
-import<map>;
-import<memory>;
+#include <map>
+#include <memory>
 
-import error;
+#include "error.hpp"
 
 using Table = std::map<icu::UnicodeString, icu::UnicodeString>;
 

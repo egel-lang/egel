@@ -1,15 +1,15 @@
-export module semantical;
+#pragma once
 
-import position;
-import error;
-import environment;
-import ast;
-import transform;
-import environment;
-import semantical;
+#include "position.hpp"
+#include "error.hpp"
+#include "environment.hpp"
+#include "ast.hpp"
+#include "transform.hpp"
+#include "environment.hpp"
+#include "semantical.hpp"
 
-export void declare(NamespacePtr env, const AstPtr &a);
-export AstPtr identify(NamespacePtr env, const AstPtr &a);
+inline void declare(NamespacePtr env, const AstPtr &a);
+inline AstPtr identify(NamespacePtr env, const AstPtr &a);
 
 // XXX this is a concat we use pretty often and should be moved to a template?
 UnicodeStrings concat(const UnicodeStrings &qq0, const UnicodeStrings &qq1) {

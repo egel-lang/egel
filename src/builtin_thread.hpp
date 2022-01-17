@@ -1,8 +1,11 @@
-export module builtin_thread;
+#pragma once
 
-import runtime.hpp;
 
-import<stdlib.h> import<math.h> import<thread>
+#include <stdlib.h>
+#include <math.h>
+#include <thread>
+
+#include "runtime.hpp"
 
     /**
      * Egel's par construct. 'par f g' starts two computations in parallel and
@@ -123,7 +126,7 @@ public:
     }
 };
 
-std::vector<VMObjectPtr> builtin_thread(VM *vm) {
+inline std::vector<VMObjectPtr> builtin_thread(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(VMObjectData::create(vm, "System", "thread"));

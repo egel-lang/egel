@@ -1,11 +1,11 @@
-export module syntactical;
+#pragma once
 
-import error;
-import lexical;
-import syntactical;
-import ast;
-import transform;
-import operators;
+#include "error.hpp"
+#include "lexical.hpp"
+#include "syntactical.hpp"
+#include "ast.hpp"
+#include "transform.hpp"
+#include "operators.hpp"
 
 class Parser {
 public:

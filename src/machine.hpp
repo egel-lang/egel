@@ -1,4 +1,4 @@
-module;
+#pragma once
 
 #include <memory>
 #include <sstream>
@@ -9,12 +9,10 @@ module;
 #include <tuple>
 #include <mutex>
 
-export module machine;
-
-import runtime;
-import modules;
-import eval;
-import assembler;
+#include "runtime.hpp"
+#include "modules.hpp"
+#include "eval.hpp"
+#include "assembler.hpp"
 
 class SymbolTable {
 public:

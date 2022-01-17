@@ -1,11 +1,11 @@
-export module builtin_runtime;
+#pragma once
 
-import runtime;
+#include <stdlib.h>
 
-import utils;
-import bytecode;
-import serialize;
-import<stdlib.h>;
+#include "runtime.hpp"
+#include "utils.hpp"
+#include "bytecode.hpp"
+#include "serialize.hpp"
 
 /**
  * Egel's runtime querying and modification implementation.

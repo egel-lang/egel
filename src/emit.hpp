@@ -1,15 +1,15 @@
-export module emit;
+#pragma once
 
-export void emit_data(VM *vm, const AstPtr &a);
-export void emit_code(VM *vm, const AstPtr &a);
+inline void emit_data(VM *vm, const AstPtr &a);
+inline void emit_code(VM *vm, const AstPtr &a);
 
-import<vector>;
-import<memory>;
+#include <vector>
+#include <memory>
 
-import ast;
-import transform;
-import environment;
-import bytecode;
+#include "ast.hpp"
+#include "transform.hpp"
+#include "environment.hpp"
+#include "bytecode.hpp"
 
 using RegisterMap = std::map<icu::UnicodeString, reg_t>;
 using CoderPtr = std::unique_ptr<Coder>;

@@ -1,6 +1,6 @@
-export module builtin_string;
+#pragma once
 
-import runtime;
+#include "runtime.hpp"
 
 /**
  * Egel's string combinators.

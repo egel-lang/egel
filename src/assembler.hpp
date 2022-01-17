@@ -1,12 +1,10 @@
-module;
+#pragma once
 
 #include <vector>
 
-export module assembler;
-
-import utils;
-import runtime;
-import bytecode;
+#include "utils.hpp"
+#include "runtime"
+#include "bytecode"
 
 const int BYTECODEVERSION = 0x00;
 const int SEPARATOR = ' ';

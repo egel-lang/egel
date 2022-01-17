@@ -1,13 +1,11 @@
-export module desugar;
+#pragma once
 
-export AstPtr desugar(const AstPtr &a);
-
-import position;
-import error;
-import ast;
-import transform;
-import environment;
-import desugar;
+#include "position.hpp"
+#include "error.hpp"
+#include "ast.hpp"
+#include "transform.hpp"
+#include "environment.hpp"
+#include "desugar.hpp"
 
 // XXX: merge these small passes when stable.
 

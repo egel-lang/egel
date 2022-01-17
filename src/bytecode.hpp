@@ -1,15 +1,13 @@
-module;
+#pragma once
 
-#define <iostream>
-#define <sstream>
-#define <iomanip>
-#define <map>
-#define <vector>
-#define <tuple>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <map>
+#include <vector>
+#include <tuple>
 
-export module bytecode;
-
-import runtime;
+#include "runtime.hpp"
 
 class VMObjectBytecode;
 
