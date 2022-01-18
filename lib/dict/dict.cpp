@@ -93,7 +93,7 @@ public:
             auto d = Dictionary::cast(arg0);
             return m->create_bool(d->has(arg1));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -110,7 +110,7 @@ public:
             auto d = Dictionary::cast(arg0);
             return d->get(arg1);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -128,7 +128,7 @@ public:
             d->set(arg1, arg2);
             return arg0;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -146,7 +146,7 @@ public:
             d->erase(arg1);
             return d;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -163,7 +163,7 @@ public:
             auto oo = d->keys();
             return m->to_list(oo);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };

@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <unicode/regex.h>
+#include "unicode/regex.h"
 
 #include "../../src/runtime.hpp"
 

@@ -63,7 +63,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -87,7 +87,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -108,7 +108,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -129,7 +129,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -150,7 +150,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -172,7 +172,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -194,7 +194,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -215,7 +215,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -236,7 +236,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -257,7 +257,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -278,7 +278,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -299,7 +299,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -320,7 +320,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -341,7 +341,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -362,7 +362,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -383,7 +383,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -404,7 +404,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -425,7 +425,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -446,7 +446,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -467,7 +467,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -488,7 +488,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -509,7 +509,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -531,7 +531,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -555,7 +555,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -579,7 +579,7 @@ override { if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) { try {
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -603,7 +603,7 @@ override { if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) { try {
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -628,7 +628,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -652,7 +652,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -676,7 +676,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -699,7 +699,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -722,7 +722,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -746,7 +746,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -770,7 +770,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -795,7 +795,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -833,7 +833,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -855,7 +855,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -880,7 +880,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -902,7 +902,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -925,7 +925,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -950,7 +950,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -977,7 +977,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -1001,7 +1001,7 @@ override { if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -1025,7 +1025,7 @@ override { if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -1048,7 +1048,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1070,7 +1070,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1093,7 +1093,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1117,7 +1117,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -1142,7 +1142,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -1164,7 +1164,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1186,7 +1186,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1208,7 +1208,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1251,7 +1251,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1275,7 +1275,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1297,7 +1297,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1320,7 +1320,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this);
         }
     }
 };
@@ -1342,7 +1342,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1364,7 +1364,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1387,7 +1387,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1409,7 +1409,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1431,7 +1431,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1456,7 +1456,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };

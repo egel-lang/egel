@@ -10,24 +10,6 @@ endif()
 
 message("generator: ${CMAKE_GENERATOR}")
 
-######################################################################
-# this code can go once cmake c++20 module support is official
-
-# set experimental cmake scan support
-set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP 1)
-string(CONCAT CMAKE_EXPERIMENTAL_CXX_SCANDEP_SOURCE
-  "<CMAKE_CXX_COMPILER> <DEFINES> <INCLUDES> <FLAGS> <SOURCE>"
-  " -MT <DYNDEP_FILE> -MD -MF <DEP_FILE>"
-  " ${flags_to_scan_deps} -fdep-file=<DYNDEP_FILE> -fdep-output=<OBJECT>"
-  )
-
-# unsure the following is ncecessay - tell cmake the module map format
-#set(CMAKE_EXPERIMENTAL_CXX_MODULE_MAP_FORMAT "gcc")
-#set(CMAKE_EXPERIMENTAL_CXX_MODULE_MAP_FLAG
-  #"${compiler_flags_for_module_map} -fmodule-mapper=<MODULE_MAP_FILE>")
-
-######################################################################
-
 # set the cxx compiler standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -145,7 +127,6 @@ target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
-target_compile_options(egel PRIVATE -fmodules-ts)
 target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
 # target_link_libraries(egel stdc++fs) # for old gcc
 

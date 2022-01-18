@@ -29,7 +29,7 @@ using namespace icu;  // use stable namespace
 #endif
 
 constexpr unsigned int EGEL_FLOAT_PRECISION =
-    16  // XXX: dbl::maxdigit doesn't seem to be defined on my system?
+    16;  // XXX: dbl::maxdigit doesn't seem to be defined on my system?
 
     // libicu doesn't provide escaping..
 
@@ -599,13 +599,13 @@ public:
 
     virtual int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) = 0;
 
-    virtual VMObjectPtr bad(const VMObjectPtr &o,
+    virtual VMObjectPtr bad(const VMObject *o,
                             const icu::UnicodeString &e) = 0;
-    virtual VMObjectPtr bad_args(const VMObjectPtr &o,
+    virtual VMObjectPtr bad_args(const VMObject *o,
                                  const VMObjectPtr &a0) = 0;
-    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0,
+    virtual VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0,
                                  const VMObjectPtr &a1) = 0;
-    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0,
+    virtual VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0,
                                  const VMObjectPtr &a1,
                                  const VMObjectPtr &a2) = 0;
 };
