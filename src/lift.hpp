@@ -1,10 +1,10 @@
 #pragma once
 
-#include "position.hpp"
-#include "error.hpp"
 #include "ast.hpp"
-#include "transform.hpp"
 #include "environment.hpp"
+#include "error.hpp"
+#include "position.hpp"
+#include "transform.hpp"
 
 // combinator lifting
 export AstPtr lift(const AstPtr &a);

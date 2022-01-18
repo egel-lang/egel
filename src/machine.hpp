@@ -1,18 +1,18 @@
 #pragma once
 
-#include <memory>
-#include <sstream>
-#include <vector>
-#include <map>
-#include <set>
 #include <iomanip>
-#include <tuple>
+#include <map>
+#include <memory>
 #include <mutex>
+#include <set>
+#include <sstream>
+#include <tuple>
+#include <vector>
 
-#include "runtime.hpp"
-#include "modules.hpp"
-#include "eval.hpp"
 #include "assembler.hpp"
+#include "eval.hpp"
+#include "modules.hpp"
+#include "runtime.hpp"
 
 class SymbolTable {
 public:
@@ -707,35 +707,39 @@ public:
         }
     */
 
-    VMObjectPtr bad(const VMObjectPtr &o, const icu::UnicodeString &s) override {
+    VMObjectPtr bad(const VMObjectPtr &o,
+                    const icu::UnicodeString &s) override {
         VMObjectPtrs tt;
-	tt.push_back(o);
-	tt.push_back(create_text(s));
-	return create_array(tt);
+        tt.push_back(o);
+        tt.push_back(create_text(s));
+        return create_array(tt);
     }
 
     VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0) override {
         VMObjectPtrs tt;
-	tt.push_back(o);
-	tt.push_back(a0);
-	return create_array(tt);
+        tt.push_back(o);
+        tt.push_back(a0);
+        return create_array(tt);
     }
 
-    VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1) override {
+    VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0,
+                         const VMObjectPtr &a1) override {
         VMObjectPtrs tt;
-	tt.push_back(o);
-	tt.push_back(a0);
-	tt.push_back(a1);
-	return create_array(tt);
+        tt.push_back(o);
+        tt.push_back(a0);
+        tt.push_back(a1);
+        return create_array(tt);
     }
 
-    VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1, const VMObjectPtr &a2) override {
+    VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0,
+                         const VMObjectPtr &a1,
+                         const VMObjectPtr &a2) override {
         VMObjectPtrs tt;
-	tt.push_back(o);
-	tt.push_back(a0);
-	tt.push_back(a1);
-	tt.push_back(a2);
-	return create_array(tt);
+        tt.push_back(o);
+        tt.push_back(a0);
+        tt.push_back(a1);
+        tt.push_back(a2);
+        return create_array(tt);
     }
 
     VMObjectPtr to_tuple(const VMObjectPtrs &oo) override {

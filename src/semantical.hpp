@@ -1,12 +1,11 @@
 #pragma once
 
-#include "position.hpp"
-#include "error.hpp"
-#include "environment.hpp"
 #include "ast.hpp"
-#include "transform.hpp"
 #include "environment.hpp"
+#include "error.hpp"
+#include "position.hpp"
 #include "semantical.hpp"
+#include "transform.hpp"
 
 inline void declare(NamespacePtr env, const AstPtr &a);
 inline AstPtr identify(NamespacePtr env, const AstPtr &a);

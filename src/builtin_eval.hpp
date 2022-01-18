@@ -2,15 +2,15 @@
 
 #include <functional>
 
-#include "runtime.hpp"
-#include "utils.hpp"
-#include "position.hpp"
-#include "reader.hpp"
+#include "eval.hpp"
 #include "lexical.hpp"
-#include "syntactical.hpp"
 #include "machine.hpp"
 #include "modules.hpp"
-#include "eval.hpp"
+#include "position.hpp"
+#include "reader.hpp"
+#include "runtime.hpp"
+#include "syntactical.hpp"
+#include "utils.hpp"
 
 //## namespace System - the `eval` combinator
 
@@ -44,7 +44,7 @@ public:
                 return nullptr;
             }
         } else {
-	    throw badargs(this, arg0);
+            throw badargs(this, arg0);
         }
     }
 

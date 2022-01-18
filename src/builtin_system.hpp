@@ -1,23 +1,23 @@
 #pragma once
 
-#include <stdlib.h>
-#include <iostream> 
-#include <map> 
-#include <math.h>
 #include <fmt/core.h>
+#include <math.h>
+#include <stdlib.h>
+
+#include <iostream>
+#include <map>
 #if __has_include(<fmt/args.h>)
-        #include<fmt/args.h>
+#include <fmt/args.h>
 #endif
 
+#include "bytecode.hpp"
 #include "runtime.hpp"
 #include "utils.hpp"
-#include "bytecode.hpp"
 
 extern int application_argc;  // XXX: get rid of this
 extern char **application_argv;
 
-
-    bool add_overflow(long int a, long int b, long int *c) {
+bool add_overflow(long int a, long int b, long int *c) {
     return __builtin_saddl_overflow(a, b, c);
 }
 
@@ -102,7 +102,7 @@ public:
             auto i = machine()->get_integer(arg0);
             vm_int_t res;
             if (mul_overflow((vm_int_t)-1, i, &res)) {
-		throw machine()->bad(this, "overflow");
+                throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -110,7 +110,7 @@ public:
             auto f = machine()->get_float(arg0);
             return VMObjectFloat::create(-f);
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -127,7 +127,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (add_overflow(i0, i1, &res)) {
-		throw machine()->bad(this, "overflow");
+                throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -140,7 +140,7 @@ public:
             auto f1 = machine()->get_text(arg1);
             return VMObjectText::create(f0 + f1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -157,7 +157,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (sub_overflow(i0, i1, &res)) {
-		throw machine()->bad(this, "overflow");
+                throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -166,7 +166,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return VMObjectFloat::create(f0 - f1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -183,7 +183,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             vm_int_t res;
             if (mul_overflow(i0, i1, &res)) {
-		throw machine()->bad(this, "overflow");
+                throw machine()->bad(this, "overflow");
             } else {
                 return VMObjectInteger::create(res);
             }
@@ -192,7 +192,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return VMObjectFloat::create(f0 * f1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -208,18 +208,18 @@ public:
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
             if (i1 == 0) {
-		throw machine()->bad(this, "divide by zero");
+                throw machine()->bad(this, "divide by zero");
             }
             return VMObjectInteger::create(i0 / i1);
         } else if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             if (f1 == 0.0) {
-		throw machine()->bad(this, "divide by zero");
+                throw machine()->bad(this, "divide by zero");
             }
             return VMObjectFloat::create(f0 / f1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -235,11 +235,11 @@ public:
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
             if (i1 == 0) {
-		throw machine()->bad(this, "divide by zero");
+                throw machine()->bad(this, "divide by zero");
             }
             return VMObjectInteger::create(i0 % i1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -256,7 +256,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 & i1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -273,7 +273,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 | i1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -290,7 +290,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 ^ i1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -305,7 +305,7 @@ public:
             auto i0 = machine()->get_integer(arg0);
             return VMObjectInteger::create(~i0);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -322,7 +322,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 << i1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -339,7 +339,7 @@ public:
             auto i1 = machine()->get_integer(arg1);
             return VMObjectInteger::create(i0 >> i1);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -437,7 +437,7 @@ public:
                 machine()->bad(this, "invalid");
             }
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -472,10 +472,10 @@ public:
                 arr->set(n + 1, arg1);
                 return arg0;
             } else {
-	    	throw machine()->bad(this, "invalid");
+                throw machine()->bad(this, "invalid");
             }
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -519,7 +519,7 @@ public:
 
             return machine()->create_array(oo);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -544,7 +544,7 @@ public:
             auto i = convert_to_int(s);
             return machine()->create_integer(i);
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -565,7 +565,7 @@ public:
             auto i = convert_to_float(s);
             return machine()->create_float(i);
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -591,7 +591,7 @@ public:
         } else if (machine()->is_text(arg0)) {
             return arg0;
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -655,7 +655,7 @@ public:
             auto r = std::static_pointer_cast<Reference>(arg0);
             return r->get_ref();
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -674,7 +674,7 @@ public:
             r->set_ref(arg1);
             return arg0;
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -696,7 +696,7 @@ public:
             }
             return machine()->to_list(ss);
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -749,7 +749,7 @@ public:
                 return none;
             }
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -773,7 +773,7 @@ public:
                 return none;
             }
         } else {
-	    throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -795,7 +795,7 @@ public:
             thunk.push_back(machine()->create_none());
             return machine()->create_array(thunk);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -817,7 +817,7 @@ public:
             thunk.push_back(machine()->create_none());
             return machine()->create_array(thunk);
         } else {
-	    throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -909,14 +909,14 @@ public:
                 try {
                     r = fmt::vformat(fmt, store);
                 } catch (std::runtime_error &e) {
-		    throw machine()->bad(this, "invalid");
+                    throw machine()->bad(this, "invalid");
                 }
                 auto u = icu::UnicodeString(r.c_str());
                 delete fmt;
 
                 return VMObjectText::create(u);
             } else {
-		throw machine()->bad(this, "format");
+                throw machine()->bad(this, "format");
             }
         }
     }
@@ -950,7 +950,7 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(MinInt::create(vm));
     oo.push_back(MaxInt::create(vm));
     oo.push_back(Add::create(vm));
-    oo.push_back(MonMin::create(vm)); // the dreaded operator
+    oo.push_back(MonMin::create(vm));  // the dreaded operator
     oo.push_back(Min::create(vm));
     oo.push_back(Mul::create(vm));
     oo.push_back(Div::create(vm));

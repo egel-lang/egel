@@ -2,13 +2,12 @@
 
 #include <exception>
 
+#include "constants.hpp"
+#include "position.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
-
 #include "utils.hpp"
-#include "position.hpp"
-#include "constants.hpp"
 
 export enum error_tag_t {
     ERROR_IO,

@@ -2,11 +2,10 @@
 
 #include <vector>
 
+#include "position.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
-
 #include "utils.hpp"
-#include "position.hpp"
 
 class CharReader {
 public:

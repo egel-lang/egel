@@ -1,11 +1,11 @@
 #pragma once
 
-#include "position.hpp"
-#include "error.hpp"
 #include "ast.hpp"
-#include "transform.hpp"
-#include "environment.hpp"
 #include "desugar.hpp"
+#include "environment.hpp"
+#include "error.hpp"
+#include "position.hpp"
+#include "transform.hpp"
 
 // XXX: merge these small passes when stable.
 

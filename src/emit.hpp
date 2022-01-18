@@ -3,13 +3,13 @@
 inline void emit_data(VM *vm, const AstPtr &a);
 inline void emit_code(VM *vm, const AstPtr &a);
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "ast.hpp"
-#include "transform.hpp"
-#include "environment.hpp"
 #include "bytecode.hpp"
+#include "environment.hpp"
+#include "transform.hpp"
 
 using RegisterMap = std::map<icu::UnicodeString, reg_t>;
 using CoderPtr = std::unique_ptr<Coder>;

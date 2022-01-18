@@ -1,14 +1,14 @@
 #pragma once
 
 #include <memory>;
+#include <set>;
 #include <sstream>;
 #include <vector>;
-#include <set>;
 
-#include "utils.hpp"
 #include "constants.hpp"
-#include "position.hpp"
 #include "error.hpp"
+#include "position.hpp"
+#include "utils.hpp"
 
 // AST tags are enumerated as a manner to implement switches conveniently
 

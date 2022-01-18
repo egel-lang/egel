@@ -1,23 +1,23 @@
 #pragma once
 
-
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
+
 #include <thread>
 
 #include "runtime.hpp"
 
-    /**
-     * Egel's par construct. 'par f g' starts two computations in parallel and
-     *returns a tuple.
-     *
-     * It's a simplistic construct which doesn't handle exception handling
-     *well. I.e., when a thread throws an exception it places it in the
-     *resulting tuple; the other thread is allowed to continue to run.
-     **/
+/**
+ * Egel's par construct. 'par f g' starts two computations in parallel and
+ *returns a tuple.
+ *
+ * It's a simplistic construct which doesn't handle exception handling
+ *well. I.e., when a thread throws an exception it places it in the
+ *resulting tuple; the other thread is allowed to continue to run.
+ **/
 
-    void runthread(VM *vm, const VMObjectPtr &e, const VMObjectPtr &ret,
-                   const VMObjectPtr &exc) {
+void runthread(VM *vm, const VMObjectPtr &e, const VMObjectPtr &ret,
+               const VMObjectPtr &exc) {
     vm->reduce(e, ret, exc);
 }
 

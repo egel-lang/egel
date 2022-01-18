@@ -2,25 +2,24 @@
 
 #include <vector>
 
-#include "constants.hpp"
-#include "error.hpp"
 #include "ast.hpp"
-#include "environment.hpp"
-#include "lexical.hpp"
-#include "syntactical.hpp"
-#include "semantical.hpp"
+#include "builtin_eval.hpp"
+#include "builtin_math.hpp"
+#include "builtin_process.hpp"
+#include "builtin_runtime.hpp"
+#include "builtin_string.hpp"
+#include "builtin_system.hpp"
+#include "builtin_thread.hpp"
+#include "constants.hpp"
 #include "desugar.hpp"
+#include "emit.hpp"
+#include "environment.hpp"
+#include "error.hpp"
+#include "lexical.hpp"
 #include "lift.hpp"
 #include "runtime.hpp"
-#include "emit.hpp"
-
-#include "builtin_system.hpp"
-#include "builtin_math.hpp"
-#include "builtin_string.hpp"
-#include "builtin_runtime.hpp"
-#include "builtin_thread.hpp"
-#include "builtin_process.hpp"
-#include "builtin_eval.hpp"
+#include "semantical.hpp"
+#include "syntactical.hpp"
 
 // extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward
 // declaration

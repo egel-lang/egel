@@ -1,17 +1,16 @@
 #pragma once
 
-#include <vector>
 #include <iostream>
 #include <memory>
+#include <vector>
 
+#include "constants.hpp"
+#include "error.hpp"
+#include "position.hpp"
+#include "reader.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
-
-#include "constants.hpp"
-#include "position.hpp"
-#include "error.hpp"
-#include "reader.hpp"
 
 export enum token_t {
     TOKEN_ERROR = 0,
@@ -560,13 +559,13 @@ static constexpr token_text_t token_text_table[]{
 
 icu::UnicodeString token_text(token_t t) {
     for (auto &tt : token_text_table) {
-	if (t = tt.tag) {
+        if (t = tt.tag) {
             return icu::UnicodeString(tt.text);
-	}
+        }
     }
-    //panic_fail("unknown token", __FILE__, __LINE__);
-    //PANIC("unknown token");
-    // surpress warnings
+    // panic_fail("unknown token", __FILE__, __LINE__);
+    // PANIC("unknown token");
+    //  surpress warnings
     return icu::UnicodeString();
 }
 
@@ -672,10 +671,10 @@ static reserved_t reserved_table[]{
 
 Token adjust_reserved(Token &&t) {
     for (auto &tt : reserved_table) {
-	if (t.text() == tt.text) {
+        if (t.text() == tt.text) {
             t.set_tag(tt.tag);
             return t;
-	}
+        }
     }
     return t;
 }
@@ -717,7 +716,8 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             c = reader.look();
             if (is_colon(c)) {
                 reader.skip();
-                token_writer.push(Token(TOKEN_DCOLON, p, Constants::STRING_DCOLON));
+                token_writer.push(
+                    Token(TOKEN_DCOLON, p, Constants::STRING_DCOLON));
             } else {
                 token_writer.push(Token(TOKEN_COLON, p, c));
             }
@@ -811,9 +811,8 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             //        } else if (is_digit(c) || (is_minus(c) &&
             //        is_digit(reader.look(1)))) { // no longer lex a leading
             //        minus
-        } else if (is_digit(
-                       c) || (is_minus(c) && is_digit(reader.look(1)))) {  
-		// XXX: LL(2), to be solved by swapping skip/look
+        } else if (is_digit(c) || (is_minus(c) && is_digit(reader.look(1)))) {
+            // XXX: LL(2), to be solved by swapping skip/look
             /* This code handles numbers which are integers and floats. Integer
              * and float regular expressions are simplistic and overlap on their
              * prefixes.

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "ast.hpp"
 #include "error.hpp"
 #include "lexical.hpp"
-#include "syntactical.hpp"
-#include "ast.hpp"
-#include "transform.hpp"
 #include "operators.hpp"
+#include "syntactical.hpp"
+#include "transform.hpp"
 
 class Parser {
 public:

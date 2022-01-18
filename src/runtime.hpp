@@ -1,19 +1,18 @@
 #pragma once
 
+#include <functional>
 #include <iostream>
-#include <vector>
+#include <limits>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <vector>
-#include <set>
-#include <limits>
-#include <functional>
 
-#include "unicode/ustring.h"
-#include "unicode/ustdio.h"
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
+#include "unicode/ustdio.h"
 #include "unicode/ustream.h"
+#include "unicode/ustring.h"
 
 // this is one stand-alone interface file external libraries can link against.
 // it must be self contained except for standard c++ and unicode (which should
@@ -32,9 +31,10 @@ using namespace icu;  // use stable namespace
 constexpr unsigned int EGEL_FLOAT_PRECISION =
     16  // XXX: dbl::maxdigit doesn't seem to be defined on my system?
 
-// libicu doesn't provide escaping..
+    // libicu doesn't provide escaping..
 
-inline icu::UnicodeString uescape(const icu::UnicodeString &s) {
+    inline icu::UnicodeString
+    uescape(const icu::UnicodeString &s) {
     icu::UnicodeString s1;
     int i = 0;
     int len = s.countChar32();
@@ -599,10 +599,15 @@ public:
 
     virtual int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) = 0;
 
-    virtual VMObjectPtr bad(const VMObjectPtr &o, const icu::UnicodeString &e) = 0;
-    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0) = 0;
-    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1) = 0;
-    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0, const VMObjectPtr &a1, const VMObjectPtr& a2) = 0;
+    virtual VMObjectPtr bad(const VMObjectPtr &o,
+                            const icu::UnicodeString &e) = 0;
+    virtual VMObjectPtr bad_args(const VMObjectPtr &o,
+                                 const VMObjectPtr &a0) = 0;
+    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0,
+                                 const VMObjectPtr &a1) = 0;
+    virtual VMObjectPtr bad_args(const VMObjectPtr &o, const VMObjectPtr &a0,
+                                 const VMObjectPtr &a1,
+                                 const VMObjectPtr &a2) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

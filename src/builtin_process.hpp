@@ -1,10 +1,11 @@
 #pragma once
 
 #include <stdlib.h>
-#include <mutex>
-#include <thread>
+
 #include <chrono>
+#include <mutex>
 #include <queue>
+#include <thread>
 
 #include "runtime.hpp"
 
@@ -195,7 +196,7 @@ public:
             process->in_push(arg1);
             return machine()->create_none();
         } else {
-	    throw machine()->badargs(this, arg0, arg1);
+            throw machine()->badargs(this, arg0, arg1);
         }
     }
 };
@@ -216,7 +217,7 @@ public:
             }
             return msg;
         } else {
-	    throw machine()->badargs(this, arg0);
+            throw machine()->badargs(this, arg0);
         }
     }
 };
@@ -234,7 +235,7 @@ public:
             process->set_state(HALTED);
             return machine()->create_none();
         } else {
-	    throw machine()->badargs(this, arg0);
+            throw machine()->badargs(this, arg0);
         }
     }
 };
