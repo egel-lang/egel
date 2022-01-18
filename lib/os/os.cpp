@@ -486,7 +486,7 @@ public:
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -503,7 +503,7 @@ public:
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -522,7 +522,7 @@ public:
             chan->close();
             return machine()->create_none();
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -541,7 +541,7 @@ public:
             UnicodeString str = chan->read();
             return machine()->create_text(str);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -560,7 +560,7 @@ public:
             UnicodeString str = chan->read_line();
             return machine()->create_text(str);
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -579,7 +579,7 @@ public:
             UnicodeString str = chan->read_all();
             return machine()->create_text(str);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -601,10 +601,10 @@ public:
                 chan->write(s);
                 return machine()->create_none();
             } else {
-                THROW_INVALID;
+                throw machine()->bad_args(this, arg0, arg1);
             }
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -626,10 +626,10 @@ public:
                 chan->write_line(s);
                 return machine()->create_none();
             } else {
-                THROW_INVALID;
+                throw machine()->bad_args(this, arg0, arg1);
             }
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -648,7 +648,7 @@ public:
             chan->flush();
             return machine()->create_none();
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -666,7 +666,7 @@ public:
             auto chan = CHANNEL_VALUE(arg0);
             return machine()->create_bool(chan->eof());
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -692,7 +692,7 @@ public:
                 m, cn);  // lock will be released when object destroyed
             return c;
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -711,7 +711,7 @@ public:
             // play nice
             return machine()->create_none();
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -809,7 +809,7 @@ public:
             auto chan = so->accept();
             return chan;
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -830,7 +830,7 @@ public:
 
             return so;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -876,7 +876,7 @@ public:
             return c;
 
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };

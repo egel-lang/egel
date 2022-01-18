@@ -1320,7 +1320,7 @@ public:
                 throw error_to_object(e);
             }
         } else {
-            throw machine()->bad_args(this);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
