@@ -8,6 +8,9 @@
 #include <sstream>
 #include <tuple>
 #include <vector>
+#include <thread>
+#include <chrono>
+
 
 #include "assembler.hpp"
 #include "eval.hpp"
@@ -62,7 +65,7 @@ public:
     }
 
     void render(std::ostream &os) {
-        for (uint_t t = 0; t < _to.size(); t++) {
+        for (size_t t = 0; t < _to.size(); t++) {
             os << std::setw(8) << t << "=" << _to[t] << std::endl;
         }
     }
@@ -118,7 +121,7 @@ public:
     }
 
     void render(std::ostream &os) {
-        for (uint_t t = 0; t < _to.size(); t++) {
+        for (size_t t = 0; t < _to.size(); t++) {
             os << std::setw(8) << t << ":";
             _to[t]->debug(os);
             os << std::endl;
@@ -365,7 +368,7 @@ public:
 #endif
                 trampoline = f->reduce(trampoline);
             } else if (*run == SLEEPING) {
-                usleep(100);  // sleep for 100ms
+                std::this_thread::sleep_for (std::chrono::milliseconds(100));
             } else {          // *run == HALTED
             }
         }
@@ -926,5 +929,3 @@ private:
     ModuleManagerPtr _manager;
     EvalPtr _eval;
 };
-
-#endif

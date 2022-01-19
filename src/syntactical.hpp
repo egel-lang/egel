@@ -13,7 +13,7 @@ public:
         _tokenreader = r;
     }
 
-    Token look(uint_t n = 0) {
+    Token look(int n = 0) {
         return _tokenreader->look(n);
     }
 
@@ -26,7 +26,7 @@ public:
         return _tokenreader->look().position();
     }
 
-    token_t tag(uint_t n = 0) {
+    token_t tag(int n = 0) {
         return _tokenreader->look(n).tag();
     }
 
@@ -89,7 +89,7 @@ public:
     }
 
     bool is_combinator() {
-        uint_t i = 0;
+        int i = 0;
         while ((look(i).tag() == TOKEN_UPPERCASE) &&
                (look(i + 1).tag() == TOKEN_DCOLON)) {
             i += 2;
@@ -98,7 +98,7 @@ public:
     }
 
     bool is_operator() {
-        uint_t i = 0;
+        int i = 0;
         while ((look(i).tag() == TOKEN_UPPERCASE) &&
                (look(i + 1).tag() == TOKEN_DCOLON)) {
             i += 2;
@@ -112,7 +112,7 @@ public:
 
     icu::UnicodeString peek_operator() {
         // (uppercase '.')* operator
-        uint_t i = 0;
+        int i = 0;
         while ((look(i).tag() == TOKEN_UPPERCASE) &&
                (look(i + 1).tag() == TOKEN_DCOLON)) {
             i += 2;
@@ -126,7 +126,7 @@ public:
 
     bool is_enclosed_operator() {
         // '(' (uppercase '::')* operator ')'
-        uint_t i = 0;
+        int i = 0;
         if (tag(i) != TOKEN_LPAREN) return false;
         i++;
         while ((look(i).tag() == TOKEN_UPPERCASE) &&

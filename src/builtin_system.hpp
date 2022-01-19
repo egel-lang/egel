@@ -434,7 +434,7 @@ public:
             if ((n + 1) < sz) {
                 return ff[n + 1];
             } else {
-                machine()->bad(this, "invalid");
+                throw machine()->bad(this, "invalid");
             }
         } else {
             throw machine()->bad_args(this, arg0, arg1);

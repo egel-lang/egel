@@ -107,50 +107,47 @@ static option_t options[] = {
     },
 };
 
-#define OPTIONS_SIZE (sizeof(options) / sizeof(option_t))
-
 using StringPairs =
     std::vector<std::pair<icu::UnicodeString, icu::UnicodeString>>;
 
 StringPairs parse_options(int argc, char *argv[]) {
     StringPairs pp;
     for (int a = 1; a < argc; a++) {
-        uint_t sz = pp.size();
 
-        for (uint_t i = 0; i < OPTIONS_SIZE; i++) {
-            if ((strncmp(argv[a], options[i].shortname, 32) == 0) ||
-                (strncmp(argv[a], options[i].longname, 32) == 0)) {
-                switch (options[i].argument) {
+        for (auto &o : options) {
+            if ((strncmp(argv[a], o.shortname, 32) == 0) ||
+                (strncmp(argv[a], o.longname, 32) == 0)) {
+                switch (o.argument) {
                     case OPTION_NONE:
                         pp.push_back(std::make_pair(
-                            icu::UnicodeString(options[i].shortname),
+                            icu::UnicodeString(o.shortname),
                             icu::UnicodeString("")));
                         break;
                     case OPTION_FILE:
                         if (a == argc - 1) goto options_error;
                         pp.push_back(std::make_pair(
-                            icu::UnicodeString(options[i].shortname),
+                            icu::UnicodeString(o.shortname),
                             icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
                     case OPTION_DIR:
                         if (a == argc - 1) goto options_error;
                         pp.push_back(std::make_pair(
-                            icu::UnicodeString(options[i].shortname),
+                            icu::UnicodeString(o.shortname),
                             icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
                     case OPTION_NUMBER:
                         if (a == argc - 1) goto options_error;
                         pp.push_back(std::make_pair(
-                            icu::UnicodeString(options[i].shortname),
+                            icu::UnicodeString(o.shortname),
                             icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
                     case OPTION_TEXT:
                         if (a == argc - 1) goto options_error;
                         pp.push_back(std::make_pair(
-                            icu::UnicodeString(options[i].shortname),
+                            icu::UnicodeString(o.shortname),
                             icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
@@ -158,7 +155,7 @@ StringPairs parse_options(int argc, char *argv[]) {
             };
         }
 
-        if (sz == pp.size()) {
+        if (a == argc - 1) {
             pp.push_back(std::make_pair(icu::UnicodeString("--"),
                                         icu::UnicodeString(argv[a])));
         }
@@ -174,10 +171,10 @@ void display_usage() {
               << std::endl;
     std::cout << "Options:" << std::endl;
 
-    for (uint_t i = 0; i < OPTIONS_SIZE; i++) {
-        std::cout << "\t[" << options[i].shortname << "|" << options[i].longname
+    for (auto &o : options) {
+        std::cout << "\t[" << o.shortname << "|" << o.longname
                   << "] ";
-        switch (options[i].argument) {
+        switch (o.argument) {
             case OPTION_NONE:
                 std::cout << "      ";
                 break;
@@ -194,7 +191,7 @@ void display_usage() {
                 std::cout << "<text>";
                 break;
         };
-        std::cout << "\t" << options[i].description << std::endl;
+        std::cout << "\t" << o.description << std::endl;
     };
 }
 

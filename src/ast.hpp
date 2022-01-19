@@ -2074,10 +2074,6 @@ int Ast::compare(const AstPtr &a0, const AstPtr &a1) {
     }
 }
 
-static int equal_ast(const AstPtr &a0, const AstPtr &a1) {
-    return Ast::compare(a0, a1) == 0;
-}
-
 int Ast::compare_asts(const AstPtrs &aa0, const AstPtrs &aa1) {
     int sz0 = aa0.size();
     int sz1 = aa1.size();

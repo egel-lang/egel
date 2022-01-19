@@ -746,7 +746,7 @@ protected:
     }
 
     void transitive_closure() {
-        uint_t n = 0;
+        size_t n = 0;
         while (n < _loading.size()) {
             auto m = _loading[n];
             m->syntactical();
@@ -802,5 +802,3 @@ private:
     ModulePtrs _modules;
     ModulePtrs _loading;
 };
-
-#endif
