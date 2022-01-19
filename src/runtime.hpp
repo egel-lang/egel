@@ -670,8 +670,8 @@ public:
     VMObjectFloat(const VMObjectFloat &l) : VMObjectFloat(l.value()) {
     }
 
-    static VMObjectPtr create(const vm_float_t v) {
-        return std::make_share<VMObjectFloat>(v);
+    static VMObjectPtr create(const vm_float_t f) {
+        return std::make_shared<VMObjectFloat>(f);
     }
 
     symbol_t symbol() const override {

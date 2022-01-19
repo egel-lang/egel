@@ -1109,16 +1109,6 @@ public:
     }
 };
 
-bool occurs(const AstPtr &t0, const AstPtr &t1);
-
-AstPtr substitute(const AstPtr &term, const AstPtr &s0, const AstPtr &s1);
-
-AstPtrSet freevars(const AstPtr &a);
-
-#endif
-#include "ast.hpp"
-#include "transform.hpp"
-
 class Occurs : public Visit {
 public:
     bool occurs(const AstPtr &t0, const AstPtr &t1) {
@@ -1144,7 +1134,7 @@ private:
     bool _found;
 };
 
-bool occurs(const AstPtr &t0, const AstPtr &t1) {
+inline bool occurs(const AstPtr &t0, const AstPtr &t1) {
     Occurs occurs;
     return occurs.occurs(t0, t1);
 }
@@ -1194,7 +1184,7 @@ private:
     AstPtr _target;
 };
 
-AstPtr substitute(const AstPtr &term, const AstPtr &s0, const AstPtr &s1) {
+inline AstPtr substitute(const AstPtr &term, const AstPtr &s0, const AstPtr &s1) {
     Substitute subs;
     return subs.substitute(term, s0, s1);
 }
@@ -1273,7 +1263,7 @@ private:
     freevars_state_t _state;
 };
 
-AstPtrSet freevars(const AstPtr &t) {
+inline AstPtrSet freevars(const AstPtr &t) {
     FreeVars freevars;
     return freevars.freevars(t);
 }

@@ -7,8 +7,6 @@
 #include "transform.hpp"
 
 // combinator lifting
-export AstPtr lift(const AstPtr &a);
-
 class RewriteEta : public Rewrite {
 public:
     AstPtr eta(const AstPtr &a) {
@@ -133,7 +131,7 @@ public:
         return _lifted;
     }
 
-    uint_t tick() {
+    int tick() {
         return _counter++;
     }
 
@@ -269,7 +267,7 @@ private:
     AstPtrs _lifted;
 };
 
-AstPtr pass_lift(const AstPtr &a) {
+inline AstPtr pass_lift(const AstPtr &a) {
     RewriteLift lift;
     return lift.lift(a);
 }
@@ -324,12 +322,12 @@ public:
     }
 };
 
-AstPtr pass_relambda(const AstPtr &a) {
+inline AstPtr pass_relambda(const AstPtr &a) {
     RewriteRelambda relambda;
     return relambda.relambda(a);
 }
 
-AstPtr lift(const AstPtr &a) {
+inline AstPtr lift(const AstPtr &a) {
     AstPtr a0;
     a0 = pass_eta(a);
     a0 = pass_deapply(a0);
