@@ -305,7 +305,7 @@ public:
             auto i0 = machine()->get_integer(arg0);
             return VMObjectInteger::create(~i0);
         } else {
-            throw machine()->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };

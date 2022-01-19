@@ -44,7 +44,7 @@ public:
                 return nullptr;
             }
         } else {
-            throw badargs(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 

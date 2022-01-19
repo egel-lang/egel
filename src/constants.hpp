@@ -175,35 +175,6 @@ inline constexpr auto STRING_EQ = "=";
 inline constexpr auto STRING_INTEGER = "integer";
 inline constexpr auto STRING_HEXINTEGER = "hexadecimal integer";
 
-// human readable byte opcodes
-
-inline constexpr auto STRING_OP_ASSIGN = "assign";
-inline constexpr auto STRING_OP_INC = "inc";
-inline constexpr auto STRING_OP_ADD = "add";
-inline constexpr auto STRING_OP_SUB = "sub";
-inline constexpr auto STRING_OP_MUL = "mul";
-inline constexpr auto STRING_OP_DIV = "div";
-inline constexpr auto STRING_OP_MOD = "mod";
-inline constexpr auto STRING_OP_LEN = "len";
-inline constexpr auto STRING_OP_EQ = "eq";
-inline constexpr auto STRING_OP_LT = "lt";
-inline constexpr auto STRING_OP_LE = "le";
-inline constexpr auto STRING_OP_NIL = "nil";
-inline constexpr auto STRING_OP_MOV = "mov";
-inline constexpr auto STRING_OP_LOAD = "load";
-inline constexpr auto STRING_OP_DATA = "data";
-inline constexpr auto STRING_OP_TAKE = "take";
-inline constexpr auto STRING_OP_SPLIT = "split";
-inline constexpr auto STRING_OP_TAKEX = "takex";
-inline constexpr auto STRING_OP_SPLITX = "splitx";
-inline constexpr auto STRING_OP_COMBINE = "combine";
-inline constexpr auto STRING_OP_CONCAT = "concat";
-inline constexpr auto STRING_OP_CONCATX = "concatx";
-inline constexpr auto STRING_OP_TEST = "test";
-inline constexpr auto STRING_OP_TAG = "tag";
-inline constexpr auto STRING_OP_JMP = "jmp";
-inline constexpr auto STRING_OP_BRANCH = "branch";
-
 // local and a magic marker for local definitions
 
 inline constexpr auto STRING_LOCAL = "Local";

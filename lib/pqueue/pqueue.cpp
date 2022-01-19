@@ -102,7 +102,7 @@ public:
             auto d = PQueue::cast(arg0);
             return m->create_bool(d->empty());
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -118,7 +118,7 @@ public:
             auto d = PQueue::cast(arg0);
             return d->top();
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -135,7 +135,7 @@ public:
             d->pop();
             return arg0;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -153,7 +153,7 @@ public:
             d->push(arg1, arg2);
             return arg0;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };

@@ -30,10 +30,10 @@ public:
         return "";
     }
 
-    virtual void render(std::ostream &os, uint_t indent) const = 0;
+    virtual void render(std::ostream &os, int indent) const = 0;
 
-    void skip(std::ostream &os, uint_t indent) const {
-        for (uint_t i = 0; i < indent; ++i) {
+    void skip(std::ostream &os, int indent) const {
+        for (int i = 0; i < indent; ++i) {
             os << " ";
         }
     }
@@ -86,7 +86,7 @@ public:
         }
     }
 
-    void render(std::ostream &os, uint_t indent) const override {
+    void render(std::ostream &os, int indent) const override {
         for (auto const &sym : _symbols) {
             skip(os, indent);
             os << sym.first << " -> " << sym.second << std::endl;
@@ -134,7 +134,7 @@ public:
         return _embeds;
     }
 
-    void render(std::ostream &os, uint_t indent) const override {
+    void render(std::ostream &os, int indent) const override {
         for (auto const &sym : _symbols) {
             skip(os, indent);
             os << sym.first << " : " << sym.second << std::endl;

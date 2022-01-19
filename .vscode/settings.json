@@ -1,7 +1,5 @@
 {
-    "cmake.generator": "Ninja",
     "cmake.configureArgs": [
-        "-DCMAKE_PREFIX_PATH=C:/Users/marco/Programming/icu4c",
-        "-DCMAKE_GENERATOR=Ninja"
+        "-DCMAKE_PREFIX_PATH=C:/Users/marco/Programming/icu4c"
     ]
 }

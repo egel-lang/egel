@@ -298,7 +298,7 @@ public:
 
     // XXX XXX XXX: get rid of all of this once. See handle_expression.
     std::mutex _lock;
-    uint_t _counter = 0;
+    int _counter = 0;
     UnicodeString generate_fresh_combinator() {
         int n = _counter;
         _lock.lock();
@@ -458,5 +458,3 @@ private:
     ModuleManagerPtr _manager;
     AstPtrs _usings;
 };
-
-#endif

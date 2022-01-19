@@ -33,7 +33,7 @@ enum opcode_t {
     OP_RETURN,   //  x           return x
 };
 
-using Code = std::vector<uint8_t> Code;
+using Code = std::vector<uint8_t>;
 using Data = std::vector<uint32_t>;  // XXX this is overkil after a change to a
                                      // data section
 

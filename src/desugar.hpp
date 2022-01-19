@@ -16,7 +16,7 @@ public:
         return rewrite(a);
     }
 
-    uint_t tick() {
+    int tick() {
         return _tick++;
     }
 
@@ -28,7 +28,7 @@ public:
     }
 
 private:
-    uint_t _tick;
+    int _tick;
 };
 
 AstPtr pass_wildcard(const AstPtr &a) {

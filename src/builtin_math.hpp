@@ -25,7 +25,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_bool(isfinite(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -40,7 +40,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_bool(isinf(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -55,7 +55,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_bool(isnan(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -70,7 +70,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_bool(isnormal(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -168,7 +168,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(abs(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -183,7 +183,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(acos(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -198,7 +198,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(acosh(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -213,7 +213,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(asin(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -228,7 +228,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(asinh(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -243,7 +243,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(atan(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -258,7 +258,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(atanh(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -275,7 +275,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(atan2(f0, f1));
         } else {
-            throw machine->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -290,7 +290,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(cbrt(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -306,7 +306,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(ceil(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -321,7 +321,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(cos(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -336,7 +336,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(cosh(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -352,7 +352,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(exp(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -367,7 +367,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(expm1(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -382,7 +382,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(floor(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -397,7 +397,7 @@ of a number class Fround: public Monadic { public:
             auto f = machine()->get_float(arg0);
             return create_float(fround(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -413,7 +413,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(log(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -429,7 +429,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(log1p(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -444,7 +444,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(log10(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -459,7 +459,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(log2(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -476,7 +476,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float((f0 < f1) ? f1 : f0);
         } else {
-            throw machine->bad_args(this, arg0, arg2);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -493,7 +493,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float((f0 < f1) ? f0 : f1);
         } else {
-            throw machine->bad_args(this, arg0, arg2);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -510,7 +510,7 @@ public:
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(pow(f0, f1));
         } else {
-            throw machine->bad_args(this, arg0, arg2);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -536,7 +536,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_integer(lround(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -553,7 +553,7 @@ public:
             auto b = signbit(f);
             return machine()->create_integer((b != 0) ? (-1) : (1));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -568,7 +568,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(sin(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -583,7 +583,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(sinh(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -598,7 +598,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(sqrt(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -613,7 +613,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(tan(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -628,7 +628,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(tanh(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -644,7 +644,7 @@ public:
             auto f = machine()->get_float(arg0);
             return machine()->create_float(trunc(f));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };

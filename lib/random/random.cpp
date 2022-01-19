@@ -47,7 +47,7 @@ public:
             return VMObjectInteger::create(random::get().between(i0, i1));
         } else {
             // XXX: extend once with two float values
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };

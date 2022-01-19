@@ -12,7 +12,7 @@
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
 
-export enum token_t {
+enum token_t {
     TOKEN_ERROR = 0,
     TOKEN_EOF,
 
@@ -81,7 +81,7 @@ export enum token_t {
 
 icu::UnicodeString token_text(token_t t);
 
-export class Token {
+class Token {
 public:
     Token(token_t tag, const Position &position, const icu::UnicodeString &text)
         : _tag(tag), _position(position), _text(text) {
@@ -125,7 +125,7 @@ private:
 class TokenReader;
 using TokenReaderPtr = std::shared_ptr<TokenReader>;
 
-export class TokenReader {
+class TokenReader {
 public:
     virtual Token look(unsigned int n = 0) = 0;
     virtual void skip() = 0;
@@ -139,13 +139,13 @@ public:
 class TokenWriter;
 using TokenWriterPtr = std::shared_ptr<TokenWriter>;
 
-export class TokenWriter {
+class TokenWriter {
 public:
     virtual void push(const Token &token) = 0;
     virtual TokenReaderPtr clone_reader() const = 0;
 };
 
-export class TokenVector : public TokenReader, public TokenWriter {
+class TokenVector : public TokenReader, public TokenWriter {
 public:
     TokenVector() {
         _index = 0;
@@ -196,7 +196,7 @@ private:
     unsigned int _index;
 };
 
-export TokenReaderPtr tokenize_from_reader(CharReader &reader);
+TokenReaderPtr tokenize_from_reader(CharReader &reader);
 
 // XXX: everything below this should be module private
 
@@ -356,210 +356,210 @@ struct token_text_t {
 static constexpr token_text_t token_text_table[]{
     {
         TOKEN_ERROR,
-        Constants::STRING_ERROR,
+        STRING_ERROR,
     },
     {
         TOKEN_EOF,
-        Constants::STRING_EOF,
+        STRING_EOF,
     },
 
     //  delimiters
     {
         TOKEN_DOT,
-        Constants::STRING_DOT,
+        STRING_DOT,
     },
     {
         TOKEN_COMMA,
-        Constants::STRING_COMMA,
+        STRING_COMMA,
     },
     {
         TOKEN_EQ,
-        Constants::STRING_EQ,
+        STRING_EQ,
     },
     {
         TOKEN_ASSIGN,
-        Constants::STRING_ASSIGN,
+        STRING_ASSIGN,
     },
     {
         TOKEN_LPAREN,
-        Constants::STRING_LPAREN,
+        STRING_LPAREN,
     },
     {
         TOKEN_RPAREN,
-        Constants::STRING_RPAREN,
+        STRING_RPAREN,
     },
     {
         TOKEN_LSQUARE,
-        Constants::STRING_LSQUARE,
+        STRING_LSQUARE,
     },
     {
         TOKEN_RSQUARE,
-        Constants::STRING_RSQUARE,
+        STRING_RSQUARE,
     },
     {
         TOKEN_LCURLY,
-        Constants::STRING_LCURLY,
+        STRING_LCURLY,
     },
     {
         TOKEN_RCURLY,
-        Constants::STRING_RCURLY,
+        STRING_RCURLY,
     },
     {
         TOKEN_COLON,
-        Constants::STRING_COLON,
+        STRING_COLON,
     },
     {
         TOKEN_DCOLON,
-        Constants::STRING_DCOLON,
+        STRING_DCOLON,
     },
     {
         TOKEN_SEMICOLON,
-        Constants::STRING_SEMICOLON,
+        STRING_SEMICOLON,
     },
     {
         TOKEN_DSEMICOLON,
-        Constants::STRING_DSEMICOLON,
+        STRING_DSEMICOLON,
     },
     {
         TOKEN_HASH,
-        Constants::STRING_HASH,
+        STRING_HASH,
     },
     {
         TOKEN_BAR,
-        Constants::STRING_BAR,
+        STRING_BAR,
     },
     {
         TOKEN_QUESTION,
-        Constants::STRING_QUESTION,
+        STRING_QUESTION,
     },
 
     //  operators, and lowercase and uppercase identifiers
     {
         TOKEN_OPERATOR,
-        Constants::STRING_OPERATOR,
+        STRING_OPERATOR,
     },
     {
         TOKEN_LOWERCASE,
-        Constants::STRING_LOWERCASE,
+        STRING_LOWERCASE,
     },
     {
         TOKEN_UPPERCASE,
-        Constants::STRING_UPPERCASE,
+        STRING_UPPERCASE,
     },
 
     //  literals
     {
         TOKEN_INTEGER,
-        Constants::STRING_INTEGER,
+        STRING_INTEGER,
     },
     {
         TOKEN_HEXINTEGER,
-        Constants::STRING_HEXINTEGER,
+        STRING_HEXINTEGER,
     },
     {
         TOKEN_FLOAT,
-        Constants::STRING_FLOAT,
+        STRING_FLOAT,
     },
     {
         TOKEN_CHAR,
-        Constants::STRING_CHAR,
+        STRING_CHAR,
     },
     {
         TOKEN_TEXT,
-        Constants::STRING_TEXT,
+        STRING_TEXT,
     },
 
     //  special symbols
     {
         TOKEN_LAMBDA,
-        Constants::STRING_LAMBDA,
+        STRING_LAMBDA,
     },
     {
         TOKEN_CLASS,
-        Constants::STRING_CLASS,
+        STRING_CLASS,
     },
     {
         TOKEN_EXTENDS,
-        Constants::STRING_EXTENDS,
+        STRING_EXTENDS,
     },
     {
         TOKEN_WITH,
-        Constants::STRING_WITH,
+        STRING_WITH,
     },
 
     //  compound expressions
     {
         TOKEN_IF,
-        Constants::STRING_IF,
+        STRING_IF,
     },
     {
         TOKEN_THEN,
-        Constants::STRING_THEN,
+        STRING_THEN,
     },
     {
         TOKEN_ELSE,
-        Constants::STRING_ELSE,
+        STRING_ELSE,
     },
 
     {
         TOKEN_LET,
-        Constants::STRING_LET,
+        STRING_LET,
     },
     {
         TOKEN_IN,
-        Constants::STRING_IN,
+        STRING_IN,
     },
 
     {
         TOKEN_TRY,
-        Constants::STRING_TRY,
+        STRING_TRY,
     },
     {
         TOKEN_CATCH,
-        Constants::STRING_CATCH,
+        STRING_CATCH,
     },
     {
         TOKEN_THROW,
-        Constants::STRING_THROW,
+        STRING_THROW,
     },
     {
         TOKEN_ARROW,
-        Constants::STRING_ARROW,
+        STRING_ARROW,
     },
 
     {
         TOKEN_VAL,
-        Constants::STRING_VAL,
+        STRING_VAL,
     },
 
     // directives
     {
         TOKEN_USING,
-        Constants::STRING_USING,
+        STRING_USING,
     },
     {
         TOKEN_IMPORT,
-        Constants::STRING_IMPORT,
+        STRING_IMPORT,
     },
 
     //  declarations
     {
         TOKEN_DATA,
-        Constants::STRING_DATA,
+        STRING_DATA,
     },
     {
         TOKEN_DEF,
-        Constants::STRING_DEF,
+        STRING_DEF,
     },
     {
         TOKEN_NAMESPACE,
-        Constants::STRING_NAMESPACE,
+        STRING_NAMESPACE,
     },
 };
 
 icu::UnicodeString token_text(token_t t) {
     for (auto &tt : token_text_table) {
-        if (t = tt.tag) {
+        if (t == tt.tag) {
             return icu::UnicodeString(tt.text);
         }
     }
@@ -577,95 +577,95 @@ struct reserved_t {
 static reserved_t reserved_table[]{
     {
         TOKEN_BAR,
-        Constants::STRING_BAR,
+        STRING_BAR,
     },
     {
         TOKEN_EQ,
-        Constants::STRING_EQ,
+        STRING_EQ,
     },
     {
         TOKEN_ASSIGN,
-        Constants::STRING_ASSIGN,
+        STRING_ASSIGN,
     },
     {
         TOKEN_QUESTION,
-        Constants::STRING_QUESTION,
+        STRING_QUESTION,
     },
     {
         TOKEN_LAMBDA,
-        Constants::STRING_LAMBDA,
+        STRING_LAMBDA,
     },
     {
         TOKEN_CLASS,
-        Constants::STRING_CLASS,
+        STRING_CLASS,
     },
     {
         TOKEN_EXTENDS,
-        Constants::STRING_EXTENDS,
+        STRING_EXTENDS,
     },
     {
         TOKEN_WITH,
-        Constants::STRING_WITH,
+        STRING_WITH,
     },
     {
         TOKEN_IF,
-        Constants::STRING_IF,
+        STRING_IF,
     },
     {
         TOKEN_THEN,
-        Constants::STRING_THEN,
+        STRING_THEN,
     },
     {
         TOKEN_ELSE,
-        Constants::STRING_ELSE,
+        STRING_ELSE,
     },
     {
         TOKEN_LET,
-        Constants::STRING_LET,
+        STRING_LET,
     },
     {
         TOKEN_IN,
-        Constants::STRING_IN,
+        STRING_IN,
     },
     {
         TOKEN_TRY,
-        Constants::STRING_TRY,
+        STRING_TRY,
     },
     {
         TOKEN_CATCH,
-        Constants::STRING_CATCH,
+        STRING_CATCH,
     },
     {
         TOKEN_THROW,
-        Constants::STRING_THROW,
+        STRING_THROW,
     },
     {
         TOKEN_ARROW,
-        Constants::STRING_ARROW,
+        STRING_ARROW,
     },
     {
         TOKEN_IMPORT,
-        Constants::STRING_IMPORT,
+        STRING_IMPORT,
     },
     {
         TOKEN_USING,
-        Constants::STRING_USING,
+        STRING_USING,
     },
     {
         TOKEN_DATA,
-        Constants::STRING_DATA,
+        STRING_DATA,
     },
     {
         TOKEN_DEF,
-        Constants::STRING_DEF,
+        STRING_DEF,
     },
     {
         TOKEN_NAMESPACE,
-        Constants::STRING_NAMESPACE,
+        STRING_NAMESPACE,
     },
     {
         TOKEN_VAL,
-        Constants::STRING_VAL,
+        STRING_VAL,
     },
 };
 
@@ -717,7 +717,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             if (is_colon(c)) {
                 reader.skip();
                 token_writer.push(
-                    Token(TOKEN_DCOLON, p, Constants::STRING_DCOLON));
+                    Token(TOKEN_DCOLON, p, STRING_DCOLON));
             } else {
                 token_writer.push(Token(TOKEN_COLON, p, c));
             }
@@ -727,7 +727,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             if (is_semicolon(c)) {
                 reader.skip();
                 token_writer.push(
-                    Token(TOKEN_DSEMICOLON, p, Constants::STRING_DSEMICOLON));
+                    Token(TOKEN_DSEMICOLON, p, STRING_DSEMICOLON));
             } else {
                 token_writer.push(Token(TOKEN_SEMICOLON, p, c));
             }

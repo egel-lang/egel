@@ -146,11 +146,11 @@ public:
         return _fail;
     }
 
-    void set_arity(uint_t a) {
+    void set_arity(int a) {
         _arity = a;
     }
 
-    uint_t get_arity() {
+    int get_arity() {
         return _arity;
     }
 
@@ -302,7 +302,7 @@ public:
                 auto l = get_fail_label();
 
                 reg_t x = 0, y = 0;
-                for (uint_t n = 0; n < aa.size(); n++) {
+                for (size_t n = 0; n < aa.size(); n++) {
                     y = get_coder()->generate_register();
                     if (n == 0) x = y;
                 }
@@ -329,8 +329,8 @@ public:
                 auto c = get_coder()->generate_register();
 
                 reg_t x = 0, y = 0;
-                uint_t sz = aa.size();
-                for (uint_t n = 1; n < sz; n++) {
+                int sz = aa.size();
+                for (int n = 1; n < sz; n++) {
                     y = get_coder()->generate_register();
                     if (n == 1) x = y;
                 }
@@ -364,7 +364,7 @@ public:
                 }
 
                 reg_t z = x;
-                for (uint_t n = 1; n < sz; n++) {
+                for (int n = 1; n < sz; n++) {
                     get_coder()->emit_op_nil(z);
                     z++;
                 }
@@ -398,7 +398,7 @@ public:
                     visit(aa[0]);
                 }
 
-                for (uint_t n = 1; n < sz; n++) {
+                for (int n = 1; n < sz; n++) {
                     auto i = machine()->create_integer(n + 4);
                     auto d = get_coder()->emit_data(i);
                     reg_t q = get_coder()->generate_register();
@@ -458,10 +458,10 @@ public:
         auto l = get_coder()->generate_label();
         set_fail_label(l);
 
-        uint_t arity = mm.size();
+        int arity = mm.size();
         set_arity(arity);
         reg_t x = 0, y = 0;
-        for (uint_t n = 0; n < arity; n++) {
+        for (int n = 0; n < arity; n++) {
             y = get_coder()->generate_register();
             if (n == 0) x = y;
         }
@@ -683,7 +683,7 @@ private:
     reg_t _register_k;
     reg_t _register_exc;
 
-    uint_t _arity;
+    int _arity;
     reg_t _current_reg;
     label_t _fail;
     CoderPtr _coder;

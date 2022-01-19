@@ -92,7 +92,7 @@ public:
             AST_EXPR_APPLICATION_SPLIT(a, p, aa0);
             AstPtrs aa1;
             for (auto &a0 : aa0) aa1.push_back(a0);
-            for (uint_t n = 1; n < aa.size(); n++) aa1.push_back(aa[n]);
+            for (size_t n = 1; n < aa.size(); n++) aa1.push_back(aa[n]);
             return rewrite(AstExprApplication::create(p, aa1));
         } else if (aa.size() == 1) {
             return rewrite(aa[0]);
@@ -265,7 +265,7 @@ public:
 
 private:
     AstPtr _scope;
-    uint_t _counter;
+    int _counter;
     AstPtrs _lifted;
 };
 

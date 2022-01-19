@@ -76,7 +76,7 @@ public:
         UErrorCode error_code = U_ZERO_ERROR;
         auto m = _pattern->matcher(s, error_code);
         if (U_FAILURE(error_code)) {
-            THROW_INVALID;  // XXX: do I leak here?
+            return nullptr; // XXX: rather throw here but no machine
         } else {
             return m;
         }
@@ -118,12 +118,12 @@ public:
             icu::RegexPattern* p =
                 icu::RegexPattern::compile(pat, parse_error, error_code);
             if (U_FAILURE(error_code)) {
-                THROW_INVALID;
+                throw machine()->bad_args(this, arg0);
             } else {
                 return Regex::create(this->machine(), p);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -140,7 +140,7 @@ public:
             auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1);
 
             UErrorCode error_code = U_ZERO_ERROR;
             auto b = r->matches(error_code);
@@ -148,7 +148,7 @@ public:
 
             return machine()->create_bool(b);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -165,7 +165,7 @@ public:
             auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1);
 
             UErrorCode error_code = U_ZERO_ERROR;
             auto b = r->lookingAt(error_code);
@@ -173,7 +173,7 @@ public:
 
             return machine()->create_bool(b);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -191,7 +191,7 @@ public:
             auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1);
 
             UErrorCode error_code = U_ZERO_ERROR;
             auto b = r->lookingAt(error_code);
@@ -204,7 +204,7 @@ public:
                 return machine()->create_none();
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -221,7 +221,7 @@ public:
             auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1);
 
             UnicodeStrings ss;
             int32_t pos = 0;
@@ -245,7 +245,7 @@ public:
 
             return strings_to_list(machine(), ss);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -262,7 +262,7 @@ public:
             auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1);
 
             UnicodeStrings ss;
             while (r->find()) {
@@ -278,7 +278,7 @@ public:
 
             return strings_to_list(machine(), ss);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -298,19 +298,19 @@ public:
             auto s1 = machine()->get_text(arg2);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1, arg2);
 
             UErrorCode error_code = U_ZERO_ERROR;
             auto s2 = r->replaceFirst(s1, error_code);
             delete r;
 
             if (U_FAILURE(error_code)) {
-                THROW_INVALID;
+                throw machine()->bad_args(this, arg0, arg1, arg2);
             } else {
                 return VMObjectText::create(s2);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -330,19 +330,19 @@ public:
             auto s1 = machine()->get_text(arg2);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1, arg2);
 
             UErrorCode error_code = U_ZERO_ERROR;
             auto s2 = r->replaceAll(s1, error_code);
             delete r;
 
             if (U_FAILURE(error_code)) {
-                THROW_INVALID;
+                throw machine()->bad_args(this, arg0, arg1, arg2);
             } else {
                 return VMObjectText::create(s2);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -359,7 +359,7 @@ public:
             auto s0 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
-            if (r == nullptr) THROW_INVALID;
+            if (r == nullptr) throw machine()->bad_args(this, arg0, arg1);
 
             UnicodeStrings ss;
             UErrorCode error_code = U_ZERO_ERROR;
@@ -377,7 +377,7 @@ public:
 
             return strings_to_list(machine(), ss);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };

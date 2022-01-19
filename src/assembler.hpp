@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "bytecode"
-#include "runtime"
 #include "utils.hpp"
+#include "runtime.hpp"
+#include "bytecode.hpp"
 
 const int BYTECODEVERSION = 0x00;
 const int SEPARATOR = ' ';

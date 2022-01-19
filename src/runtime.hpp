@@ -138,7 +138,6 @@ using vm_int_t = int64_t;
 using vm_float_t = double;
 using vm_char_t = UChar32;
 using vm_text_t = icu::UnicodeString;
-using vm_ptr_t = (void *);
 
 using symbol_t = uint32_t;
 using data_t = uint32_t;

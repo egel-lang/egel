@@ -2,7 +2,7 @@
 
 #include "utils.hpp"
 
-constexpr auto OPERATOR_BOTTOM "="
+constexpr auto OPERATOR_BOTTOM = "=";
 
     inline int
     operator_compare(const icu::UnicodeString &o0,

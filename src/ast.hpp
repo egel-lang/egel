@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>;
-#include <set>;
-#include <sstream>;
-#include <vector>;
+#include <memory>
+#include <set>
+#include <sstream>
+#include <vector>
 
 #include "constants.hpp"
 #include "error.hpp"
@@ -57,8 +57,9 @@ enum ast_tag_t {
 
 class Ast;
 using AstPtr = std::shared_ptr<Ast>;
+using AstPtrs = std::vector<AstPtr>;
 
-int compare_ast(const AstPtr &a0, const AstPtr &a1);
+using text_index_t = int;
 
 class Ast {
 public:
@@ -81,21 +82,21 @@ public:
         return os;
     }
 
-    static uint_t line_length;
+    static const text_index_t line_length = 80;
 
-    virtual uint_t approximate_length(uint_t indent) const = 0;
+    virtual text_index_t approximate_length(text_index_t indent) const = 0;
 
-    void skip(std::ostream &os, uint_t indent) const {
-        for (uint_t i = 0; i < indent; ++i) {
+    void skip(std::ostream &os, text_index_t indent) const {
+        for (text_index_t i = 0; i < indent; ++i) {
             os << " ";
         }
     }
-    void skip_line(std::ostream &os, uint_t indent) const {
+    void skip_line(std::ostream &os, text_index_t indent) const {
         os << std::endl;
         skip(os, indent);
     }
 
-    virtual void render(std::ostream &os, uint_t indent) const = 0;
+    virtual void render(std::ostream &os, text_index_t indent) const = 0;
 
     virtual icu::UnicodeString to_text() const {
         std::stringstream ss;
@@ -104,6 +105,16 @@ public:
         return u;
     }
 
+    static int compare(const AstPtr& a0, const AstPtr &a1);
+
+protected: // a collection of helper functions
+    static int compare_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1);
+    static int compare_ast2(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
+                 const AstPtr &a3);
+    static int compare_ast3(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
+                 const AstPtr &a3, const AstPtr &a4, const AstPtr &a5);
+    static int compare_asts(const AstPtrs &aa0, const AstPtrs &aa1);
+
 private:
     ast_tag_t _tag;
     Position _position;
@@ -111,17 +122,16 @@ private:
 
 struct EqualAstPtr {
     bool operator()(const AstPtr &a0, const AstPtr &a1) const {
-        return (compare_ast(a0, a1) == 0);
+        return (Ast::compare(a0, a1) == 0);
     }
 };
 
 struct LessAstPtr {
     bool operator()(const AstPtr &a0, const AstPtr &a1) const {
-        return (compare_ast(a0, a1) == -1);
+        return (Ast::compare(a0, a1) == -1);
     }
 };
 
-using AstPtrs = std::vector<AstPtr>;
 using AstPtrSet = std::set<AstPtr, LessAstPtr>;
 
 // filler for optional cases
@@ -138,14 +148,15 @@ public:
         return std::make_shared<AstEmpty>();
     }
 
-    static std::shared_ptr<AstEmpty> cast(const AstPtr &o){
-        return std::static_pointer_cast<AstEmptyPtr>(a)}
+    static std::shared_ptr<AstEmpty> cast(const AstPtr &a){
+        return std::static_pointer_cast<AstEmpty>(a);
+    }
 
-    uint_t approximate_length(uint_t indent) const {
+    text_index_t approximate_length(text_index_t indent) const override {
         return indent;
     }
 
-    void render(std::ostream &os, uint_t) const {
+    void render(std::ostream &os, text_index_t indent) const override {
         os << "(XX)";
     }
 };
@@ -165,11 +176,11 @@ public:
         return _text;
     }
 
-    uint_t approximate_length(uint_t indent) const {
+    text_index_t approximate_length(text_index_t indent) const {
         return (indent + text().length());
     }
 
-    void render(std::ostream &os, uint_t) const {
+    void render(std::ostream &os, text_index_t) const {
         os << text();
     }
 
@@ -381,8 +392,8 @@ public:
         return _tag;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l = expression()->approximate_length(l);
         l += 2;
         if (l >= line_length) return l;
@@ -390,7 +401,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             os << "(" << expression() << STRING_COLON << tag() << ")";
         } else {
@@ -477,8 +488,8 @@ public:
         return str;
     }
 
-    uint_t approximate_length(uint_t indent) const override {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const override {
+        text_index_t l = indent;
         for (auto &p : _path) {
             l += p.length() + 1;
         }
@@ -486,7 +497,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t) const override {
+    void render(std::ostream &os, text_index_t) const override {
         os << to_text();
     }
 
@@ -558,8 +569,8 @@ public:
         return str;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         for (auto &p : _path) {
             l += p.length();
             l += 1;
@@ -569,7 +580,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t) const {
+    void render(std::ostream &os, text_index_t) const {
         os << text();
     }
 
@@ -623,8 +634,8 @@ public:
         return _tail;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 1;
         for (auto e : _content) {
             l = e->approximate_length(l);
@@ -639,7 +650,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) < line_length) {
             os << "{";
             bool first = true;
@@ -711,8 +722,8 @@ public:
         return _content;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 1;
         for (auto e : _content) {
             l = e->approximate_length(l);
@@ -723,7 +734,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) < line_length) {
             os << "(";
             bool first = true;
@@ -821,8 +832,8 @@ public:
         return _arguments;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 1;
         for (auto a : arguments()) {
             l = a->approximate_length(l);
@@ -833,7 +844,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) < line_length) {
             os << "(";
             bool first = true;
@@ -906,12 +917,12 @@ public:
         return _result;
     }
 
-    uint_t arity() const {
+    int arity() const {
         return _patterns.size();
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 1;
         for (auto p : patterns()) {
             l = p->approximate_length(l);
@@ -926,7 +937,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             bool first = true;
             for (auto &p : patterns()) {
@@ -1010,7 +1021,7 @@ public:
         return _matches;
     }
 
-    uint_t arity() const {
+    text_index_t arity() const {
         if ((_matches.size() > 0) && (_matches[0]->tag() == AST_EXPR_MATCH)) {
             auto m0 = AST_EXPR_MATCH_CAST(_matches[0]);
             return m0->arity();
@@ -1019,8 +1030,8 @@ public:
         }
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 1;
         if (l >= line_length) return l;
         for (auto m : matches()) {
@@ -1031,7 +1042,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             os << "[ ";
             bool first = true;
@@ -1093,14 +1104,14 @@ public:
         return _match;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 1;
         l = match()->approximate_length(l);
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         // XXX
         os << "\\";
         match()->render(os, indent + 1);
@@ -1151,8 +1162,8 @@ public:
         return _expression;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         if (l >= line_length) return l;
         for (auto p : left_hand_side()) {
             l = p->approximate_length(l);
@@ -1168,7 +1179,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             os << "(let ";
             for (auto p : left_hand_side()) {
@@ -1232,8 +1243,8 @@ public:
         return _catch;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 4;
         if (l >= line_length) return l;
         l = try0()->approximate_length(l);
@@ -1244,7 +1255,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             os << "try (";
             try0()->render(os, indent + 4);
@@ -1299,14 +1310,14 @@ public:
         return _throw;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 6;
         l = throw0()->approximate_length(l);
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             os << "throw (" << throw0() << ")";
         } else {
@@ -1347,7 +1358,7 @@ public:
     }
 
     static std::shared_ptr<AstExprIf> cast(const AstPtr &a) {
-        return std : static_pointer_cast<AstExprIf>(a);
+        return std::static_pointer_cast<AstExprIf>(a);
     }
 
     AstPtr if0() const {
@@ -1362,8 +1373,8 @@ public:
         return _else;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 3;
         l = if0()->approximate_length(l);
         l += 6;
@@ -1376,7 +1387,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             os << "if ";
             if0()->render(os, indent);
@@ -1441,8 +1452,8 @@ public:
         return _rhs;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 3;
         l = lhs()->approximate_length(l);
         l += 2;
@@ -1451,7 +1462,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             lhs()->render(os, indent);
             os << "; ";
@@ -1507,11 +1518,11 @@ public:
         return _content;
     }
 
-    uint_t approximate_length(uint_t indent) const {
+    text_index_t approximate_length(text_index_t indent) const {
         return indent;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         skip(os, indent);
         os << "namespace ";
         bool first = true;
@@ -1562,8 +1573,8 @@ public:
         return _names;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 5;
         for (auto n : names()) {
             l = n->approximate_length(l);
@@ -1573,7 +1584,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             skip(os, indent);
             os << STRING_DATA << " ";
@@ -1641,8 +1652,8 @@ public:
         return _expression;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 4;
         l = name()->approximate_length(l);
         if (l >= line_length) return l;
@@ -1651,7 +1662,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             skip(os, indent);
             os << STRING_DEF << " ";
@@ -1709,8 +1720,8 @@ public:
         return _expression;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 4;
         l = name()->approximate_length(l);
         if (l >= line_length) return l;
@@ -1719,7 +1730,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             skip(os, indent);
             os << STRING_VAL << " ";
@@ -1775,8 +1786,8 @@ public:
         return _expression;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         l += 4;
         l = combinator()->approximate_length(l);
         if (l >= line_length) return l;
@@ -1785,7 +1796,7 @@ public:
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
             skip(os, indent);
             os << STRING_DEF << " ";
@@ -1858,11 +1869,11 @@ public:
         return _extends;
     }
 
-    uint_t approximate_length(uint_t indent) const {
+    text_index_t approximate_length(text_index_t indent) const {
         return indent;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         skip(os, indent);
         os << STRING_OBJECT << " " << name() << " ";
         for (auto v : variables()) {
@@ -1931,13 +1942,13 @@ public:
         return _import;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent + 6;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent + 6;
         l += _import.length();
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         skip(os, indent);
         os << "import " << import() << std::endl;
     }
@@ -1975,15 +1986,15 @@ public:
         return _using;
     }
 
-    uint_t approximate_length(uint_t indent) const {
-        uint_t l = indent;
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
         for (auto &u : using0()) {
             l += u.length() + 1;
         }
         return l;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         skip(os, indent);
         os << "using ";
         bool first = true;
@@ -2027,11 +2038,11 @@ public:
         return _content;
     }
 
-    uint_t approximate_length(uint_t indent) const {
+    text_index_t approximate_length(text_index_t indent) const {
         return indent;
     }
 
-    void render(std::ostream &os, uint_t indent) const {
+    void render(std::ostream &os, text_index_t indent) const {
         for (auto e : content()) {
             e->render(os, indent);
         }
@@ -2048,11 +2059,7 @@ using AstWrapperPtr = std::shared_ptr<AstWrapper>;
     auto p = _##a->position();       \
     auto dd = _##a->content();
 
-uint_t Ast::line_length = 80;
-
-int compare_ast_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1);
-
-int compare_ast(const AstPtr &a0, const AstPtr &a1) {
+int Ast::compare(const AstPtr &a0, const AstPtr &a1) {
     if ((a0 == nullptr) && (a1 == nullptr)) return true;
     if (a0 == nullptr) return 1;
     if (a1 == nullptr) return -1;
@@ -2063,47 +2070,47 @@ int compare_ast(const AstPtr &a0, const AstPtr &a1) {
     } else if (t1 < t0) {
         return 1;
     } else {
-        return compare_ast_tag(t0, a0, a1);
+        return Ast::compare_tag(t0, a0, a1);
     }
 }
 
-int equal_ast(const AstPtr &a0, const AstPtr &a1) {
-    return compare_ast(a0, a1) == 0;
+static int equal_ast(const AstPtr &a0, const AstPtr &a1) {
+    return Ast::compare(a0, a1) == 0;
 }
 
-int compare_asts(const AstPtrs &aa0, const AstPtrs &aa1) {
-    uint_t sz0 = aa0.size();
-    uint_t sz1 = aa1.size();
+int Ast::compare_asts(const AstPtrs &aa0, const AstPtrs &aa1) {
+    int sz0 = aa0.size();
+    int sz1 = aa1.size();
     if (sz0 < sz1) {
         return -1;
     } else if (sz1 < sz0) {
         return 1;
     } else {
-        uint_t sz = sz0;
-        for (uint_t i = 0; i < sz; i++) {
+        int sz = sz0;
+        for (int i = 0; i < sz; i++) {
             auto a0 = aa0[i];
             auto a1 = aa1[i];
-            int c = compare_ast(a0, a1);
+            int c = Ast::compare(a0, a1);
             if (c != 0) return c;
         }
         return 0;
     }
 }
 
-int compare_text(const icu::UnicodeString &t0, const icu::UnicodeString &t1) {
+static int compare_text(const icu::UnicodeString &t0, const icu::UnicodeString &t1) {
     return t0.compare(t1);
 }
 
-int compare_texts(const UnicodeStrings &aa0, const UnicodeStrings &aa1) {
-    uint_t sz0 = aa0.size();
-    uint_t sz1 = aa1.size();
+static int compare_texts(const UnicodeStrings &aa0, const UnicodeStrings &aa1) {
+    int sz0 = aa0.size();
+    int sz1 = aa1.size();
     if (sz0 < sz1) {
         return -1;
     } else if (sz1 < sz0) {
         return 1;
     } else {
-        uint_t sz = sz0;
-        for (uint_t i = 0; i < sz; i++) {
+        int sz = sz0;
+        for (int i = 0; i < sz; i++) {
             auto a0 = aa0[i];
             auto a1 = aa1[i];
             int c = compare_text(a0, a1);
@@ -2113,23 +2120,23 @@ int compare_texts(const UnicodeStrings &aa0, const UnicodeStrings &aa1) {
     }
 }
 
-int compare_ast2(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
+int Ast::compare_ast2(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
                  const AstPtr &a3) {
-    uint_t c = compare_ast(a0, a1);
+    int c = compare(a0, a1);
     if (c != 0) return c;
-    return compare_ast(a2, a3);
+    return compare(a2, a3);
 }
 
-int compare_ast3(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
+int Ast::compare_ast3(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
                  const AstPtr &a3, const AstPtr &a4, const AstPtr &a5) {
-    uint_t c = compare_ast(a0, a1);
+    int c = compare(a0, a1);
     if (c != 0) return c;
-    c = compare_ast(a2, a3);
+    c = compare(a2, a3);
     if (c != 0) return c;
-    return compare_ast(a4, a5);
+    return compare(a4, a5);
 }
 
-int compare_ast_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1) {
+int Ast::compare_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1) {
     int c;
 
     switch (t) {
@@ -2202,7 +2209,7 @@ int compare_ast_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1) {
             AST_EXPR_LIST_SPLIT(a1, p1, tt1, tl1);
             c = compare_asts(tt0, tt1);
             if (c != 0) return c;
-            return compare_ast(tl0, tl1);
+            return Ast::compare(tl0, tl1);
             break;
         }
         case AST_EXPR_TUPLE: {
@@ -2221,7 +2228,7 @@ int compare_ast_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1) {
         case AST_EXPR_LAMBDA: {
             AST_EXPR_LAMBDA_SPLIT(a0, p0, m0);
             AST_EXPR_LAMBDA_SPLIT(a1, p1, m1);
-            return compare_ast(m0, m1);
+            return Ast::compare(m0, m1);
             break;
         }
         case AST_EXPR_BLOCK: {
@@ -2309,7 +2316,7 @@ int compare_ast_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1) {
         case AST_DECL_OBJECT: {
             AST_DECL_OBJECT_SPLIT(a0, p0, c0, vv0, ff0, ee0);
             AST_DECL_OBJECT_SPLIT(a1, p1, c1, vv1, ff1, ee1);
-            c = compare_ast(c0, c1);
+            c = Ast::compare(c0, c1);
             if (c != 0) return c;
             c = compare_asts(vv0, vv1);
             if (c != 0) return c;
