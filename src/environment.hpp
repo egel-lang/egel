@@ -1,18 +1,18 @@
-#ifndef ENVIRONMENT_HPP
-#define ENVIRONMENT_HPP
+#pragma once
 
 #include <map>
 #include <memory>
+
 #include "error.hpp"
 
-typedef std::map<icu::UnicodeString, icu::UnicodeString> Table;
+using Table = std::map<icu::UnicodeString, icu::UnicodeString>;
 
 class Scope;
-typedef std::shared_ptr<Scope>  ScopePtr;
+using ScopePtr = std::shared_ptr<Scope>;
 
 class Scope {
 public:
-    void declare(const icu::UnicodeString& k, const icu::UnicodeString& v) {
+    void declare(const icu::UnicodeString &k, const icu::UnicodeString &v) {
         if (_symbols.count(k) > 0) {
             throw ErrorSemantical("redeclaration of " + k);
         } else {
@@ -20,19 +20,20 @@ public:
         }
     }
 
-    void declare_implicit(const icu::UnicodeString& k, const icu::UnicodeString& v) {
+    void declare_implicit(const icu::UnicodeString &k,
+                          const icu::UnicodeString &v) {
         _symbols[k] = v;
     }
 
-    icu::UnicodeString get(const icu::UnicodeString& k) const {
+    icu::UnicodeString get(const icu::UnicodeString &k) const {
         if (_symbols.count(k) > 0) return _symbols.at(k);
         return "";
     }
 
-    virtual void render(std::ostream& os, uint_t indent) const = 0;
+    virtual void render(std::ostream &os, int indent) const = 0;
 
-    void skip(std::ostream& os, uint_t indent) const {
-        for (uint_t i = 0; i < indent; ++i) {
+    void skip(std::ostream &os, int indent) const {
+        for (int i = 0; i < indent; ++i) {
             os << " ";
         }
     }
@@ -43,31 +44,31 @@ public:
         icu::UnicodeString u(ss.str().c_str());
         return u;
     }
+
 protected:
-    Table       _symbols;
+    Table _symbols;
 };
 
 class Namespace;
-typedef std::shared_ptr<Namespace>  NamespacePtr;
-typedef std::map<icu::UnicodeString, NamespacePtr> NamespaceMap;
+using NamespacePtr = std::shared_ptr<Namespace>;
+using NamespaceMap = std::map<icu::UnicodeString, NamespacePtr>;
 
-class Namespace: public Scope {
+class Namespace : public Scope {
 public:
     Namespace() {
     }
 
-    Namespace(const Namespace& nn):
-        _embeds(nn._embeds) {
+    Namespace(const Namespace &nn) : _embeds(nn._embeds) {
     }
 
-    virtual ~Namespace() { // keep the compiler happy
+    virtual ~Namespace() {  // keep the compiler happy
     }
 
     static NamespacePtr create() {
-        return NamespacePtr(new Namespace());
+        return std::make_shared<Namespace>();
     }
 
-    NamespacePtr create_namespace(const icu::UnicodeString& n) {
+    NamespacePtr create_namespace(const icu::UnicodeString &n) {
         if (_embeds.count(n) > 0) {
             return _embeds.at(n);
         } else {
@@ -77,7 +78,7 @@ public:
         }
     }
 
-    NamespacePtr find_namespace(const icu::UnicodeString& n) const {
+    NamespacePtr find_namespace(const icu::UnicodeString &n) const {
         if (_embeds.count(n) > 0) {
             return _embeds.at(n);
         } else {
@@ -85,44 +86,43 @@ public:
         }
     }
 
-    void render(std::ostream& os, uint_t indent) const override {
-        for (auto const& sym:_symbols) {
+    void render(std::ostream &os, int indent) const override {
+        for (auto const &sym : _symbols) {
             skip(os, indent);
             os << sym.first << " -> " << sym.second << std::endl;
         }
 
-        for (auto const& space:_embeds) {
+        for (auto const &space : _embeds) {
             skip(os, indent);
             os << space.first << " (" << std::endl;
             space.second->render(os, indent + 4);
             skip(os, indent);
             os << ")" << std::endl;
-
         }
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const NamespacePtr& n) {
+    friend std::ostream &operator<<(std::ostream &os, const NamespacePtr &n) {
         n->render(os, 0);
         return os;
     }
 
 private:
-    NamespaceMap   _embeds;
+    NamespaceMap _embeds;
 };
 
 class Range;
-typedef std::shared_ptr<Range>    RangePtr;
-typedef std::vector<NamespacePtr> Uses;
+using RangePtr = std::shared_ptr<Range>;
+using Uses = std::vector<NamespacePtr>;
 
-class Range: public Scope {
+class Range : public Scope {
 public:
-    Range(RangePtr r): _embeds(r) {
+    Range(RangePtr r) : _embeds(r) {
     }
 
-    virtual ~Range() { // keep the compiler happy
+    virtual ~Range() {  // keep the compiler happy
     }
 
-    void add_namespace(const NamespacePtr& n) {
+    void add_namespace(const NamespacePtr &n) {
         _uses.push_back(n);
     }
 
@@ -134,8 +134,8 @@ public:
         return _embeds;
     }
 
-    void render(std::ostream& os, uint_t indent) const override {
-        for (auto const& sym:_symbols) {
+    void render(std::ostream &os, int indent) const override {
+        for (auto const &sym : _symbols) {
             skip(os, indent);
             os << sym.first << " : " << sym.second << std::endl;
         }
@@ -149,14 +149,14 @@ public:
         }
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const RangePtr& n) {
+    friend std::ostream &operator<<(std::ostream &os, const RangePtr &n) {
         n->render(os, 0);
         return os;
     }
 
 private:
-    Uses        _uses;
-    RangePtr    _embeds;
+    Uses _uses;
+    RangePtr _embeds;
 };
 
 // the Namespace ADT
@@ -165,34 +165,39 @@ inline NamespacePtr namespace_nil() {
     return std::make_shared<Namespace>();
 }
 
-inline void declare(const NamespacePtr& p, const UnicodeStrings& nn, const icu::UnicodeString& n, const icu::UnicodeString& v) {
+inline void declare(const NamespacePtr &p, const UnicodeStrings &nn,
+                    const icu::UnicodeString &n, const icu::UnicodeString &v) {
     auto ptr = p;
-    for (auto& n: nn) {
+    for (auto &n : nn) {
         ptr = ptr->create_namespace(n);
     }
     ptr->declare(n, v);
 }
 
-inline void declare_implicit(const NamespacePtr& p, const UnicodeStrings& nn, const icu::UnicodeString& n, const icu::UnicodeString& v) {
+inline void declare_implicit(const NamespacePtr &p, const UnicodeStrings &nn,
+                             const icu::UnicodeString &n,
+                             const icu::UnicodeString &v) {
     auto ptr = p;
-    for (auto& n: nn) {
+    for (auto &n : nn) {
         ptr = ptr->create_namespace(n);
     }
     ptr->declare_implicit(n, v);
 }
 
-inline icu::UnicodeString get(const NamespacePtr& p, const UnicodeStrings& nn, const icu::UnicodeString& n) {
+inline icu::UnicodeString get(const NamespacePtr &p, const UnicodeStrings &nn,
+                              const icu::UnicodeString &n) {
     auto ptr = p;
-    for (auto& n: nn) {
+    for (auto &n : nn) {
         ptr = ptr->find_namespace(n);
         if (ptr == nullptr) return "";
     }
     return ptr->get(n);
 }
 
-inline NamespacePtr find_namespace(const NamespacePtr& p, const UnicodeStrings& nn) {
+inline NamespacePtr find_namespace(const NamespacePtr &p,
+                                   const UnicodeStrings &nn) {
     auto ptr = p;
-    for (auto& n: nn) {
+    for (auto &n : nn) {
         ptr = ptr->find_namespace(n);
         if (ptr == nullptr) return ptr;
     }
@@ -201,32 +206,33 @@ inline NamespacePtr find_namespace(const NamespacePtr& p, const UnicodeStrings& 
 
 // the Range ADT
 
-inline RangePtr range_nil(const NamespacePtr& p) {
+inline RangePtr range_nil(const NamespacePtr &p) {
     auto q = std::make_shared<Range>(nullptr);
     q->add_namespace(p);
     return q;
 }
 
-inline RangePtr enter_range(const RangePtr& p) {
+inline RangePtr enter_range(const RangePtr &p) {
     return std::make_shared<Range>(p);
 }
 
-inline RangePtr leave_range(const RangePtr& p) {
+inline RangePtr leave_range(const RangePtr &p) {
     return p->embeds();
 }
 
-inline void declare(const RangePtr& p, const icu::UnicodeString& k, const icu::UnicodeString& v) {
+inline void declare(const RangePtr &p, const icu::UnicodeString &k,
+                    const icu::UnicodeString &v) {
     p->declare(k, v);
 }
 
-inline icu::UnicodeString get(const RangePtr& r, const icu::UnicodeString& n) {
+inline icu::UnicodeString get(const RangePtr &r, const icu::UnicodeString &n) {
     static UnicodeStrings nn;
     if (r == nullptr) return "";
     icu::UnicodeString s = r->get(n);
     if (s != "") {
         return s;
     } else {
-        for (auto& ptr: r->uses()) {
+        for (auto &ptr : r->uses()) {
             icu::UnicodeString s = get(ptr, nn, n);
             if (s != "") return s;
         }
@@ -234,27 +240,26 @@ inline icu::UnicodeString get(const RangePtr& r, const icu::UnicodeString& n) {
     }
 }
 
-inline icu::UnicodeString get(const RangePtr& r, const UnicodeStrings& nn, const icu::UnicodeString& n) {
+inline icu::UnicodeString get(const RangePtr &r, const UnicodeStrings &nn,
+                              const icu::UnicodeString &n) {
     if (r == nullptr) return "";
-    for (auto& ptr: r->uses()) {
+    for (auto &ptr : r->uses()) {
         icu::UnicodeString s = get(ptr, nn, n);
         if (s != "") return s;
     }
     return get(r->embeds(), nn, n);
 }
 
-inline void add_using(RangePtr& r, const UnicodeStrings& nn) {
+inline void add_using(RangePtr &r, const UnicodeStrings &nn) {
     // find root
     auto p = r;
     if (p == nullptr) return;
     while (p->embeds() != nullptr) p = p->embeds();
     // take global namespace
-    auto globals = p->uses()[0]; // XXX: needs an assertion
+    auto globals = p->uses()[0];  // XXX: needs an assertion
     // find namespace
     auto n = find_namespace(globals, nn);
     if (n == nullptr) return;
     // insert namespace
     r->add_namespace(n);
 }
-
-#endif

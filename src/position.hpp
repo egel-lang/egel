@@ -1,9 +1,10 @@
-#ifndef POSITION_H
-#define POSITION_H
+#pragma once
 
 #include <iostream>
 #include <sstream>
-#include "utils.hpp"
+
+#include "unicode/unistr.h"
+#include "unicode/ustream.h"
 
 class Position {
 public:
@@ -41,15 +42,13 @@ public:
         return u;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Position &p) {
+    friend std::ostream &operator<<(std::ostream &os, const Position &p) {
         os << p.resource() << ":" << p.row() << ":" << p.column() << "";
         return os;
     }
 
 private:
-    icu::UnicodeString   _resource;
-    int32_t         _row;
-    int32_t         _column;
+    icu::UnicodeString _resource;
+    int32_t _row;
+    int32_t _column;
 };
-
-#endif

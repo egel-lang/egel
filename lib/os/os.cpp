@@ -1,31 +1,31 @@
-#include "../../src/runtime.hpp"
-
 #include <stdlib.h>
-#include <iostream>
-#include <fstream>
 
-#include <string>
-#include <memory>
 #include <exception>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <string>
 #include <thread>
 
+#include "../../src/runtime.hpp"
+
 // lets hope all this C stuff can once be gone
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/file.h> //for flock
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/file.h>  //for flock
+#include <sys/socket.h>
+#include <unistd.h>
 
 // from utils.... XXX
-char* unicode_to_char(const icu::UnicodeString &str) {
+char* unicode_to_char(const icu::UnicodeString& str) {
     std::string utf8;
     str.toUTF8String(utf8);
     auto cc0 = utf8.c_str();
     auto len = strlen(cc0);
-    auto cc1 = (char*) malloc(len+1);
-    strncpy(cc1, cc0, len+1);
+    auto cc1 = (char*)malloc(len + 1);
+    strncpy(cc1, cc0, len + 1);
     return cc1;
 }
 
@@ -35,18 +35,16 @@ char* unicode_to_char(const icu::UnicodeString &str) {
  * iostream derived classes unworkable.
  *
  * These channel classes flatten C++ i/o streams hierarchy into
- * one channel class with all operations and derived classes 
+ * one channel class with all operations and derived classes
  * which implement them.
  **/
 
 class Unsupported : public std::exception {
 public:
-    Unsupported() :
-        _message("")  {
+    Unsupported() : _message("") {
     }
 
-    Unsupported(const UnicodeString &m) :
-        _message(m)  {
+    Unsupported(const UnicodeString& m) : _message(m) {
     }
 
     ~Unsupported() {
@@ -56,13 +54,13 @@ public:
         return _message;
     }
 
-    friend std::ostream & operator<<(std::ostream &os, const Unsupported &e) {
+    friend std::ostream& operator<<(std::ostream& os, const Unsupported& e) {
         os << "unsupported(" << e.message() << ")";
         return os;
     }
 
 private:
-    UnicodeString   _message;
+    UnicodeString _message;
 };
 
 typedef enum {
@@ -78,10 +76,10 @@ typedef std::shared_ptr<Channel> ChannelPtr;
 
 class Channel {
 public:
-    Channel(channel_tag_t t): _tag(t) {
+    Channel(channel_tag_t t) : _tag(t) {
     }
 
-    virtual ~Channel() { // keep some C++ compilers happy
+    virtual ~Channel() {  // keep some C++ compilers happy
     }
 
     channel_tag_t tag() {
@@ -92,16 +90,16 @@ public:
         throw Unsupported();
     }
 
-    virtual UChar32 read_char() { // XXX: wait for the libicu fix?
+    virtual UChar32 read_char() {  // XXX: wait for the libicu fix?
         throw Unsupported();
     }
 
-    virtual UnicodeString read_line() { // implemented otherwise
+    virtual UnicodeString read_line() {  // implemented otherwise
         throw Unsupported();
     }
 
     virtual UnicodeString read_all() {
-        UnicodeString s; // replace with a buffer once
+        UnicodeString s;  // replace with a buffer once
         while (!eof()) {
             s += read_line();
         }
@@ -131,12 +129,12 @@ public:
     }
 
 protected:
-    channel_tag_t   _tag;
+    channel_tag_t _tag;
 };
 
-class ChannelStreamIn: public Channel {
+class ChannelStreamIn : public Channel {
 public:
-    ChannelStreamIn(): Channel(CHANNEL_STREAM_IN) {
+    ChannelStreamIn() : Channel(CHANNEL_STREAM_IN) {
     }
 
     static ChannelPtr create() {
@@ -160,10 +158,9 @@ public:
     }
 };
 
-class ChannelStreamOut: public Channel {
+class ChannelStreamOut : public Channel {
 public:
-    ChannelStreamOut(): Channel(CHANNEL_STREAM_OUT) {
-
+    ChannelStreamOut() : Channel(CHANNEL_STREAM_OUT) {
     }
 
     static ChannelPtr create() {
@@ -183,9 +180,9 @@ public:
     }
 };
 
-class ChannelStreamErr: public Channel {
+class ChannelStreamErr : public Channel {
 public:
-    ChannelStreamErr(): Channel(CHANNEL_STREAM_ERR) {
+    ChannelStreamErr() : Channel(CHANNEL_STREAM_ERR) {
     }
 
     static ChannelPtr create() {
@@ -205,15 +202,17 @@ public:
     }
 };
 
-class ChannelFile: public Channel {
+class ChannelFile : public Channel {
 public:
-    ChannelFile(const UnicodeString& fn, std::ios_base::openmode m): Channel(CHANNEL_FILE), _fn(fn) {
+    ChannelFile(const UnicodeString& fn, std::ios_base::openmode m)
+        : Channel(CHANNEL_FILE), _fn(fn) {
         auto cc = unicode_to_char(fn);
-        _stream = std::fstream(cc, m); // unsafe due to NUL
+        _stream = std::fstream(cc, m);  // unsafe due to NUL
         free(cc);
     }
 
-    static ChannelPtr create(const UnicodeString& fn, std::ios_base::openmode m) {
+    static ChannelPtr create(const UnicodeString& fn,
+                             std::ios_base::openmode m) {
         return ChannelPtr(new ChannelFile(fn, m));
     }
 
@@ -248,16 +247,17 @@ public:
     virtual bool eof() override {
         return _stream.eof();
     }
+
 protected:
-    UnicodeString   _fn;
-    std::fstream    _stream;
+    UnicodeString _fn;
+    std::fstream _stream;
 };
 
 // Convenience class for file descriptors from _sockets_.
 // should be removed as soon as C++ adds stream io on them.
-class ChannelFD: public Channel {
+class ChannelFD : public Channel {
 public:
-    ChannelFD(const int fd): Channel(CHANNEL_FD), _fd(fd) {
+    ChannelFD(const int fd) : Channel(CHANNEL_FD), _fd(fd) {
     }
 
     ~ChannelFD() {
@@ -270,8 +270,8 @@ public:
 
     UnicodeString read_line() override {
         const int CHUNK_SIZE = 1024;
-        char* str = (char*) malloc(CHUNK_SIZE);
-        int allocated = CHUNK_SIZE; 
+        char* str = (char*)malloc(CHUNK_SIZE);
+        int allocated = CHUNK_SIZE;
         int count = 0;
 
         _eof = false;
@@ -281,18 +281,18 @@ public:
         int n = 0;
         char ch;
         do {
-            n = ::read(_fd, (void*) &ch, (size_t) 1);
-            if (n < 0) { // this signals an error
+            n = ::read(_fd, (void*)&ch, (size_t)1);
+            if (n < 0) {  // this signals an error
                 throw "error in read";
-            } else if (n == 0) { // this signals EOF
+            } else if (n == 0) {  // this signals EOF
                 _eof = true;
-            } else { // n == 1
+            } else {  // n == 1
                 if (ch == '\n') {
                 } else {
                     str[count] = ch;
                     count++;
                     if (count >= allocated) {
-                        str = (char*) realloc(str, allocated + CHUNK_SIZE);
+                        str = (char*)realloc(str, allocated + CHUNK_SIZE);
                         allocated += CHUNK_SIZE;
                     }
                 }
@@ -309,11 +309,12 @@ public:
         ch = c;
         int n = 0;
         do {
-            n = ::write(_fd, &ch, 1); // always remember write can fail, folks
+            n = ::write(_fd, &ch, 1);  // always remember write can fail, folks
             if (n == 0) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(50)); // XXX
+                std::this_thread::sleep_for(
+                    std::chrono::milliseconds(50));  // XXX
             }
-        } while (n == 0); 
+        } while (n == 0);
         if (n < 0) {
             throw "error in write";
         }
@@ -343,31 +344,31 @@ public:
     bool eof() override {
         return _eof;
     }
-    
+
 protected:
-    int  _fd;
+    int _fd;
     bool _eof;
 };
-
 
 /**
  * Egel's primitive input/output combinators.
  *
- * Unstable and not all combinators fully provide what their 
+ * Unstable and not all combinators fully provide what their
  * specification promises. Neither are all combinators implemented
  * according to spec.
  **/
 
 //## OS::channel - opaque values which are input/output channels
-class ChannelValue: public Opaque {
+class ChannelValue : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ChannelValue, "OS", "channel");
 
-    ChannelValue(VM* m, const ChannelPtr& chan): ChannelValue(m) {
+    ChannelValue(VM* m, const ChannelPtr& chan) : ChannelValue(m) {
         _value = chan;
     }
 
-    ChannelValue(const ChannelValue& chan): Opaque(VM_SUB_EGO, chan.machine(), chan.symbol()) {
+    ChannelValue(const ChannelValue& chan)
+        : Opaque(VM_SUB_EGO, chan.machine(), chan.symbol()) {
         _value = chan.value();
     }
 
@@ -377,9 +378,12 @@ public:
 
     int compare(const VMObjectPtr& o) override {
         auto v = (std::static_pointer_cast<ChannelValue>(o))->value();
-        if (_value < v) return -1;
-        else if (v < _value) return 1;
-        else return 0;
+        if (_value < v)
+            return -1;
+        else if (v < _value)
+            return 1;
+        else
+            return 0;
     }
 
     void set_value(ChannelPtr cp) {
@@ -395,53 +399,50 @@ protected:
 };
 
 #define CHANNEL_TEST(o, sym) \
-    ((machine()->is_opaque(o)) && \
-     (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
-#define CHANNEL_VALUE(o) \
-    ((std::static_pointer_cast<ChannelValue>(o))->value())
+    ((machine()->is_opaque(o)) && (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
+#define CHANNEL_VALUE(o) ((std::static_pointer_cast<ChannelValue>(o))->value())
 
 //## OS::cin - standard input channel
-class Stdin: public Medadic {
+class Stdin : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdin, "OS", "stdin");
 
     VMObjectPtr apply() const override {
         auto cin = ChannelStreamIn::create();
-        auto in  = ChannelValue::create(machine(), cin);
+        auto in = ChannelValue::create(machine(), cin);
         return in;
     }
 };
 
 //## OS::stdout - standard output channel
-class Stdout: public Medadic {
+class Stdout : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdout, "OS", "stdout");
 
     VMObjectPtr apply() const override {
         auto cout = ChannelStreamOut::create();
-        auto out  = ChannelValue::create(machine(), cout);
+        auto out = ChannelValue::create(machine(), cout);
         return out;
     }
 };
 
 //## OS::stderr - standard error channel
-class Stderr: public Medadic {
+class Stderr : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stderr, "OS", "stderr");
 
     VMObjectPtr apply() const override {
         auto cerr = ChannelStreamErr::create();
-        auto err  = ChannelValue::create(machine(), cerr);
+        auto err = ChannelValue::create(machine(), cerr);
         return err;
     }
 };
-
 
 /* Input functions on standard input */
 
 /*
 //## OS::getint
-// Read one line from standard input and convert it to an integer. 
+// Read one line from standard input and convert it to an integer.
 
 class Getint: public Medadic {
 public:
@@ -455,8 +456,8 @@ public:
 };
 
 //## OS::getfloat
-// Read one line from standard input and convert it to a 
-// floating-point number. The result is unspecified if the line read 
+// Read one line from standard input and convert it to a
+// floating-point number. The result is unspecified if the line read
 // is not a valid representation of a floating-point number.
 
 class Getfloat: public Medadic {
@@ -473,8 +474,8 @@ public:
 
 /* File channel creation and destruction */
 
-//## OS::open_in fn - create a channel from filename 
-class OpenIn: public Monadic {
+//## OS::open_in fn - create a channel from filename
+class OpenIn : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenIn, "OS", "open_in");
 
@@ -485,13 +486,13 @@ public:
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-//## OS::open_out fn - create a channel from filename 
-class OpenOut: public Monadic {
+//## OS::open_out fn - create a channel from filename
+class OpenOut : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenOut, "OS", "open_out");
 
@@ -502,13 +503,13 @@ public:
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::close c - close a channel
-class Close: public Monadic {
+class Close : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Close, "OS", "close");
 
@@ -521,13 +522,13 @@ public:
             chan->close();
             return machine()->create_none();
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::read c - read a string from a channel
-class Read: public Monadic {
+class Read : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Read, "OS", "read");
 
@@ -540,13 +541,13 @@ public:
             UnicodeString str = chan->read();
             return machine()->create_text(str);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::read_line c - read a line from a channel
-class ReadLine: public Monadic {
+class ReadLine : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadLine, "OS", "read_line");
 
@@ -559,13 +560,13 @@ public:
             UnicodeString str = chan->read_line();
             return machine()->create_text(str);
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::read_all c - read entire channel content
-class ReadAll: public Monadic {
+class ReadAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadAll, "OS", "read_all");
 
@@ -578,17 +579,18 @@ public:
             UnicodeString str = chan->read_all();
             return machine()->create_text(str);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::write c s - write a string s to a channel
-class Write: public Dyadic {
+class Write : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Write, "OS", "write");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         static symbol_t sym = 0;
         if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
@@ -599,20 +601,21 @@ public:
                 chan->write(s);
                 return machine()->create_none();
             } else {
-                THROW_INVALID;
+                throw machine()->bad_args(this, arg0, arg1);
             }
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::write_line c s - write a string s to a channel
-class WriteLine: public Dyadic {
+class WriteLine : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, WriteLine, "OS", "write_line");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         static symbol_t sym = 0;
         if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
 
@@ -623,16 +626,16 @@ public:
                 chan->write_line(s);
                 return machine()->create_none();
             } else {
-                THROW_INVALID;
+                throw machine()->bad_args(this, arg0, arg1);
             }
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::flush c - flush a channel
-class Flush: public Monadic {
+class Flush : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flush, "OS", "flush");
 
@@ -645,13 +648,13 @@ public:
             chan->flush();
             return machine()->create_none();
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::eof c - tests if there is no more input
-class Eof: public Monadic {
+class Eof : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Eof, "OS", "eof");
 
@@ -663,13 +666,13 @@ public:
             auto chan = CHANNEL_VALUE(arg0);
             return machine()->create_bool(chan->eof());
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::flock f n - create a filesystem lock file (not process safe)
-class Flock: public Monadic {
+class Flock : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flock, "OS", "flock");
 
@@ -677,24 +680,26 @@ public:
         auto m = machine();
 
         if (m->is_text(arg0)) {
-            auto s  = m->get_text(arg0);
+            auto s = m->get_text(arg0);
             auto fn = unicode_to_char(s);
 
-            auto fd = open(fn, O_WRONLY | O_CREAT, 0644); // channels not fds so just open a file
+            auto fd = open(fn, O_WRONLY | O_CREAT,
+                           0644);  // channels not fds so just open a file
             flock(fd, LOCK_EX);
             free(fn);
             auto cn = ChannelFD::create(fd);
-            auto c  = ChannelValue::create(m, cn); // lock will be released when object destroyed
+            auto c = ChannelValue::create(
+                m, cn);  // lock will be released when object destroyed
             return c;
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::exit n - flush all channels and terminate process with exit code n
 // (0 to indicate no errors, a small positive integer for failure.)
-class Exit: public Monadic {
+class Exit : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exit, "OS", "exit");
 
@@ -706,7 +711,7 @@ public:
             // play nice
             return machine()->create_none();
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -715,13 +720,15 @@ public:
 // Highly unstable and experimental client/server code.
 
 //## OS::serverobject - an opaque objects which serves as a server
-class ServerObject: public Opaque {
+class ServerObject : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ServerObject, "OS", "serverobject");
 
-    ServerObject(const ServerObject& so): Opaque(VM_SUB_EGO, so.machine(), so.symbol()) {
-        // memcpy( (char*) &_server_address,  (char *) &so._server_address, sizeof(_server_address));
-	_server_address = so._server_address;
+    ServerObject(const ServerObject& so)
+        : Opaque(VM_SUB_EGO, so.machine(), so.symbol()) {
+        // memcpy( (char*) &_server_address,  (char *) &so._server_address,
+        // sizeof(_server_address));
+        _server_address = so._server_address;
         _portno = so._portno;
         _queue = so._queue;
         _sockfd = so._sockfd;
@@ -753,28 +760,27 @@ public:
         }
 
         // bzero((char *) &_server_address, sizeof(_server_address));
-	_server_address = {};
+        _server_address = {};
         _server_address.sin_family = AF_INET;
         _server_address.sin_addr.s_addr = INADDR_ANY;
         _server_address.sin_port = htons(_portno);
-        if (::bind(_sockfd, (struct sockaddr *) &_server_address,
-                 sizeof(_server_address)) < 0) {
+        if (::bind(_sockfd, (struct sockaddr*)&_server_address,
+                   sizeof(_server_address)) < 0) {
             throw VMObjectText::create("error on bind");
         }
-        listen(_sockfd,_queue);
+        listen(_sockfd, _queue);
     }
 
     VMObjectPtr accept() {
         struct sockaddr_in address;
-        socklen_t n = sizeof(address); // XXX: What is the supposed lifetime of this?
-        int fd = ::accept(_sockfd,
-                     (struct sockaddr *) &address,
-                     &n);
+        socklen_t n =
+            sizeof(address);  // XXX: What is the supposed lifetime of this?
+        int fd = ::accept(_sockfd, (struct sockaddr*)&address, &n);
         if (fd < 0) {
             throw VMObjectText::create("error opening socket");
         }
         auto cn = ChannelFD::create(fd);
-        auto c  = ChannelValue::create(machine(), cn);
+        auto c = ChannelValue::create(machine(), cn);
         return c;
     }
 
@@ -786,13 +792,11 @@ protected:
 };
 
 #define SERVER_OBJECT_TEST(o, sym) \
-    ((machine()->is_opaque(o)) && \
-     (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
-#define SERVER_OBJECT_CAST(o) \
-    (std::static_pointer_cast<ServerObject>(o))
+    ((machine()->is_opaque(o)) && (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
+#define SERVER_OBJECT_CAST(o) (std::static_pointer_cast<ServerObject>(o))
 
 //## OS::accept serverobject - accept connections
-class Accept: public Monadic {
+class Accept : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Accept, "OS", "accept");
 
@@ -805,38 +809,40 @@ public:
             auto chan = so->accept();
             return chan;
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-//## OS::server port in - create a serverobject 
-class Server: public Dyadic {
+//## OS::server port in - create a serverobject
+class Server : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Server, "OS", "server");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) ) {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto port = machine()->get_integer(arg0);
-            auto in   = machine()->get_integer(arg1);
+            auto in = machine()->get_integer(arg1);
 
             auto so = ServerObject::create(machine());
             SERVER_OBJECT_CAST(so)->bind(port, in);
 
             return so;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::client host port - create a client channel
-class Client: public Dyadic {
+class Client : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Client, "OS", "client");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ( (machine()->is_text(arg0)) && (machine()->is_integer(arg1)) ) {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
+        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             auto host = machine()->get_text(arg0);
             auto port = machine()->get_integer(arg1);
 
@@ -848,30 +854,31 @@ public:
                 throw VMObjectText::create("error opening socket");
             }
 
-            bzero((char *) &server_address, sizeof(server_address));
+            bzero((char*)&server_address, sizeof(server_address));
             server_address.sin_family = AF_INET;
             server_address.sin_port = htons(port);
 
             std::string utf8;
             host.toUTF8String(utf8);
             // Convert IPv4 and IPv6 addresses from text to binary form
-            if(::inet_pton(AF_INET, utf8.c_str(), &server_address.sin_addr)<=0) {
+            if (::inet_pton(AF_INET, utf8.c_str(), &server_address.sin_addr) <=
+                0) {
                 throw VMObjectText::create("invalid address");
             }
 
-            if (::connect(sockfd, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
+            if (::connect(sockfd, (struct sockaddr*)&server_address,
+                          sizeof(server_address)) < 0) {
                 throw VMObjectText::create("connection failed");
             }
 
             auto cn = ChannelFD::create(sockfd);
-            auto c  = ChannelValue::create(machine(), cn);
+            auto c = ChannelValue::create(machine(), cn);
             return c;
 
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
-
 };
 
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
@@ -881,9 +888,9 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-//    oo.push_back::create(VMObjectData(vm, "OS", "channel"));
+    //    oo.push_back::create(VMObjectData(vm, "OS", "channel"));
 
-    //oo.push_back(ChannelValue::create(vm));
+    // oo.push_back(ChannelValue::create(vm));
     oo.push_back(VMObjectStub::create(vm, "<OS::channel>"));
     oo.push_back(Stdin::create(vm));
     oo.push_back(Stdout::create(vm));
@@ -901,7 +908,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Flock::create(vm));
     oo.push_back(Exit::create(vm));
 
-// hacked TCP protocol
+    // hacked TCP protocol
     oo.push_back(ServerObject::create(vm));
     oo.push_back(Accept::create(vm));
     oo.push_back(Server::create(vm));

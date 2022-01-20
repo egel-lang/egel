@@ -1,12 +1,14 @@
 # minimal cmake version
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.20)
 
 # fallback for other versions 
-if(${CMAKE_VERSION} VERSION_LESS 3.18)
+if(${CMAKE_VERSION} VERSION_LESS 3.20)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 else()
-    cmake_policy(VERSION 3.18) 
+    cmake_policy(VERSION 3.20) 
 endif()
+
+message("generator: ${CMAKE_GENERATOR}")
 
 # set the cxx compiler standard
 set(CMAKE_CXX_STANDARD 20)
@@ -39,7 +41,6 @@ file(STRINGS "${CMAKE_SOURCE_DIR}/src/egel.cpp"
 string(REGEX REPLACE ${EGEL_PATH_REGEX} "\\1" EGEL_PATH "${EGEL_PATH}")
 
 # report findings
-
 message("egel version: ${PVERSION}")
 message("egel path: ${EGEL_PATH}")
 
@@ -108,8 +109,8 @@ else()
 endif()
 
 # for the moment, glob sources and headers
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.hpp")
-file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB EGEL_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB EGEL_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.hpp")
 
 # check for ICU, Threads, fmt
 # ICU components: data, i18n, io, le, lx, test, tu and uc.
@@ -120,7 +121,7 @@ find_package(fmt 7.1 REQUIRED)
 include_directories("${CMAKE_SOURCE_DIR}/src")
 
 # objects
-add_library(objlib OBJECT ${SOURCE_LIST})
+add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
 
@@ -128,7 +129,6 @@ target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io
 add_executable(egel $<TARGET_OBJECTS:objlib>)
 target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
 # target_link_libraries(egel stdc++fs) # for old gcc
-
 
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
@@ -191,7 +191,7 @@ install(TARGETS egellib egellib_static
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-install(FILES ${HEADER_LIST}
+install(FILES ${EGEL_MODULES}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/egel
 )
 

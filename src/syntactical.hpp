@@ -1,18 +1,19 @@
-#ifndef SYNTACTICAL_HPP
-#define SYNTACTICAL_HPP
+#pragma once
 
-#include "lexical.hpp"
-#include "error.hpp"
-#include "operators.hpp"
 #include "ast.hpp"
+#include "error.hpp"
+#include "lexical.hpp"
+#include "operators.hpp"
+#include "syntactical.hpp"
+#include "transform.hpp"
 
 class Parser {
 public:
-    Parser(TokenReaderPtr& r) {
+    Parser(TokenReaderPtr &r) {
         _tokenreader = r;
     }
 
-    Token   look(uint_t n = 0) {
+    Token look(int n = 0) {
         return _tokenreader->look(n);
     }
 
@@ -25,7 +26,7 @@ public:
         return _tokenreader->look().position();
     }
 
-    token_t   tag(uint_t n = 0) {
+    token_t tag(int n = 0) {
         return _tokenreader->look(n).tag();
     }
 
@@ -88,16 +89,18 @@ public:
     }
 
     bool is_combinator() {
-        uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
+        int i = 0;
+        while ((look(i).tag() == TOKEN_UPPERCASE) &&
+               (look(i + 1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         return look(i).tag() == TOKEN_LOWERCASE;
     }
 
     bool is_operator() {
-        uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
+        int i = 0;
+        while ((look(i).tag() == TOKEN_UPPERCASE) &&
+               (look(i + 1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         return look(i).tag() == TOKEN_OPERATOR;
@@ -109,8 +112,9 @@ public:
 
     icu::UnicodeString peek_operator() {
         // (uppercase '.')* operator
-        uint_t i = 0;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
+        int i = 0;
+        while ((look(i).tag() == TOKEN_UPPERCASE) &&
+               (look(i + 1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         if (look(i).tag() == TOKEN_OPERATOR) {
@@ -122,10 +126,11 @@ public:
 
     bool is_enclosed_operator() {
         // '(' (uppercase '::')* operator ')'
-        uint_t i = 0;
+        int i = 0;
         if (tag(i) != TOKEN_LPAREN) return false;
         i++;
-        while ((look(i).tag() == TOKEN_UPPERCASE) && (look(i+1).tag() == TOKEN_DCOLON)) {
+        while ((look(i).tag() == TOKEN_UPPERCASE) &&
+               (look(i + 1).tag() == TOKEN_DCOLON)) {
             i += 2;
         }
         if (tag(i) != TOKEN_OPERATOR) return false;
@@ -153,10 +158,10 @@ public:
     AstPtr parse_combinator() {
         Position p = position();
         UnicodeStrings nn;
-        while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_DCOLON) ) {
+        while ((tag(0) == TOKEN_UPPERCASE) && (tag(1) == TOKEN_DCOLON)) {
             icu::UnicodeString n = look().text();
-            skip(); skip();
+            skip();
+            skip();
             nn.push_back(n);
         };
         check_token(TOKEN_LOWERCASE);
@@ -168,10 +173,10 @@ public:
     AstPtr parse_operator() {
         Position p = position();
         UnicodeStrings nn;
-        while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_DCOLON) ) {
+        while ((tag(0) == TOKEN_UPPERCASE) && (tag(1) == TOKEN_DCOLON)) {
             icu::UnicodeString n = look().text();
-            skip(); skip();
+            skip();
+            skip();
             nn.push_back(n);
         };
         check_token(TOKEN_OPERATOR);
@@ -183,10 +188,10 @@ public:
     AstPtr parse_prefix_operator() {
         Position p = position();
         UnicodeStrings nn;
-        while ( (tag(0) == TOKEN_UPPERCASE) &&
-                (tag(1) == TOKEN_DCOLON) ) {
+        while ((tag(0) == TOKEN_UPPERCASE) && (tag(1) == TOKEN_DCOLON)) {
             icu::UnicodeString n = look().text();
-            skip(); skip();
+            skip();
+            skip();
             nn.push_back(n);
         };
         check_token(TOKEN_OPERATOR);
@@ -208,8 +213,7 @@ public:
         icu::UnicodeString s = look().text();
         ss.push_back(s);
         skip();
-        while ( (tag(0) == TOKEN_DCOLON) &&
-                (tag(1) == TOKEN_UPPERCASE) ) {
+        while ((tag(0) == TOKEN_DCOLON) && (tag(1) == TOKEN_UPPERCASE)) {
             skip();
             icu::UnicodeString s = look().text();
             skip();
@@ -221,65 +225,64 @@ public:
     // patterns
     bool is_pattern_primary() {
         switch (tag()) {
-        case TOKEN_INTEGER:
-        case TOKEN_HEXINTEGER:
-        case TOKEN_FLOAT:
-        case TOKEN_CHAR:
-        case TOKEN_TEXT:
-        case TOKEN_LPAREN:
-        case TOKEN_LCURLY:
-            return true;
-            break;
-        default:
-            return (is_wildcard() || is_variable() 
-                    || is_combinator());
-            break;
+            case TOKEN_INTEGER:
+            case TOKEN_HEXINTEGER:
+            case TOKEN_FLOAT:
+            case TOKEN_CHAR:
+            case TOKEN_TEXT:
+            case TOKEN_LPAREN:
+            case TOKEN_LCURLY:
+                return true;
+                break;
+            default:
+                return (is_wildcard() || is_variable() || is_combinator());
+                break;
         }
     }
 
     AstPtr parse_pattern_primary() {
         switch (tag()) {
-        case TOKEN_INTEGER:
-            return parse_integer();
-            break;
-        case TOKEN_HEXINTEGER:
-            return parse_hexinteger();
-            break;
-        case TOKEN_FLOAT:
-            return parse_float();
-            break;
-        case TOKEN_CHAR:
-            return parse_character();
-            break;
-        case TOKEN_TEXT:
-            return parse_text();
-            break;
-        case TOKEN_LPAREN:
-            return parse_pattern_enclosed();
-            break;
-        case TOKEN_LCURLY:
-            return parse_pattern_list();
-            break;
-        default:
-            AstPtr e;
-            if (is_wildcard()) {
-                e = parse_wildcard();
-            } else if (is_combinator()) {
-                e = parse_combinator();
-            } else if (is_variable()) {
-                e = parse_variable();
-            } else {
-                throw ErrorSyntactical(position(), "pattern expected");
-            }
-            if (tag() == TOKEN_COLON) {
-                Position p = position();
-                skip();
-                auto c = parse_combinator();
-                return AstExprTag::create(p, e, c);
-            } else {
-                return e;
-            }
-            break;
+            case TOKEN_INTEGER:
+                return parse_integer();
+                break;
+            case TOKEN_HEXINTEGER:
+                return parse_hexinteger();
+                break;
+            case TOKEN_FLOAT:
+                return parse_float();
+                break;
+            case TOKEN_CHAR:
+                return parse_character();
+                break;
+            case TOKEN_TEXT:
+                return parse_text();
+                break;
+            case TOKEN_LPAREN:
+                return parse_pattern_enclosed();
+                break;
+            case TOKEN_LCURLY:
+                return parse_pattern_list();
+                break;
+            default:
+                AstPtr e;
+                if (is_wildcard()) {
+                    e = parse_wildcard();
+                } else if (is_combinator()) {
+                    e = parse_combinator();
+                } else if (is_variable()) {
+                    e = parse_variable();
+                } else {
+                    throw ErrorSyntactical(position(), "pattern expected");
+                }
+                if (tag() == TOKEN_COLON) {
+                    Position p = position();
+                    skip();
+                    auto c = parse_combinator();
+                    return AstExprTag::create(p, e, c);
+                } else {
+                    return e;
+                }
+                break;
         }
         throw ErrorSyntactical(position(), "pattern expected");
     }
@@ -368,11 +371,11 @@ public:
         return pp;
     }
 
-    // expressions 
+    // expressions
     AstPtr parse_match() {
         Position p = position();
         AstPtrs mm = parse_patterns();
-        /* 
+        /*
         if (tag() == TOKEN_QUESTION) {
             skip();
             AstPtr q = parse_expression();
@@ -499,76 +502,77 @@ public:
 
     bool is_primary() {
         switch (tag()) {
-        case TOKEN_INTEGER:
-        case TOKEN_HEXINTEGER:
-        case TOKEN_FLOAT:
-        case TOKEN_CHAR:
-        case TOKEN_TEXT:
-        case TOKEN_LPAREN:
-        case TOKEN_IF:
-        case TOKEN_TRY:
-        case TOKEN_THROW:
-        case TOKEN_LSQUARE:
-        case TOKEN_LCURLY:
-            return true;
-            break;
-        default:
-            if (is_operator()) return false; // qualified operator and variable overlap
-            return (is_combinator() || is_variable());
-            break;
+            case TOKEN_INTEGER:
+            case TOKEN_HEXINTEGER:
+            case TOKEN_FLOAT:
+            case TOKEN_CHAR:
+            case TOKEN_TEXT:
+            case TOKEN_LPAREN:
+            case TOKEN_IF:
+            case TOKEN_TRY:
+            case TOKEN_THROW:
+            case TOKEN_LSQUARE:
+            case TOKEN_LCURLY:
+                return true;
+                break;
+            default:
+                if (is_operator())
+                    return false;  // qualified operator and variable overlap
+                return (is_combinator() || is_variable());
+                break;
         }
     }
 
     AstPtr parse_primary() {
         switch (tag()) {
-        case TOKEN_INTEGER:
-            return parse_integer();
-            break;
-        case TOKEN_HEXINTEGER:
-            return parse_hexinteger();
-            break;
-        case TOKEN_FLOAT:
-            return parse_float();
-            break;
-        case TOKEN_CHAR:
-            return parse_character();
-            break;
-        case TOKEN_TEXT:
-            return parse_text();
-            break;
-        case TOKEN_LPAREN:
-            return parse_enclosed();
-            break;
-        case TOKEN_LCURLY:
-            return parse_list();
-            break;
-        case TOKEN_LSQUARE:
-            return parse_block();
-            break;
-        case TOKEN_LAMBDA:
-            return parse_lambda();
-            break;
-        case TOKEN_IF:
-            return parse_if();
-            break;
-        case TOKEN_TRY:
-            return parse_try();
-            break;
-        case TOKEN_THROW:
-            return parse_throw();
-            break;
-        case TOKEN_LET:
-            return parse_let();
-        default:
-            if (is_combinator()) {
-                return parse_combinator();
-            } else if (is_variable()) {
-                return parse_variable();
-            } else {
-                Position p = position();
-                throw ErrorSyntactical(p, "primary expression expected");
-            }
-            break;
+            case TOKEN_INTEGER:
+                return parse_integer();
+                break;
+            case TOKEN_HEXINTEGER:
+                return parse_hexinteger();
+                break;
+            case TOKEN_FLOAT:
+                return parse_float();
+                break;
+            case TOKEN_CHAR:
+                return parse_character();
+                break;
+            case TOKEN_TEXT:
+                return parse_text();
+                break;
+            case TOKEN_LPAREN:
+                return parse_enclosed();
+                break;
+            case TOKEN_LCURLY:
+                return parse_list();
+                break;
+            case TOKEN_LSQUARE:
+                return parse_block();
+                break;
+            case TOKEN_LAMBDA:
+                return parse_lambda();
+                break;
+            case TOKEN_IF:
+                return parse_if();
+                break;
+            case TOKEN_TRY:
+                return parse_try();
+                break;
+            case TOKEN_THROW:
+                return parse_throw();
+                break;
+            case TOKEN_LET:
+                return parse_let();
+            default:
+                if (is_combinator()) {
+                    return parse_combinator();
+                } else if (is_variable()) {
+                    return parse_variable();
+                } else {
+                    Position p = position();
+                    throw ErrorSyntactical(p, "primary expression expected");
+                }
+                break;
         }
     }
 
@@ -599,37 +603,35 @@ public:
         }
     }
 
-
     /*
-     *  Taken from Wikipedia https://en.wikipedia.org/wiki/Operator-precedence_parser
+     *  Taken from Wikipedia
+     * https://en.wikipedia.org/wiki/Operator-precedence_parser
      *
      *  parse_expression_1 (lhs, min_precedence)
      *      lookahead := peek next token
-     *      while lookahead is a binary operator whose precedence is >= min_precedence
-     *          op := lookahead
-     *          advance to next token
-     *          rhs := parse_primary ()
-     *          lookahead := peek next token
-     *          while lookahead is a binary operator whose precedence is greater
-     *                   than op's, or a right-associative operator
-     *                   whose precedence is equal to op's
-     *              rhs := parse_expression_1 (rhs, lookahead's precedence)
-     *              lookahead := peek next token
-     *          lhs := the result of applying op with operands lhs and rhs
-     *      return lhs
+     *      while lookahead is a binary operator whose precedence is >=
+     * min_precedence op := lookahead advance to next token rhs := parse_primary
+     * () lookahead := peek next token while lookahead is a binary operator
+     * whose precedence is greater than op's, or a right-associative operator
+     * whose precedence is equal to op's rhs := parse_expression_1 (rhs,
+     * lookahead's precedence) lookahead := peek next token lhs := the result of
+     * applying op with operands lhs and rhs return lhs
      */
 
     AstPtr parse_arithmetic_expression_1(AstPtr e0, icu::UnicodeString mp) {
         AstPtr lhs = e0;
         icu::UnicodeString la = peek_operator();
-        while (((la.compare("") != 0) && operator_is_infix(la)) && (operator_compare(la, mp) >= 0)) {
+        while (((la.compare("") != 0) && operator_is_infix(la)) &&
+               (operator_compare(la, mp) >= 0)) {
             Position p = position();
             icu::UnicodeString opt = la;
             AstPtr op = parse_operator();
             AstPtr rhs = parse_primaries();
             la = peek_operator();
-            while (((la.compare("") != 0) && operator_is_infix(la))
-                    && ((operator_compare(la, opt) > 0) || ((opt.compare(la) == 0) && operator_is_right_associative(la)))) {
+            while (((la.compare("") != 0) && operator_is_infix(la)) &&
+                   ((operator_compare(la, opt) > 0) ||
+                    ((opt.compare(la) == 0) &&
+                     operator_is_right_associative(la)))) {
                 rhs = parse_arithmetic_expression_1(rhs, la);
                 la = peek_operator();
             }
@@ -658,13 +660,13 @@ public:
     // class fields
     bool is_field() {
         switch (tag()) {
-        case TOKEN_DATA:
-        case TOKEN_DEF:
-            return true;
-            break;
-        default:
-            return false;
-            break;
+            case TOKEN_DATA:
+            case TOKEN_DEF:
+                return true;
+                break;
+            default:
+                return false;
+                break;
         }
     }
 
@@ -702,15 +704,15 @@ public:
 
     AstPtr parse_field() {
         switch (tag()) {
-        case TOKEN_DATA:
-            return parse_field_data();
-            break;
-        case TOKEN_DEF:
-            return parse_field_definition();
-            break;
-        default:
-            return nullptr; // XXX;
-            break;
+            case TOKEN_DATA:
+                return parse_field_data();
+                break;
+            case TOKEN_DEF:
+                return parse_field_definition();
+                break;
+            default:
+                return nullptr;  // XXX;
+                break;
         }
     }
 
@@ -730,7 +732,7 @@ public:
         AstPtrs ee = AstPtrs();
         AstPtr e = parse_combinator();
         ee.push_back(e);
-        while ( (tag() == TOKEN_COMMA) ) {
+        while ((tag() == TOKEN_COMMA)) {
             force_token(TOKEN_COMMA);
             e = parse_combinator();
             ee.push_back(e);
@@ -812,38 +814,38 @@ public:
 
     bool is_decl() {
         switch (tag()) {
-        case TOKEN_DATA:
-        case TOKEN_DEF:
-        case TOKEN_VAL:
-        case TOKEN_NAMESPACE:
-        case TOKEN_CLASS:
-            return true;
-            break;
-        default:
-            return false;
-            break;
+            case TOKEN_DATA:
+            case TOKEN_DEF:
+            case TOKEN_VAL:
+            case TOKEN_NAMESPACE:
+            case TOKEN_CLASS:
+                return true;
+                break;
+            default:
+                return false;
+                break;
         }
     }
 
     AstPtr parse_decl() {
         switch (tag()) {
-        case TOKEN_DATA:
-            return parse_decl_data();
-            break;
-        case TOKEN_DEF:
-            return parse_decl_definition();
-            break;
-        case TOKEN_VAL:
-            return parse_decl_value();
-            break;
-        case TOKEN_CLASS:
-            return parse_decl_class();
-            break;
-        case TOKEN_NAMESPACE:
-            return parse_decl_namespace();
-            break;
-        default:
-            break;
+            case TOKEN_DATA:
+                return parse_decl_data();
+                break;
+            case TOKEN_DEF:
+                return parse_decl_definition();
+                break;
+            case TOKEN_VAL:
+                return parse_decl_value();
+                break;
+            case TOKEN_CLASS:
+                return parse_decl_class();
+                break;
+            case TOKEN_NAMESPACE:
+                return parse_decl_namespace();
+                break;
+            default:
+                break;
         }
         Position p = position();
         throw ErrorSyntactical(p, "declaration expected");
@@ -853,13 +855,13 @@ public:
 
     bool is_directive() {
         switch (tag()) {
-        case TOKEN_IMPORT:
-        case TOKEN_USING:
-            return true;
-            break;
-        default:
-            return false;
-            break;
+            case TOKEN_IMPORT:
+            case TOKEN_USING:
+                return true;
+                break;
+            default:
+                return false;
+                break;
         }
     }
 
@@ -881,14 +883,14 @@ public:
 
     AstPtr parse_directive() {
         switch (tag()) {
-        case TOKEN_USING:
-            return parse_using();
-            break;
-        case TOKEN_IMPORT:
-            return parse_import();
-            break;
-        default:
-            break;
+            case TOKEN_USING:
+                return parse_using();
+                break;
+            case TOKEN_IMPORT:
+                return parse_import();
+                break;
+            default:
+                break;
         }
         Position p = position();
         throw ErrorSyntactical(p, "directive expected");
@@ -925,9 +927,9 @@ private:
     TokenReaderPtr _tokenreader;
 };
 
-class LineParser: public Parser {
+class LineParser : public Parser {
 public:
-    LineParser(TokenReaderPtr& r): Parser (r) {
+    LineParser(TokenReaderPtr &r) : Parser(r) {
     }
 
     AstPtr parse_command() {
@@ -964,12 +966,91 @@ public:
     }
 };
 
-
-AstPtrs imports(const AstPtr &a); // XXX: didn't know where to place this
-AstPtrs values(const AstPtr &a); // XXX: didn't know where to place this
+AstPtrs imports(const AstPtr &a);  // XXX: didn't know where to place this
+AstPtrs values(const AstPtr &a);   // XXX: didn't know where to place this
 
 AstPtr parse(TokenReaderPtr &r);
 
 AstPtr parse_line(TokenReaderPtr &r);
 
-#endif
+class Imports : public Visit {
+public:
+    AstPtrs imports(const AstPtr &a) {
+        visit(a);
+        return _imports;
+    }
+
+    void visit_directive_import(const Position &p,
+                                const icu::UnicodeString &i) override {
+        _imports.push_back(AstDirectImport::create(p, i));
+    }
+
+    // cuts
+    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    }
+
+    void visit_decl_definition(const Position &p, const AstPtr &n,
+                               const AstPtr &e) override {
+    }
+
+    void visit_decl_value(const Position &p, const AstPtr &n,
+                          const AstPtr &e) override {
+    }
+
+    void visit_decl_operator(const Position &p, const AstPtr &c,
+                             const AstPtr &e) override {
+    }
+
+private:
+    AstPtrs _imports;
+};
+
+AstPtrs imports(const AstPtr &a) {
+    Imports imports;
+    return imports.imports(a);
+}
+
+class Values : public Visit {
+public:
+    AstPtrs values(const AstPtr &a) {
+        visit(a);
+        return _values;
+    }
+
+    void visit_decl_value(const Position &p, const AstPtr &n,
+                          const AstPtr &e) override {
+        _values.push_back(AstDeclValue::create(p, n, e));
+    }
+
+    // cuts
+    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    }
+
+    void visit_decl_definition(const Position &p, const AstPtr &n,
+                               const AstPtr &e) override {
+    }
+
+    void visit_decl_operator(const Position &p, const AstPtr &c,
+                             const AstPtr &e) override {
+    }
+
+private:
+    AstPtrs _values;
+};
+
+AstPtrs values(const AstPtr &a) {
+    Values values;
+    return values.values(a);
+}
+
+AstPtr parse(TokenReaderPtr &r) {
+    Parser p(r);
+    AstPtr a = p.parse();
+    return a;
+}
+
+AstPtr parse_line(TokenReaderPtr &r) {
+    LineParser p(r);
+    AstPtr a = p.parse_line();
+    return a;
+}

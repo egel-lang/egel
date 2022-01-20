@@ -1,14 +1,15 @@
-#include "../../src/runtime.hpp"
-
 #include <stdlib.h>
+
 #include <filesystem>
+
+#include "../../src/runtime.hpp"
 
 namespace fs = std::filesystem;
 /**
  * Lift of C++ filesystem
  */
 
-#define OS_STRING    "OS"
+#define OS_STRING "OS"
 
 typedef std::vector<icu::UnicodeString> UnicodeStrings;
 
@@ -29,9 +30,10 @@ VMObjectPtr paths_to_list(VM* vm, std::vector<fs::path> ss) {
 
 fs::path object_to_path(const VMObjectPtr& o) {
     auto str = VM_OBJECT_TEXT_VALUE(o);
-    auto len = str.extract(0, 2048, nullptr, (uint32_t) 0); // XXX: I hate constants
-    auto buffer = new char[len+1];
-    str.extract(0, 2048, buffer, len+1);
+    auto len =
+        str.extract(0, 2048, nullptr, (uint32_t)0);  // XXX: I hate constants
+    auto buffer = new char[len + 1];
+    str.extract(0, 2048, buffer, len + 1);
     auto p = fs::path(buffer);
     delete[] buffer;
     return p;
@@ -43,11 +45,12 @@ VMObjectPtr error_to_object(const fs::filesystem_error& e) {
 }
 
 //## OS::concat p0 p1 - concatenates two paths
-class Concat: public Dyadic {
+class Concat : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Concat, OS_STRING, "concat");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
@@ -58,19 +61,20 @@ public:
                 return path_to_object(p0);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::concat_with p0 p1 - concatenates two paths with a directory separator
-class ConcatWith: public Dyadic {
+class ConcatWith : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ConcatWith, OS_STRING, "concat_with");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
@@ -81,15 +85,15 @@ public:
                 return path_to_object(p0);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::empty p - checks whether the path is empty
-class Empty: public Monadic {
+class Empty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Empty, OS_STRING, "empty");
 
@@ -102,15 +106,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_root_path p - checks whether the path has a root path
-class HasRootPath: public Monadic {
+class HasRootPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootPath, OS_STRING, "has_root_path");
 
@@ -123,15 +127,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_root_name p - checks whether path has a root name
-class HasRootName: public Monadic {
+class HasRootName : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootName, OS_STRING, "has_root_name");
 
@@ -144,17 +148,18 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_root_directory p - checks whether the path has a root directory
-class HasRootDirectory: public Monadic {
+class HasRootDirectory : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, HasRootDirectory, OS_STRING, "has_root_directory");
+    MONADIC_PREAMBLE(VM_SUB_EGO, HasRootDirectory, OS_STRING,
+                     "has_root_directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -165,17 +170,18 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_relative_path p - checks whether the path has a relative path
-class HasRelativePath: public Monadic {
+class HasRelativePath : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, HasRelativePath, OS_STRING, "has_relative_path");
+    MONADIC_PREAMBLE(VM_SUB_EGO, HasRelativePath, OS_STRING,
+                     "has_relative_path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -186,15 +192,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_parent_path p - checks whether the path has a parent path
-class HasParentPath: public Monadic {
+class HasParentPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasParentPath, OS_STRING, "has_parent_path");
 
@@ -207,15 +213,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_filename p - checks whether the path has a filename
-class HasFilename: public Monadic {
+class HasFilename : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasFilename, OS_STRING, "has_filename");
 
@@ -228,15 +234,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_stem p - checks whether the path has a stem
-class HasStem: public Monadic {
+class HasStem : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasStem, OS_STRING, "has_stem");
 
@@ -249,15 +255,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::has_extension p - checks whether the path has an extension
-class HasExtension: public Monadic {
+class HasExtension : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasExtension, OS_STRING, "has_extension");
 
@@ -270,16 +276,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::is_absolute p - checks whether the path is absolute
-class IsAbsolute: public Monadic {
+class IsAbsolute : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsAbsolute, OS_STRING, "is_absolute");
 
@@ -292,16 +297,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::is_relative p - checks whether the path is relative
-class IsRelative: public Monadic {
+class IsRelative : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRelative, OS_STRING, "is_relative");
 
@@ -314,15 +318,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::root_name p - returns the root-name of the path, if present
-class RootName: public Monadic {
+class RootName : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootName, OS_STRING, "root_name");
 
@@ -335,15 +339,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::root_directory p - returns the root directory of the path, if present
-class RootDirectory: public Monadic {
+class RootDirectory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootDirectory, OS_STRING, "root_directory");
 
@@ -356,15 +360,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::root_path p - returns the root path of the path, if present
-class RootPath: public Monadic {
+class RootPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootPath, OS_STRING, "root_path");
 
@@ -377,15 +381,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::relative_path p - returns path relative to the root path
-class RelativePath: public Monadic {
+class RelativePath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RelativePath, OS_STRING, "relative_path");
 
@@ -398,15 +402,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::parent_path p - returns the path of the parent path
-class ParentPath: public Monadic {
+class ParentPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ParentPath, OS_STRING, "parent_path");
 
@@ -419,15 +423,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::filename p - returns the filename path component
-class Filename: public Monadic {
+class Filename : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Filename, OS_STRING, "filename");
 
@@ -440,15 +444,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::stem p - returns the stem path component
-class Stem: public Monadic {
+class Stem : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Stem, OS_STRING, "stem");
 
@@ -461,15 +465,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::extension p - returns the file extension path component
-class Extension: public Monadic {
+class Extension : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Extension, OS_STRING, "extension");
 
@@ -482,15 +486,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::absolute p - composes an absolute path
-class Absolute: public Monadic {
+class Absolute : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Absolute, OS_STRING, "absolute");
 
@@ -503,9 +507,9 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -525,9 +529,9 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -537,7 +541,8 @@ public:
 //# OS::weakly_canonical  - composes a weakly canonical path
 class WeaklyCanonical: public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, WeaklyCanonical, OS_STRING, "weakly_canonical");
+    MONADIC_PREAMBLE(VM_SUB_EGO, WeaklyCanonical, OS_STRING,
+"weakly_canonical");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -548,9 +553,9 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -562,9 +567,8 @@ class Relative: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Relative, OS_STRING, "relative");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
-            try {
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const
+override { if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) { try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
@@ -573,9 +577,9 @@ public:
                 return path_to_object(p2);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -587,9 +591,8 @@ class Proximate: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Proximate, OS_STRING, "proximate");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
-            try {
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const
+override { if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) { try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
@@ -598,89 +601,91 @@ public:
                 return path_to_object(p2);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 */
 
 //## OS::copy src dst - copies files or directories
-class Copy: public Dyadic {
+class Copy : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Copy, OS_STRING, "copy");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                fs::copy(p0,p1);
+                fs::copy(p0, p1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::copy_file src dst - copies file contents
-class CopyFile: public Dyadic {
+class CopyFile : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CopyFile, OS_STRING, "copy_file");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                fs::copy_file(p0,p1);
+                fs::copy_file(p0, p1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
-
 //## OS::copy_symlink src trg - copies a symbolic link
-class CopySymlink: public Dyadic {
+class CopySymlink : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CopySymlink, OS_STRING, "copy_symlink");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                fs::copy_symlink(p0,p1);
+                fs::copy_symlink(p0, p1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
-
 //## OS::create_directory p - creates new directory
-class CreateDirectory: public Monadic {
+class CreateDirectory : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectory, OS_STRING, "create_directory");
+    MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectory, OS_STRING,
+                     "create_directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -692,17 +697,18 @@ public:
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::create_directories p - creates new directories
-class CreateDirectories: public Monadic {
+class CreateDirectories : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectories, OS_STRING, "create_directories");
+    MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectories, OS_STRING,
+                     "create_directories");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -714,86 +720,88 @@ public:
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::create_hard_link p0 p1 - creates a hard link
-class CreateHardLink: public Dyadic {
+class CreateHardLink : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateHardLink, OS_STRING, "create_hard_link");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                fs::create_hard_link(p0,p1);
+                fs::create_hard_link(p0, p1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::create_symlink p0 p1 - creates a symbolic link
-class CreateSymlink: public Dyadic {
+class CreateSymlink : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateSymlink, OS_STRING, "create_symlink");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                fs::create_symlink(p0,p1);
+                fs::create_symlink(p0, p1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::create_directory_symlink p0 p1 - creates a symbolic link
-class CreateDirectorySymlink: public Dyadic {
+class CreateDirectorySymlink : public Dyadic {
 public:
-    DYADIC_PREAMBLE(VM_SUB_EGO, CreateDirectorySymlink, OS_STRING, "create_directory_symlink");
+    DYADIC_PREAMBLE(VM_SUB_EGO, CreateDirectorySymlink, OS_STRING,
+                    "create_directory_symlink");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                fs::create_directory_symlink(p0,p1);
+                fs::create_directory_symlink(p0, p1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
-
 //## OS::current_path - returns the current working directory
-class CurrentPath: public Medadic {
+class CurrentPath : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, CurrentPath, OS_STRING, "current_path");
 
@@ -804,12 +812,12 @@ public:
             return path_to_object(p);
         } catch (const fs::filesystem_error& e) {
             throw error_to_object(e);
-        } 
+        }
     }
 };
 
 //## OS::set_current_path p - sets the current working directory
-class SetCurrentPath: public Monadic {
+class SetCurrentPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SetCurrentPath, OS_STRING, "set_current_path");
 
@@ -823,15 +831,15 @@ public:
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::exists p - checks whether path refers to existing file system object
-class Exists: public Monadic {
+class Exists : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exists, OS_STRING, "exists");
 
@@ -845,39 +853,40 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-//## OS::equivalent p0 p1 - checks whether two paths refer to the same file system object
-class Equivalent: public Dyadic {
+//## OS::equivalent p0 p1 - checks whether two paths refer to the same file
+// system object
+class Equivalent : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Equivalent, OS_STRING, "equivalent");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                auto b = fs::equivalent(p0,p1);
+                auto b = fs::equivalent(p0, p1);
 
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
-
 //## OS::file_size p - returns the size of a file
-class FileSize: public Monadic {
+class FileSize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, FileSize, OS_STRING, "file_size");
 
@@ -891,16 +900,16 @@ public:
                 return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
-//## OS::hard_link_count p - returns the number of hard links referring to the specific file
-class HardLinkCount: public Monadic {
+//## OS::hard_link_count p - returns the number of hard links referring to the
+// specific file
+class HardLinkCount : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HardLinkCount, OS_STRING, "hard_link_count");
 
@@ -914,17 +923,18 @@ public:
                 return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-//# OS::last_write_time - gets or sets the time of the last data modification XXX
+//# OS::last_write_time - gets or sets the time of the last data modification
+// XXX
 
 //## OS::permissions p - get file access permissions
-class Permissions: public Monadic {
+class Permissions : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Permissions, OS_STRING, "permissions");
 
@@ -933,38 +943,41 @@ public:
             try {
                 auto p0 = object_to_path(arg0);
 
-                auto n = (vm_int_t) fs::status(p0).permissions();
+                auto n = (vm_int_t)fs::status(p0).permissions();
 
                 return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::replace_permissions p n - set file access permissions
-class ReplacePermissions: public Dyadic {
+class ReplacePermissions : public Dyadic {
 public:
-    DYADIC_PREAMBLE(VM_SUB_EGO, ReplacePermissions, OS_STRING, "replace_permissions");
+    DYADIC_PREAMBLE(VM_SUB_EGO, ReplacePermissions, OS_STRING,
+                    "replace_permissions");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto n1 = machine()->get_integer(arg1);
 
-                //fs::permissions(p0,(fs::perms) n1, fs::perm_options::replace);
-                fs::permissions(p0,(fs::perms) n1);
+                // fs::permissions(p0,(fs::perms) n1,
+                // fs::perm_options::replace);
+                fs::permissions(p0, (fs::perms)n1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -975,8 +988,8 @@ class AddPermissions: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, AddPermissions, OS_STRING, "add_permissions");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const
+override { if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto n1 = machine()->get_integer(arg1);
@@ -986,9 +999,9 @@ public:
                 return machine->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -996,10 +1009,11 @@ public:
 //# OS::remove_permissions - remove file access permissions
 class RemovePermissions: public Dyadic {
 public:
-    DYADIC_PREAMBLE(VM_SUB_EGO, RemovePermissions, OS_STRING, "remove_permissions");
+    DYADIC_PREAMBLE(VM_SUB_EGO, RemovePermissions, OS_STRING,
+"remove_permissions");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
-        if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const
+override { if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto n1 = machine()->get_integer(arg1);
@@ -1009,16 +1023,16 @@ public:
                 return machine->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 */
 
 //## OS::read_symlink p - obtains the target of a symbolic link
-class ReadSymlink: public Monadic {
+class ReadSymlink : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadSymlink, OS_STRING, "read_symlink");
 
@@ -1032,15 +1046,15 @@ public:
                 return path_to_object(p1);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::remove p - removes a file or empty directory
-class Remove: public Monadic {
+class Remove : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Remove, OS_STRING, "remove");
 
@@ -1054,15 +1068,16 @@ public:
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-//## OS::remove_all p - removes a file or directory and all its contents, recursively
-class RemoveAll: public Monadic {
+//## OS::remove_all p - removes a file or directory and all its contents,
+// recursively
+class RemoveAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RemoveAll, OS_STRING, "remove_all");
 
@@ -1076,62 +1091,64 @@ public:
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::rename p0 p1 - moves or renames a file or directory
-class Rename: public Dyadic {
+class Rename : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Rename, OS_STRING, "rename");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto p1 = object_to_path(arg1);
 
-                fs::rename(p0,p1);
+                fs::rename(p0, p1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
-//## OS::resize_file p n - changes the size of a regular file by truncation or zero-fill
-class ResizeFile: public Dyadic {
+//## OS::resize_file p n - changes the size of a regular file by truncation or
+// zero-fill
+class ResizeFile : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ResizeFile, OS_STRING, "resize_file");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
         if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
             try {
                 auto p0 = object_to_path(arg0);
                 auto n1 = machine()->get_integer(arg1);
 
-                fs::resize_file(p0,n1);
+                fs::resize_file(p0, n1);
 
                 return machine()->create_none();
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
 
 //## OS::space_free p - determines free space on the file system
-class SpaceFree: public Monadic {
+class SpaceFree : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceFree, OS_STRING, "space_free");
 
@@ -1145,16 +1162,15 @@ public:
                 return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::space_capacity p - determines capacity space on the file system
-class SpaceCapacity: public Monadic {
+class SpaceCapacity : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceCapacity, OS_STRING, "space_capacity");
 
@@ -1168,15 +1184,15 @@ public:
                 return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::space_available p - determines available space on the file system
-class SpaceAvailable: public Monadic {
+class SpaceAvailable : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceAvailable, OS_STRING, "space_available");
 
@@ -1190,20 +1206,22 @@ public:
                 return machine()->create_integer(n);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //# OS::status - determines file attributes XXX
-//# OS::symlink_status - determines file attributes, checking the symlink target XXX
+//# OS::symlink_status - determines file attributes, checking the symlink target
+// XXX
 
 //## OS::temp_directory_path - returns a directory suitable for temporary files
-class TempDirectoryPath: public Medadic {
+class TempDirectoryPath : public Medadic {
 public:
-    MEDADIC_PREAMBLE(VM_SUB_EGO, TempDirectoryPath, OS_STRING, "temp_directory_path");
+    MEDADIC_PREAMBLE(VM_SUB_EGO, TempDirectoryPath, OS_STRING,
+                     "temp_directory_path");
 
     VMObjectPtr apply() const override {
         try {
@@ -1212,12 +1230,12 @@ public:
             return path_to_object(p);
         } catch (const fs::filesystem_error& e) {
             throw error_to_object(e);
-        } 
+        }
     }
 };
 
 //## OS::is_block_file p - checks whether the given path refers to block device
-class IsBlockFile: public Monadic {
+class IsBlockFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsBlockFile, OS_STRING, "is_block_file");
 
@@ -1231,17 +1249,19 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-//## OS::is_character_file p - checks whether the given path refers to a character device
-class IsCharacterFile: public Monadic {
+//## OS::is_character_file p - checks whether the given path refers to a
+// character device
+class IsCharacterFile : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_EGO, IsCharacterFile, OS_STRING, "is_character_file");
+    MONADIC_PREAMBLE(VM_SUB_EGO, IsCharacterFile, OS_STRING,
+                     "is_character_file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1253,16 +1273,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::is_directory p - checks whether the given path refers to a directory
-class IsDirectory: public Monadic {
+class IsDirectory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsDirectory, OS_STRING, "is_directory");
 
@@ -1276,16 +1295,16 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
-//## OS::is_empty p - checks whether the given path refers to an empty file or directory
-class IsEmpty: public Monadic {
+//## OS::is_empty p - checks whether the given path refers to an empty file or
+// directory
+class IsEmpty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsEmpty, OS_STRING, "is_empty");
 
@@ -1299,16 +1318,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::is_fifo p - checks whether the given path refers to a named pipe
-class IsFifo: public Monadic {
+class IsFifo : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsFifo, OS_STRING, "is_fifo");
 
@@ -1322,16 +1340,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::is_other p - checks whether the argument refers to an other file
-class IsOther: public Monadic {
+class IsOther : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsOther, OS_STRING, "is_other");
 
@@ -1345,16 +1362,16 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
-//## OS::is_regular_file p - checks whether the argument refers to a regular file
-class IsRegularFile: public Monadic {
+//## OS::is_regular_file p - checks whether the argument refers to a regular
+// file
+class IsRegularFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRegularFile, OS_STRING, "is_regular_file");
 
@@ -1368,15 +1385,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 //## OS::is_socket p - checks whether the argument refers to a named IPC socket
-class IsSocket: public Monadic {
+class IsSocket : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsSocket, OS_STRING, "is_socket");
 
@@ -1390,16 +1407,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::is_symlink p - checks whether the argument refers to a symbolic link
-class IsSymlink: public Monadic {
+class IsSymlink : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsSymlink, OS_STRING, "is_symlink");
 
@@ -1413,16 +1429,15 @@ public:
                 return machine()->create_bool(b);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
-
 //## OS::directory p - lists the content of a directory
-class Directory: public Monadic {
+class Directory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Directory, OS_STRING, "directory");
 
@@ -1432,20 +1447,19 @@ public:
                 auto p0 = object_to_path(arg0);
 
                 std::vector<fs::path> ff;
-                for(auto& f: fs::directory_iterator(p0)) {
+                for (auto& f : fs::directory_iterator(p0)) {
                     ff.push_back(f);
                 }
 
                 return paths_to_list(machine(), ff);
             } catch (const fs::filesystem_error& e) {
                 throw error_to_object(e);
-            } 
+            }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
-
 
 //## OS::status_known - checks whether file status is known XXX
 
@@ -1478,10 +1492,10 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Stem::create(vm));
     oo.push_back(Extension::create(vm));
     oo.push_back(Absolute::create(vm));
-    //oo.push_back(Canonical::create(vm));
-    //oo.push_back(WeaklyCanonical::create(vm));
-    //oo.push_back(Relative::create(vm));
-    //oo.push_back(Proximate::create(vm));
+    // oo.push_back(Canonical::create(vm));
+    // oo.push_back(WeaklyCanonical::create(vm));
+    // oo.push_back(Relative::create(vm));
+    // oo.push_back(Proximate::create(vm));
     oo.push_back(Copy::create(vm));
     oo.push_back(CopyFile::create(vm));
     oo.push_back(CopySymlink::create(vm));
@@ -1498,8 +1512,8 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(HardLinkCount::create(vm));
     oo.push_back(Permissions::create(vm));
     oo.push_back(ReplacePermissions::create(vm));
-    //oo.push_back(AddPermissions::create(vm));
-    //oo.push_back(RemovePermissions::create(vm));
+    // oo.push_back(AddPermissions::create(vm));
+    // oo.push_back(RemovePermissions::create(vm));
     oo.push_back(ReadSymlink::create(vm));
     oo.push_back(Remove::create(vm));
     oo.push_back(RemoveAll::create(vm));

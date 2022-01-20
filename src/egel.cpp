@@ -1,108 +1,155 @@
-#include <string.h>
-#include <vector>
-
-#include "utils.hpp"
-#include "position.hpp"
-#include "reader.hpp"
-#include "lexical.hpp"
-#include "syntactical.hpp"
-#include "runtime.hpp"
 #include "machine.hpp"
-#include "eval.hpp"
-#include "modules.hpp"
+#include "runtime.hpp"
 
 #define EXECUTABLE_NAME "egel"
 
-#define EXECUTABLE_VERSION_MAJOR   "0"
-#define EXECUTABLE_VERSION_MINOR   "1"
-#define EXECUTABLE_VERSION_PATCH   "7"
+#define EXECUTABLE_VERSION_MAJOR "0"
+#define EXECUTABLE_VERSION_MINOR "1"
+#define EXECUTABLE_VERSION_PATCH "7"
 
-#define EXECUTABLE_VERSION \
-    EXECUTABLE_VERSION_MAJOR "." \
-    EXECUTABLE_VERSION_MINOR "." \
-    EXECUTABLE_VERSION_PATCH
+#define EXECUTABLE_VERSION                                \
+    EXECUTABLE_VERSION_MAJOR "." EXECUTABLE_VERSION_MINOR \
+                             "." EXECUTABLE_VERSION_PATCH
 
-#define EXECUTABLE_COPYRIGHT \
-    "Copyright (C) 2017"
-#define EXECUTABLE_AUTHORS \
-    "M.C.A. (Marco) Devillers"
+#define EXECUTABLE_COPYRIGHT "Copyright (C) 2017"
+#define EXECUTABLE_AUTHORS "M.C.A. (Marco) Devillers"
 
 #define EGEL_PATH "/usr/local/lib/egel"
 
-typedef enum {
+enum arg_t {
     OPTION_NONE,
     OPTION_FILE,
     OPTION_DIR,
     OPTION_NUMBER,
     OPTION_TEXT,
-} arg_t;
-
-typedef struct {
-    char const*     shortname;
-    char const*     longname;
-    arg_t           argument;
-    char const*     description;
-} option_t;
-
-static option_t options[] = {
-    { "-h", "--help",       OPTION_NONE, "display usage", },
-    { "-v", "--version",    OPTION_NONE, "display version", },
-    { "-",  "--interact",   OPTION_NONE, "interactive mode (default)", },
-    { "-I", "--include",    OPTION_DIR,  "add include directory", },
-    { "-e", "--eval",       OPTION_TEXT, "evaluate command", },
-    { "-T", "--tokens",     OPTION_NONE, "output all tokens (debug)", },
-    { "-U", "--unparse",    OPTION_NONE, "output the parse tree (debug)", },
-    { "-X", "--check",      OPTION_NONE, "output analyzed tree (debug)", },
-    { "-D", "--desugar",    OPTION_NONE, "output desugared tree (debug)", },
-    { "-C", "--lift",       OPTION_NONE, "output combinator lifted tree (debug)", },
-    { "-B", "--bytes",      OPTION_NONE, "output bytecode (debug)", },
 };
 
-#define OPTIONS_SIZE    (sizeof(options)/sizeof(option_t))
+struct option_t {
+    char const *shortname;
+    char const *longname;
+    arg_t argument;
+    char const *description;
+};
 
-typedef std::vector<std::pair<icu::UnicodeString, icu::UnicodeString> > StringPairs;
+static option_t options[] = {
+    {
+        "-h",
+        "--help",
+        OPTION_NONE,
+        "display usage",
+    },
+    {
+        "-v",
+        "--version",
+        OPTION_NONE,
+        "display version",
+    },
+    {
+        "-",
+        "--interact",
+        OPTION_NONE,
+        "interactive mode (default)",
+    },
+    {
+        "-I",
+        "--include",
+        OPTION_DIR,
+        "add include directory",
+    },
+    {
+        "-e",
+        "--eval",
+        OPTION_TEXT,
+        "evaluate command",
+    },
+    {
+        "-T",
+        "--tokens",
+        OPTION_NONE,
+        "output all tokens (debug)",
+    },
+    {
+        "-U",
+        "--unparse",
+        OPTION_NONE,
+        "output the parse tree (debug)",
+    },
+    {
+        "-X",
+        "--check",
+        OPTION_NONE,
+        "output analyzed tree (debug)",
+    },
+    {
+        "-D",
+        "--desugar",
+        OPTION_NONE,
+        "output desugared tree (debug)",
+    },
+    {
+        "-C",
+        "--lift",
+        OPTION_NONE,
+        "output combinator lifted tree (debug)",
+    },
+    {
+        "-B",
+        "--bytes",
+        OPTION_NONE,
+        "output bytecode (debug)",
+    },
+};
+
+using StringPairs =
+    std::vector<std::pair<icu::UnicodeString, icu::UnicodeString>>;
 
 StringPairs parse_options(int argc, char *argv[]) {
     StringPairs pp;
     for (int a = 1; a < argc; a++) {
-        uint_t sz = pp.size();
-
-        for(uint_t i = 0; i < OPTIONS_SIZE; i++) {
-            
-            if ( (strncmp(argv[a], options[i].shortname, 32) == 0) ||
-                 (strncmp(argv[a], options[i].longname, 32) == 0) ) {
-                
-                switch (options[i].argument) {
-                case OPTION_NONE:
-                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString("")));
-                    break;
-                case OPTION_FILE:
-                    if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
-                    a++;
-                    break;
-                case OPTION_DIR:
-                    if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
-                    a++;
-                    break;
-                case OPTION_NUMBER:
-                    if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
-                    a++;
-                    break;
-                case OPTION_TEXT:
-                    if (a == argc - 1) goto options_error;
-                    pp.push_back(std::make_pair(icu::UnicodeString(options[i].shortname), icu::UnicodeString(argv[a+1])));
-                    a++;
-                    break;
+        for (auto &o : options) {
+            if ((strncmp(argv[a], o.shortname, 32) == 0) ||
+                (strncmp(argv[a], o.longname, 32) == 0)) {
+                switch (o.argument) {
+                    case OPTION_NONE:
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString("")));
+                        break;
+                    case OPTION_FILE:
+                        if (a == argc - 1) goto options_error;
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
+                        a++;
+                        break;
+                    case OPTION_DIR:
+                        if (a == argc - 1) goto options_error;
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
+                        a++;
+                        break;
+                    case OPTION_NUMBER:
+                        if (a == argc - 1) goto options_error;
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
+                        a++;
+                        break;
+                    case OPTION_TEXT:
+                        if (a == argc - 1) goto options_error;
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
+                        a++;
+                        break;
                 };
             };
-
         }
 
-        if (sz == pp.size()) {
-            pp.push_back(std::make_pair(icu::UnicodeString("--"), icu::UnicodeString(argv[a])));
+        if (a == argc - 1) {
+            pp.push_back(std::make_pair(icu::UnicodeString("--"),
+                                        icu::UnicodeString(argv[a])));
         }
     }
     return pp;
@@ -111,34 +158,35 @@ options_error:
     throw 0;
 }
 
-void display_usage () {
-    std::cout << "Usage: " << EXECUTABLE_NAME << " [options] [filename]" << std::endl;
+void display_usage() {
+    std::cout << "Usage: " << EXECUTABLE_NAME << " [options] [filename]"
+              << std::endl;
     std::cout << "Options:" << std::endl;
 
-    for (uint_t i = 0; i < OPTIONS_SIZE; i++) {
-        std::cout << "\t[" << options[i].shortname << "|" << options[i].longname << "] ";
-        switch (options[i].argument) {
-        case OPTION_NONE:
-            std::cout << "      "; 
-            break;
-        case OPTION_FILE:
-            std::cout << "<file>"; 
-            break;
-        case OPTION_DIR:
-            std::cout << "<dir>"; 
-            break;
-        case OPTION_NUMBER:
-            std::cout << "<num>"; 
-            break;
-        case OPTION_TEXT:
-            std::cout << "<text>"; 
-            break;
+    for (auto &o : options) {
+        std::cout << "\t[" << o.shortname << "|" << o.longname << "] ";
+        switch (o.argument) {
+            case OPTION_NONE:
+                std::cout << "      ";
+                break;
+            case OPTION_FILE:
+                std::cout << "<file>";
+                break;
+            case OPTION_DIR:
+                std::cout << "<dir>";
+                break;
+            case OPTION_NUMBER:
+                std::cout << "<num>";
+                break;
+            case OPTION_TEXT:
+                std::cout << "<text>";
+                break;
         };
-        std::cout << "\t" << options[i].description << std::endl;
+        std::cout << "\t" << o.description << std::endl;
     };
 }
 
-void display_version () {
+void display_version() {
     std::cout << EXECUTABLE_NAME << ' ' << EXECUTABLE_VERSION << std::endl;
     std::cout << EXECUTABLE_COPYRIGHT << ' ' << EXECUTABLE_AUTHORS << std::endl;
 }
@@ -152,9 +200,9 @@ int main(int argc, char *argv[]) {
         std::cerr << "options error, try -h." << std::endl;
         return (EXIT_FAILURE);
     };
-    
+
     // check for -h or -v
-    for (auto& p : pp) {
+    for (auto &p : pp) {
         if (p.first == ("-h")) {
             display_usage();
             return (EXIT_SUCCESS);
@@ -168,10 +216,9 @@ int main(int argc, char *argv[]) {
     // options
     OptionsPtr oo = Options::create();
 
-
     // check for include paths
     bool hasI = false;
-    for (auto& p : pp) {
+    for (auto &p : pp) {
         if (p.first == ("-I")) {
             oo->add_include_path(p.second);
             hasI = true;
@@ -190,7 +237,7 @@ int main(int argc, char *argv[]) {
     }
 
     // check for flags
-    for (auto& p : pp) {
+    for (auto &p : pp) {
         if (p.first == ("-")) {
             oo->set_interactive(true);
         };
@@ -217,7 +264,7 @@ int main(int argc, char *argv[]) {
     // check for unique --/fn
     icu::UnicodeString fn;
     std::vector<icu::UnicodeString> aa;
-    for (auto& p : pp) {
+    for (auto &p : pp) {
         if (p.first == ("--")) {
             if (fn == "") {
                 fn = p.second;
@@ -230,7 +277,7 @@ int main(int argc, char *argv[]) {
     // check for command
     bool command = false;
     icu::UnicodeString e;
-    for (auto& p : pp) {
+    for (auto &p : pp) {
         if (p.first == ("-e")) {
             command = true;
             e = p.second;

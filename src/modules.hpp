@@ -1,68 +1,66 @@
-#ifndef MODULES_HPP
-#define MODULES_HPP
+#pragma once
 
+#include <dlfcn.h> // XXX: I wish I could get rid of this
+
+#include <memory>
 #include <vector>
 
-#include "constants.hpp"
-
-#include "error.hpp"
 #include "ast.hpp"
-#include "environment.hpp"
-#include "lexical.hpp"
-#include "syntactical.hpp"
-#include "semantical.hpp"
+#include "builtin_eval.hpp"
+#include "builtin_math.hpp"
+#include "builtin_process.hpp"
+#include "builtin_runtime.hpp"
+#include "builtin_string.hpp"
+#include "builtin_system.hpp"
+#include "builtin_thread.hpp"
+#include "constants.hpp"
 #include "desugar.hpp"
+#include "emit.hpp"
+#include "environment.hpp"
+#include "error.hpp"
+#include "lexical.hpp"
 #include "lift.hpp"
 #include "runtime.hpp"
-#include "emit.hpp"
+#include "semantical.hpp"
+#include "syntactical.hpp"
 
-#include "builtin_system.hpp"
-#include "builtin_math.hpp"
-#include "builtin_string.hpp"
-#include "builtin_runtime.hpp"
-#include "builtin_thread.hpp"
-#include "builtin_process.hpp"
-#include "builtin_eval.hpp"
-
-
-extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward declaration
+// extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward
+// declaration
 
 // convenience
-inline icu::UnicodeString first(const icu::UnicodeString& s) {
+inline icu::UnicodeString first(const icu::UnicodeString &s) {
     auto d = s;
     auto i = d.indexOf(STRING_DCOLON);
     return d.remove(i, d.length());
 }
 
-inline icu::UnicodeString second(const icu::UnicodeString& s) {
+inline icu::UnicodeString second(const icu::UnicodeString &s) {
     auto d = s;
     auto i = d.indexOf(STRING_DCOLON);
-    return d.remove(0, i+2);
+    return d.remove(0, i + 2);
 }
 
 class Module;
-typedef std::shared_ptr<Module> ModulePtr;
+using ModulePtr = std::shared_ptr<Module>;
 
 class ModuleManager;
-typedef std::shared_ptr<ModuleManager> ModuleManagerPtr;
-
+using ModuleManagerPtr = std::shared_ptr<ModuleManager>;
 
 // modules may define imports or values
 class QualifiedString {
 public:
-    QualifiedString():
-        _position(Position()), _string("") {
+    QualifiedString() : _position(Position()), _string("") {
     }
 
-    QualifiedString(const Position& p, const icu::UnicodeString& s):
-        _position(p), _string(s) {
+    QualifiedString(const Position &p, const icu::UnicodeString &s)
+        : _position(p), _string(s) {
     }
 
-/*
-    QualifiedString(const QualifiedString& i):
-        _position(i._position), _string(i._string) {
-    }
-*/
+    /*
+        QualifiedString(const QualifiedString& i):
+            _position(i._position), _string(i._string) {
+        }
+    */
 
     Position position() const {
         return _position;
@@ -71,29 +69,31 @@ public:
     icu::UnicodeString string() const {
         return _string;
     }
+
 private:
-    Position            _position;
-    icu::UnicodeString  _string;
+    Position _position;
+    icu::UnicodeString _string;
 };
 
-typedef std::vector<QualifiedString> QualifiedStrings;
+using QualifiedStrings = std::vector<QualifiedString>;
 
-typedef enum {
+enum module_tag_t {
     MODULE_SOURCE,
     MODULE_INTERNAL,
     MODULE_DYNAMIC,
-} module_tag_t;
+};
 
 class Module {
 public:
-    Module(const module_tag_t t, const icu::UnicodeString& p, const icu::UnicodeString& fn, VM* m):
-        _tag(t), _path(p), _filename(fn), _machine(m) {
+    Module(const module_tag_t t, const icu::UnicodeString &p,
+           const icu::UnicodeString &fn, VM *m)
+        : _tag(t), _path(p), _filename(fn), _machine(m) {
     }
 
-    virtual ~Module() { // keep the compiler happy
+    virtual ~Module() {  // keep the compiler happy
     }
 
-    void set_options(const OptionsPtr& o) {
+    void set_options(const OptionsPtr &o) {
         _options = o;
     }
 
@@ -113,7 +113,7 @@ public:
         return _tag;
     }
 
-    VM* machine() const {
+    VM *machine() const {
         return _machine;
     }
 
@@ -127,9 +127,9 @@ public:
 
     virtual VMObjectPtrs exports() = 0;
 
-    virtual void render(std::ostream& os) const = 0;
+    virtual void render(std::ostream &os) const = 0;
 
-    friend std::ostream& operator<<(std::ostream& os, const ModulePtr& m) {
+    friend std::ostream &operator<<(std::ostream &os, const ModulePtr &m) {
         m->render(os);
         return os;
     }
@@ -137,53 +137,52 @@ public:
 public:
     // this is why OO is sometimes bad. but I am lazy at the moment.
     // pretend every module is equivalent to an Egel source file.
-    virtual void syntactical() {};
+    virtual void syntactical(){};
 
-    virtual void declarations(NamespacePtr& env) {};
+    virtual void declarations(NamespacePtr &env){};
 
-    virtual void semantical(NamespacePtr& env) {};
+    virtual void semantical(NamespacePtr &env){};
 
-    virtual void desugar() {};
+    virtual void desugar(){};
 
-    virtual void lift() {};
+    virtual void lift(){};
 
-    virtual void datagen(VM* m) {};
+    virtual void datagen(VM *m){};
 
-    virtual void codegen(VM* m) {};
+    virtual void codegen(VM *m){};
 
 private:
-    module_tag_t        _tag;
-    OptionsPtr          _options;
-    icu::UnicodeString  _path;
-    icu::UnicodeString  _filename;
-    VM*                 _machine;
+    module_tag_t _tag;
+    OptionsPtr _options;
+    icu::UnicodeString _path;
+    icu::UnicodeString _filename;
+    VM *_machine;
 };
 
 class VMModule;
-typedef std::shared_ptr<VMModule>  VMModulePtr;
+using VMModulePtr = std::shared_ptr<VMModule>;
 
-class VMModule: public Opaque {
+class VMModule : public Opaque {
 public:
-    VMModule(VM* vm, ModulePtr p)
+    VMModule(VM *vm, ModulePtr p)
         : Opaque(VM_SUB_MODULE, vm, STRING_SYSTEM, "module"), _value(p) {
     }
 
-    VMModule(const VMModule& m)
-        : VMModule(m.machine(), m.value()) {
+    VMModule(const VMModule &m) : VMModule(m.machine(), m.value()) {
     }
 
     ~VMModule() {
     }
 
-    static VMObjectPtr create(VM* vm, ModulePtr p) {
-        return VMObjectPtr(new VMModule(vm, p));
+    static VMObjectPtr create(VM *vm, ModulePtr p) {
+        return std::make_shared<VMModule>(vm, p);
     }
 
     ModulePtr value() const {
         return _value;
     }
 
-    int compare(const VMObjectPtr& o) override {
+    int compare(const VMObjectPtr &o) override {
         if (is_module(o)) {
             auto m = module_cast(o);
             auto n0 = value()->get_filename();
@@ -199,12 +198,12 @@ public:
             return -1;
         }
     }
-    
-    static bool is_module(const VMObjectPtr& o) {
+
+    static bool is_module(const VMObjectPtr &o) {
         return (o->subtag() == VM_SUB_MODULE);
     }
 
-    static VMModulePtr module_cast(const VMObjectPtr& o) {
+    static VMModulePtr module_cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMModule>(o);
     }
 
@@ -221,7 +220,7 @@ public:
     VMObjectPtr imports() {
         auto ii = value()->imports();
         VMObjectPtrs pp;
-        for (auto& i: ii) {
+        for (auto &i : ii) {
             auto s = i.string();
             auto p = machine()->create_text(s);
             pp.push_back(p);
@@ -237,7 +236,7 @@ public:
     VMObjectPtr values() {
         auto vv = value()->values();
         VMObjectPtrs pp;
-        for (auto& v: vv) {
+        for (auto &v : vv) {
             auto s = v.string();
             auto p = machine()->create_text(s);
             pp.push_back(p);
@@ -249,22 +248,24 @@ private:
     ModulePtr _value;
 };
 
-typedef std::vector<VMObjectPtr> (*exports_t)(VM*);
+using exports_t = std::vector<VMObjectPtr> (*)(VM *);
 
-class ModuleInternal: public Module {
+class ModuleInternal : public Module {
 public:
-    ModuleInternal(const icu::UnicodeString& fn, VM* m, const exports_t handle):
-        Module(MODULE_INTERNAL, fn, fn, m),
-            _handle(handle) {
+    ModuleInternal(const icu::UnicodeString &fn, VM *m, const exports_t handle)
+        : Module(MODULE_INTERNAL, fn, fn, m), _handle(handle) {
     }
 
-    ModuleInternal(const ModuleInternal& m):
-        Module(MODULE_INTERNAL, m.get_path(), m.get_filename(), m.machine()),
-            _handle(m._handle), _imports(m._imports), _exports(m._exports) {
+    ModuleInternal(const ModuleInternal &m)
+        : Module(MODULE_INTERNAL, m.get_path(), m.get_filename(), m.machine()),
+          _handle(m._handle),
+          _imports(m._imports),
+          _exports(m._exports) {
     }
 
-    static ModulePtr create(const icu::UnicodeString& fn, VM* m, const exports_t handle) {
-        return ModulePtr(new ModuleInternal(fn, m, handle));
+    static ModulePtr create(const icu::UnicodeString &fn, VM *m,
+                            const exports_t handle) {
+        return std::make_shared<ModuleInternal>(fn, m, handle);
     }
 
     void load() override {
@@ -288,11 +289,11 @@ public:
         return _exports;
     }
 
-    void declarations(NamespacePtr& env) override {
-        for (auto& o:_exports) {
+    void declarations(NamespacePtr &env) override {
+        for (auto &o : _exports) {
             if (machine()->is_combinator(o)) {
                 auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-                auto s   = machine()->get_combinator_string(sym);
+                auto s = machine()->get_combinator_string(sym);
 
                 UnicodeStrings nn;
                 nn.push_back(first(s));
@@ -302,55 +303,57 @@ public:
         }
     }
 
-    void codegen(VM* vm) override {
-        for (auto& o:_exports) {
+    void codegen(VM *vm) override {
+        for (auto &o : _exports) {
             vm->enter_data(o);
         }
     }
 
-    void render(std::ostream& os) const override {
+    void render(std::ostream &os) const override {
         os << "dynamic module: " << get_filename();
     }
 
-    static bool filetype(const icu::UnicodeString& fn) {
+    static bool filetype(const icu::UnicodeString &fn) {
         return unicode_endswith(fn, ".ego");
     }
 
 private:
-    exports_t           _handle;
-    QualifiedStrings    _imports;
-    QualifiedStrings    _values;
-    VMObjectPtrs        _exports;
+    exports_t _handle;
+    QualifiedStrings _imports;
+    QualifiedStrings _values;
+    VMObjectPtrs _exports;
 };
 
-#define LINUX
-#ifdef LINUX
-
-#include <dlfcn.h>
-
-class ModuleDynamic: public Module {
+class ModuleDynamic : public Module {
 public:
-    ModuleDynamic(const icu::UnicodeString& p, const icu::UnicodeString& fn, VM* m):
-        Module(MODULE_DYNAMIC, p, fn, m),
-            _handle(0), _imports(0), _exports(0) {
+    ModuleDynamic(const icu::UnicodeString &p, const icu::UnicodeString &fn,
+                  VM *m)
+        : Module(MODULE_DYNAMIC, p, fn, m),
+          _handle(0),
+          _imports(0),
+          _exports(0) {
     }
 
-    ModuleDynamic(const ModuleDynamic& m):
-        Module(MODULE_DYNAMIC, m.get_path(), m.get_filename(), m.machine()),
-        _handle(m._handle), _imports(m._imports), _exports(m._exports) {
+    ModuleDynamic(const ModuleDynamic &m)
+        : Module(MODULE_DYNAMIC, m.get_path(), m.get_filename(), m.machine()),
+          _handle(m._handle),
+          _imports(m._imports),
+          _exports(m._exports) {
         set_options(m.get_options());
     }
 
-    static ModulePtr create(const icu::UnicodeString& p, const icu::UnicodeString& fn, VM* m) {
-        return ModulePtr(new ModuleDynamic(p, fn, m));
+    static ModulePtr create(const icu::UnicodeString &p,
+                            const icu::UnicodeString &fn, VM *m) {
+        return std::make_shared<ModuleDynamic>(p, fn, m);
     }
 
     void load() override {
-        char* error;
+        char *error;
 
         dlerror();
 
-        _handle = dlopen(unicode_to_char(get_path()), RTLD_LAZY | RTLD_GLOBAL); // XXX: leaks?
+        _handle = dlopen(unicode_to_char(get_path()),
+                         RTLD_LAZY | RTLD_GLOBAL);  // XXX: leaks?
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
@@ -359,8 +362,8 @@ public:
         }
 
         std::vector<icu::UnicodeString> (*egel_imports)();
-        egel_imports = (std::vector<icu::UnicodeString> (*)())
-                            dlsym(_handle, "egel_imports");
+        egel_imports = (std::vector<icu::UnicodeString>(*)())dlsym(
+            _handle, "egel_imports");
         error = dlerror();
         if (error != NULL) {
             icu::UnicodeString err = "dynamic load error: ";
@@ -368,9 +371,9 @@ public:
             throw ErrorIO(err);
         }
 
-        std::vector<VMObjectPtr>   (*egel_exports)(VM*);
-        egel_exports = (std::vector<VMObjectPtr> (*)(VM*))
-                            dlsym(_handle, "egel_exports");
+        std::vector<VMObjectPtr> (*egel_exports)(VM *);
+        egel_exports =
+            (std::vector<VMObjectPtr>(*)(VM *))dlsym(_handle, "egel_exports");
         error = dlerror();
         if (error != NULL) {
             icu::UnicodeString err = "dynamic load error: ";
@@ -382,7 +385,7 @@ public:
 
         QualifiedStrings ii;
         Position p(get_path(), 1, 1);
-        for (auto& s:ss) {
+        for (auto &s : ss) {
             ii.push_back(QualifiedString(p, s));
         }
 
@@ -406,11 +409,11 @@ public:
         return _exports;
     }
 
-    void declarations(NamespacePtr& env) override {
-        for (auto& o:_exports) {
+    void declarations(NamespacePtr &env) override {
+        for (auto &o : _exports) {
             if (machine()->is_combinator(o)) {
                 auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
-                auto s   = machine()->get_combinator_string(sym);
+                auto s = machine()->get_combinator_string(sym);
 
                 UnicodeStrings nn;
                 nn.push_back(first(s));
@@ -420,43 +423,44 @@ public:
         }
     }
 
-    void codegen(VM* vm) override {
-        for (auto& o:_exports) {
+    void codegen(VM *vm) override {
+        for (auto &o : _exports) {
             vm->enter_data(o);
         }
     }
 
-    void render(std::ostream& os) const override {
+    void render(std::ostream &os) const override {
         os << "dynamic module: " << get_filename();
     }
 
-    static bool filetype(const icu::UnicodeString& fn) {
+    static bool filetype(const icu::UnicodeString &fn) {
         return unicode_endswith(fn, ".ego");
     }
 
 private:
-    void*               _handle;
-    QualifiedStrings    _imports;
-    QualifiedStrings    _values;
-    VMObjectPtrs        _exports;
+    void *_handle;
+    QualifiedStrings _imports;
+    QualifiedStrings _values;
+    VMObjectPtrs _exports;
 };
-#endif
 
 class ModuleSource : public Module {
 public:
-    ModuleSource(const icu::UnicodeString& path, const icu::UnicodeString& fn, VM* m):
-        Module(MODULE_SOURCE, path, fn, m),
-        _source(""), _ast(0) {
+    ModuleSource(const icu::UnicodeString &path, const icu::UnicodeString &fn,
+                 VM *m)
+        : Module(MODULE_SOURCE, path, fn, m), _source(""), _ast(0) {
     }
 
-    ModuleSource(const ModuleSource& m):
-        Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
-        _source(m._source), _ast(m._ast) {
+    ModuleSource(const ModuleSource &m)
+        : Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
+          _source(m._source),
+          _ast(m._ast) {
         set_options(m.get_options());
     }
 
-    static ModulePtr create(const icu::UnicodeString& path, const icu::UnicodeString& fn, VM* m) {
-        return ModulePtr(new ModuleSource(path, fn, m));
+    static ModulePtr create(const icu::UnicodeString &path,
+                            const icu::UnicodeString &fn, VM *m) {
+        return std::make_shared<ModuleSource>(path, fn, m);
     }
 
     void load() override {
@@ -473,29 +477,29 @@ public:
     QualifiedStrings imports() override {
         auto aa = ::imports(_ast);
         auto ii = QualifiedStrings();
-        for (auto a:aa) {
+        for (auto a : aa) {
             if (a->tag() == AST_DIRECT_IMPORT) {
                 AST_DIRECT_IMPORT_SPLIT(a, p, s);
                 ii.push_back(QualifiedString(p, unicode_strip_quotes(s)));
             }
         }
-        return ii;        
+        return ii;
     }
 
     QualifiedStrings values() override {
         auto aa = ::values(_ast);
         auto ii = QualifiedStrings();
-        for (auto a:aa) {
+        for (auto a : aa) {
             if (a->tag() == AST_DECL_VALUE) {
                 AST_DECL_VALUE_SPLIT(a, p, n, f);
                 ii.push_back(QualifiedString(p, n->to_text()));
             }
         }
-        return ii;        
+        return ii;
     }
 
     VMObjectPtrs exports() override {
-        return VMObjectPtrs(); // XXX XXX XXX: implement this
+        return VMObjectPtrs();  // XXX XXX XXX: implement this
     }
 
     void syntactical() override {
@@ -508,25 +512,25 @@ public:
                 tt->skip();
             };
             std::cout << std::endl;
-            exit (EXIT_SUCCESS);
+            exit(EXIT_SUCCESS);
         };
 
         AstPtr a = parse(tt);
 
         if (get_options()->only_unparse()) {
             std::cout << a << std::endl;
-            exit (EXIT_SUCCESS);
+            exit(EXIT_SUCCESS);
         };
 
         _source = "";
         _ast = a;
-	}
+    }
 
-    void declarations(NamespacePtr& env) override {
+    void declarations(NamespacePtr &env) override {
         declare(env, _ast);
-	}
+    }
 
-    void semantical(NamespacePtr& env) override {
+    void semantical(NamespacePtr &env) override {
         _ast = ::identify(env, _ast);
 
         if (get_options()->only_semantical()) {
@@ -534,70 +538,72 @@ public:
             std::cout << env << std::endl;
 #endif
             std::cout << _ast << std::endl;
-            exit (EXIT_SUCCESS);
+            exit(EXIT_SUCCESS);
         };
-	}
+    }
 
     void desugar() override {
-         _ast = ::desugar(_ast);
+        _ast = ::desugar(_ast);
         if (get_options()->only_desugar()) {
             std::cout << _ast << std::endl;
-            exit (EXIT_SUCCESS);
+            exit(EXIT_SUCCESS);
         };
-
-	}
+    }
 
     void lift() override {
-         _ast = ::lift(_ast);
+        _ast = ::lift(_ast);
 
         if (get_options()->only_lift()) {
             std::cout << _ast << std::endl;
-            exit (EXIT_SUCCESS);
+            exit(EXIT_SUCCESS);
         };
-	}
+    }
 
-    void datagen(VM* vm) override {
+    void datagen(VM *vm) override {
         ::emit_data(vm, _ast);
-	}
+    }
 
-    void codegen(VM* vm) override {
+    void codegen(VM *vm) override {
         ::emit_code(vm, _ast);
         if (get_options()->only_bytecode()) {
             vm->render(std::cout);
-            exit (EXIT_SUCCESS);
+            exit(EXIT_SUCCESS);
         };
-	}
+    }
 
-    void render(std::ostream& os) const override {
+    void render(std::ostream &os) const override {
         os << "source module " << get_filename();
     }
 
-    static bool filetype(const icu::UnicodeString& fn) {
+    static bool filetype(const icu::UnicodeString &fn) {
         return unicode_endswith(fn, ".eg");
     }
 
 private:
-    icu::UnicodeString   _source;
-    AstPtr          _ast;
+    icu::UnicodeString _source;
+    AstPtr _ast;
 };
 
-typedef std::vector<ModulePtr> ModulePtrs;
+using ModulePtrs = std::vector<ModulePtr>;
 
 class ModuleManager {
 public:
     ModuleManager() {
     }
 
-    ModuleManager(const ModuleManager& mm):
-        _options(mm._options), _machine(mm._machine), _environment(mm._environment),
-        _modules(mm._modules), _loading(mm._loading) {
+    ModuleManager(const ModuleManager &mm)
+        : _options(mm._options),
+          _machine(mm._machine),
+          _environment(mm._environment),
+          _modules(mm._modules),
+          _loading(mm._loading) {
     }
 
     static ModuleManagerPtr create() {
-        return ModuleManagerPtr(new ModuleManager());
+        return std::make_shared<ModuleManager>();
     }
 
-    void init(const OptionsPtr& oo, VM* vm) {
+    void init(const OptionsPtr &oo, VM *vm) {
         NamespacePtr env = Namespace::create();
         set_options(oo);
         set_machine(vm);
@@ -610,7 +616,13 @@ public:
         auto thd = ModuleInternal::create("internal", vm, &builtin_thread);
         auto prc = ModuleInternal::create("internal", vm, &builtin_process);
         auto evl = ModuleInternal::create("internal", vm, &builtin_eval);
-        sys->load(); mth->load(); str->load(); run->load(); thd->load(); prc->load(); evl->load();
+        sys->load();
+        mth->load();
+        str->load();
+        run->load();
+        thd->load();
+        prc->load();
+        evl->load();
         _loading.push_back(sys);
         _loading.push_back(mth);
         _loading.push_back(str);
@@ -622,7 +634,7 @@ public:
         flush();
     }
 
-    void set_options(const OptionsPtr& oo) {
+    void set_options(const OptionsPtr &oo) {
         _options = oo;
     }
 
@@ -630,15 +642,15 @@ public:
         return _options;
     }
 
-    void set_machine(VM* vm) {
+    void set_machine(VM *vm) {
         _machine = vm;
     }
 
-    VM* machine() const {
+    VM *machine() const {
         return _machine;
     }
 
-    void set_environment(const NamespacePtr& env) {
+    void set_environment(const NamespacePtr &env) {
         _environment = env;
     }
 
@@ -651,38 +663,39 @@ public:
     }
 
     // implements incremental loading for interactive mode
-    void load(const Position& p, const icu::UnicodeString& fn) {
+    void load(const Position &p, const icu::UnicodeString &fn) {
         preload(p, fn);
         _loading[0]->set_options(_options);
         transitive_closure();
-         reverse(); // XXX: why was this again?
+        reverse();  // XXX: why was this again?
         process();
         flush();
     }
 
     QualifiedStrings values() {
         QualifiedStrings ss;
-        for(auto& m:_modules) {
+        for (auto &m : _modules) {
             auto vv = m->values();
-            for (auto& s:vv) {
+            for (auto &s : vv) {
                 ss.push_back(s);
             }
         }
         return ss;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const ModuleManager& mm) {
-        for (auto m:mm._modules) {
+    friend std::ostream &operator<<(std::ostream &os, const ModuleManager &mm) {
+        for (auto m : mm._modules) {
             os << m << std::endl;
         }
         return os;
     }
 
 protected:
-    icu::UnicodeString search(const UnicodeStrings& path, const icu::UnicodeString& fn) {
-        auto fn_here = path_absolute(fn); // XXX: shouldn't this be in path?
+    icu::UnicodeString search(const UnicodeStrings &path,
+                              const icu::UnicodeString &fn) {
+        auto fn_here = path_absolute(fn);  // XXX: shouldn't this be in path?
         if (file_exists(fn_here)) return fn_here;
-        for (auto p:path) {
+        for (auto p : path) {
             auto fn0 = path_combine(p, fn);
             auto fn1 = path_absolute(fn0);
             if (file_exists(fn1)) return fn1;
@@ -690,18 +703,17 @@ protected:
         return "";
     }
 
-
-    bool already_loaded(const icu::UnicodeString& fn) {
-        for (auto& m:_modules) {
+    bool already_loaded(const icu::UnicodeString &fn) {
+        for (auto &m : _modules) {
             if (m->get_path().compare(fn) == 0) return true;
         }
-        for (auto& m:_loading) {
+        for (auto &m : _loading) {
             if (m->get_path().compare(fn) == 0) return true;
         }
         return false;
     }
 
-    void preload(const Position& p, const icu::UnicodeString& fn) {
+    void preload(const Position &p, const icu::UnicodeString &fn) {
         if (fn[0] == '!') {
             // not implemented yet
         } else {
@@ -719,7 +731,7 @@ protected:
                 } else {
                     throw ErrorIO(p, "file \"" + fn + "\" has wrong extension");
                 }
-                m->set_options(Options::create());//XXX check this
+                m->set_options(Options::create());  // XXX check this
                 try {
                     m->load();
                 } catch (ErrorIO &e) {
@@ -731,12 +743,12 @@ protected:
     }
 
     void transitive_closure() {
-        uint_t n = 0;
+        size_t n = 0;
         while (n < _loading.size()) {
             auto m = _loading[n];
             m->syntactical();
             auto ii = m->imports();
-            for (auto& i:ii) {
+            for (auto &i : ii) {
                 preload(i.position(), i.string());
             }
             n++;
@@ -752,28 +764,28 @@ protected:
     }
 
     void process() {
-        for (auto& m:_loading) {
+        for (auto &m : _loading) {
             m->declarations(_environment);
         }
-        for (auto& m:_loading) {
+        for (auto &m : _loading) {
             m->semantical(_environment);
         }
-        for (auto& m:_loading) {
+        for (auto &m : _loading) {
             m->desugar();
         }
-        for (auto& m:_loading) {
+        for (auto &m : _loading) {
             m->lift();
         }
-        for (auto& m:_loading) {
+        for (auto &m : _loading) {
             m->datagen(_machine);
         }
-        for (auto& m:_loading) {
+        for (auto &m : _loading) {
             m->codegen(_machine);
         }
     }
 
     void flush() {
-        for(auto& m:_loading) {
+        for (auto &m : _loading) {
             _modules.push_back(m);
         }
         ModulePtrs empty;
@@ -781,11 +793,9 @@ protected:
     }
 
 private:
-    OptionsPtr          _options;
-    VM*                 _machine;
-    NamespacePtr        _environment;
-    ModulePtrs          _modules;
-    ModulePtrs          _loading;
+    OptionsPtr _options;
+    VM *_machine;
+    NamespacePtr _environment;
+    ModulePtrs _modules;
+    ModulePtrs _loading;
 };
-
-#endif

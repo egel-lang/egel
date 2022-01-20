@@ -1,8 +1,11 @@
-#ifndef READER_HPP
-#define READER_HPP
+#pragma once
 
-#include "utils.hpp"
+#include <vector>
+
 #include "position.hpp"
+#include "unicode/unistr.h"
+#include "unicode/ustream.h"
+#include "utils.hpp"
 
 class CharReader {
 public:
@@ -19,13 +22,14 @@ public:
 
 class StringCharReader : public CharReader {
 public:
-    StringCharReader(const icu::UnicodeString &resource, const icu::UnicodeString &content) {
+    StringCharReader(const icu::UnicodeString &resource,
+                     const icu::UnicodeString &content) {
         _row = 1;
         _column = 1;
         _index = 0;
         _resource = resource;
         _content = content;
-	fill_buffer();
+        fill_buffer();
     }
 
     Position position() override {
@@ -41,14 +45,15 @@ public:
         return _buffer[_index];
     }
 
-    UChar32 look(int n) override { // need LL(2) in the lexer for '-1', to be decaprecated at some point
-        return _buffer[_index+n];
+    UChar32 look(int n) override {  // need LL(2) in the lexer for '-1', to be
+        // decaprecated at some point
+        return _buffer[_index + n];
     }
 
     void skip() override {
         if (end()) return;
         UChar32 c = look();
-	_index++;
+        _index++;
         switch (c) {
             // XXX: handle MSDOS like newlines
             case '\n':
@@ -61,9 +66,10 @@ public:
     }
 
     bool end() override {
-	if (_index >= _length) return true;
-	if (_buffer[_index] == 65535) return true; // make absolutely sure we always detect the end
-	return false;
+        if (_index >= _length) return true;
+        if (_buffer[_index] == 65535)
+            return true;  // make absolutely sure we always detect the end
+        return false;
     }
 
     bool eol() override {
@@ -73,7 +79,7 @@ public:
             return look() == '\n';
         };
     }
- 
+
     void reset() override {
         _index = 0;
         _row = 1;
@@ -81,21 +87,20 @@ public:
     }
 
 protected:
-
     void fill_buffer() {
-	std::string utf8;
-       	_content.toUTF8String(utf8);
-	icu::StringPiece sp(utf8);
-        const char *s=sp.data();
-        int32_t length=sp.length();
-        int32_t n=0;
-        for(int32_t i=0; i<length;) {
+        std::string utf8;
+        _content.toUTF8String(utf8);
+        icu::StringPiece sp(utf8);
+        const char *s = sp.data();
+        int32_t length = sp.length();
+        int32_t n = 0;
+        for (int32_t i = 0; i < length;) {
             UChar32 c;
             U8_NEXT(s, i, length, c);
-	    _buffer.push_back(c);
-	    n++;
+            _buffer.push_back(c);
+            n++;
         }
-	_length = n;
+        _length = n;
     }
 
 private:
@@ -104,10 +109,7 @@ private:
     int32_t _index;
     int32_t _length;
 
-    icu::UnicodeString   _resource;
-    icu::UnicodeString   _content;
+    icu::UnicodeString _resource;
+    icu::UnicodeString _content;
     std::vector<UChar32> _buffer;
-
 };
-
-#endif
