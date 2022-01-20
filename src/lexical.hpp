@@ -716,8 +716,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
             c = reader.look();
             if (is_colon(c)) {
                 reader.skip();
-                token_writer.push(
-                    Token(TOKEN_DCOLON, p, STRING_DCOLON));
+                token_writer.push(Token(TOKEN_DCOLON, p, STRING_DCOLON));
             } else {
                 token_writer.push(Token(TOKEN_COLON, p, c));
             }

@@ -252,5 +252,3 @@ icu::UnicodeString path_absolute(const icu::UnicodeString& s);
  ** @return the combined path
  **/
 icu::UnicodeString path_combine(const icu::UnicodeString& s0, const icu::UnicodeString& s1);
-
-#endif

@@ -861,7 +861,7 @@ public:
 };
 
 //## OS::equivalent p0 p1 - checks whether two paths refer to the same file
-//system object
+// system object
 class Equivalent : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Equivalent, OS_STRING, "equivalent");
@@ -908,7 +908,7 @@ public:
 };
 
 //## OS::hard_link_count p - returns the number of hard links referring to the
-//specific file
+// specific file
 class HardLinkCount : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HardLinkCount, OS_STRING, "hard_link_count");
@@ -931,7 +931,7 @@ public:
 };
 
 //# OS::last_write_time - gets or sets the time of the last data modification
-//XXX
+// XXX
 
 //## OS::permissions p - get file access permissions
 class Permissions : public Monadic {
@@ -1076,7 +1076,7 @@ public:
 };
 
 //## OS::remove_all p - removes a file or directory and all its contents,
-//recursively
+// recursively
 class RemoveAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RemoveAll, OS_STRING, "remove_all");
@@ -1123,7 +1123,7 @@ public:
 };
 
 //## OS::resize_file p n - changes the size of a regular file by truncation or
-//zero-fill
+// zero-fill
 class ResizeFile : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ResizeFile, OS_STRING, "resize_file");
@@ -1215,7 +1215,7 @@ public:
 
 //# OS::status - determines file attributes XXX
 //# OS::symlink_status - determines file attributes, checking the symlink target
-//XXX
+// XXX
 
 //## OS::temp_directory_path - returns a directory suitable for temporary files
 class TempDirectoryPath : public Medadic {
@@ -1257,7 +1257,7 @@ public:
 };
 
 //## OS::is_character_file p - checks whether the given path refers to a
-//character device
+// character device
 class IsCharacterFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsCharacterFile, OS_STRING,
@@ -1303,7 +1303,7 @@ public:
 };
 
 //## OS::is_empty p - checks whether the given path refers to an empty file or
-//directory
+// directory
 class IsEmpty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsEmpty, OS_STRING, "is_empty");
@@ -1370,7 +1370,7 @@ public:
 };
 
 //## OS::is_regular_file p - checks whether the argument refers to a regular
-//file
+// file
 class IsRegularFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRegularFile, OS_STRING, "is_regular_file");

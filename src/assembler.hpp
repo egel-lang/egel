@@ -1,10 +1,11 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
-#include "utils.hpp"
 #include "runtime.hpp"
 #include "bytecode.hpp"
+#include "utils.hpp"
 
 const int BYTECODEVERSION = 0x00;
 const int SEPARATOR = ' ';

@@ -105,14 +105,15 @@ public:
         return u;
     }
 
-    static int compare(const AstPtr& a0, const AstPtr &a1);
+    static int compare(const AstPtr &a0, const AstPtr &a1);
 
-protected: // a collection of helper functions
+protected:  // a collection of helper functions
     static int compare_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1);
-    static int compare_ast2(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
-                 const AstPtr &a3);
-    static int compare_ast3(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
-                 const AstPtr &a3, const AstPtr &a4, const AstPtr &a5);
+    static int compare_ast2(const AstPtr &a0, const AstPtr &a1,
+                            const AstPtr &a2, const AstPtr &a3);
+    static int compare_ast3(const AstPtr &a0, const AstPtr &a1,
+                            const AstPtr &a2, const AstPtr &a3,
+                            const AstPtr &a4, const AstPtr &a5);
     static int compare_asts(const AstPtrs &aa0, const AstPtrs &aa1);
 
 private:
@@ -148,7 +149,7 @@ public:
         return std::make_shared<AstEmpty>();
     }
 
-    static std::shared_ptr<AstEmpty> cast(const AstPtr &a){
+    static std::shared_ptr<AstEmpty> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstEmpty>(a);
     }
 
@@ -2093,7 +2094,8 @@ int Ast::compare_asts(const AstPtrs &aa0, const AstPtrs &aa1) {
     }
 }
 
-static int compare_text(const icu::UnicodeString &t0, const icu::UnicodeString &t1) {
+static int compare_text(const icu::UnicodeString &t0,
+                        const icu::UnicodeString &t1) {
     return t0.compare(t1);
 }
 
@@ -2117,14 +2119,14 @@ static int compare_texts(const UnicodeStrings &aa0, const UnicodeStrings &aa1) {
 }
 
 int Ast::compare_ast2(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
-                 const AstPtr &a3) {
+                      const AstPtr &a3) {
     int c = compare(a0, a1);
     if (c != 0) return c;
     return compare(a2, a3);
 }
 
 int Ast::compare_ast3(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
-                 const AstPtr &a3, const AstPtr &a4, const AstPtr &a5) {
+                      const AstPtr &a3, const AstPtr &a4, const AstPtr &a5) {
     int c = compare(a0, a1);
     if (c != 0) return c;
     c = compare(a2, a3);

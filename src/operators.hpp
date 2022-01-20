@@ -4,9 +4,8 @@
 
 constexpr auto OPERATOR_BOTTOM = "=";
 
-    inline int
-    operator_compare(const icu::UnicodeString &o0,
-                     const icu::UnicodeString &o1);
+inline int operator_compare(const icu::UnicodeString &o0,
+                            const icu::UnicodeString &o1);
 
 inline bool operator_is_infix(const icu::UnicodeString &o);
 inline bool operator_is_prefix(const icu::UnicodeString &o);
@@ -96,7 +95,7 @@ inline int operator_char_compare(const UChar32 c0, const UChar32 c1) {
 }
 
 inline int operator_compare(const icu::UnicodeString &o0,
-                     const icu::UnicodeString &o1) {
+                            const icu::UnicodeString &o1) {
     int l0 = o0.length();
     int l1 = o1.length();
 

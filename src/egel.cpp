@@ -1,12 +1,12 @@
-#include "utils.hpp"
+#include "eval.hpp"
+#include "lexical.hpp"
+#include "machine.hpp"
+#include "modules.hpp"
 #include "position.hpp"
 #include "reader.hpp"
-#include "lexical.hpp"
-#include "syntactical.hpp"
 #include "runtime.hpp"
-#include "machine.hpp"
-#include "eval.hpp"
-#include "modules.hpp"
+#include "syntactical.hpp"
+#include "utils.hpp"
 
 #define EXECUTABLE_NAME "egel"
 
@@ -113,42 +113,41 @@ using StringPairs =
 StringPairs parse_options(int argc, char *argv[]) {
     StringPairs pp;
     for (int a = 1; a < argc; a++) {
-
         for (auto &o : options) {
             if ((strncmp(argv[a], o.shortname, 32) == 0) ||
                 (strncmp(argv[a], o.longname, 32) == 0)) {
                 switch (o.argument) {
                     case OPTION_NONE:
-                        pp.push_back(std::make_pair(
-                            icu::UnicodeString(o.shortname),
-                            icu::UnicodeString("")));
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString("")));
                         break;
                     case OPTION_FILE:
                         if (a == argc - 1) goto options_error;
-                        pp.push_back(std::make_pair(
-                            icu::UnicodeString(o.shortname),
-                            icu::UnicodeString(argv[a + 1])));
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
                     case OPTION_DIR:
                         if (a == argc - 1) goto options_error;
-                        pp.push_back(std::make_pair(
-                            icu::UnicodeString(o.shortname),
-                            icu::UnicodeString(argv[a + 1])));
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
                     case OPTION_NUMBER:
                         if (a == argc - 1) goto options_error;
-                        pp.push_back(std::make_pair(
-                            icu::UnicodeString(o.shortname),
-                            icu::UnicodeString(argv[a + 1])));
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
                     case OPTION_TEXT:
                         if (a == argc - 1) goto options_error;
-                        pp.push_back(std::make_pair(
-                            icu::UnicodeString(o.shortname),
-                            icu::UnicodeString(argv[a + 1])));
+                        pp.push_back(
+                            std::make_pair(icu::UnicodeString(o.shortname),
+                                           icu::UnicodeString(argv[a + 1])));
                         a++;
                         break;
                 };
@@ -172,8 +171,7 @@ void display_usage() {
     std::cout << "Options:" << std::endl;
 
     for (auto &o : options) {
-        std::cout << "\t[" << o.shortname << "|" << o.longname
-                  << "] ";
+        std::cout << "\t[" << o.shortname << "|" << o.longname << "] ";
         switch (o.argument) {
             case OPTION_NONE:
                 std::cout << "      ";

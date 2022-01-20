@@ -1,4 +1,5 @@
 #include <stdlib.h>
+
 #include "unicode/regex.h"
 
 #include "../../src/runtime.hpp"
@@ -76,7 +77,7 @@ public:
         UErrorCode error_code = U_ZERO_ERROR;
         auto m = _pattern->matcher(s, error_code);
         if (U_FAILURE(error_code)) {
-            return nullptr; // XXX: rather throw here but no machine
+            return nullptr;  // XXX: rather throw here but no machine
         } else {
             return m;
         }
@@ -179,7 +180,7 @@ public:
 };
 
 //## Regex::look_match pat s0 - returns the initial matched part of the string,
-//or none
+// or none
 class LookMatch : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
@@ -284,7 +285,7 @@ public:
 };
 
 //## Regex::replace pat s0 s1 - replace the first occurence of pattern in a
-//string with a string
+// string with a string
 class Replace : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
@@ -316,7 +317,7 @@ public:
 };
 
 //## Regex::replace_all pat s0 s1 - replace the all occurences of pattern in a
-//string with a string
+// string with a string
 class ReplaceAll : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");

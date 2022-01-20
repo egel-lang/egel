@@ -1,21 +1,21 @@
 #pragma once
 
 #include <iomanip>
+#include <sstream>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <set>
-#include <sstream>
 #include <tuple>
 #include <vector>
 #include <thread>
 #include <chrono>
 
-
+#include "runtime.hpp"
+#include "environment.hpp"
 #include "assembler.hpp"
 #include "eval.hpp"
 #include "modules.hpp"
-#include "runtime.hpp"
 
 class SymbolTable {
 public:
@@ -173,7 +173,7 @@ public:
     }
 
     static VMPtr create() {
-        return VMPtr(new Machine());  // XXX: use a copy constructor once
+        return std::make_shared<Machine>();
     }
 
     void populate() {
@@ -368,8 +368,8 @@ public:
 #endif
                 trampoline = f->reduce(trampoline);
             } else if (*run == SLEEPING) {
-                std::this_thread::sleep_for (std::chrono::milliseconds(100));
-            } else {          // *run == HALTED
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {  // *run == HALTED
             }
         }
     }
@@ -710,8 +710,7 @@ public:
         }
     */
 
-    VMObjectPtr bad(const VMObject *o,
-                    const icu::UnicodeString &s) override {
+    VMObjectPtr bad(const VMObject *o, const icu::UnicodeString &s) override {
         VMObjectPtrs tt;
         tt.push_back(create_text(o->to_text()));
         tt.push_back(create_text(s));

@@ -1184,7 +1184,8 @@ private:
     AstPtr _target;
 };
 
-inline AstPtr substitute(const AstPtr &term, const AstPtr &s0, const AstPtr &s1) {
+inline AstPtr substitute(const AstPtr &term, const AstPtr &s0,
+                         const AstPtr &s1) {
     Substitute subs;
     return subs.substitute(term, s0, s1);
 }

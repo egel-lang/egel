@@ -1,5 +1,8 @@
 #pragma once
 
+#include <dlfcn.h> // XXX: I wish I could get rid of this
+
+#include <memory>
 #include <vector>
 
 #include "ast.hpp"
@@ -321,11 +324,6 @@ private:
     VMObjectPtrs _exports;
 };
 
-#define LINUX
-#ifdef LINUX
-
-#include <dlfcn.h>
-
 class ModuleDynamic : public Module {
 public:
     ModuleDynamic(const icu::UnicodeString &p, const icu::UnicodeString &fn,
@@ -445,7 +443,6 @@ private:
     QualifiedStrings _values;
     VMObjectPtrs _exports;
 };
-#endif
 
 class ModuleSource : public Module {
 public:
