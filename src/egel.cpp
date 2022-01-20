@@ -1,12 +1,5 @@
-#include "eval.hpp"
-#include "lexical.hpp"
 #include "machine.hpp"
-#include "modules.hpp"
-#include "position.hpp"
-#include "reader.hpp"
 #include "runtime.hpp"
-#include "syntactical.hpp"
-#include "utils.hpp"
 
 #define EXECUTABLE_NAME "egel"
 

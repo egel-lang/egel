@@ -2,15 +2,7 @@
 
 #include <functional>
 
-#include "eval.hpp"
-#include "lexical.hpp"
-#include "machine.hpp"
-#include "modules.hpp"
-#include "position.hpp"
-#include "reader.hpp"
 #include "runtime.hpp"
-#include "syntactical.hpp"
-#include "utils.hpp"
 
 //## namespace System - the `eval` combinator
 
