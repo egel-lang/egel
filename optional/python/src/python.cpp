@@ -196,16 +196,6 @@ class PythonMachine: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonMachine, "Python", "machine");
 
-/*
-    PythonMachine(const PythonMachine& m): Opaque(VM_SUB_PYTHON_OBJECT, m.machine(), m.symbol()) {
-        _value = m._value;
-    }
-*/
-/*
-    PythonMachine(VM* m) : Opaque(VM_SUB_PYTHON_OBJECT, m, "Python", "machine") {
-    }
-*/
-
     static VMObjectPtr create(VM* m) {
         return std::make_shared<PythonMachine>(m); // XXX: closes and creates?
     }
