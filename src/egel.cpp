@@ -106,6 +106,7 @@ using StringPairs =
 StringPairs parse_options(int argc, char *argv[]) {
     StringPairs pp;
     for (int a = 1; a < argc; a++) {
+        size_t pp_size = pp.size();
         for (auto &o : options) {
             if ((strncmp(argv[a], o.shortname, 32) == 0) ||
                 (strncmp(argv[a], o.longname, 32) == 0)) {
@@ -147,7 +148,7 @@ StringPairs parse_options(int argc, char *argv[]) {
             };
         }
 
-        if (a == argc - 1) {
+        if (pp_size == pp.size()) { // XXX: didn't add an option - not sure this always works
             pp.push_back(std::make_pair(icu::UnicodeString("--"),
                                         icu::UnicodeString(argv[a])));
         }
