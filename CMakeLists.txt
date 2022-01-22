@@ -191,7 +191,7 @@ install(TARGETS egellib egellib_static
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-install(FILES ${EGEL_MODULES}
+install(FILES ${EGEL_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/egel
 )
 

@@ -137,7 +137,7 @@ static PyObject* egel_to_python(VM* machine, const VMObjectPtr& o) {
         auto n0 = machine->get_integer(o);
         PyObject* n1 = Py_BuildValue("l", n0); // XXX: l = long int; L = long long
         return n1;
-    } else if (machine->is_float()(o)) {
+    } else if (machine->is_float(o)) {
         auto f0 = machine->get_float(o);
         PyObject* f1 = Py_BuildValue("f", f0);
         return f1;
@@ -167,12 +167,12 @@ static VMObjectPtr python_to_egel(VM* machine, const CPythonObject& object) {
     } else if (Py_Is(o, Py_True)) {
         return machine->create_true();
     } else if (PYTHON_HAS_TYPE(o, PyLong_Type)) {
-        machine_int_t n0;
+        vm_int_t n0;
         PyArg_Parse(o, "l", &n0);
         auto n1 = machine->create_integer(n0);
         return n1;
     } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
-        machine_float_t f0;
+        vm_float_t f0;
         PyArg_Parse(o, "d", &f0);
         auto f1 = machine->create_float(f0);
         return f1;
@@ -196,12 +196,18 @@ class PythonMachine: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonMachine, "Python", "machine");
 
+/*
     PythonMachine(const PythonMachine& m): Opaque(VM_SUB_PYTHON_OBJECT, m.machine(), m.symbol()) {
         _value = m._value;
     }
+*/
+/*
+    PythonMachine(VM* m) : Opaque(VM_SUB_PYTHON_OBJECT, m, "Python", "machine") {
+    }
+*/
 
-    VMObjectPtr create() const override {
-        return VMObjectPtr(new PythonMachine(*this)); // XXX: closes and creates?
+    static VMObjectPtr create(VM* m) {
+        return std::make_shared<PythonMachine>(m); // XXX: closes and creates?
     }
 
     ~PythonMachine() {
@@ -255,12 +261,12 @@ public:
     PythonObject(VM* vm, const PyObject* o): Opaque(VM_SUB_PYTHON_OBJECT, vm, "Python", "object"), _value(o) {
     }
 
-    VMObjectPtr create() const override {
-        return VMObjectPtr(new PythonObject(*this));
+    VMObjectPtr create() const {
+        return std::make_shared<PythonObject>(*this);
     }
 
     static VMObjectPtr create(VM* vm, PyObject* o) {
-        return PythonObject::create(vm, o);
+        return std::make_shared<PythonObject>(vm, o);
     }
 
     static VMObjectPtr create(VM* vm, const PyObject* o) {
@@ -314,7 +320,7 @@ public:
             PYTHON_MACHINE_CAST(m)->run();
             return m;
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -329,7 +335,7 @@ public:
             auto p0 = egel_to_python(machine(), arg0);
             return PythonObject::create(machine(), p0);
         } catch (std::exception& e) {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -346,10 +352,10 @@ public:
                 auto e = python_to_egel(machine(), o);
                 return e;
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0);
             }
         } catch (std::exception& e) {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -364,7 +370,7 @@ public:
             auto o = PYTHON_OBJECT_VALUE(arg0);
             return machine()->create_bool(Py_Is(o, Py_None));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -379,7 +385,7 @@ public:
             auto o = PYTHON_OBJECT_VALUE(arg0);
             return machine()->create_bool(Py_Is(o, Py_False));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -394,7 +400,7 @@ public:
             auto o = PYTHON_OBJECT_VALUE(arg0);
             return machine()->create_bool(Py_Is(o, Py_True));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -409,7 +415,7 @@ public:
             auto o = PYTHON_OBJECT_VALUE(arg0);
             return machine()->create_bool(PYTHON_HAS_TYPE(o, PyLong_Type));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -424,7 +430,7 @@ public:
             auto o = PYTHON_OBJECT_VALUE(arg0);
             return machine()->create_bool(PYTHON_HAS_TYPE(o, PyFloat_Type));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -439,7 +445,7 @@ public:
             auto o = PYTHON_OBJECT_VALUE(arg0);
             return machine()->create_bool(PYTHON_HAS_TYPE(o, PyUnicode_Type));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -456,7 +462,7 @@ public:
             PyArg_Parse(o, "l", &n);
             return machine()->create_integer(n);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -473,7 +479,7 @@ public:
             PyArg_Parse(o, "d", &f);
             return machine()->create_float(f);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -491,7 +497,7 @@ public:
             auto s1 = icu::UnicodeString(s0);
             return machine()->create_text(s1);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -512,10 +518,10 @@ public:
             if (attr) {
                 return PythonObject::create(machine(), attr);
             } else {
-                throw create_text("no attribute: " + s);
+                throw machine()->create_text("no attribute: " + s);
             }
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -536,7 +542,7 @@ public:
             delete n;
             return machine()->create_none();
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -555,7 +561,7 @@ public:
 
             return PythonObject::create(machine(), obj0);
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -571,9 +577,9 @@ public:
             auto key = PYTHON_OBJECT_VALUE(arg1);
             auto a   = PYTHON_OBJECT_VALUE(arg2);
             PyObject_SetItem(o, key, a);
-            return create_none();
+            return machine()->create_none();
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -600,7 +606,7 @@ public:
             auto p = PYTHON_OBJECT_VALUE(arg0);
             return m->create_bool(Py_IS_TYPE(p, &PyTuple_Type));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -617,14 +623,14 @@ public:
             auto sz = aa->size();
 
             // well-formedness check
-            for (int n = 1; n < sz; n++) {
-                if (!PYTHON_OBJECT_TEST(aa->get(n))) THROW_BADARGS;
+            for (size_t n = 1; n < sz; n++) {
+                if (!PYTHON_OBJECT_TEST(aa->get(n))) throw machine()->bad_args(this, arg0);
             }
 
             // translation
             PyObject* t;
             t = PyTuple_New(sz-1);
-            for (int n = 1; n < sz; n++) {
+            for (size_t n = 1; n < sz; n++) {
                 auto o = PYTHON_OBJECT_VALUE(aa->get(n));
                 PyTuple_SetItem(t, n-1, o);
             }
@@ -634,7 +640,7 @@ public:
             t = PyTuple_New(0);
             return PythonObject::create(m, t);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -662,10 +668,10 @@ public:
                     return m->to_tuple(oo);
                 }
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -681,7 +687,7 @@ public:
             auto p = PYTHON_OBJECT_VALUE(arg0);
             return m->create_bool(Py_IS_TYPE(p, &PyList_Type));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -699,7 +705,7 @@ public:
 
             // well-formedness check
             for (unsigned long n = 0; n < sz; n++) {
-                if (!PYTHON_OBJECT_TEST(aa[n])) THROW_BADARGS;
+                if (!PYTHON_OBJECT_TEST(aa[n])) throw machine()->bad_args(this, arg0);
             }
 
             // translation
@@ -711,7 +717,7 @@ public:
             }
             return PythonObject::create(m, t);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -737,10 +743,10 @@ public:
 
                 return m->to_list(oo);
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -756,7 +762,7 @@ public:
             auto p = PYTHON_OBJECT_VALUE(arg0);
             return m->create_bool(Py_IS_TYPE(p, &PySet_Type));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -774,7 +780,7 @@ public:
 
             // well-formedness check
             for (unsigned long n = 0; n < sz; n++) {
-                if (!PYTHON_OBJECT_TEST(aa[n])) THROW_BADARGS;
+                if (!PYTHON_OBJECT_TEST(aa[n])) throw machine()->bad_args(this, arg0);
             }
 
             // translation
@@ -786,7 +792,7 @@ public:
             }
             return PythonObject::create(m, s);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -809,10 +815,10 @@ public:
                 }
                 return m->to_list(oo);
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -828,7 +834,7 @@ public:
             auto p = PYTHON_OBJECT_VALUE(arg0);
             return m->create_bool(Py_IS_TYPE(p, &PyDict_Type));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -851,7 +857,7 @@ public:
                   && (PYTHON_OBJECT_TEST(m->array_get(o,1))) 
                   && (PYTHON_OBJECT_TEST(m->array_get(o,2)))) {
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0);
             }
         }
 
@@ -884,7 +890,6 @@ public:
                 Py_ssize_t n = 0;
 
                 while (PyDict_Next(p, &n, &key, &val)) {
-                    auto aa = m->create_array();
                     auto k = PythonObject::create(m, key);
                     auto v = PythonObject::create(m, val);
                     VMObjectPtrs tt;
@@ -895,10 +900,10 @@ public:
 
                 return m->to_list(oo);
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -914,13 +919,13 @@ public:
             auto o = PYTHON_OBJECT_VALUE(arg0);
             auto d = PyObject_Dir(o);
             if (d == nullptr) {
-                throw create_text("no object directory");
+                throw machine()->create_text("no object directory");
             } else {
                 auto p = PythonObject::create(m, d);
                 return p;
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -936,7 +941,7 @@ public:
             auto f = PYTHON_OBJECT_VALUE(arg0);
             return m->create_bool(PyCallable_Check(f) != 0);
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -965,10 +970,10 @@ public:
                     return PythonObject::create(m, r);
                 }
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0, arg1);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -998,10 +1003,10 @@ public:
                     return PythonObject::create(m, r);
                 }
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0, arg1, arg2);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 };
@@ -1025,7 +1030,7 @@ public:
             }
             return machine()->create_none();
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1043,7 +1048,7 @@ public:
             FILE* fp;
             fp = fopen(fn1, "r"); // XXX: fp is never closed
             if (fp == nullptr) {
-                throw create_text("cannot open file: " + fn0);
+                throw machine()->create_text("cannot open file: " + fn0);
             }
             PyRun_SimpleFile(fp, fn1);
             delete fn1;
@@ -1054,9 +1059,9 @@ public:
             } else {
                 return machine()->create_none();
             }
-            return create_none();
+            return machine()->create_none();
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1077,14 +1082,14 @@ public:
                 if (e) {
                     throw PythonObject::create(machine(), e);
                 } else {
-                    throw create_text("cannot add module: " + m0);
+                    throw machine()->create_text("cannot add module: " + m0);
                 }
             }
             auto m = PythonObject::create(machine(), mod);
             Py_XDECREF(mod);
             return m;
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1107,14 +1112,14 @@ public:
                 if (e) {
                     throw PythonObject::create(machine(), e);
                 } else {
-                    throw create_text("cannot open module: " + fn0);
+                    throw machine()->create_text("cannot open module: " + fn0);
                 }
             }
             auto m = PythonObject::create(machine(), mod);
             Py_XDECREF(mod);
             return m;
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -1136,10 +1141,10 @@ public:
             if (func0 && PyCallable_Check(func0)) {
                 return PythonObject::create(machine(), func0);
             } else {
-                throw create_text("no function: " + s);
+                throw machine()->create_text("no function: " + s);
             }
         } else {
-            THROW_INVALID;
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -1151,10 +1156,10 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(PythonMachine::create(vm));
+    oo.push_back(VMObjectStub::create(vm, "Python::machine"));
     oo.push_back(PythonRun::create(vm));
 
-    oo.push_back(PythonObject::create(vm));
+    oo.push_back(VMObjectStub::create(vm, "Python::object"));
     oo.push_back(PythonToObject::create(vm));
     oo.push_back(PythonFromObject::create(vm));
 
