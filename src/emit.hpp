@@ -174,8 +174,7 @@ public:
                 get_coder()->emit_op_test(r, ri);
                 get_coder()->emit_op_fail(l);
             } break;
-            case EMIT_EXPR_ROOT:
-            case EMIT_EXPR: {
+            case EMIT_EXPR_ROOT: {
                 auto rt = get_coder()->generate_register();
                 auto rti = get_coder()->generate_register();
                 auto k = get_coder()->generate_register();
@@ -204,6 +203,15 @@ public:
                 } else {
                     set_register_k(t);
                 }
+            } break;
+            case EMIT_EXPR: {
+                auto c = get_coder()->generate_register();
+                auto d = get_coder()->emit_data(o);
+                get_coder()->emit_op_data(c, d);
+
+                auto rt = get_register_rt();
+                auto rti = get_register_rti();
+                get_coder()->emit_op_set(rt, rti, c);
             } break;
         }
     }

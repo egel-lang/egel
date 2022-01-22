@@ -13,7 +13,7 @@
 #include "unicode/ustream.h"
 
 enum token_t {
-    TOKEN_ERROR = 0,
+    TOKEN_ERROR,
     TOKEN_EOF,
 
     //  delimiters

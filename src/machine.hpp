@@ -163,7 +163,7 @@ private:
     bool _exception;
 };
 
-class Machine : public VM {
+class Machine final: public VM {
 public:
     Machine() {
         populate();

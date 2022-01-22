@@ -63,13 +63,13 @@ private:
     UnicodeString _message;
 };
 
-typedef enum {
+enum channel_tag_t {
     CHANNEL_STREAM_IN,
     CHANNEL_STREAM_OUT,
     CHANNEL_STREAM_ERR,
     CHANNEL_FILE,
     CHANNEL_FD,
-} channel_tag_t;
+};
 
 class Channel;
 typedef std::shared_ptr<Channel> ChannelPtr;
@@ -851,7 +851,7 @@ public:
 
             sockfd = socket(AF_INET, SOCK_STREAM, 0);
             if (sockfd < 0) {
-                throw VMObjectText::create("error opening socket");
+                throw machine()->create_text("error opening socket");
             }
 
             bzero((char*)&server_address, sizeof(server_address));
@@ -863,12 +863,12 @@ public:
             // Convert IPv4 and IPv6 addresses from text to binary form
             if (::inet_pton(AF_INET, utf8.c_str(), &server_address.sin_addr) <=
                 0) {
-                throw VMObjectText::create("invalid address");
+                throw machine()->create_text("invalid address");
             }
 
             if (::connect(sockfd, (struct sockaddr*)&server_address,
                           sizeof(server_address)) < 0) {
-                throw VMObjectText::create("connection failed");
+                throw machine()->create_text("connection failed");
             }
 
             auto cn = ChannelFD::create(sockfd);

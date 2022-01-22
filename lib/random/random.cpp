@@ -44,7 +44,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger::create(random::get().between(i0, i1));
+            return machine()->create_integer(random::get().between(i0, i1));
         } else {
             // XXX: extend once with two float values
             throw machine()->bad_args(this, arg0, arg1);

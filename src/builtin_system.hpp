@@ -104,11 +104,11 @@ public:
             if (mul_overflow((vm_int_t)-1, i, &res)) {
                 throw machine()->bad(this, "overflow");
             } else {
-                return VMObjectInteger::create(res);
+                return machine()->create_integer(res);
             }
         } else if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return VMObjectFloat::create(-f);
+            return machine()->create_float(-f);
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -129,12 +129,12 @@ public:
             if (add_overflow(i0, i1, &res)) {
                 throw machine()->bad(this, "overflow");
             } else {
-                return VMObjectInteger::create(res);
+                return machine()->create_integer(res);
             }
         } else if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
-            return VMObjectFloat::create(f0 + f1);
+            return machine()->create_float(f0 + f1);
         } else if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             auto f0 = machine()->get_text(arg0);
             auto f1 = machine()->get_text(arg1);
@@ -159,12 +159,12 @@ public:
             if (sub_overflow(i0, i1, &res)) {
                 throw machine()->bad(this, "overflow");
             } else {
-                return VMObjectInteger::create(res);
+                return machine()->create_integer(res);
             }
         } else if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
-            return VMObjectFloat::create(f0 - f1);
+            return machine()->create_float(f0 - f1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -185,12 +185,12 @@ public:
             if (mul_overflow(i0, i1, &res)) {
                 throw machine()->bad(this, "overflow");
             } else {
-                return VMObjectInteger::create(res);
+                return machine()->create_integer(res);
             }
         } else if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
-            return VMObjectFloat::create(f0 * f1);
+            return machine()->create_float(f0 * f1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -210,14 +210,14 @@ public:
             if (i1 == 0) {
                 throw machine()->bad(this, "divide by zero");
             }
-            return VMObjectInteger::create(i0 / i1);
+            return machine()->create_integer(i0 / i1);
         } else if ((machine()->is_float(arg0)) && (machine()->is_float(arg1))) {
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             if (f1 == 0.0) {
                 throw machine()->bad(this, "divide by zero");
             }
-            return VMObjectFloat::create(f0 / f1);
+            return machine()->create_float(f0 / f1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -237,7 +237,7 @@ public:
             if (i1 == 0) {
                 throw machine()->bad(this, "divide by zero");
             }
-            return VMObjectInteger::create(i0 % i1);
+            return machine()->create_integer(i0 % i1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -254,7 +254,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger::create(i0 & i1);
+            return machine()->create_integer(i0 & i1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -271,7 +271,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger::create(i0 | i1);
+            return machine()->create_integer(i0 | i1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -288,7 +288,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger::create(i0 ^ i1);
+            return machine()->create_integer(i0 ^ i1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -303,7 +303,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if ((machine()->is_integer(arg0))) {
             auto i0 = machine()->get_integer(arg0);
-            return VMObjectInteger::create(~i0);
+            return machine()->create_integer(~i0);
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -320,7 +320,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger::create(i0 << i1);
+            return machine()->create_integer(i0 << i1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -337,7 +337,7 @@ public:
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
             auto i0 = machine()->get_integer(arg0);
             auto i1 = machine()->get_integer(arg1);
-            return VMObjectInteger::create(i0 >> i1);
+            return machine()->create_integer(i0 >> i1);
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }

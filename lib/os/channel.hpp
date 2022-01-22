@@ -38,11 +38,11 @@ private:
     icu::UnicodeString   _message;
 };
 
-typedef enum {
+enum class channel_tag_t {
     CHANNEL_STREAM_IN,
     CHANNEL_STREAM_OUT,
     CHANNEL_FILE,
-} channel_tag_t;
+};
 
 class Channel;
 typedef std::shared_ptr<Channel> ChannelPtr;
