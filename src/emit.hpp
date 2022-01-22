@@ -216,6 +216,52 @@ public:
         }
     }
 
+    void visit_combinator(const VMObjectPtr &o) {
+        switch (get_state()) {
+            case EMIT_PATTERN: {
+                auto r = get_current_register();
+                auto l = get_fail_label();
+                auto ri = get_coder()->generate_register();
+
+                auto d = get_coder()->emit_data(o);
+                get_coder()->emit_op_data(ri, d);
+                get_coder()->emit_op_test(r, ri);
+                get_coder()->emit_op_fail(l);
+            } break;
+            case EMIT_EXPR: 
+            case EMIT_EXPR_ROOT: {
+                auto rt = get_coder()->generate_register();
+                auto rti = get_coder()->generate_register();
+                auto k = get_coder()->generate_register();
+                auto exc = get_coder()->generate_register();
+                auto c = get_coder()->generate_register();
+
+                auto t = get_coder()->generate_register();
+
+                get_coder()->emit_op_mov(rt, get_register_rt());
+                get_coder()->emit_op_mov(rti, get_register_rti());
+                get_coder()->emit_op_mov(k, get_register_k());
+                get_coder()->emit_op_mov(exc, get_register_exc());
+
+                auto d = get_coder()->emit_data(o);
+                get_coder()->emit_op_data(c, d);
+
+                get_coder()->emit_op_array(t, rt, c);
+
+                if (get_state() == EMIT_EXPR_ROOT) {
+                    set_state(EMIT_EXPR);
+                    auto x = get_coder()->generate_register();
+                    auto f = get_register_frame();
+
+                    get_coder()->emit_op_concatx(x, t, f, 5 + get_arity());
+                    set_register_k(x);
+                } else {
+                    set_register_k(t);
+                }
+            } break;
+        }
+    }
+
     void visit_expr_integer(const Position &p,
                             const icu::UnicodeString &v) override {
         if (v.startsWith("0x")) {
@@ -253,7 +299,7 @@ public:
     void visit_expr_combinator(const Position &p, const UnicodeStrings &nn,
                                const icu::UnicodeString &n) override {
         auto c = machine()->get_combinator(nn, n);
-        visit_constant(c);
+        visit_combinator(c);
     }
 
     void visit_expr_operator(const Position &p, const UnicodeStrings &nn,
