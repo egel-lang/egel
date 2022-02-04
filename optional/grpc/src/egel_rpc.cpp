@@ -1,5 +1,3 @@
-export module egel_rpc;
-
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -24,7 +22,7 @@ using grpc::ServerReader;
 using grpc::ServerReaderWriter;
 using grpc::ServerWriter;
 using grpc::Status;
-using egel_rpc::EgelText;
+using EgelRpc::EgelText;
 
 #define LIBRARY_VERSION_MAJOR "0"
 #define LIBRARY_VERSION_MINOR "0"
@@ -44,14 +42,8 @@ public:
     Status EgelStream(ServerContext* context, ServerReaderWriter<EgelText, EgelText>* stream) override {
         EgelText text;
         while (stream->Read(&text)) {
-          std::unique_lock<std::mutex> lock(mu_);
-          for (const RouteNote& n : received_notes_) {
-            if (n.location().latitude() == note.location().latitude() &&
-                n.location().longitude() == note.location().longitude()) {
-              stream->Write(n);
-            }
-          }
-        received_notes_.push_back(note);
+            stream->Write(text); // XXX
+        }
     }
 
     return Status::OK;
@@ -59,8 +51,6 @@ public:
 
 private:
   std::vector<Feature> feature_list_;
-  std::mutex mu_;
-  std::vector<RouteNote> received_notes_;
 };
 
 void RunServer(const std::string& db_path) {

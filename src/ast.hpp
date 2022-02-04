@@ -10,8 +10,15 @@
 #include "position.hpp"
 #include "utils.hpp"
 
-// AST tags are enumerated as a manner to implement switches conveniently
+// XXX: rewrite all the code once to make use of the next templates
+template <typename T> using Ptr = std::shared_ptr<T>;
+template <typename T> using Ptrs = std::vector<std::shared_ptr<T>>;
+template <typename T, typename... Args>
+std::shared_ptr<T> make_ptr(Args&&... args) {
+    return std::make_shared<T>(std::forward<Args>(args)...);
+}
 
+// AST tags are enumerated as a manner to implement switches conveniently
 enum ast_tag_t {
     AST_EMPTY,
     // literals
