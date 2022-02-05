@@ -31,7 +31,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${PROTOBUF_INCLUDE_DIR})
 include_directories(/usr/local/include)
 include_directories(${ICU_INCLUDE_DIRS})
-message( ${ICU_INCLUDE_DIRS} )
+message("including ICU: ${ICU_INCLUDE_DIRS}")
 
 add_library(egel_rpc MODULE ${PROTO_HEADER} ${PROTO_SRC} ${EGEL_GRPC_HDRS} ${EGEL_GRPC_SRCS} src/egel_rpc.cpp)
 target_link_libraries(egel_rpc proto ${PROTOBUF_LIBRARY})

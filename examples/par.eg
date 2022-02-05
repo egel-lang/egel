@@ -4,8 +4,8 @@
 # returns a tuple with the fully reduced terms.
 # 
 # The par construct is implemented simplistically with c++ 
-# native threads and is mostly there to show case that 
-# concurrent rewriting is possible on the acyclic graph
+# native threads and is mostly there to showcase that 
+# parallel rewriting is possible on the acyclic graph
 # representation.
 #
 # 'par' is somewhat convenient for trivial programs but I
@@ -28,7 +28,7 @@ namespace Fibonnaci (
   def pfib = 
     [ 0 -> 0 
     | 1 -> 1 
-    | X -> [ (F0, F1) -> F0 + F1 ] (par [Y -> pfib (X - 1) ] [Z-> pfib (X - 2)]) ]
+    | N -> [ (N0, N1) -> N0 + N1 ] (par [_ -> pfib (N - 1) ] [_ -> pfib (N - 2)]) ]
 
 )
 
