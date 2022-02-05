@@ -35,4 +35,4 @@ namespace Fibonnaci (
 using Fibonnaci
 using System
 
-def main = pfib 10
+def main = pfib 15
