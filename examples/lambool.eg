@@ -1,0 +1,16 @@
+# lambda terms for booleans
+
+def true = [ T F -> T ]
+def false = [ T F -> F ]
+
+def if_ = [ P T F -> P T F ]
+
+def and = [ X Y -> if_ X Y false ]
+def or = [ X Y -> if_ X true Y ]
+def not = [ X -> if_ X false true ]
+
+def main =
+    (and true false, not (not (or true false)))
+
+# (false, true)
+
