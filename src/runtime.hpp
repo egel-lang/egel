@@ -141,6 +141,17 @@ using vm_text_t = icu::UnicodeString;
 using symbol_t = uint32_t;
 using data_t = uint32_t;
 
+// tagbits (used internally but declared here for vm_object_t)
+
+typedef unsigned int vm_tagbits_t;
+
+// an egel value
+
+union vm_object_t {
+    std::atomic<vm_tagbits_t> tagbits;
+    vm_object_t* next;
+};
+
 class VMObject;
 using VMObjectPtr = std::shared_ptr<VMObject>;
 using VMWeakObjectPtr = std::weak_ptr<VMObject>;
@@ -149,6 +160,7 @@ using VMWeakObjectPtr = std::weak_ptr<VMObject>;
 inline void render_tuple(const VMObjectPtr &tt, std::ostream &os);
 inline void render_nil(const VMObjectPtr &n, std::ostream &os);
 inline void render_cons(const VMObjectPtr &cc, std::ostream &os);
+
 
 class VMObject {
 public:

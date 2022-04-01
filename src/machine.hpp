@@ -12,6 +12,7 @@
 #include <chrono>
 
 #include "runtime.hpp"
+#include "allocate.hpp"
 #include "environment.hpp"
 #include "assembler.hpp"
 #include "eval.hpp"
