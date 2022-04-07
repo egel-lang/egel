@@ -152,16 +152,6 @@ union vm_object_t {
     vm_object_t* next;
 };
 
-class VMObject;
-using VMObjectPtr = std::shared_ptr<VMObject>;
-using VMWeakObjectPtr = std::weak_ptr<VMObject>;
-
-// forward declarations for pretty printing
-inline void render_tuple(const VMObjectPtr &tt, std::ostream &os);
-inline void render_nil(const VMObjectPtr &n, std::ostream &os);
-inline void render_cons(const VMObjectPtr &cc, std::ostream &os);
-
-
 class VMObject {
 public:
     VMObject(const vm_tag_t t) : _tag(t), _subtag(0) {
@@ -190,12 +180,12 @@ public:
         return _subtag == t;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const VMObjectPtr &a) {
+    friend std::ostream &operator<<(std::ostream &os, const vm_object_t *a) {
         a->render(os);
         return os;
     }
 
-    virtual VMObjectPtr reduce(const VMObjectPtr &thunk) const = 0;
+    virtual vm_object_t* reduce(const vm_object_t *thunk) const = 0;
 
     virtual void render(std::ostream &os) const = 0;
 
@@ -215,7 +205,6 @@ private:
     vm_subtag_t _subtag;
 };
 
-using VMObjectPtrs = std::vector<VMObjectPtr>;
 using UnicodeStrings = std::vector<icu::UnicodeString>;
 
 // the virtual machine
@@ -384,7 +373,7 @@ private:
 };
 
 struct VMReduceResult {
-    VMObjectPtr result;
+    vm_object_t* result;
     bool exception;
 };
 
@@ -393,7 +382,7 @@ enum reducer_state_t { RUNNING, SLEEPING, HALTED };
 class VM;
 using VMPtr = std::shared_ptr<VM>;
 
-using callback_t = std::function<void(VM *vm, const VMObjectPtr &)>;
+using callback_t = std::function<void(VM *vm, const vm_object_t *)>;
 
 class VM {
 public:
@@ -416,19 +405,19 @@ public:
     virtual icu::UnicodeString get_combinator_string(symbol_t s) = 0;
 
     // data table manipulation
-    virtual data_t enter_data(const VMObjectPtr &o) = 0;
-    virtual data_t define_data(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtr get_data(const data_t d) = 0;
-    virtual data_t get_data(const VMObjectPtr &d) = 0;
+    virtual data_t enter_data(const vm_object_t *o) = 0;
+    virtual data_t define_data(const vm_object_t *o) = 0;
+    virtual vm_object_t* get_data(const data_t d) = 0;
+    virtual data_t get_data(const vm_object_t *d) = 0;
 
     // reduce an expression
-    virtual void reduce(const VMObjectPtr &e, const VMObjectPtr &ret,
-                        const VMObjectPtr &exc, reducer_state_t *run) = 0;
-    virtual void reduce(const VMObjectPtr &e, const VMObjectPtr &ret,
-                        const VMObjectPtr &exc) = 0;
-    virtual VMReduceResult reduce(const VMObjectPtr &e,
+    virtual void reduce(const vm_object_t *e, const vm_object_t *ret,
+                        const vm_object_t *exc, reducer_state_t *run) = 0;
+    virtual void reduce(const vm_object_t *e, const vm_object_t *ret,
+                        const vm_object_t *exc) = 0;
+    virtual VMReduceResult reduce(const vm_object_t *e,
                                   reducer_state_t *run) = 0;
-    virtual VMReduceResult reduce(const VMObjectPtr &e) = 0;
+    virtual VMReduceResult reduce(const vm_object_t *e) = 0;
 
     // for threadsafe reductions we lock the vm and rely on C++ threadsafe
     // behavior on containers
@@ -443,148 +432,144 @@ public:
     virtual void *get_context() const = 0;
 
     // convenience routines
-    virtual VMObjectPtr get_combinator(const symbol_t t) = 0;
-    virtual VMObjectPtr get_combinator(const icu::UnicodeString &n) = 0;
-    virtual VMObjectPtr get_combinator(const icu::UnicodeString &n0,
+    virtual vm_object_t* get_combinator(const symbol_t t) = 0;
+    virtual vm_object_t* get_combinator(const icu::UnicodeString &n) = 0;
+    virtual vm_object_t* get_combinator(const icu::UnicodeString &n0,
                                        const icu::UnicodeString &n1) = 0;
-    virtual VMObjectPtr get_combinator(
+    virtual vm_object_t* get_combinator(
         const std::vector<icu::UnicodeString> &nn,
         const icu::UnicodeString &n) = 0;
 
     // state
     virtual void define(
-        const VMObjectPtr &o) = 0;  // define an undefined symbol
+        const vm_object_t *o) = 0;  // define an undefined symbol
     virtual void overwrite(
-        const VMObjectPtr &o) = 0;  // define or overwrite a symbol
-    virtual VMObjectPtr get(const VMObjectPtr &o) = 0;  // get a defined symbol
+        const vm_object_t *o) = 0;  // define or overwrite a symbol
+    virtual vm_object_t* get(const vm_object_t *o) = 0;  // get a defined symbol
 
     // expose, necessary for switch convenience
-    virtual vm_tag_t get_tag(const VMObjectPtr &o) = 0;
-    virtual vm_subtag_t get_subtag(const VMObjectPtr &o) = 0;
+    virtual vm_tag_t get_tag(const vm_object_t *o) = 0;
+    virtual vm_subtag_t get_subtag(const vm_object_t *o) = 0;
 
     // creation
-    virtual VMObjectPtr create_integer(const vm_int_t b) = 0;
-    virtual VMObjectPtr create_float(const vm_float_t b) = 0;
-    virtual VMObjectPtr create_char(const vm_char_t b) = 0;
-    virtual VMObjectPtr create_text(const vm_text_t b) = 0;
+    virtual vm_object_t* create_integer(const vm_int_t b) = 0;
+    virtual vm_object_t* create_float(const vm_float_t b) = 0;
+    virtual vm_object_t* create_char(const vm_char_t b) = 0;
+    virtual vm_object_t* create_text(const vm_text_t b) = 0;
 
-    virtual bool is_integer(const VMObjectPtr &o) = 0;
-    virtual bool is_float(const VMObjectPtr &o) = 0;
-    virtual bool is_char(const VMObjectPtr &o) = 0;
-    virtual bool is_text(const VMObjectPtr &o) = 0;
+    virtual bool is_integer(const vm_object_t *o) = 0;
+    virtual bool is_float(const vm_object_t *o) = 0;
+    virtual bool is_char(const vm_object_t *o) = 0;
+    virtual bool is_text(const vm_object_t *o) = 0;
 
-    virtual vm_int_t get_integer(const VMObjectPtr &o) = 0;
-    virtual vm_float_t get_float(const VMObjectPtr &o) = 0;
-    virtual vm_char_t get_char(const VMObjectPtr &o) = 0;
-    virtual vm_text_t get_text(const VMObjectPtr &o) = 0;
+    virtual vm_int_t get_integer(const vm_object_t *o) = 0;
+    virtual vm_float_t get_float(const vm_object_t *o) = 0;
+    virtual vm_char_t get_char(const vm_object_t *o) = 0;
+    virtual vm_text_t get_text(const vm_object_t *o) = 0;
 
-    virtual VMObjectPtr create_none() = 0;
-    virtual VMObjectPtr create_true() = 0;
-    virtual VMObjectPtr create_false() = 0;
-    virtual VMObjectPtr create_bool(const bool b) = 0;
-    virtual VMObjectPtr create_nil() = 0;
-    virtual VMObjectPtr create_cons() = 0;
-    virtual VMObjectPtr create_tuple() = 0;
+    virtual vm_object_t* create_none() = 0;
+    virtual vm_object_t* create_true() = 0;
+    virtual vm_object_t* create_false() = 0;
+    virtual vm_object_t* create_bool(const bool b) = 0;
+    virtual vm_object_t* create_nil() = 0;
+    virtual vm_object_t* create_cons() = 0;
+    virtual vm_object_t* create_tuple() = 0;
 
-    virtual bool is_none(const VMObjectPtr &o) = 0;
-    virtual bool is_true(const VMObjectPtr &o) = 0;
-    virtual bool is_false(const VMObjectPtr &o) = 0;
-    virtual bool is_bool(const VMObjectPtr &o) = 0;
-    virtual bool is_nil(const VMObjectPtr &o) = 0;
-    virtual bool is_cons(const VMObjectPtr &o) = 0;
-    virtual bool is_tuple(const VMObjectPtr &o) = 0;
+    virtual bool is_none(const vm_object_t *o) = 0;
+    virtual bool is_true(const vm_object_t *o) = 0;
+    virtual bool is_false(const vm_object_t *o) = 0;
+    virtual bool is_bool(const vm_object_t *o) = 0;
+    virtual bool is_nil(const vm_object_t *o) = 0;
+    virtual bool is_cons(const vm_object_t *o) = 0;
+    virtual bool is_tuple(const vm_object_t *o) = 0;
 
-    // deprecate the following
-    // virtual VMObjectPtr  create_array() = 0;
-    // virtual void         array_append(VMObjectPtr aa, const VMObjectPtr a) =
-    // 0;
+    virtual vm_object_t* create_array(const unsigned int size) = 0;
+    virtual bool is_array(const vm_object_t *o) = 0;
+    virtual unsigned int array_size(const vm_object_t *o) = 0;
+    virtual vm_object_t* array_get(const vm_object_t *o, int n) = 0;
+    virtual void array_set(vm_object_t *o, int n, const vm_object_t *e) = 0;
 
-    virtual VMObjectPtr create_array(const VMObjectPtrs &oo) = 0;
-    virtual VMObjectPtr create_array(const unsigned int size) = 0;
-    virtual bool is_array(const VMObjectPtr &o) = 0;
-    virtual unsigned int array_size(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtr array_get(const VMObjectPtr &o, int n) = 0;
-    virtual void array_set(VMObjectPtr &o, int n, const VMObjectPtr &e) = 0;
-    virtual VMObjectPtrs get_array(const VMObjectPtr &o) = 0;
+    virtual vm_object_t* create_array(std::vector<vm_object_t*> &oo) = 0;
+    virtual std::vector<vm_object_t*> get_array(const vm_object_t *o) = 0;
 
-    virtual bool is_combinator(const VMObjectPtr &o) = 0;
-    virtual bool is_opaque(const VMObjectPtr &o) = 0;
-    virtual bool is_data(const VMObjectPtr &o) = 0;
-    virtual bool is_bytecode(const VMObjectPtr &o) = 0;
+    virtual bool is_combinator(const vm_object_t *o) = 0;
+    virtual bool is_opaque(const vm_object_t *o) = 0;
+    virtual bool is_data(const vm_object_t *o) = 0;
+    virtual bool is_bytecode(const vm_object_t *o) = 0;
 
-    virtual vm_text_t symbol(const VMObjectPtr &o) = 0;
+    virtual vm_text_t symbol(const vm_object_t *o) = 0;
 
-    virtual icu::UnicodeString get_bytecode(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtrs get_bytedata(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtr create_bytecode(const icu::UnicodeString &s) = 0;
+    virtual icu::UnicodeString get_bytecode(const vm_object_t *o) = 0;
+    virtual std::vector<vm_object_t*> get_bytedata(const vm_object_t *o) = 0;
+    virtual vm_object_t* create_bytecode(const icu::UnicodeString &s) = 0;
 
-    virtual VMObjectPtr create_data(const icu::UnicodeString &s) = 0;
-    virtual VMObjectPtr create_data(const icu::UnicodeString &s0,
+    virtual vm_object_t* create_data(const icu::UnicodeString &s) = 0;
+    virtual vm_object_t* create_data(const icu::UnicodeString &s0,
                                     const icu::UnicodeString &s1) = 0;
-    virtual VMObjectPtr create_data(const std::vector<icu::UnicodeString> &ss,
+    virtual vm_object_t* create_data(const std::vector<icu::UnicodeString> &ss,
                                     const icu::UnicodeString &s) = 0;
 
-    virtual VMObjectPtr create_medadic(const icu::UnicodeString &s,
-                                       std::function<VMObjectPtr()> f) = 0;
-    virtual VMObjectPtr create_medadic(const icu::UnicodeString &s0,
+    virtual vm_object_t* create_medadic(const icu::UnicodeString &s,
+                                       std::function<vm_object_t*()> f) = 0;
+    virtual vm_object_t* create_medadic(const icu::UnicodeString &s0,
                                        const icu::UnicodeString &s1,
-                                       std::function<VMObjectPtr()> f) = 0;
-    virtual VMObjectPtr create_medadic(
+                                       std::function<vm_object_t*()> f) = 0;
+    virtual vm_object_t* create_medadic(
         const std::vector<icu::UnicodeString> &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr()> f) = 0;
+        std::function<vm_object_t*()> f) = 0;
 
-    virtual VMObjectPtr create_monadic(
+    virtual vm_object_t* create_monadic(
         const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) = 0;
-    virtual VMObjectPtr create_monadic(
+        std::function<vm_object_t*(const vm_object_t *a0)> f) = 0;
+    virtual vm_object_t* create_monadic(
         const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) = 0;
-    virtual VMObjectPtr create_monadic(
+        std::function<vm_object_t*(const vm_object_t *a0)> f) = 0;
+    virtual vm_object_t* create_monadic(
         const std::vector<icu::UnicodeString> &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) = 0;
+        std::function<vm_object_t*(const vm_object_t *a0)> f) = 0;
 
-    virtual VMObjectPtr create_dyadic(
+    virtual vm_object_t* create_dyadic(
         const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1)>
             f) = 0;
-    virtual VMObjectPtr create_dyadic(
+    virtual vm_object_t* create_dyadic(
         const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1)>
             f) = 0;
-    virtual VMObjectPtr create_dyadic(
+    virtual vm_object_t* create_dyadic(
         const std::vector<icu::UnicodeString> &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1)>
             f) = 0;
     /*
-        virtual VMObjectPtr create_triadic(const icu::UnicodeString& s,
-                                           std::function<VMObjectPtr(const
-       VMObjectPtr& a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) = 0;
-        virtual VMObjectPtr create_triadic(const icu::UnicodeString& s0, const
-       icu::UnicodeString& s1, std::function<VMObjectPtr(const VMObjectPtr& a0,
-       const VMObjectPtr& a1, const VMObjectPtr& a2)> f) = 0; virtual
-       VMObjectPtr create_triadic(const std::vector<icu::UnicodeString>& ss,
-       const icu::UnicodeString& s, std::function<VMObjectPtr(const VMObjectPtr&
-       a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) = 0;
+        virtual vm_object_t* create_triadic(const icu::UnicodeString& s,
+                                           std::function<vm_object_t*(const
+       vm_object_t*& a0, vm_object_t*& a1, vm_object_t*& a2)> f) = 0;
+        virtual vm_object_t* create_triadic(const icu::UnicodeString& s0, const
+       icu::UnicodeString& s1, std::function<vm_object_t*(vm_object_t*& a0,
+       vm_object_t*& a1, vm_object_t*& a2)> f) = 0; virtual
+       vm_object_t* create_triadic(const std::vector<icu::UnicodeString>& ss,
+       const icu::UnicodeString& s, std::function<vm_object_t*(vm_object_t*&
+       a0, vm_object_t*& a1, vm_object_t*& a2)> f) = 0;
 
-        virtual VMObjectPtr create_variadic(const icu::UnicodeString& s,
-                                            std::function<VMObjectPtr(const
-       VMObjectPtrs& aa)> f) = 0; virtual VMObjectPtr create_variadic(const
+        virtual vm_object_t* create_variadic(const icu::UnicodeString& s,
+                                            std::function<vm_object_t*(const
+       vm_object_t*s& aa)> f) = 0; virtual vm_object_t* create_variadic(const
        icu::UnicodeString& s0, const icu::UnicodeString& s1,
-                                            std::function<VMObjectPtr(const
-       VMObjectPtrs& aa)> f) = 0; virtual VMObjectPtr create_variadic(const
+                                            std::function<vm_object_t*(const
+       vm_object_t*s& aa)> f) = 0; virtual vm_object_t* create_variadic(const
        std::vector<icu::UnicodeString>& ss, const icu::UnicodeString& s,
-                                            std::function<VMObjectPtr(const
-       VMObjectPtrs& aa)> f) = 0;
+                                            std::function<vm_object_t*(const
+       vm_object_t*s& aa)> f) = 0;
     */
 
     // convenience (appends and strips tuple tag)
-    virtual VMObjectPtr to_tuple(const VMObjectPtrs &oo) = 0;
-    virtual VMObjectPtrs from_tuple(const VMObjectPtr &tt) = 0;
+    virtual vm_object_t* to_tuple(std::vector<vm_object_t*> &oo) = 0;
+    virtual std::vector<vm_object_t*> from_tuple(const vm_object_t *tt) = 0;
 
     // convenience (for internal usage)
-    virtual bool is_list(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtr to_list(const VMObjectPtrs &oo) = 0;
-    virtual VMObjectPtrs from_list(const VMObjectPtr &o) = 0;
+    virtual bool is_list(const vm_object_t *o) = 0;
+    virtual vm_object_t* to_list(std::vector<vm_object_t*> &oo) = 0;
+    virtual std::vector<vm_object_t*> from_list(const vm_object_t *o) = 0;
 
     // evaluation
     virtual void eval_line(const icu::UnicodeString &in, const callback_t &main,
@@ -595,27 +580,27 @@ public:
     virtual void eval_interactive() = 0;
 
     // module inspection
-    virtual VMObjectPtr query_modules() = 0;
-    virtual bool is_module(const VMObjectPtr &m) = 0;
-    virtual VMObjectPtr query_module_name(const VMObjectPtr &m) = 0;
-    virtual VMObjectPtr query_module_path(const VMObjectPtr &m) = 0;
-    virtual VMObjectPtr query_module_imports(const VMObjectPtr &m) = 0;
-    virtual VMObjectPtr query_module_exports(const VMObjectPtr &m) = 0;
-    virtual VMObjectPtr query_module_values(const VMObjectPtr &m) = 0;
+    virtual vm_object_t* query_modules() = 0;
+    virtual bool is_module(const vm_object_t *m) = 0;
+    virtual vm_object_t* query_module_name(const vm_object_t *m) = 0;
+    virtual vm_object_t* query_module_path(const vm_object_t *m) = 0;
+    virtual vm_object_t* query_module_imports(const vm_object_t *m) = 0;
+    virtual vm_object_t* query_module_exports(const vm_object_t *m) = 0;
+    virtual vm_object_t* query_module_values(const vm_object_t *m) = 0;
 
     // machine state
-    virtual VMObjectPtr query_symbols() = 0;
-    virtual VMObjectPtr query_data() = 0;
+    virtual vm_object_t* query_symbols() = 0;
+    virtual vm_object_t* query_data() = 0;
 
-    virtual int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) = 0;
+    virtual int compare(const vm_object_t *o0, const vm_object_t *o1) = 0;
 
-    virtual VMObjectPtr bad(const VMObject *o, const icu::UnicodeString &e) = 0;
-    virtual VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0) = 0;
-    virtual VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0,
-                                 const VMObjectPtr &a1) = 0;
-    virtual VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0,
-                                 const VMObjectPtr &a1,
-                                 const VMObjectPtr &a2) = 0;
+    virtual vm_object_t* bad(const VMObject *o, const icu::UnicodeString &e) = 0;
+    virtual vm_object_t* bad_args(const VMObject *o, const vm_object_t *a0) = 0;
+    virtual vm_object_t* bad_args(const VMObject *o, const vm_object_t *a0,
+                                 const vm_object_t *a1) = 0;
+    virtual vm_object_t* bad_args(const VMObject *o, const vm_object_t *a0,
+                                 const vm_object_t *a1,
+                                 const vm_object_t *a2) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -624,305 +609,10 @@ public:
 
 // VM object definitions
 
-class VMObjectLiteral : public VMObject {
-public:
-    VMObjectLiteral(const vm_tag_t &t) : VMObject(t) {
-    }
 
-    void debug(std::ostream &os) const override {
-        render(os);
-    }
-
-    // note: reduce is defined later in this header file for portability
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
-};
-
-class VMObjectInteger : public VMObjectLiteral {
-public:
-    VMObjectInteger(const vm_int_t &v)
-        : VMObjectLiteral(VM_OBJECT_INTEGER), _value(v){};
-
-    VMObjectInteger(const VMObjectInteger &l) : VMObjectInteger(l.value()) {
-    }
-
-    static VMObjectPtr create(const vm_int_t v) {
-        return std::make_shared<VMObjectInteger>(v);
-    }
-
-    symbol_t symbol() const override {
-        return SYMBOL_INT;
-    }
-
-    void render(std::ostream &os) const override {
-        os << value();
-    }
-
-    vm_int_t value() const {
-        return _value;
-    }
-
-private:
-    vm_int_t _value;
-};
-
-using VMObjectIntegerPtr = std::shared_ptr<VMObjectInteger>;
-#define VM_OBJECT_IS_INTEGER(a) (a->tag() == VM_OBJECT_INTEGER)
-#define VM_OBJECT_INTEGER_TEST(a) (a->tag() == VM_OBJECT_INTEGER)
-#define VM_OBJECT_INTEGER_CAST(a) std::static_pointer_cast<VMObjectInteger>(a)
-#define VM_OBJECT_INTEGER_VALUE(a) (VM_OBJECT_INTEGER_CAST(a)->value())
-
-class VMObjectFloat : public VMObjectLiteral {
-public:
-    VMObjectFloat(const vm_float_t &v)
-        : VMObjectLiteral(VM_OBJECT_FLOAT), _value(v){};
-
-    VMObjectFloat(const VMObjectFloat &l) : VMObjectFloat(l.value()) {
-    }
-
-    static VMObjectPtr create(const vm_float_t f) {
-        return std::make_shared<VMObjectFloat>(f);
-    }
-
-    symbol_t symbol() const override {
-        return SYMBOL_FLOAT;
-    }
-
-    void render(std::ostream &os) const override {
-        os.precision(EGEL_FLOAT_PRECISION);
-        // os.setf(std::ios::fixed, std::ios::floatfield);
-        os.setf(std::ios::showpoint);
-        os << value();
-    }
-
-    vm_float_t value() const {
-        return _value;
-    }
-
-private:
-    vm_float_t _value;
-};
-
-using VMObjectFloatPtr = std::shared_ptr<VMObjectFloat>;
-#define VM_OBJECT_FLOAT_TEST(a) (a->tag() == VM_OBJECT_FLOAT)
-#define VM_OBJECT_FLOAT_CAST(a) std::static_pointer_cast<VMObjectFloat>(a)
-#define VM_OBJECT_FLOAT_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_FLOAT_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_FLOAT_VALUE(a) (VM_OBJECT_FLOAT_CAST(a)->value())
-
-class VMObjectChar : public VMObjectLiteral {
-public:
-    VMObjectChar(const vm_char_t &v)
-        : VMObjectLiteral(VM_OBJECT_CHAR), _value(v){};
-
-    VMObjectChar(const VMObjectChar &l) : VMObjectChar(l.value()) {
-    }
-
-    static VMObjectPtr create(const vm_char_t v) {
-        return std::make_shared<VMObjectChar>(v);
-    }
-
-    symbol_t symbol() const override {
-        return SYMBOL_CHAR;
-    }
-
-    void render(std::ostream &os) const override {
-        icu::UnicodeString s;
-        s = uescape(s + value());
-        os << "'" << s << "'";
-    }
-
-    vm_char_t value() const {
-        return _value;
-    }
-
-private:
-    vm_char_t _value;
-};
-
-using VMObjectCharPtr = std::shared_ptr<VMObjectChar>;
-#define VM_OBJECT_CHAR_TEST(a) (a->tag() == VM_OBJECT_CHAR)
-#define VM_OBJECT_CHAR_CAST(a) std::static_pointer_cast<VMObjectChar>(a)
-#define VM_OBJECT_CHAR_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_CHAR_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_CHAR_VALUE(a) (VM_OBJECT_CHAR_CAST(a)->value())
-
-class VMObjectText : public VMObjectLiteral {
-public:
-    VMObjectText(const icu::UnicodeString &v)
-        : VMObjectLiteral(VM_OBJECT_TEXT), _value(v){};
-
-    VMObjectText(const char *v) : VMObjectLiteral(VM_OBJECT_TEXT) {
-        _value = icu::UnicodeString::fromUTF8(icu::StringPiece(v));
-    };
-
-    VMObjectText(const VMObjectText &l) : VMObjectText(l.value()) {
-    }
-
-    static VMObjectPtr create(const icu::UnicodeString &v) {
-        return std::make_shared<VMObjectText>(v);
-    }
-
-    static VMObjectPtr create(const char *v) {
-        return std::make_shared<VMObjectText>(v);
-    }
-
-    symbol_t symbol() const override {
-        return SYMBOL_TEXT;
-    }
-
-    char *to_char() {
-        const int STRING_MAX_SIZE = 10000000;  // XXX: i hate constants
-        auto len = _value.extract(0, STRING_MAX_SIZE, nullptr, (uint32_t)0);
-        auto buffer = new char[len + 1];
-        _value.extract(0, STRING_MAX_SIZE, buffer, len + 1);
-        return buffer;
-    }
-
-    void render(std::ostream &os) const override {
-        icu::UnicodeString s;
-        s = uescape(value());
-        os << '"' << s << '"';
-    }
-
-    icu::UnicodeString value() const {
-        return _value;
-    }
-
-private:
-    icu::UnicodeString _value;
-};
-
-using VMObjectTextPtr = std::shared_ptr<VMObjectText>;
-#define VM_OBJECT_TEXT_TEST(a) (a->tag() == VM_OBJECT_TEXT)
-#define VM_OBJECT_TEXT_CAST(a) std::static_pointer_cast<VMObjectText>(a)
-#define VM_OBJECT_TEXT_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_TEXT_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_TEXT_VALUE(a) (VM_OBJECT_TEXT_CAST(a)->value())
-
-class VMObjectArray : public VMObject {
-public:
-    VMObjectArray() : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs()){};
-
-    VMObjectArray(const VMObjectPtrs &v)
-        : VMObject(VM_OBJECT_ARRAY), _value(v){};
-
-    VMObjectArray(const VMObjectArray &l) : VMObjectArray(l.value()) {
-    }
-
-    VMObjectArray(const int size)
-        : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs(size)) {
-    }
-
-    VMObjectPtr clone() const {
-        return std::make_shared<VMObjectArray>(*this);
-    }
-
-    static VMObjectPtr create(int size) {
-        return std::make_shared<VMObjectArray>(size);
-    }
-
-    static VMObjectPtr create(const VMObjectPtrs &pp) {
-        if (pp.size() == 1) {
-            return pp[0];
-        } else {
-            return std::make_shared<VMObjectArray>(pp);
-        }
-    }
-
-    static VMObjectPtr create(const VMObjectPtr *pp, size_t sz) {
-        if (sz == 1) {
-            return pp[0];
-        } else {
-            auto aa = std::static_pointer_cast<VMObjectArray>(create(sz));
-            for (size_t n = 0; n < sz; n++) {
-                aa->set(n, pp[n]);
-            }
-            return aa;
-        }
-    }
-
-    symbol_t symbol() const override {
-        return _value[0]->symbol();
-    }
-
-    size_t size() const {
-        return _value.size();
-    }
-
-    VMObjectPtr &operator[](const size_t i) {
-        return _value[i];
-    }
-
-    const VMObjectPtr &operator[](const size_t i) const {
-        return _value[i];
-    }
-
-    // deprecate
-    VMObjectPtr get(unsigned int i) const {
-        return _value[i];
-    }
-
-    // deprecate
-    void set(unsigned int i, const VMObjectPtr &o) {
-        _value[i] = o;
-    }
-
-    void push_back(const VMObjectPtr &o) {
-        _value.push_back(o);
-    }
-
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
-
-    void debug(std::ostream &os) const override {
-        render(os);
-    }
-
-    void render(std::ostream &os) const override {
-        auto head = value()[0];
-        if (head->symbol() == SYMBOL_TUPLE) {
-            render_tuple(this->clone(), os);
-        } else if ((head->symbol() == SYMBOL_CONS) && (value().size() == 3)) {
-            render_cons(this->clone(), os);
-        } else {
-            os << '(';
-            bool first = true;
-            for (auto &v : value()) {
-                if (first) {
-                    first = false;
-                } else {
-                    os << ' ';
-                }
-                if (v == nullptr) {
-                    os << ".";
-                } else {
-                    v->render(os);
-                }
-            }
-            os << ')';
-        }
-    }
-
-    VMObjectPtrs value() const {
-        return _value;
-    }
-
-private:
-    VMObjectPtrs _value;
-};
-
-using VMObjectArrayPtr = std::shared_ptr<VMObjectArray>;
-#define VM_OBJECT_ARRAY_TEST(a) (a->tag() == VM_OBJECT_ARRAY)
-#define VM_OBJECT_ARRAY_CAST(a) std::static_pointer_cast<VMObjectArray>(a)
-#define VM_OBJECT_ARRAY_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_ARRAY_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_ARRAY_VALUE(a) (VM_OBJECT_ARRAY_CAST(a)->value())
 
 // here we can safely declare reduce
-inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
+inline vm_object_t* VMObjectLiteral::reduce(const vm_object_t *thunk) const {
     auto tt = VM_OBJECT_ARRAY_CAST(thunk);
     // optimize a bit for the case it's either a sole literal or an applied
     // literal
@@ -943,7 +633,7 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
         auto rti = tt->get(1);
         auto k = tt->get(2);
 
-        VMObjectPtrs vv;
+        vm_object_t*s vv;
         for (size_t n = 4; n < tt->size(); n++) {
             vv.push_back(tt->get(n));
         }
@@ -958,7 +648,7 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
     }
 };
 
-inline VMObjectPtr VMObjectArray::reduce(const VMObjectPtr &thunk) const {
+inline vm_object_t* VMObjectArray::reduce(const vm_object_t *thunk) const {
     auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
     auto rt = tt[0];
     auto rti = tt[1];
@@ -966,7 +656,7 @@ inline VMObjectPtr VMObjectArray::reduce(const VMObjectPtr &thunk) const {
     auto exc = tt[3];
     auto c = tt[4];
 
-    VMObjectPtrs vv;
+    vm_object_t*s vv;
     vv.push_back(rt);
     vv.push_back(rti);
     vv.push_back(k);
@@ -1019,7 +709,7 @@ public:
         return _machine->get_combinator_string(_symbol);
     }
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
@@ -1027,9 +717,9 @@ public:
         // auto exc   = tt[3];
         // auto c   = tt[4];
 
-        VMObjectPtr ret;
+        vm_object_t* ret;
         if (tt.size() > 5) {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
@@ -1054,7 +744,7 @@ public:
     }
 
     // compare should implement a total order, even if the state changes..
-    virtual int compare(const VMObjectPtr &o) = 0;
+    virtual int compare(const vm_object_t *o) = 0;
 
 private:
     VM *_machine;
@@ -1140,28 +830,28 @@ public:
         : VMObjectData(d.machine(), d.symbol()) {
     }
 
-    static VMObjectPtr create(VM *vm, const symbol_t s) {
+    static vm_object_t* create(VM *vm, const symbol_t s) {
         return std::make_shared<VMObjectData>(vm, s);
     }
 
-    static VMObjectPtr create(VM *vm, const icu::UnicodeString &s) {
+    static vm_object_t* create(VM *vm, const icu::UnicodeString &s) {
         auto sym = vm->enter_symbol(s);
         return VMObjectData::create(vm, sym);
     }
 
-    static VMObjectPtr create(VM *vm, const icu::UnicodeString &s0,
+    static vm_object_t* create(VM *vm, const icu::UnicodeString &s0,
                               const icu::UnicodeString &s1) {
         auto sym = vm->enter_symbol(s0, s1);
         return VMObjectData::create(vm, sym);
     }
 
-    static VMObjectPtr create(VM *vm, const UnicodeStrings &ss,
+    static vm_object_t* create(VM *vm, const UnicodeStrings &ss,
                               const icu::UnicodeString &s) {
         auto sym = vm->enter_symbol(ss, s);
         return VMObjectData::create(vm, sym);
     }
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
@@ -1169,9 +859,9 @@ public:
         // auto exc   = tt[3];
         // auto c   = tt[4];
 
-        VMObjectPtr ret;
+        vm_object_t* ret;
         if (tt.size() > 5) {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
@@ -1196,8 +886,8 @@ using VMObjectCombinatorPtr = std::shared_ptr<VMObjectCombinator>;
 #define VM_OBJECT_COMBINATOR_SYMBOL(a) (VM_OBJECT_COMBINATOR_CAST(a)->symbol())
 #define VM_OBJECT_DATA_TEST(a) (a->subtag_test(VM_SUB_DATA))
 
-struct CompareVMObjectPtr {
-    int operator()(const VMObjectPtr &a0, const VMObjectPtr &a1) const {
+struct Comparevm_object_t* {
+    int operator()(const vm_object_t *a0, const vm_object_t *a1) const {
         auto t0 = a0->tag();
         auto t1 = a1->tag();
         if (t0 < t1) {
@@ -1291,19 +981,19 @@ struct CompareVMObjectPtr {
         return 0;
     }
 };
-struct EqualVMObjectPtr {
-    bool operator()(const VMObjectPtr &a0, const VMObjectPtr &a1) const {
-        CompareVMObjectPtr compare;
+struct Equalvm_object_t* {
+    bool operator()(const vm_object_t *a0, const vm_object_t *a1) const {
+        Comparevm_object_t* compare;
         return (compare(a0, a1) == 0);
     }
 };
-struct LessVMObjectPtr {
-    bool operator()(const VMObjectPtr &a0, const VMObjectPtr &a1) const {
-        CompareVMObjectPtr compare;
+struct Lessvm_object_t* {
+    bool operator()(const vm_object_t *a0, const vm_object_t *a1) const {
+        Comparevm_object_t* compare;
         return (compare(a0, a1) == -1);
     }
 };
-using VMObjectPtrSet = std::set<VMObjectPtr, LessVMObjectPtr>;
+using vm_object_t*Set = std::set<vm_object_t*, Lessvm_object_t*>;
 
 // a stub is used for finding objects by their string or symbol
 // and for opaque default members
@@ -1321,15 +1011,15 @@ public:
         : VMObjectStub(d.machine(), d.symbol()) {
     }
 
-    static VMObjectPtr create(VM *m, const symbol_t s) {
+    static vm_object_t* create(VM *m, const symbol_t s) {
         return std::make_shared<VMObjectStub>(m, s);
     }
 
-    static VMObjectPtr create(VM *m, const UnicodeString &s) {
+    static vm_object_t* create(VM *m, const UnicodeString &s) {
         return std::make_shared<VMObjectStub>(m, s);
     }
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         std::cerr << "symbol = " << symbol() << std::endl;
         PANIC("reduce on stub");
         return nullptr;
@@ -1346,11 +1036,11 @@ public:
     VMThrow(const VMThrow &t) : VMThrow(t.machine()) {
     }
 
-    static VMObjectPtr create(VM *m) {
+    static vm_object_t* create(VM *m) {
         return std::make_shared<VMThrow>(m);
     }
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         // when throw is reduced, it takes the exception, inserts it argument,
         // and reduces that
 
@@ -1403,30 +1093,30 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply() const = 0;
+    virtual vm_object_t* apply() const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (tt.size() > 4) {
             try {
                 r = apply();
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4; i < tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
                     r = VMObjectArray::create(rr);
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = tt[3];
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -1437,7 +1127,7 @@ public:
                 return VMObjectArray::create(rr);
             }
         } else {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
@@ -1446,7 +1136,7 @@ public:
 
         // also return spurious arguments
         if (tt.size() > 5) {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             rr.push_back(r);
             for (unsigned int i = 5; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
@@ -1469,7 +1159,7 @@ public:
     }                                               \
     c(const c &o) : c(o.machine(), o.symbol()) {    \
     }                                               \
-    static VMObjectPtr create(VM *m) {              \
+    static vm_object_t* create(VM *m) {              \
         return std::shared_ptr<c>(new c(m));        \
     }
 
@@ -1477,11 +1167,11 @@ class MedadicCallback : Medadic {
 public:
     MedadicCallback(VM *m, const icu::UnicodeString &s0,
                     const icu::UnicodeString &s1,
-                    std::function<VMObjectPtr()> f)
+                    std::function<vm_object_t*()> f)
         : Medadic(VM_SUB_BUILTIN, m, s0, s1), _value(f) {
     }
 
-    MedadicCallback(VM *m, const symbol_t s, std::function<VMObjectPtr()> f)
+    MedadicCallback(VM *m, const symbol_t s, std::function<vm_object_t*()> f)
         : Medadic(VM_SUB_BUILTIN, m, s), _value(f) {
     }
 
@@ -1489,41 +1179,41 @@ public:
         : MedadicCallback(o.machine(), o.symbol(), o.value()) {
     }
 
-    static VMObjectPtr create(VM *m, const symbol_t s,
-                              std::function<VMObjectPtr()> f) {
-        return VMObjectPtr((VMObject *)new MedadicCallback(m, s, f));
+    static vm_object_t* create(VM *m, const symbol_t s,
+                              std::function<vm_object_t*()> f) {
+        return vm_object_t*((VMObject *)new MedadicCallback(m, s, f));
     }
 
-    std::function<VMObjectPtr()> value() const {
+    std::function<vm_object_t*()> value() const {
         return _value;
     }
 
-    VMObjectPtr apply() const override {
+    vm_object_t* apply() const override {
         return (_value)();
     }
 
-    static VMObjectPtr create(VM *m, const icu::UnicodeString &s,
-                              std::function<VMObjectPtr()> f) {
+    static vm_object_t* create(VM *m, const icu::UnicodeString &s,
+                              std::function<vm_object_t*()> f) {
         auto sym = m->enter_symbol(s);
         return MedadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(VM *m, const icu::UnicodeString &s0,
+    static vm_object_t* create(VM *m, const icu::UnicodeString &s0,
                               const icu::UnicodeString &s1,
-                              std::function<VMObjectPtr()> f) {
+                              std::function<vm_object_t*()> f) {
         auto sym = m->enter_symbol(s0, s1);
         return MedadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(VM *m, const UnicodeStrings &ss,
+    static vm_object_t* create(VM *m, const UnicodeStrings &ss,
                               const icu::UnicodeString &s,
-                              std::function<VMObjectPtr()> f) {
+                              std::function<vm_object_t*()> f) {
         auto sym = m->enter_symbol(ss, s);
         return MedadicCallback::create(m, sym, f);
     }
 
 private:
-    std::function<VMObjectPtr()> _value;
+    std::function<vm_object_t*()> _value;
 };
 
 class Monadic : public VMObjectCombinator {
@@ -1537,32 +1227,32 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply(const VMObjectPtr &arg0) const = 0;
+    virtual vm_object_t* apply(const vm_object_t *arg0) const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (tt.size() > 5) {
             auto arg0 = tt[5];
 
             try {
                 r = apply(arg0);
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4; i < tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
                     r = VMObjectArray::create(rr);
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = tt[3];
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -1573,7 +1263,7 @@ public:
                 return VMObjectArray::create(rr);
             }
         } else {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
@@ -1582,7 +1272,7 @@ public:
 
         // also return spurious arguments
         if (tt.size() > 6) {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             rr.push_back(r);
             for (unsigned int i = 6; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
@@ -1605,7 +1295,7 @@ public:
     }                                               \
     c(const c &o) : c(o.machine(), o.symbol()) {    \
     }                                               \
-    static VMObjectPtr create(VM *m) {              \
+    static vm_object_t* create(VM *m) {              \
         return std::shared_ptr<c>(new c(m));        \
     }
 
@@ -1613,12 +1303,12 @@ class MonadicCallback : public Monadic {
 public:
     MonadicCallback(VM *m, const icu::UnicodeString &s0,
                     const icu::UnicodeString &s1,
-                    std::function<VMObjectPtr(const VMObjectPtr &a0)> f)
+                    std::function<vm_object_t*(const vm_object_t *a0)> f)
         : Monadic(VM_SUB_BUILTIN, m, s0, s1), _value(f) {
     }
 
     MonadicCallback(VM *m, const symbol_t s,
-                    std::function<VMObjectPtr(const VMObjectPtr &a0)> f)
+                    std::function<vm_object_t*(const vm_object_t *a0)> f)
         : Monadic(VM_SUB_BUILTIN, m, s), _value(f) {
     }
 
@@ -1629,45 +1319,45 @@ public:
     ~MonadicCallback() {
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const symbol_t sym,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) {
+        std::function<vm_object_t*(const vm_object_t *a0)> f) {
         // return std::shared_ptr<MonadicCallback>(new MonadicCallback(m, sym,
         // f));
         return std::shared_ptr<MonadicCallback>(new MonadicCallback(m, sym, f));
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) {
+        std::function<vm_object_t*(const vm_object_t *a0)> f) {
         auto sym = m->enter_symbol(s);
         return MonadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) {
+        std::function<vm_object_t*(const vm_object_t *a0)> f) {
         auto sym = m->enter_symbol(s0, s1);
         return MonadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const UnicodeStrings &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) {
+        std::function<vm_object_t*(const vm_object_t *a0)> f) {
         auto sym = m->enter_symbol(ss, s);
         return MonadicCallback::create(m, sym, f);
     }
 
-    std::function<VMObjectPtr(const VMObjectPtr &a0)> value() const {
+    std::function<vm_object_t*(const vm_object_t *a0)> value() const {
         return _value;
     }
 
-    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+    vm_object_t* apply(const vm_object_t *arg0) const override {
         return (_value)(arg0);
     }
 
 private:
-    std::function<VMObjectPtr(const VMObjectPtr &a0)> _value;
+    std::function<vm_object_t*(const vm_object_t *a0)> _value;
 };
 
 class Dyadic : public VMObjectCombinator {
@@ -1681,16 +1371,16 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply(const VMObjectPtr &arg0,
-                              const VMObjectPtr &arg1) const = 0;
+    virtual vm_object_t* apply(const vm_object_t *arg0,
+                              const vm_object_t *arg1) const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto m = machine();
         auto rt = m->array_get(thunk, 0);
         auto rti = m->array_get(thunk, 1);
         auto k = m->array_get(thunk, 2);
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (m->array_size(thunk) > 6) {
             auto arg0 = m->array_get(thunk, 5);
             auto arg1 = m->array_get(thunk, 6);
@@ -1698,18 +1388,18 @@ public:
             try {
                 r = apply(arg0, arg1);
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4;
                          i < (unsigned int)m->array_size(thunk); i++) {
                         rr.push_back(m->array_get(thunk, i));
                     }
                     r = VMObjectArray::create(rr);
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = m->array_get(thunk, 3);
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -1720,7 +1410,7 @@ public:
                 return VMObjectArray::create(rr);
             }
         } else {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < (unsigned int)m->array_size(thunk);
                  i++) {
                 rr.push_back(m->array_get(thunk, i));
@@ -1730,7 +1420,7 @@ public:
 
         // also return spurious arguments
         if (m->array_size(thunk) > 7) {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             rr.push_back(r);
             for (unsigned int i = 7; i < (unsigned int)m->array_size(thunk);
                  i++) {
@@ -1754,7 +1444,7 @@ public:
     }                                              \
     c(const c &o) : c(o.machine(), o.symbol()) {   \
     }                                              \
-    static VMObjectPtr create(VM *m) {             \
+    static vm_object_t* create(VM *m) {             \
         return std::shared_ptr<c>(new c(m));       \
     }
 
@@ -1762,14 +1452,14 @@ class DyadicCallback : public Dyadic {
 public:
     DyadicCallback(
         VM *m, const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
             f)
         : Dyadic(VM_SUB_BUILTIN, m, s0, s1), _value(f) {
     }
 
     DyadicCallback(
         VM *m, const symbol_t s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
             f)
         : Dyadic(VM_SUB_BUILTIN, m, s), _value(f) {
     }
@@ -1778,52 +1468,52 @@ public:
         : DyadicCallback(o.machine(), o.symbol(), o.value()) {
     }
 
-    VMObjectPtr clone() const {
-        return VMObjectPtr((VMObject *)new DyadicCallback(*this));
+    vm_object_t* clone() const {
+        return vm_object_t*((VMObject *)new DyadicCallback(*this));
     }
 
-    std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+    std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
     value() const {
         return _value;
     }
 
-    VMObjectPtr apply(const VMObjectPtr &arg0,
-                      const VMObjectPtr &arg1) const override {
+    vm_object_t* apply(const vm_object_t *arg0,
+                      const vm_object_t *arg1) const override {
         return (_value)(arg0, arg1);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const symbol_t sym,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
             f) {
-        return VMObjectPtr(new DyadicCallback(m, sym, f));
+        return vm_object_t*(new DyadicCallback(m, sym, f));
     }
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
             f) {
         auto sym = m->enter_symbol(s);
         return DyadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
             f) {
         auto sym = m->enter_symbol(s0, s1);
         return DyadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const UnicodeStrings &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
             f) {
         auto sym = m->enter_symbol(ss, s);
         return DyadicCallback::create(m, sym, f);
     }
 
 private:
-    std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
+    std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a2)>
         _value;
 };
 
@@ -1838,16 +1528,16 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1,
-                              const VMObjectPtr &arg2) const = 0;
+    virtual vm_object_t* apply(const vm_object_t *arg0, const vm_object_t *arg1,
+                              const vm_object_t *arg2) const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (tt.size() > 7) {
             auto arg0 = tt[5];
             auto arg1 = tt[6];
@@ -1856,17 +1546,17 @@ public:
             try {
                 r = apply(arg0, arg1, arg2);
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4; i < tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
                     r = VMObjectArray::create(rr);
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = tt[3];
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -1877,7 +1567,7 @@ public:
                 return VMObjectArray::create(rr);
             }
         } else {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
@@ -1886,7 +1576,7 @@ public:
 
         // also return spurious arguments
         if (tt.size() > 8) {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             rr.push_back(r);
             for (unsigned int i = 8; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
@@ -1909,7 +1599,7 @@ public:
     }                                               \
     c(const c &o) : c(o.machine(), o.symbol()) {    \
     }                                               \
-    static VMObjectPtr create(VM *m) {              \
+    static vm_object_t* create(VM *m) {              \
         return std::shared_ptr<c>(new c(m));        \
     }
 
@@ -1917,16 +1607,16 @@ class TriadicCallback : public Triadic {
 public:
     TriadicCallback(
         VM *m, const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                                  const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                                  const vm_object_t *a2)>
             f)
         : Triadic(VM_SUB_BUILTIN, m, s0, s1), _value(f) {
     }
 
     TriadicCallback(
         VM *m, const symbol_t s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                                  const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                                  const vm_object_t *a2)>
             f)
         : Triadic(VM_SUB_BUILTIN, m, s), _value(f) {
     }
@@ -1935,55 +1625,55 @@ public:
         : TriadicCallback(o.machine(), o.symbol(), o.value()) {
     }
 
-    std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                              const VMObjectPtr &a2)>
+    std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                              const vm_object_t *a2)>
     value() const {
         return _value;
     }
 
-    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1,
-                      const VMObjectPtr &arg2) const override {
+    vm_object_t* apply(const vm_object_t *arg0, const vm_object_t *arg1,
+                      const vm_object_t *arg2) const override {
         return (_value)(arg0, arg1, arg2);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const symbol_t &sym,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                                  const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                                  const vm_object_t *a2)>
             f) {
-        return VMObjectPtr(new TriadicCallback(m, sym, f));
+        return vm_object_t*(new TriadicCallback(m, sym, f));
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                                  const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                                  const vm_object_t *a2)>
             f) {
         auto sym = m->enter_symbol(s);
         return TriadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                                  const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                                  const vm_object_t *a2)>
             f) {
         auto sym = m->enter_symbol(s0, s1);
         return TriadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(
+    static vm_object_t* create(
         VM *m, const UnicodeStrings &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                                  const VMObjectPtr &a2)>
+        std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                                  const vm_object_t *a2)>
             f) {
         auto sym = m->enter_symbol(ss, s);
         return TriadicCallback::create(m, sym, f);
     }
 
 private:
-    std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1,
-                              const VMObjectPtr &a2)>
+    std::function<vm_object_t*(const vm_object_t *a0, const vm_object_t *a1,
+                              const vm_object_t *a2)>
         _value;
 };
 
@@ -1998,17 +1688,17 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply(const VMObjectPtrs &args) const = 0;
+    virtual vm_object_t* apply(vm_object_t*s &args) const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (tt.size() > 4) {
-            VMObjectPtrs args;
+            vm_object_t*s args;
             for (unsigned int i = 5; i < tt.size(); i++) {
                 args.push_back(tt[i]);
             }
@@ -2016,17 +1706,17 @@ public:
             try {
                 r = apply(args);
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4; i < tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
                     r = VMObjectArray::create(rr);
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = tt[3];
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -2037,7 +1727,7 @@ public:
                 return VMObjectArray::create(rr);
             }
         } else {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
@@ -2059,7 +1749,7 @@ public:
     }                                                \
     c(const c &o) : c(o.machine(), o.symbol()) {     \
     }                                                \
-    static VMObjectPtr create(VM *m) {               \
+    static vm_object_t* create(VM *m) {               \
         return std::shared_ptr<c>(new c(m));         \
     }
 
@@ -2067,12 +1757,12 @@ public:
 class VariadicCallback : public Variadic {
 public:
     VariadicCallback(VM* m, const icu::UnicodeString& s0, const
-icu::UnicodeString& s1, std::function<VMObjectPtr(const VMObjectPtrs& aa)> f)
+icu::UnicodeString& s1, std::function<vm_object_t*(vm_object_t*s& aa)> f)
     : Variadic(VM_SUB_BUILTIN, m, s0, s1), _value(f) {
     }
 
     VariadicCallback(VM* m, const symbol_t s,
-                     std::function<VMObjectPtr(const VMObjectPtrs& aa)> f)
+                     std::function<vm_object_t*(vm_object_t*s& aa)> f)
     : Variadic(VM_SUB_BUILTIN, m, s), _value(f) {
     }
 
@@ -2080,40 +1770,40 @@ icu::UnicodeString& s1, std::function<VMObjectPtr(const VMObjectPtrs& aa)> f)
     : VariadicCallback(o.machine(), o.symbol(), o.value()) {
     }
 
-    static VMObjectPtr create(VM* vm, const symbol_t s),
-                   std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) {
-        return VMObjectPtr(new VariadicCallback(vm, s, f));
+    static vm_object_t* create(VM* vm, const symbol_t s),
+                   std::function<vm_object_t*(vm_object_t*s& aa)> f) {
+        return vm_object_t*(new VariadicCallback(vm, s, f));
     }
 
-    static VMObjectPtr create(VM* m, const icu::UnicodeString& s,
-                   std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) {
+    static vm_object_t* create(VM* m, const icu::UnicodeString& s,
+                   std::function<vm_object_t*(vm_object_t*s& aa)> f) {
         auto sym = m->enter_symbol(s);
         return VariadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(VM* m, const icu::UnicodeString& s0, const
-icu::UnicodeString& s1, std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) {
+    static vm_object_t* create(VM* m, const icu::UnicodeString& s0, const
+icu::UnicodeString& s1, std::function<vm_object_t*(vm_object_t*s& aa)> f) {
         auto sym = m->enter_symbol(s0, s1);
         return VariadicCallback::create(m, sym, f);
     }
 
-    static VMObjectPtr create(VM* m, const UnicodeStrings& ss, const
-icu::UnicodeString& s, std::function<VMObjectPtr(const VMObjectPtrs& aa)> f) {
+    static vm_object_t* create(VM* m, const UnicodeStrings& ss, const
+icu::UnicodeString& s, std::function<vm_object_t*(vm_object_t*s& aa)> f) {
         auto sym = m->enter_symbol(ss, s);
         return VariadicCallback::create(m, sym, f);
     }
 
-    std::function<VMObjectPtr(const VMObjectPtrs& aa)> value() const {
+    std::function<vm_object_t*(vm_object_t*s& aa)> value() const {
         return _value;
     }
 
-    VMObjectPtr apply(const VMObjectPtrs& args) const override {
+    vm_object_t* apply(vm_object_t*s& args) const override {
         return (_value)(args);
     }
 
 
 private:
-    std::function<VMObjectPtr(const VMObjectPtrs& aa)> _value();
+    std::function<vm_object_t*(vm_object_t*s& aa)> _value();
 };
 */
 // convenience classes which return continued evaluations
@@ -2129,23 +1819,23 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply(const VMObjectPtr &arg0) const = 0;
+    virtual vm_object_t* apply(const vm_object_t *arg0) const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
         auto exc = tt[3];
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (tt.size() > 5) {
             auto arg0 = tt[5];
 
             try {
                 r = apply(arg0);
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4; i < tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
@@ -2157,11 +1847,11 @@ public:
 
                     return k;
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = tt[3];
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -2173,7 +1863,7 @@ public:
             }
         } else {
             // This seems the way to go about it.. Check Binary etc. for this.
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
@@ -2185,7 +1875,7 @@ public:
             return k;
         }
 
-        VMObjectPtrs kk;
+        vm_object_t*s kk;
         kk.push_back(rt);
         kk.push_back(rti);
         kk.push_back(k);
@@ -2206,7 +1896,7 @@ public:
     }                                             \
     c(const c &o) : c(o.machine(), o.symbol()) {  \
     }                                             \
-    static VMObjectPtr create(VM *m) {            \
+    static vm_object_t* create(VM *m) {            \
         return std::shared_ptr<c>(new c(m));      \
     }
 
@@ -2221,17 +1911,17 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply(const VMObjectPtr &arg0,
-                              const VMObjectPtr &arg1) const = 0;
+    virtual vm_object_t* apply(const vm_object_t *arg0,
+                              const vm_object_t *arg1) const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
         auto exc = tt[3];
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (tt.size() > 6) {
             auto arg0 = tt[5];
             auto arg1 = tt[6];
@@ -2239,7 +1929,7 @@ public:
             try {
                 r = apply(arg0, arg1);
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4; i < tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
@@ -2251,11 +1941,11 @@ public:
 
                     return k;
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = tt[3];
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -2266,14 +1956,14 @@ public:
                 return VMObjectArray::create(rr);
             }
         } else {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
             r = VMObjectArray::create(rr);
         }
 
-        VMObjectPtrs kk;
+        vm_object_t*s kk;
         kk.push_back(rt);
         kk.push_back(rti);
         kk.push_back(k);
@@ -2294,7 +1984,7 @@ public:
     }                                              \
     c(const c &o) : c(o.machine(), o.symbol()) {   \
     }                                              \
-    static VMObjectPtr create(VM *m) {             \
+    static vm_object_t* create(VM *m) {             \
         return std::shared_ptr<c>(new c(m));       \
     }
 
@@ -2309,17 +1999,17 @@ public:
         : VMObjectCombinator(t, m, s) {
     }
 
-    virtual VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1,
-                              const VMObjectPtr &arg2) const = 0;
+    virtual vm_object_t* apply(const vm_object_t *arg0, const vm_object_t *arg1,
+                              const vm_object_t *arg2) const = 0;
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t *thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
         auto exc = tt[3];
 
-        VMObjectPtr r;
+        vm_object_t* r;
         if (tt.size() > 7) {
             auto arg0 = tt[5];
             auto arg1 = tt[6];
@@ -2328,7 +2018,7 @@ public:
             try {
                 r = apply(arg0, arg1, arg2);
                 if (r == nullptr) {
-                    VMObjectPtrs rr;
+                    vm_object_t*s rr;
                     for (unsigned int i = 4; i < tt.size(); i++) {
                         rr.push_back(tt[i]);
                     }
@@ -2340,11 +2030,11 @@ public:
 
                     return k;
                 }
-            } catch (VMObjectPtr e) {
+            } catch (vm_object_t* e) {
                 auto exc = tt[3];
                 auto ee = VM_OBJECT_ARRAY_VALUE(exc);
 
-                VMObjectPtrs rr;
+                vm_object_t*s rr;
                 rr.push_back(ee[0]);
                 rr.push_back(ee[1]);
                 rr.push_back(ee[2]);
@@ -2355,14 +2045,14 @@ public:
                 return VMObjectArray::create(rr);
             }
         } else {
-            VMObjectPtrs rr;
+            vm_object_t*s rr;
             for (unsigned int i = 4; i < tt.size(); i++) {
                 rr.push_back(tt[i]);
             }
             r = VMObjectArray::create(rr);
         }
 
-        VMObjectPtrs kk;
+        vm_object_t*s kk;
         kk.push_back(rt);
         kk.push_back(rti);
         kk.push_back(k);
@@ -2383,13 +2073,13 @@ public:
     }                                               \
     c(const c &o) : c(o.machine(), o.symbol()) {    \
     }                                               \
-    static VMObjectPtr create(VM *m) {              \
+    static vm_object_t* create(VM *m) {              \
         return std::shared_ptr<c>(new c(m));        \
     }
 
 // 'pretty' printing
 
-inline void render_tuple(const VMObjectPtr &tt, std::ostream &os) {
+inline void render_tuple(const vm_object_t *tt, std::ostream &os) {
     if (tt == nullptr) {
         os << '.';
     } else if (tt->tag() == VM_OBJECT_ARRAY) {
@@ -2426,7 +2116,7 @@ inline void render_tuple(const VMObjectPtr &tt, std::ostream &os) {
     }
 };
 
-inline void render_nil(const VMObjectPtr &n, std::ostream &os) {
+inline void render_nil(const vm_object_t *n, std::ostream &os) {
     if (n == nullptr) {
         os << '.';
     } else {
@@ -2434,7 +2124,7 @@ inline void render_nil(const VMObjectPtr &n, std::ostream &os) {
     }
 };
 
-inline void render_array_raw(const VMObjectPtr &ee, std::ostream &os) {
+inline void render_array_raw(const vm_object_t *ee, std::ostream &os) {
     if (ee == nullptr) {
         os << '.';
     } else if (ee->tag() == VM_OBJECT_ARRAY) {
@@ -2459,7 +2149,7 @@ inline void render_array_raw(const VMObjectPtr &ee, std::ostream &os) {
     }
 };
 
-inline bool is_well_formed_nil(const VMObjectPtr &ee) {
+inline bool is_well_formed_nil(const vm_object_t *ee) {
     if (ee->tag() == VM_OBJECT_COMBINATOR) {
         auto sym = VM_OBJECT_COMBINATOR_SYMBOL(ee);
         return sym == SYMBOL_NIL;
@@ -2468,7 +2158,7 @@ inline bool is_well_formed_nil(const VMObjectPtr &ee) {
     }
 };
 
-inline bool is_well_formed_const(const VMObjectPtr &ee) {
+inline bool is_well_formed_const(const vm_object_t *ee) {
     if (ee == nullptr) {
         return false;
     } else if (ee->tag() == VM_OBJECT_ARRAY) {
@@ -2489,7 +2179,7 @@ inline bool is_well_formed_const(const VMObjectPtr &ee) {
     }
 };
 
-inline void render_cons_elements(const VMObjectPtr &ee, std::ostream &os) {
+inline void render_cons_elements(const vm_object_t *ee, std::ostream &os) {
     if (ee == nullptr) {
         os << '.';
     } else if (is_well_formed_nil(ee)) {
@@ -2528,7 +2218,7 @@ inline void render_cons_elements(const VMObjectPtr &ee, std::ostream &os) {
     }
 };
 
-inline void render_cons(const VMObjectPtr &c, std::ostream &os) {
+inline void render_cons(const vm_object_t *c, std::ostream &os) {
     os << "{";
     render_cons_elements(c, os);
     os << "}";
