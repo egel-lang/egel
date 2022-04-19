@@ -243,10 +243,8 @@ public:
 inline std::vector<VMObjectPtr> builtin_process(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
-    // oo.push_back(Process::create(vm)); // XXX: I always forget whether this
-    // is needed
-    oo.push_back(VMObjectStub::create(
-        vm, "System::process"));  // XXX: I always forget whether this is needed
+    oo.push_back(VMObjectData::create(
+        vm, "System::process"));
     oo.push_back(Proc::create(vm));
     oo.push_back(Send::create(vm));
     oo.push_back(Recv::create(vm));

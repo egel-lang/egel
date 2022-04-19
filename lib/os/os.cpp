@@ -891,7 +891,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     //    oo.push_back::create(VMObjectData(vm, "OS", "channel"));
 
     // oo.push_back(ChannelValue::create(vm));
-    oo.push_back(VMObjectStub::create(vm, "<OS::channel>"));
+    oo.push_back(VMObjectData::create(vm, "<OS::channel>"));
     oo.push_back(Stdin::create(vm));
     oo.push_back(Stdout::create(vm));
     oo.push_back(Stderr::create(vm));

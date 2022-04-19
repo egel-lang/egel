@@ -132,7 +132,7 @@ inline void render(const vm_object_t *o, std::ostream &os) {
     }
 };
 
-int compare(const vm_object_t *o0, const vm_object_t *o1) const {
+int vm_object_compare(const vm_object_t *o0, const vm_object_t *o1) const {
     if (o0 == o1) {
         return 0;
     } else if (o0 == nullptr) {
@@ -197,7 +197,7 @@ int compare(const vm_object_t *o0, const vm_object_t *o1) const {
                 else if (s1 < s0)
                     return 1;
                 else
-                    return vm_opaque_value(o0)->compare(o0, o1);
+                    return vm_opaque_value(o0)->vm_object_compare(o0, o1);
             } break;
             case VM_OBJECT_COMBINATOR: {
                 auto v0 = vm_combinator_value(o0)->symbol();
@@ -219,7 +219,7 @@ int compare(const vm_object_t *o0, const vm_object_t *o1) const {
                     return 1;
                 else {
                     for (int n = 0; n < s0; n++) {
-                        auto c = compare(vm_array_get(o0,n), vm_array_get(o1,n));
+                        auto c = vm_object_compare(vm_array_get(o0,n), vm_array_get(o1,n));
                         if (c < 0) return -1;
                         if (c > 0) return 1;
                     }
@@ -230,7 +230,11 @@ int compare(const vm_object_t *o0, const vm_object_t *o1) const {
     }
     PANIC("switch failed");
     return 0;
-}
+};
+
+bool vm_object_less(const vm_object_t* o0, const vm_object_t* o1) {
+    return (vm_object_compare(o0, o1) == -1)
+};
 
 class SymbolTable {
 public:
@@ -292,8 +296,8 @@ private:
 
 class DataTable {
 public:
-    DataTable() : _to(std::vector<VMObjectPtr>()) {
-        // _from(std::map<VMObjectPtr, data_t, LessVMObjectPtr>()) {
+    DataTable() : _to(std::vector<vm_object_t*>()) {
+        // _from(std::map<vm_object_t*, data_t, Lessvm_object_t*>()) {
     }
 
     DataTable(const DataTable &other) : _to(other._to), _from(other._from) {
@@ -302,7 +306,7 @@ public:
     void initialize() {
     }
 
-    data_t enter(const VMObjectPtr &s) {
+    data_t enter(const vm_object_t* &s) {
         if (_from.count(s) == 0) {
             data_t n = _to.size();
             _to.push_back(s);
@@ -317,7 +321,7 @@ public:
         return _to.size();
     }
 
-    data_t define(const VMObjectPtr &s) {
+    data_t define(const vm_object_t* &s) {
         if (_from.count(s) == 0) {
             return enter(s);
         } else {
@@ -327,11 +331,11 @@ public:
         }
     }
 
-    VMObjectPtr get(const data_t &s) {
+    vm_object_t* get(const data_t &s) {
         return _to[s];
     }
 
-    data_t get(const VMObjectPtr &o) {
+    data_t get(const vm_object_t* &o) {
         return _from[o];
     }
 
@@ -344,8 +348,8 @@ public:
     }
 
 private:
-    std::vector<VMObjectPtr> _to;
-    std::map<VMObjectPtr, data_t, LessVMObjectPtr> _from;
+    std::vector<vm_object_t*> _to;
+    std::map<vm_object_t*, data_t, vm_object_less> _from;
 };
 
 class VMObjectResult : public VMObjectCombinator {
@@ -359,12 +363,12 @@ public:
         : VMObjectResult(d.machine(), d.symbol(), d._result, d._exception) {
     }
 
-    static VMObjectPtr create(VM *m, const symbol_t s, VMReduceResult *r,
+    static vm_object_t* create(VM *m, const symbol_t s, VMReduceResult *r,
                               const bool exc) {
-        return VMObjectPtr(new VMObjectResult(m, s, r, exc));
+        return vm_object_t*(new VMObjectResult(m, s, r, exc));
     }
 
-    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+    vm_object_t* reduce(const vm_object_t* &thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto arg0 = tt[5];
 
@@ -479,47 +483,47 @@ public:
     }
 
     // data table manipulation
-    data_t enter_data(const VMObjectPtr &o) override {
+    data_t enter_data(const vm_object_t* &o) override {
         return _data.enter(o);
     }
 
-    data_t define_data(const VMObjectPtr &o) override {
+    data_t define_data(const vm_object_t* &o) override {
         return _data.define(o);
     }
 
-    data_t get_data(const VMObjectPtr &o) override {
+    data_t get_data(const vm_object_t* &o) override {
         return _data.get(o);
     }
 
-    VMObjectPtr get_data(const data_t d) override {
+    vm_object_t* get_data(const data_t d) override {
         return _data.get(d);
     }
 
     // convenience
-    VMObjectPtr get_combinator(const symbol_t s) override {
+    vm_object_t* get_combinator(const symbol_t s) override {
         auto o = VMObjectStub::create(this, s);
         auto d = enter_data(o);
         return get_data(d);
     }
 
-    VMObjectPtr get_combinator(const icu::UnicodeString &n) override {
+    vm_object_t* get_combinator(const icu::UnicodeString &n) override {
         auto i = enter_symbol(n);
         return get_combinator(i);
     }
 
-    VMObjectPtr get_combinator(const icu::UnicodeString &n0,
+    vm_object_t* get_combinator(const icu::UnicodeString &n0,
                                const icu::UnicodeString &n1) override {
         auto i = enter_symbol(n0, n1);
         return get_combinator(i);
     }
 
-    VMObjectPtr get_combinator(const std::vector<icu::UnicodeString> &nn,
+    vm_object_t* get_combinator(const std::vector<icu::UnicodeString> &nn,
                                const icu::UnicodeString &n) override {
         auto i = enter_symbol(nn, n);
         return get_combinator(i);
     }
 
-    void define(const VMObjectPtr &o) override {
+    void define(const vm_object_t* &o) override {
         // define an undefined symbol
         auto s = o->to_text();  // XXX: usually works? probably not for {}
         if (_symbols.member(s)) {
@@ -530,22 +534,22 @@ public:
         }
     }
 
-    void overwrite(const VMObjectPtr &o) override {
+    void overwrite(const vm_object_t* &o) override {
         // define or overwrite
         auto s = o->to_text();  // XXX: usually works?
         enter_symbol(s);
         enter_data(o);
     }
 
-    VMObjectPtr get(const VMObjectPtr &o) override {
+    vm_object_t* get(const vm_object_t* &o) override {
         // get a defined symbol
         return get_combinator(o->to_text());
     }
 
     // reduce an expression
-    void reduce(const VMObjectPtr &f, const VMObjectPtr &ret,
-                const VMObjectPtr &exc, reducer_state_t *run) override {
-        VMObjectPtrs rr;
+    void reduce(const vm_object_t* &f, const vm_object_t* &ret,
+                const vm_object_t* &exc, reducer_state_t *run) override {
+        vm_object_t*s rr;
         rr.push_back(nullptr);  // rt
         rr.push_back(nullptr);  // rti
         rr.push_back(nullptr);  // k
@@ -554,7 +558,7 @@ public:
         rr.push_back(nullptr);  // arg0
         auto r = create_array(rr);
 
-        VMObjectPtrs ee;
+        vm_object_t*s ee;
         ee.push_back(nullptr);  // rt
         ee.push_back(nullptr);  // rti
         ee.push_back(nullptr);  // k
@@ -564,7 +568,7 @@ public:
         auto e = create_array(ee);
 
         auto i = VMObjectInteger::create(5);
-        VMObjectPtrs tt;
+        vm_object_t*s tt;
         tt.push_back(r);  // rt
         tt.push_back(i);  // rti
         tt.push_back(r);  // k
@@ -589,13 +593,13 @@ public:
         }
     }
 
-    void reduce(const VMObjectPtr &f, const VMObjectPtr &ret,
-                const VMObjectPtr &exc) override {
+    void reduce(const vm_object_t* &f, const vm_object_t* &ret,
+                const vm_object_t* &exc) override {
         reducer_state_t run = RUNNING;
         reduce(f, ret, exc, &run);
     }
 
-    VMReduceResult reduce(const VMObjectPtr &f, reducer_state_t *run) override {
+    VMReduceResult reduce(const vm_object_t* &f, reducer_state_t *run) override {
         VMReduceResult r;
 
         auto sm = enter_symbol("Internal", "result");
@@ -608,7 +612,7 @@ public:
         return r;
     }
 
-    VMReduceResult reduce(const VMObjectPtr &f) override {
+    VMReduceResult reduce(const vm_object_t* &f) override {
         reducer_state_t run = RUNNING;
         return reduce(f, &run);
     }
@@ -636,77 +640,77 @@ public:
         _context = m;
     }
 
-    vm_tag_t get_tag(const VMObjectPtr &o) override {
+    vm_tag_t get_tag(const vm_object_t* &o) override {
         return o->tag();
     }
 
-    vm_subtag_t get_subtag(const VMObjectPtr &o) override {
+    vm_subtag_t get_subtag(const vm_object_t* &o) override {
         return o->subtag();
     }
 
     // primitive values
-    VMObjectPtr create_integer(const vm_int_t n) override {
+    vm_object_t* create_integer(const vm_int_t n) override {
         return VMObjectInteger::create(n);
     }
 
-    VMObjectPtr create_char(const vm_char_t c) override {
+    vm_object_t* create_char(const vm_char_t c) override {
         return VMObjectChar::create(c);
     }
 
-    VMObjectPtr create_text(const vm_text_t s) override {
+    vm_object_t* create_text(const vm_text_t s) override {
         return VMObjectText::create(s);
     }
 
-    VMObjectPtr create_float(const vm_float_t f) override {
+    vm_object_t* create_float(const vm_float_t f) override {
         return VMObjectFloat::create(f);
     }
 
-    bool is_integer(const VMObjectPtr &o) override {
+    bool is_integer(const vm_object_t* &o) override {
         return o->tag() == VM_OBJECT_INTEGER;
     }
 
-    bool is_float(const VMObjectPtr &o) override {
+    bool is_float(const vm_object_t* &o) override {
         return o->tag() == VM_OBJECT_FLOAT;
     }
 
-    bool is_char(const VMObjectPtr &o) override {
+    bool is_char(const vm_object_t* &o) override {
         return o->tag() == VM_OBJECT_CHAR;
     }
 
-    bool is_text(const VMObjectPtr &o) override {
+    bool is_text(const vm_object_t* &o) override {
         return o->tag() == VM_OBJECT_TEXT;
     }
 
-    vm_int_t get_integer(const VMObjectPtr &o) override {
+    vm_int_t get_integer(const vm_object_t* &o) override {
         return VM_OBJECT_INTEGER_VALUE(o);
     }
 
-    vm_float_t get_float(const VMObjectPtr &o) override {
+    vm_float_t get_float(const vm_object_t* &o) override {
         return VM_OBJECT_FLOAT_VALUE(o);
     }
 
-    vm_char_t get_char(const VMObjectPtr &o) override {
+    vm_char_t get_char(const vm_object_t* &o) override {
         return VM_OBJECT_CHAR_VALUE(o);
     }
 
-    vm_text_t get_text(const VMObjectPtr &o) override {
+    vm_text_t get_text(const vm_object_t* &o) override {
         return VM_OBJECT_TEXT_VALUE(o);
     }
 
-    VMObjectPtr create_none() override {
+    vm_object_t* create_none() override {
         return get_data(SYMBOL_NONE);
     }
 
-    VMObjectPtr create_true() override {
+    vm_object_t* create_true() override {
         return get_data(SYMBOL_TRUE);
     }
 
-    VMObjectPtr create_false() override {
+    vm_object_t* create_false() override {
         return get_data(SYMBOL_FALSE);
     }
 
     // predefined constants
-    VMObjectPtr create_bool(const bool b) override {
+    vm_object_t* create_bool(const bool b) override {
         if (b) {
             return create_true();
         } else {
@@ -714,244 +718,244 @@ public:
         }
     }
 
-    VMObjectPtr create_nil() override {
+    vm_object_t* create_nil() override {
         return _nil;
     }
 
-    VMObjectPtr create_cons() override {
+    vm_object_t* create_cons() override {
         return _cons;
     }
 
-    VMObjectPtr create_tuple() override {
+    vm_object_t* create_tuple() override {
         return _tuple;
     }
 
-    bool is_none(const VMObjectPtr &o) override {
+    bool is_none(const vm_object_t* &o) override {
         return (VM_OBJECT_NONE_TEST(o));
     }
 
-    bool is_true(const VMObjectPtr &o) override {
+    bool is_true(const vm_object_t* &o) override {
         return (VM_OBJECT_TRUE_TEST(o));
     }
 
-    bool is_false(const VMObjectPtr &o) override {
+    bool is_false(const vm_object_t* &o) override {
         return (VM_OBJECT_FALSE_TEST(o));
     }
 
-    bool is_bool(const VMObjectPtr &o) override {
+    bool is_bool(const vm_object_t* &o) override {
         return is_false(o) || is_true(o);
     }
 
-    bool is_nil(const VMObjectPtr &o) override {
+    bool is_nil(const vm_object_t* &o) override {
         return (VM_OBJECT_NIL_TEST(o));
     }
 
-    bool is_cons(const VMObjectPtr &o) override {
+    bool is_cons(const vm_object_t* &o) override {
         return (VM_OBJECT_CONS_TEST(o));
     }
 
-    bool is_tuple(const VMObjectPtr &o) override {
+    bool is_tuple(const vm_object_t* &o) override {
         return (VM_OBJECT_TUPLE_TEST(o));
     }
 
-    VMObjectPtr create_array(const VMObjectPtrs &oo) override {
+    vm_object_t* create_array(const vm_object_t*s &oo) override {
         return VMObjectArray::create(oo);
     }
 
-    VMObjectPtr create_array(const unsigned int size) override {
+    vm_object_t* create_array(const unsigned int size) override {
         return VMObjectArray::create(size);
     }
 
-    bool is_array(const VMObjectPtr &o) override {
+    bool is_array(const vm_object_t* &o) override {
         return VM_OBJECT_ARRAY_TEST(o);
     }
 
-    unsigned int array_size(const VMObjectPtr &o) override {
+    unsigned int array_size(const vm_object_t* &o) override {
         return VM_OBJECT_ARRAY_CAST(o)->size();
     }
 
-    VMObjectPtr array_get(const VMObjectPtr &o, int n) override {
+    vm_object_t* array_get(const vm_object_t* &o, int n) override {
         return VM_OBJECT_ARRAY_CAST(o)->get(n);
     }
 
-    void array_set(VMObjectPtr &o, int n, const VMObjectPtr &e) override {
+    void array_set(vm_object_t* &o, int n, const vm_object_t* &e) override {
         VM_OBJECT_ARRAY_CAST(o)->set(n, e);
     }
 
-    VMObjectPtrs get_array(const VMObjectPtr &o) override {
+    vm_object_t*s get_array(const vm_object_t* &o) override {
         return VM_OBJECT_ARRAY_VALUE(o);
     }
 
-    bool is_combinator(const VMObjectPtr &o) override {
+    bool is_combinator(const vm_object_t* &o) override {
         return VM_OBJECT_COMBINATOR_TEST(o);
     }
 
-    bool is_opaque(const VMObjectPtr &o) override {
+    bool is_opaque(const vm_object_t* &o) override {
         return VM_OBJECT_OPAQUE_TEST(o);
     }
 
-    bool is_data(const VMObjectPtr &o) override {
+    bool is_data(const vm_object_t* &o) override {
         return VM_OBJECT_DATA_TEST(o);
     }
 
-    bool is_bytecode(const VMObjectPtr &o) override {
+    bool is_bytecode(const vm_object_t* &o) override {
         return (o->subtag_test(VM_SUB_BYTECODE));
     }
 
-    icu::UnicodeString get_bytecode(const VMObjectPtr &o) override {
+    icu::UnicodeString get_bytecode(const vm_object_t* &o) override {
         Disassembler d(o);
         return d.disassemble();
     }
 
-    VMObjectPtrs get_bytedata(const VMObjectPtr &o) override {
+    vm_object_t*s get_bytedata(const vm_object_t* &o) override {
         auto b = VMObjectBytecode::cast(o);
         return b->get_data_list();
     }
 
-    VMObjectPtr create_bytecode(const icu::UnicodeString &s) override {
+    vm_object_t* create_bytecode(const icu::UnicodeString &s) override {
         Assembler a(this, s);
         return a.assemble();
     }
 
-    icu::UnicodeString symbol(const VMObjectPtr &o) override {
+    icu::UnicodeString symbol(const vm_object_t* &o) override {
         return _symbols.get(o->symbol());
     }
 
-    VMObjectPtr create_data(const icu::UnicodeString &n) override {
+    vm_object_t* create_data(const icu::UnicodeString &n) override {
         return VMObjectData::create(this, n);
     }
 
-    VMObjectPtr create_data(const icu::UnicodeString &n0,
+    vm_object_t* create_data(const icu::UnicodeString &n0,
                             const icu::UnicodeString &n1) override {
         return VMObjectData::create(this, n0, n1);
     }
 
-    VMObjectPtr create_data(const std::vector<icu::UnicodeString> &nn,
+    vm_object_t* create_data(const std::vector<icu::UnicodeString> &nn,
                             const icu::UnicodeString &n) override {
         return VMObjectData::create(this, nn, n);
     }
 
-    VMObjectPtr create_medadic(const icu::UnicodeString &s,
-                               std::function<VMObjectPtr()> f) override {
+    vm_object_t* create_medadic(const icu::UnicodeString &s,
+                               std::function<vm_object_t*()> f) override {
         return MedadicCallback::create(this, s, f);
     }
 
-    VMObjectPtr create_medadic(const icu::UnicodeString &s0,
+    vm_object_t* create_medadic(const icu::UnicodeString &s0,
                                const icu::UnicodeString &s1,
-                               std::function<VMObjectPtr()> f) override {
+                               std::function<vm_object_t*()> f) override {
         return MedadicCallback::create(this, s0, s1, f);
     }
 
-    VMObjectPtr create_medadic(const std::vector<icu::UnicodeString> &ss,
+    vm_object_t* create_medadic(const std::vector<icu::UnicodeString> &ss,
                                const icu::UnicodeString &s,
-                               std::function<VMObjectPtr()> f) override {
+                               std::function<vm_object_t*()> f) override {
         return MedadicCallback::create(this, ss, s, f);
     }
 
-    VMObjectPtr create_monadic(
+    vm_object_t* create_monadic(
         const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) override {
+        std::function<vm_object_t*(const vm_object_t* &a0)> f) override {
         return MonadicCallback::create(this, s, f);
     }
 
-    VMObjectPtr create_monadic(
+    vm_object_t* create_monadic(
         const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) override {
+        std::function<vm_object_t*(const vm_object_t* &a0)> f) override {
         return MonadicCallback::create(this, s0, s1, f);
     }
 
-    VMObjectPtr create_monadic(
+    vm_object_t* create_monadic(
         const std::vector<icu::UnicodeString> &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0)> f) override {
+        std::function<vm_object_t*(const vm_object_t* &a0)> f) override {
         return MonadicCallback::create(this, ss, s, f);
     }
 
-    VMObjectPtr create_dyadic(
+    vm_object_t* create_dyadic(
         const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1)>
+        std::function<vm_object_t*(const vm_object_t* &a0, const vm_object_t* &a1)>
             f) override {
         return DyadicCallback::create(this, s, f);
     }
 
-    VMObjectPtr create_dyadic(
+    vm_object_t* create_dyadic(
         const icu::UnicodeString &s0, const icu::UnicodeString &s1,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1)>
+        std::function<vm_object_t*(const vm_object_t* &a0, const vm_object_t* &a1)>
             f) override {
         return DyadicCallback::create(this, s0, s1, f);
     }
 
-    VMObjectPtr create_dyadic(
+    vm_object_t* create_dyadic(
         const std::vector<icu::UnicodeString> &ss, const icu::UnicodeString &s,
-        std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a1)>
+        std::function<vm_object_t*(const vm_object_t* &a0, const vm_object_t* &a1)>
             f) override {
         return DyadicCallback::create(this, ss, s, f);
     }
     /*
-        VMObjectPtr create_triadic(const icu::UnicodeString& s,
-                                   std::function<VMObjectPtr(const VMObjectPtr&
-       a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override { return
+        vm_object_t* create_triadic(const icu::UnicodeString& s,
+                                   std::function<vm_object_t*(const vm_object_t*&
+       a0, const vm_object_t*& a1, const vm_object_t*& a2)> f) override { return
        TriadicCallback::create(this, s, f);
         }
 
-        VMObjectPtr create_triadic(const icu::UnicodeString& s0, const
-       icu::UnicodeString& s1, std::function<VMObjectPtr(const VMObjectPtr& a0,
-       const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override { return
+        vm_object_t* create_triadic(const icu::UnicodeString& s0, const
+       icu::UnicodeString& s1, std::function<vm_object_t*(const vm_object_t*& a0,
+       const vm_object_t*& a1, const vm_object_t*& a2)> f) override { return
        TriadicCallback::create(this, s0, s1, f);
         }
 
-        VMObjectPtr create_triadic(const std::vector<icu::UnicodeString>& ss,
-       const icu::UnicodeString& s, std::function<VMObjectPtr(const VMObjectPtr&
-       a0, const VMObjectPtr& a1, const VMObjectPtr& a2)> f) override { return
+        vm_object_t* create_triadic(const std::vector<icu::UnicodeString>& ss,
+       const icu::UnicodeString& s, std::function<vm_object_t*(const vm_object_t*&
+       a0, const vm_object_t*& a1, const vm_object_t*& a2)> f) override { return
        TriadicCallback::create(this, ss, s, f);
         }
         */
 
     /*
-        VMObjectPtr create_variadic(const icu::UnicodeString& s,
-                                    std::function<VMObjectPtr(const
-       VMObjectPtrs& aa)> f) override { return VariadicCallback::create(this, s,
+        vm_object_t* create_variadic(const icu::UnicodeString& s,
+                                    std::function<vm_object_t*(const
+       vm_object_t*s& aa)> f) override { return VariadicCallback::create(this, s,
        f);
         }
 
-        VMObjectPtr create_variadic(const icu::UnicodeString& s0, const
-       icu::UnicodeString& s1, std::function<VMObjectPtr(const VMObjectPtrs&
+        vm_object_t* create_variadic(const icu::UnicodeString& s0, const
+       icu::UnicodeString& s1, std::function<vm_object_t*(const vm_object_t*s&
        aa)> f) override { return VariadicCallback::create(this, s0, s1, f);
         }
 
-        VMObjectPtr create_variadic(const std::vector<icu::UnicodeString>& ss,
-       const icu::UnicodeString& s, std::function<VMObjectPtr(const
-       VMObjectPtrs& aa)> f) override { return VariadicCallback::create(this,
+        vm_object_t* create_variadic(const std::vector<icu::UnicodeString>& ss,
+       const icu::UnicodeString& s, std::function<vm_object_t*(const
+       vm_object_t*s& aa)> f) override { return VariadicCallback::create(this,
        ss, s, f);
         }
     */
 
-    VMObjectPtr bad(const VMObject *o, const icu::UnicodeString &s) override {
-        VMObjectPtrs tt;
+    vm_object_t* bad(const VMObject *o, const icu::UnicodeString &s) override {
+        vm_object_t*s tt;
         tt.push_back(create_text(o->to_text()));
         tt.push_back(create_text(s));
         return create_array(tt);
     }
 
-    VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0) override {
-        VMObjectPtrs tt;
+    vm_object_t* bad_args(const VMObject *o, const vm_object_t* &a0) override {
+        vm_object_t*s tt;
         tt.push_back(create_text(o->to_text()));
         tt.push_back(a0);
         return create_array(tt);
     }
 
-    VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0,
-                         const VMObjectPtr &a1) override {
-        VMObjectPtrs tt;
+    vm_object_t* bad_args(const VMObject *o, const vm_object_t* &a0,
+                         const vm_object_t* &a1) override {
+        vm_object_t*s tt;
         tt.push_back(create_text(o->to_text()));
         tt.push_back(a0);
         tt.push_back(a1);
         return create_array(tt);
     }
 
-    VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0,
-                         const VMObjectPtr &a1,
-                         const VMObjectPtr &a2) override {
-        VMObjectPtrs tt;
+    vm_object_t* bad_args(const VMObject *o, const vm_object_t* &a0,
+                         const vm_object_t* &a1,
+                         const vm_object_t* &a2) override {
+        vm_object_t*s tt;
         tt.push_back(create_text(o->to_text()));
         tt.push_back(a0);
         tt.push_back(a1);
@@ -959,8 +963,8 @@ public:
         return create_array(tt);
     }
 
-    VMObjectPtr to_tuple(const VMObjectPtrs &oo) override {
-        VMObjectPtrs tt;
+    vm_object_t* to_tuple(const vm_object_t*s &oo) override {
+        vm_object_t*s tt;
         tt.push_back(create_tuple());
         for (auto &o : oo) {
             tt.push_back(o);
@@ -968,8 +972,8 @@ public:
         return create_array(tt);
     }
 
-    VMObjectPtrs from_tuple(const VMObjectPtr &oo) override {
-        VMObjectPtrs tt;
+    vm_object_t*s from_tuple(const vm_object_t* &oo) override {
+        vm_object_t*s tt;
         if (is_tuple(oo)) {
             return tt;
         } else if (is_array(oo)) {
@@ -984,7 +988,7 @@ public:
     }
     // convenience (for internal usage)
     bool is_list(
-        const VMObjectPtr &o) override {  // XXX: tail-recursive version
+        const vm_object_t* &o) override {  // XXX: tail-recursive version
         if (is_nil(o)) {
             return true;
         } else if (is_array(o)) {
@@ -999,14 +1003,14 @@ public:
         }
     }
 
-    VMObjectPtr to_list(const VMObjectPtrs &oo) override {
+    vm_object_t* to_list(const vm_object_t*s &oo) override {
         auto nil = create_nil();
         auto cons = create_cons();
 
-        VMObjectPtr result = nil;
+        vm_object_t* result = nil;
 
         for (int n = oo.size() - 1; n >= 0; n--) {
-            VMObjectPtrs aa;
+            vm_object_t*s aa;
             aa.push_back(cons);
             aa.push_back(oo[n]);
             aa.push_back(result);
@@ -1017,9 +1021,9 @@ public:
         return result;
     }
 
-    VMObjectPtrs from_list(
-        const VMObjectPtr &o) override {  // 'type'-unsafe list conversion
-        VMObjectPtrs oo;
+    vm_object_t*s from_list(
+        const vm_object_t* &o) override {  // 'type'-unsafe list conversion
+        vm_object_t*s oo;
 
         auto l = o;
         while (!is_nil(l)) {
@@ -1053,11 +1057,11 @@ public:
         _eval->eval_interactive();
     }
 
-    bool is_module(const VMObjectPtr &m) override {
+    bool is_module(const vm_object_t* &m) override {
         return VMModule::is_module(m);
     }
 
-    VMObjectPtr query_module_name(const VMObjectPtr &m) override {
+    vm_object_t* query_module_name(const vm_object_t* &m) override {
         if (is_module(m)) {
             return VMModule::module_cast(m)->name();
         } else {
@@ -1065,7 +1069,7 @@ public:
         }
     }
 
-    VMObjectPtr query_module_path(const VMObjectPtr &m) override {
+    vm_object_t* query_module_path(const vm_object_t* &m) override {
         if (is_module(m)) {
             return VMModule::module_cast(m)->path();
         } else {
@@ -1073,7 +1077,7 @@ public:
         }
     }
 
-    VMObjectPtr query_module_imports(const VMObjectPtr &m) override {
+    vm_object_t* query_module_imports(const vm_object_t* &m) override {
         if (is_module(m)) {
             return VMModule::module_cast(m)->imports();
         } else {
@@ -1081,7 +1085,7 @@ public:
         }
     }
 
-    VMObjectPtr query_module_exports(const VMObjectPtr &m) override {
+    vm_object_t* query_module_exports(const vm_object_t* &m) override {
         if (is_module(m)) {
             return VMModule::module_cast(m)->exports();
         } else {
@@ -1089,7 +1093,7 @@ public:
         }
     }
 
-    VMObjectPtr query_module_values(const VMObjectPtr &m) override {
+    vm_object_t* query_module_values(const vm_object_t* &m) override {
         if (is_module(m)) {
             return VMModule::module_cast(m)->values();
         } else {
@@ -1098,25 +1102,25 @@ public:
     }
 
     // machine state
-    VMObjectPtr query_modules() override {
+    vm_object_t* query_modules() override {
         auto mm = _manager->get_modules();
-        VMObjectPtrs oo;
+        vm_object_t*s oo;
         for (auto &m : mm) {
             oo.push_back(VMModule::create(this, m));
         }
         return to_list(oo);
     }
 
-    VMObjectPtr query_symbols() override {
+    vm_object_t* query_symbols() override {
         throw create_text("stub");
     }
 
-    VMObjectPtr query_data() override {
+    vm_object_t* query_data() override {
         throw create_text("stub");
     }
 
-    int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) override {
-        CompareVMObjectPtr compare;
+    int compare(const vm_object_t* &o0, const vm_object_t* &o1) override {
+        Comparevm_object_t* compare;
         return compare(o0, o1);
     }
 
@@ -1126,18 +1130,18 @@ private:
     void *_context;
     std::mutex _mutex;
 
-    VMObjectPtr _int;
-    VMObjectPtr _float;
-    VMObjectPtr _char;
-    VMObjectPtr _text;
+    vm_object_t* _int;
+    vm_object_t* _float;
+    vm_object_t* _char;
+    vm_object_t* _text;
 
-    VMObjectPtr _none;
-    VMObjectPtr _true;
-    VMObjectPtr _false;
+    vm_object_t* _none;
+    vm_object_t* _true;
+    vm_object_t* _false;
 
-    VMObjectPtr _nil;
-    VMObjectPtr _cons;
-    VMObjectPtr _tuple;
+    vm_object_t* _nil;
+    vm_object_t* _cons;
+    vm_object_t* _tuple;
 
     OptionsPtr _options;
     ModuleManagerPtr _manager;

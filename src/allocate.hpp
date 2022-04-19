@@ -309,7 +309,7 @@ inline vm_subtag_t vm_object_subtag(vm_object_t* p) {
     } if (vm_is_combinator(p)) {
         return vm_combinator_value(p)->subtag();
     } else {
-        return 0;
+        return 0; // XXX
     }
 };
 

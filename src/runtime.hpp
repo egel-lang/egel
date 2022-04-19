@@ -831,7 +831,7 @@ public:
     }
 
     static vm_object_t* create(VM *vm, const symbol_t s) {
-        return std::make_shared<VMObjectData>(vm, s);
+        return vm_combinator_create(new VMObjectData(vm, s));
     }
 
     static vm_object_t* create(VM *vm, const icu::UnicodeString &s) {
@@ -877,110 +877,7 @@ public:
         return k;
     }
 };
-using VMObjectDataPtr = std::shared_ptr<VMObjectData>;
 
-using VMObjectCombinatorPtr = std::shared_ptr<VMObjectCombinator>;
-#define VM_OBJECT_COMBINATOR_TEST(a) (a->tag() == VM_OBJECT_COMBINATOR)
-#define VM_OBJECT_COMBINATOR_CAST(a) \
-    std::static_pointer_cast<VMObjectCombinator>(a)
-#define VM_OBJECT_COMBINATOR_SYMBOL(a) (VM_OBJECT_COMBINATOR_CAST(a)->symbol())
-#define VM_OBJECT_DATA_TEST(a) (a->subtag_test(VM_SUB_DATA))
-
-struct Comparevm_object_t* {
-    int operator()(const vm_object_t *a0, const vm_object_t *a1) const {
-        auto t0 = a0->tag();
-        auto t1 = a1->tag();
-        if (t0 < t1) {
-            return -1;
-        } else if (t1 < t0) {
-            return 1;
-        } else {
-            switch (t0) {
-                case VM_OBJECT_INTEGER: {
-                    auto v0 = VM_OBJECT_INTEGER_VALUE(a0);
-                    auto v1 = VM_OBJECT_INTEGER_VALUE(a1);
-                    if (v0 < v1)
-                        return -1;
-                    else if (v1 < v0)
-                        return 1;
-                    else
-                        return 0;
-                } break;
-                case VM_OBJECT_FLOAT: {
-                    auto v0 = VM_OBJECT_FLOAT_VALUE(a0);
-                    auto v1 = VM_OBJECT_FLOAT_VALUE(a1);
-                    if (v0 < v1)
-                        return -1;
-                    else if (v1 < v0)
-                        return 1;
-                    else
-                        return 0;
-                } break;
-                case VM_OBJECT_CHAR: {
-                    auto v0 = VM_OBJECT_CHAR_VALUE(a0);
-                    auto v1 = VM_OBJECT_CHAR_VALUE(a1);
-                    if (v0 < v1)
-                        return -1;
-                    else if (v1 < v0)
-                        return 1;
-                    else
-                        return 0;
-                } break;
-                case VM_OBJECT_TEXT: {
-                    auto v0 = VM_OBJECT_TEXT_VALUE(a0);
-                    auto v1 = VM_OBJECT_TEXT_VALUE(a1);
-                    if (v0 < v1)
-                        return -1;
-                    else if (v1 < v0)
-                        return 1;
-                    else
-                        return 0;
-                } break;
-                case VM_OBJECT_OPAQUE: {
-                    auto s0 = VM_OBJECT_OPAQUE_SYMBOL(a0);
-                    auto s1 = VM_OBJECT_OPAQUE_SYMBOL(a1);
-                    if (s0 < s1)
-                        return -1;
-                    else if (s1 < s0)
-                        return 1;
-                    else
-                        return VM_OBJECT_OPAQUE_COMPARE(a0, a1);
-                } break;
-                case VM_OBJECT_COMBINATOR: {
-                    auto v0 = VM_OBJECT_COMBINATOR_SYMBOL(a0);
-                    auto v1 = VM_OBJECT_COMBINATOR_SYMBOL(a1);
-                    if (v0 < v1)
-                        return -1;
-                    else if (v1 < v0)
-                        return 1;
-                    else
-                        return 0;
-                } break;
-                case VM_OBJECT_ARRAY: {
-                    auto v0 = VM_OBJECT_ARRAY_VALUE(a0);
-                    auto v1 = VM_OBJECT_ARRAY_VALUE(a1);
-                    auto s0 = v0.size();
-                    auto s1 = v1.size();
-
-                    if (s0 < s1)
-                        return -1;
-                    else if (s1 < s0)
-                        return 1;
-                    else {
-                        for (unsigned int i = 0; i < s0; i++) {
-                            auto c = operator()(v0[i], v1[i]);
-                            if (c < 0) return -1;
-                            if (c > 0) return 1;
-                        }
-                        return 0;
-                    }
-                } break;
-            }
-        }
-        PANIC("switch failed");
-        return 0;
-    }
-};
 struct Equalvm_object_t* {
     bool operator()(const vm_object_t *a0, const vm_object_t *a1) const {
         Comparevm_object_t* compare;
@@ -997,6 +894,7 @@ using vm_object_t*Set = std::set<vm_object_t*, Lessvm_object_t*>;
 
 // a stub is used for finding objects by their string or symbol
 // and for opaque default members
+// XXX: to be depecrated
 class VMObjectStub : public VMObjectCombinator {
 public:
     VMObjectStub(VM *vm, const symbol_t s)
@@ -1012,7 +910,7 @@ public:
     }
 
     static vm_object_t* create(VM *m, const symbol_t s) {
-        return std::make_shared<VMObjectStub>(m, s);
+        return vm_object_create(new VMObjectStub(m, s));
     }
 
     static vm_object_t* create(VM *m, const UnicodeString &s) {
@@ -2076,150 +1974,3 @@ public:
     static vm_object_t* create(VM *m) {              \
         return std::shared_ptr<c>(new c(m));        \
     }
-
-// 'pretty' printing
-
-inline void render_tuple(const vm_object_t *tt, std::ostream &os) {
-    if (tt == nullptr) {
-        os << '.';
-    } else if (tt->tag() == VM_OBJECT_ARRAY) {
-        os << '(';
-        auto vv = VM_OBJECT_ARRAY_VALUE(tt);
-        int sz = (int)vv.size();
-        if (sz == 2) {  // NOTE, handle 'tuple 0 = (0,)' differently
-            if (vv[0] == nullptr) {
-                os << '.';
-            } else {
-                vv[0]->render(os);
-            }
-            os << ' ';
-            if (vv[1] == nullptr) {
-                os << '.';
-            } else {
-                vv[1]->render(os);
-            }
-        } else {
-            for (int n = 1; n < sz; n++) {
-                if (vv[n] == nullptr) {
-                    os << '.';
-                } else {
-                    vv[n]->render(os);
-                    if (n < sz - 1) {
-                        os << ", ";
-                    }
-                }
-            }
-        }
-        os << ')';
-    } else {
-        PANIC("not a tuple");
-    }
-};
-
-inline void render_nil(const vm_object_t *n, std::ostream &os) {
-    if (n == nullptr) {
-        os << '.';
-    } else {
-        os << "{}";
-    }
-};
-
-inline void render_array_raw(const vm_object_t *ee, std::ostream &os) {
-    if (ee == nullptr) {
-        os << '.';
-    } else if (ee->tag() == VM_OBJECT_ARRAY) {
-        auto vv = VM_OBJECT_ARRAY_VALUE(ee);
-        os << '(';
-        bool first = true;
-        for (auto &v : vv) {
-            if (first) {
-                first = false;
-            } else {
-                os << ' ';
-            }
-            if (v == nullptr) {
-                os << ".";
-            } else {
-                v->render(os);
-            }
-        }
-        os << ')';
-    } else {
-        PANIC("array expected");
-    }
-};
-
-inline bool is_well_formed_nil(const vm_object_t *ee) {
-    if (ee->tag() == VM_OBJECT_COMBINATOR) {
-        auto sym = VM_OBJECT_COMBINATOR_SYMBOL(ee);
-        return sym == SYMBOL_NIL;
-    } else {
-        return false;
-    }
-};
-
-inline bool is_well_formed_const(const vm_object_t *ee) {
-    if (ee == nullptr) {
-        return false;
-    } else if (ee->tag() == VM_OBJECT_ARRAY) {
-        auto v = VM_OBJECT_ARRAY_VALUE(ee);
-        if (v.size() != 3) {
-            return false;
-        } else {
-            auto head = v[0];
-            if (head->tag() == VM_OBJECT_COMBINATOR) {
-                auto h = VM_OBJECT_COMBINATOR_CAST(head);
-                return h->symbol() == SYMBOL_CONS;
-            } else {
-                return false;
-            }
-        }
-    } else {
-        return false;
-    }
-};
-
-inline void render_cons_elements(const vm_object_t *ee, std::ostream &os) {
-    if (ee == nullptr) {
-        os << '.';
-    } else if (is_well_formed_nil(ee)) {
-    } else if (is_well_formed_const(ee)) {
-        auto v = VM_OBJECT_ARRAY_VALUE(ee);
-        if ((v[2] != nullptr) && is_well_formed_nil(v[2])) {
-            if (v[1] == nullptr) {
-                os << ".";
-            } else {
-                v[1]->render(os);
-            }
-        } else if ((v[2] != nullptr) && is_well_formed_const(v[2])) {
-            if (v[1] == nullptr) {
-                os << ".";
-            } else {
-                v[1]->render(os);
-            }
-            os << ", ";
-            render_cons_elements(v[2], os);
-        } else {
-            if (v[1] == nullptr) {
-                os << ".";
-            } else {
-                v[1]->render(os);
-            }
-            os << "| ";
-            if (v[2] == nullptr) {
-                os << ".";
-            } else {
-                v[2]->render(os);
-            }
-        }
-    } else {
-        os << "|";
-        ee->render(os);
-    }
-};
-
-inline void render_cons(const vm_object_t *c, std::ostream &os) {
-    os << "{";
-    render_cons_elements(c, os);
-    os << "}";
-};

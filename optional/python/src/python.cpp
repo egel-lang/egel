@@ -1193,10 +1193,10 @@ extern "C" std::vector<icu::UnicodeString> egel_imports() {
 extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectStub::create(vm, "Python::machine"));
+    oo.push_back(VMObjectData::create(vm, "Python::machine"));
     oo.push_back(PythonRun::create(vm));
 
-    oo.push_back(VMObjectStub::create(vm, "Python::object"));
+    oo.push_back(VMObjectData::create(vm, "Python::object"));
     oo.push_back(PythonToObject::create(vm));
     oo.push_back(PythonFromObject::create(vm));
 

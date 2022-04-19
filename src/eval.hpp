@@ -150,7 +150,7 @@ public:
         auto vm = machine();
         auto c = vm->get_combinator("main");
 
-        if (c->subtag() != VM_SUB_STUB) {
+        if (c != nullptr) {
             eval_command(icu::UnicodeString("main"));
         }
     }
@@ -327,7 +327,7 @@ public:
 
         // reduce
         auto c = vm->get_combinator(fv);
-        if (c->subtag() != VM_SUB_STUB) {
+        if (c->subtag() != nullptr) {
             vm->reduce(c, r, exc);
         }
     }
