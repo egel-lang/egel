@@ -90,6 +90,10 @@ public:
         throw Unsupported();
     }
 
+    virtual int read_byte() {  
+        throw Unsupported();
+    }
+
     virtual UChar32 read_char() {  // XXX: wait for the libicu fix?
         throw Unsupported();
     }
@@ -107,6 +111,10 @@ public:
     }
 
     virtual void write(const UnicodeString& n) {
+        throw Unsupported();
+    }
+
+    virtual void write_byte(const int n) {
         throw Unsupported();
     }
 
@@ -147,6 +155,11 @@ public:
         return s;
     }
 
+    virtual int read_byte() override { 
+        // XXX: not always supported to read bytes, stream may be in text mode too
+        return std::cin.get();
+    }
+
     virtual UnicodeString read_line() override {
         std::string str;
         std::getline(std::cin, str);
@@ -171,6 +184,10 @@ public:
         std::cout << s;
     }
 
+    virtual void write_byte(const int n) override { 
+        std::cout.put((char) n);
+    }
+
     virtual void write_line(const UnicodeString& s) override {
         std::cout << s << std::endl;
     }
@@ -191,6 +208,10 @@ public:
 
     virtual void write(const UnicodeString& s) override {
         std::cerr << s;
+    }
+
+    virtual void write_byte(const int n) override { 
+        std::cerr.put((char) n);
     }
 
     virtual void write_line(const UnicodeString& s) override {
@@ -230,6 +251,10 @@ public:
 
     virtual void write(const UnicodeString& s) override {
         _stream << s;
+    }
+
+    virtual void write_byte(const int n) override {
+        _stream.put( (char) n);
     }
 
     virtual void write_line(const UnicodeString& s) override {
@@ -304,9 +329,9 @@ public:
         return s;
     }
 
-    void write_byte(const char c) {
+    void write_byte(const int b) override {
         char ch;
-        ch = c;
+        ch = b;
         int n = 0;
         do {
             n = ::write(_fd, &ch, 1);  // always remember write can fail, folks
@@ -546,6 +571,25 @@ public:
     }
 };
 
+//## OS::read_byte c - read a line from a channel
+class ReadByte : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, ReadByte, "OS", "read_byte");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            int b = chan->read_byte();
+            return machine()->create_text(b);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 //## OS::read_line c - read a line from a channel
 class ReadLine : public Monadic {
 public:
@@ -584,7 +628,7 @@ public:
     }
 };
 
-//## OS::write c s - write a string s to a channel
+//## OS::write c s - write a string to a channel
 class Write : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Write, "OS", "write");
@@ -599,6 +643,31 @@ public:
             if (machine()->is_text(arg1)) {
                 auto s = machine()->get_text(arg1);
                 chan->write(s);
+                return machine()->create_none();
+            } else {
+                throw machine()->bad_args(this, arg0, arg1);
+            }
+        } else {
+            throw machine()->bad_args(this, arg0, arg1);
+        }
+    }
+};
+
+//## OS::write_byte c b - write a byte to a channel
+class WriteByte : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_EGO, WriteByte, "OS", "write_byte");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0,
+                      const VMObjectPtr& arg1) const override {
+        static symbol_t sym = 0;
+        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
+
+        if (CHANNEL_TEST(arg0, sym)) {
+            auto chan = CHANNEL_VALUE(arg0);
+            if (machine()->is_integer(arg1)) {
+                auto b = machine()->get_integer(arg1);
+                chan->write_byte(b);
                 return machine()->create_none();
             } else {
                 throw machine()->bad_args(this, arg0, arg1);
@@ -899,9 +968,11 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(OpenOut::create(vm));
     oo.push_back(Close::create(vm));
     oo.push_back(Read::create(vm));
+    oo.push_back(ReadByte::create(vm));
     oo.push_back(ReadLine::create(vm));
     oo.push_back(ReadAll::create(vm));
     oo.push_back(Write::create(vm));
+    oo.push_back(WriteByte::create(vm));
     oo.push_back(WriteLine::create(vm));
     oo.push_back(Flush::create(vm));
     oo.push_back(Eof::create(vm));
