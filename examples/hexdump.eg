@@ -1,0 +1,31 @@
+# A small hexdump thing to show byte input
+#
+import "prelude.eg"
+import "os.ego"
+
+using System
+using OS
+using String
+using List
+
+def fix = [ F -> F [ X -> (fix F) X ] ]
+
+def read_file =
+    [ FN ->
+        let CHAN = open_in FN in
+        let LINES = fix [ F CHAN -> let B = read_byte CHAN in
+                      if eof CHAN then {} else {B|F CHAN} ] CHAN 
+        in close CHAN; LINES ]
+
+def hexit_to_string = 
+    [ 0 -> "0" | 1 -> "1" | 2 -> "2" | 3 -> "3" 
+    | 4 -> "4" | 5 -> "5" | 6 -> "6" | 7 -> "7" 
+    | 8 -> "8" | 9 -> "9" | 10 -> "a" | 11 -> "b" 
+    | 12 -> "c" | 13 -> "d" | 14 -> "e" | 15 -> "f" ]
+
+def int_to_hex =
+    [ N -> "0x" + (hexit_to_string (N & 15)) + (hexit_to_string ((N >> 4) & 15)) ]
+
+def main = 
+    let T = read_file "hexdump.eg" in map int_to_hex T
+

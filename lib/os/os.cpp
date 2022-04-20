@@ -243,6 +243,10 @@ public:
         return str;
     }
 
+    virtual int read_byte() override {
+        return _stream.get();
+    }
+
     virtual UnicodeString read_line() override {
         std::string str;
         std::getline(_stream, str);
@@ -293,7 +297,7 @@ public:
         return ChannelPtr(new ChannelFD(fd));
     }
 
-    UnicodeString read_line() override {
+    virtual UnicodeString read_line() override {
         const int CHUNK_SIZE = 1024;
         char* str = (char*)malloc(CHUNK_SIZE);
         int allocated = CHUNK_SIZE;
@@ -329,7 +333,7 @@ public:
         return s;
     }
 
-    void write_byte(const int b) override {
+    virtual void write_byte(const int b) override {
         char ch;
         ch = b;
         int n = 0;
@@ -571,7 +575,7 @@ public:
     }
 };
 
-//## OS::read_byte c - read a line from a channel
+//## OS::read_byte c - read a byte from a channel
 class ReadByte : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadByte, "OS", "read_byte");
@@ -583,7 +587,7 @@ public:
         if (CHANNEL_TEST(arg0, sym)) {
             auto chan = CHANNEL_VALUE(arg0);
             int b = chan->read_byte();
-            return machine()->create_text(b);
+            return machine()->create_integer(b);
         } else {
             throw machine()->bad_args(this, arg0);
         }
