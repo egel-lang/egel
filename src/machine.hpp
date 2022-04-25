@@ -239,117 +239,75 @@ bool vm_object_less(const vm_object_t* o0, const vm_object_t* o1) {
 class SymbolTable {
 public:
     SymbolTable()
-        : _to(std::vector<icu::UnicodeString>()),
-          _from(std::map<icu::UnicodeString, symbol_t>()) {
-    }
-
-    SymbolTable(const SymbolTable &other) : _to(other._to), _from(other._from) {
+    :
+    _texts(std::vector<icu::UnicodeString>),
+    _objects(std::vector<const vm_object_t*>),
+    _index(std::map<icu::UnicodeString, symbol_t>)
     }
 
     bool member(const icu::UnicodeString &s) const {
-        return (_from.count(s) > 0);
+        return (_index.count(s) > 0);
     }
 
-    symbol_t enter(const icu::UnicodeString &s) {
-        if (_from.count(s) == 0) {
-            symbol_t n = _to.size();
-            _to.push_back(s);
-            _from[s] = n;
-            return n;
+    symbol_t enter(const icu::UnicodeString &s, const vm_object_t *o) {
+        if (member(s)) {
+            auto n = _index(s);
+            _objects[n] = o;
         } else {
-            return _from[s];
+            symbol_t n = _texts.size();
+            _index[s] = n;
+            _texts[n] = s;
+            _objects[n] = o;
         }
     }
 
-    symbol_t enter(const icu::UnicodeString &n0, const icu::UnicodeString &n1) {
+    symbol_t enter(const icu::UnicodeString &n0, const icu::UnicodeString &n1, const vm_object_t* o) {
         icu::UnicodeString n = n0 + STRING_DCOLON + n1;
-        return enter(n);
+        return enter(n, o);
     }
 
-    symbol_t enter(const UnicodeStrings &nn, const icu::UnicodeString &n) {
+    symbol_t enter(const UnicodeStrings &nn, const icu::UnicodeString &n, const vm_object_t *o) {
         icu::UnicodeString s;
         for (auto &n0 : nn) {
             s += n0 + STRING_DCOLON;
         }
         s += n;
-        return enter(s);
+        return enter(s, o);
     }
 
     int size() const {
-        return _to.size();
+        return _text.size();
     }
 
-    icu::UnicodeString get(const symbol_t &s) {
-        return _to[s];
+    symbol_t get_index(const icu::UnicodeString &s) {
+        return _index[s];
+    }
+
+    icu::UnicodeString get_text(const symbol_t &s) {
+        return _text[s];
+    }
+    vm_object_t* get_object(const symbol_t &s) {
+        return _objects[s];
+    }
+    vm_object_t* get_object(const icu::UnicodeString &s) {
+        if (member(s)) {
+            auto n = get_index(s);
+            return get_object(n);
+        } else {
+            return nullptr;
+        }
     }
 
     void render(std::ostream &os) {
-        for (size_t t = 0; t < _to.size(); t++) {
-            os << std::setw(8) << t << "=" << _to[t] << std::endl;
+        for (size_t t = 0; t < _objects.size(); t++) {
+            os << std::setw(8) << t << "=" << render(_to[t]) << std::endl;
         }
     }
 
 private:
-    std::vector<icu::UnicodeString> _to;
-    std::map<icu::UnicodeString, symbol_t> _from;
-};
-
-class DataTable {
-public:
-    DataTable() : _to(std::vector<vm_object_t*>()) {
-        // _from(std::map<vm_object_t*, data_t, Lessvm_object_t*>()) {
-    }
-
-    DataTable(const DataTable &other) : _to(other._to), _from(other._from) {
-    }
-
-    void initialize() {
-    }
-
-    data_t enter(const vm_object_t* &s) {
-        if (_from.count(s) == 0) {
-            data_t n = _to.size();
-            _to.push_back(s);
-            _from[s] = n;
-            return n;
-        } else {
-            return _from[s];
-        }
-    }
-
-    data_t size() {
-        return _to.size();
-    }
-
-    data_t define(const vm_object_t* &s) {
-        if (_from.count(s) == 0) {
-            return enter(s);
-        } else {
-            data_t n = _from[s];
-            _to[n] = s;
-            return n;
-        }
-    }
-
-    vm_object_t* get(const data_t &s) {
-        return _to[s];
-    }
-
-    data_t get(const vm_object_t* &o) {
-        return _from[o];
-    }
-
-    void render(std::ostream &os) {
-        for (size_t t = 0; t < _to.size(); t++) {
-            os << std::setw(8) << t << ":";
-            _to[t]->debug(os);
-            os << std::endl;
-        }
-    }
-
-private:
-    std::vector<vm_object_t*> _to;
-    std::map<vm_object_t*, data_t, vm_object_less> _from;
+    std::vector<icu::UnicodeString> _texts;
+    std::vector<const vm_object_t*> _objects;
+    std::map<icu::UnicodeString, symbol_t> _index;
 };
 
 class VMObjectResult : public VMObjectCombinator {
@@ -384,6 +342,21 @@ private:
 
 class Machine final: public VM {
 public:
+
+    // predefined symbols (indices in symbol table)
+    const int SYMBOL_INT = 0;
+    const int SYMBOL_FLOAT = 1;
+    const int SYMBOL_CHAR = 2;
+    const int SYMBOL_TEXT = 3;
+
+    const int SYMBOL_NONE = 4;
+    const int SYMBOL_TRUE = 5;
+    const int SYMBOL_FALSE = 6;
+
+    const int SYMBOL_TUPLE = 7;
+    const int SYMBOL_NIL = 8;
+    const int SYMBOL_CONS = 9;
+
     Machine() {
         populate();
     }
@@ -460,17 +433,21 @@ public:
     }
 
     // symbol table manipulation
-    symbol_t enter_symbol(const icu::UnicodeString &n) override {
+    bool has_symbol(const icu::UnicodeString &n) override {
+        return _symbols.member(n);
+    }
+
+    symbol_t enter_symbol(const icu::UnicodeString &n, const vm_object_t *o) override {
         return _symbols.enter(n);
     }
 
     symbol_t enter_symbol(const icu::UnicodeString &n0,
-                          const icu::UnicodeString &n1) override {
+                          const icu::UnicodeString &n1, const vm_object_t *o) override {
         return _symbols.enter(n0, n1);
     }
 
     symbol_t enter_symbol(const UnicodeStrings &nn,
-                          const icu::UnicodeString &n) override {
+                          const icu::UnicodeString &n, const vm_object_t *o) override {
         return _symbols.enter(nn, n);
     }
 
@@ -478,49 +455,22 @@ public:
         return _symbols.size();
     }
 
-    icu::UnicodeString get_combinator_string(symbol_t s) override {
+    vm_object_t* get_symbol(const symbol_t s) override {
+    }
+
+    icu::UnicodeString get_symbol_string(symbol_t s) override {
         return _symbols.get(s);
     }
 
-    // data table manipulation
-    data_t enter_data(const vm_object_t* &o) override {
-        return _data.enter(o);
+    vm_object_t* get_symbol(const icu::UnicodeString &n) override {
     }
 
-    data_t define_data(const vm_object_t* &o) override {
-        return _data.define(o);
-    }
-
-    data_t get_data(const vm_object_t* &o) override {
-        return _data.get(o);
-    }
-
-    vm_object_t* get_data(const data_t d) override {
-        return _data.get(d);
-    }
-
-    // convenience
-    vm_object_t* get_combinator(const symbol_t s) override {
-        auto o = VMObjectStub::create(this, s);
-        auto d = enter_data(o);
-        return get_data(d);
-    }
-
-    vm_object_t* get_combinator(const icu::UnicodeString &n) override {
-        auto i = enter_symbol(n);
-        return get_combinator(i);
-    }
-
-    vm_object_t* get_combinator(const icu::UnicodeString &n0,
+    vm_object_t* get_symbol(const icu::UnicodeString &n0,
                                const icu::UnicodeString &n1) override {
-        auto i = enter_symbol(n0, n1);
-        return get_combinator(i);
     }
 
-    vm_object_t* get_combinator(const std::vector<icu::UnicodeString> &nn,
+    vm_object_t* get_symbol(const std::vector<icu::UnicodeString> &nn,
                                const icu::UnicodeString &n) override {
-        auto i = enter_symbol(nn, n);
-        return get_combinator(i);
     }
 
     void define(const vm_object_t* &o) override {
@@ -731,15 +681,16 @@ public:
     }
 
     bool is_none(const vm_object_t* &o) override {
-        return (VM_OBJECT_NONE_TEST(o));
+        // XXX: fixme
+        return (o->symbol() == SYMBOL_NONE)
     }
 
     bool is_true(const vm_object_t* &o) override {
-        return (VM_OBJECT_TRUE_TEST(o));
+        return (o->symbol() == SYMBOL_TRUE)
     }
 
     bool is_false(const vm_object_t* &o) override {
-        return (VM_OBJECT_FALSE_TEST(o));
+        return (o->symbol() == SYMBOL_FALSE)
     }
 
     bool is_bool(const vm_object_t* &o) override {
@@ -747,15 +698,15 @@ public:
     }
 
     bool is_nil(const vm_object_t* &o) override {
-        return (VM_OBJECT_NIL_TEST(o));
+        return (o->symbol() == SYMBOL_NIL)
     }
 
     bool is_cons(const vm_object_t* &o) override {
-        return (VM_OBJECT_CONS_TEST(o));
+        return (o->symbol() == SYMBOL_CONS)
     }
 
     bool is_tuple(const vm_object_t* &o) override {
-        return (VM_OBJECT_TUPLE_TEST(o));
+        return (o->symbol() == SYMBOL_TUPLE)
     }
 
     vm_object_t* create_array(const vm_object_t*s &oo) override {
@@ -1126,7 +1077,6 @@ public:
 
 private:
     SymbolTable _symbols;
-    DataTable _data;
     void *_context;
     std::mutex _mutex;
 

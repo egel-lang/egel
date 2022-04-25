@@ -991,7 +991,7 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
 
     // references
     // oo.push_back(Reference::create(vm)); // XXXX
-    oo.push_back(VMObjectStub::create(vm, "System::reference"));  // XXXX
+    oo.push_back(VMObjectData::create(vm, "System::reference"));  // XXXX
     oo.push_back(Ref::create(vm));
     oo.push_back(Setref::create(vm));
     oo.push_back(Getref::create(vm));
