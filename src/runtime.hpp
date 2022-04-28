@@ -131,12 +131,15 @@ union vm_object_t {
     vm_object_t* next;
 };
 
+class VM;
+inline void render(const vm_object_t *o, std::ostream &os);
+
 class VMObject {
 public:
-    VMObject(const vm_tag_t t, const icu::UnicodeString& t) : _tag(t), _subtag(0), _text(t) {
+    VMObject(const vm_tag_t t, const icu::UnicodeString& s) : _tag(t), _subtag(0), _text(s) {
     }
 
-    VMObject(const vm_tag_t t, const vm_subtag_t st, const icu::UnicodeString &t) : _tag(t), _subtag(st), _text(t) {
+    VMObject(const vm_tag_t t, const vm_subtag_t st, const icu::UnicodeString &s) : _tag(t), _subtag(st), _text(s) {
     }
 
     virtual ~VMObject() {  
@@ -147,12 +150,12 @@ public:
         return _tag;
     }
 
-    icu::UnicodeString text() const {
-        return _text;
-    }
-
     vm_subtag_t subtag() const {
         return _subtag;
+    }
+
+    icu::UnicodeString text() const {
+        return _text;
     }
 
     void record(VM* m, symbol_t s) {
@@ -176,28 +179,20 @@ public:
         return _subtag == t;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const vm_object_t *a) {
-        a->render(os);
+    friend std::ostream &operator<<(std::ostream &os, const VMObject &o) {
+        os << o.text();
         return os;
     }
 
     virtual vm_object_t* reduce(const vm_object_t *thunk) const = 0;
 
-    virtual void render(std::ostream &os) const = 0;
-
-    virtual void debug(std::ostream &os) const = 0;
-
-    virtual symbol_t symbol() const = 0;
-
-    icu::UnicodeString to_text() const {
-        return text();
-    }
+    void render(std::ostream &os) const;
 
 private:
     vm_tag_t _tag;
     vm_subtag_t _subtag;
     icu::UnicodeString _text;
-    vm* _machine;
+    VM* _machine;
     symbol_t _symbol;
 };
 
@@ -207,11 +202,11 @@ const unsigned int VM_TAG_BITS = 3;
 const vm_tagbits_t VM_TAG_MASK = (1 << VM_TAG_BITS) - 1;
 const vm_tagbits_t VM_RC_ONE = 1 << VM_TAG_BITS;
 
-inline vm_tag_t vm_tagbits_tag(const vm_tagbits_t bb) const {
+inline vm_tag_t vm_tagbits_tag(const vm_tagbits_t bb) {
     return (vm_tag_t)(bb & VM_TAG_MASK);
 };
 
-inline vm_tagbits_t vm_tagbits_rc(const vm_tagbits_t bb) const {
+inline vm_tagbits_t vm_tagbits_rc(const vm_tagbits_t bb) {
     return bb >> VM_TAG_BITS;
 };
 
@@ -223,11 +218,11 @@ inline vm_tagbits_t vm_tagbits_dec(const vm_tagbits_t bb) {
     return bb - VM_RC_ONE;
 };
 
-inline vm_tag_t vm_object_tag(const vm_object_t* p) const {
+inline vm_tag_t vm_object_tag(const vm_object_t* p) {
     return vm_tagbits_tag(p->tagbits);
 };
 
-inline unsigned int vm_object_rc(const vm_object_t* p) const {
+inline unsigned int vm_object_rc(const vm_object_t* p) {
     return vm_tagbits_rc(p->tagbits);
 };
 
@@ -380,7 +375,7 @@ inline bool vm_is_combinator(const vm_object_t* p) {
     return vm_object_tag(p) == VM_OBJECT_COMBINATOR;
 };
 
-inline void* vm_combinator_value(const vm_object_t* p) {
+inline VMObject* vm_combinator_value(const vm_object_t* p) {
     return ((vm_object_combinator_t*)p)->value;
 };
 
@@ -504,16 +499,8 @@ inline vm_subtag_t vm_object_subtag(vm_object_t* p) {
     }
 };
 
-inline symbol_t vm_object_symbol(vm_object_t* p) {
-    if (vm_is_int(p)) {
-        return SYMBOL_INT;
-    } else if (vm_is_float(p)) {
-        return SYMBOL_FLOAT;
-    } else if (vm_is_char(p)) {
-        return SYMBOL_CHAR;
-    } else if (vm_is_text(p)) {
-        return SYMBOL_TEXT
-    } else if (vm_is_opaque(p)) {
+inline symbol_t vm_object_symbol(const vm_object_t* p) {
+    if (vm_is_opaque(p)) {
         return vm_opaque_value(p)->symbol();
     } if (vm_is_combinator(p)) {
         return vm_combinator_value(p)->symbol();
@@ -521,6 +508,249 @@ inline symbol_t vm_object_symbol(vm_object_t* p) {
         return 0;
     }
 };
+
+// predefined symbols (indices in symbol table)
+const int SYMBOL_INT = 0;
+const int SYMBOL_FLOAT = 1;
+const int SYMBOL_CHAR = 2;
+const int SYMBOL_TEXT = 3;
+
+const int SYMBOL_NONE = 4;
+const int SYMBOL_TRUE = 5;
+const int SYMBOL_FALSE = 6;
+
+const int SYMBOL_TUPLE = 7;
+const int SYMBOL_NIL = 8;
+const int SYMBOL_CONS = 9;
+
+inline bool wf_is_tuple(const vm_object_t* o) {
+    if ((o!=nullptr) && (vm_is_array(o)) && (vm_array_size(o) > 0)) {
+        auto hd = vm_array_get(o, 0);
+        return vm_is_combinator(hd) && (vm_object_symbol(hd) == SYMBOL_TUPLE);
+    } else {
+        return false;
+    }
+};
+
+inline bool wf_is_nil(const vm_object_t* o) {
+    return vm_is_combinator(o) && (vm_object_symbol(o) == SYMBOL_NIL);
+};
+
+inline bool wf_is_cons(const vm_object_t* o) {
+    if ((o!=nullptr) && (vm_is_array(o)) && (vm_array_size(o) == 3)) {
+        auto hd = vm_array_get(o, 0);
+        return vm_is_combinator(hd) && (vm_object_symbol(hd) == SYMBOL_CONS);
+    } else {
+        return false;
+    }
+};
+
+inline bool wf_is_list(const vm_object_t* o) {
+    return wf_is_nil(o) || wf_is_cons(o);
+}
+
+inline void render_array(const vm_object_t *o, std::ostream &os) {
+    if (vm_is_array(o)) {
+        auto sz = vm_array_size(o);
+        os << "(";
+        for (int n = 0; n < sz - 1; n++) { // XXX: maybe once check for sz = 1 arrays
+            render(vm_array_get(o, n), os);
+            os << " ";
+        }
+        render(vm_array_get(o, sz - 1), os);
+        os << ")";
+    } else {
+        PANIC("not an array");
+    }
+};
+
+inline void render_tuple(const vm_object_t *o, std::ostream &os) {
+    if (wf_is_tuple(o)) {
+        auto sz = vm_array_size(o);
+        if (sz <= 2) {
+            render_array(o, os);
+        } else {
+            os << "(";
+            for (int n = 0; n < sz -1; n++) {
+                render(vm_array_get(o, n), os);
+                os << ", ";
+            }
+            render(vm_array_get(o, sz - 1), os);
+            os << ")";
+        }
+    } else {
+        PANIC("not a tuple");
+    }
+};
+
+inline void render_nil(const vm_object_t *o, std::ostream &os) {
+    os << "{}";
+};
+
+inline void render_cons_elements(const vm_object_t *o, std::ostream &os) {
+    if (wf_is_cons(o) && (wf_is_nil(vm_array_get(o,2)))) {
+            render(vm_array_get(o,1), os);
+    } else if (wf_is_cons(o) && (wf_is_cons(vm_array_get(o,2)))) {
+        render(vm_array_get(o,1), os);
+        os << ", ";
+        render_cons_elements(vm_array_get(o,2), os);
+    } else if (wf_is_cons(o)) {
+        render(vm_array_get(o,1), os);
+        os << "| ";
+        render(vm_array_get(o,2), os);
+    } else {
+        PANIC("not a list");
+    }
+};
+
+inline void render_cons(const vm_object_t *o, std::ostream &os) {
+    os << "{";
+    render_cons_elements(o, os);
+    os << "}";
+};
+
+inline void render_list(const vm_object_t *o, std::ostream &os) {
+    if (wf_is_nil(o)) {
+        render_nil(o,os);
+    } else if (wf_is_cons(o)) {
+        render_cons(o, os);
+    } else {
+        PANIC("not a list");
+    }
+};
+
+inline void render(const vm_object_t *o, std::ostream &os) {
+    if (o == nullptr) {
+        os << ".";
+    } else if (vm_is_int(o)) {
+        os << vm_int_value(o);
+    } else if (vm_is_float(o)) {
+        os << vm_float_value(o);
+    } else if (vm_is_char(o)) {
+        icu::UnicodeString s;
+        s = uescape(s + vm_char_value(o));
+        os << "'" << s << "'";
+    } else if (vm_is_text(o)) {
+        auto s = uescape(vm_text_value(o));
+        os << "\"" << s << "\"";
+    } else if (vm_is_opaque(o)) {
+        os << vm_opaque_value(o)->text();
+    } else if (vm_is_combinator(o)) {
+        os << vm_combinator_value(o)->text();
+    } else if (vm_is_array(o)) {
+        if (wf_is_tuple(o)) {
+            render_tuple(o, os);
+        } else if (wf_is_list(o)) {
+            render_list(o, os);
+        } else {
+            render_array(o, os);
+        }
+    }
+};
+
+int vm_object_compare(const vm_object_t *o0, const vm_object_t *o1) {
+    if (o0 == o1) {
+        return 0;
+    } else if (o0 == nullptr) {
+        return -1;
+    } else if (o1 == nullptr) {
+        return 1;
+    }
+    auto t0 = vm_object_tag(o0);
+    auto t1 = vm_object_tag(o1);
+    if (t0 < t1) {
+        return -1;
+    } else if (t1 < t0) {
+        return 1;
+    } else {
+        switch (t0) {
+            case VM_OBJECT_INTEGER: {
+                auto v0 = vm_int_value(o0);
+                auto v1 = vm_int_value(o1);
+                if (v0 < v1)
+                    return -1;
+                else if (v1 < v0)
+                    return 1;
+                else
+                    return 0;
+            } break;
+            case VM_OBJECT_FLOAT: {
+                auto v0 = vm_float_value(o0);
+                auto v1 = vm_float_value(o1);
+                if (v0 < v1)
+                    return -1;
+                else if (v1 < v0)
+                    return 1;
+                else
+                    return 0;
+            } break;
+            case VM_OBJECT_CHAR: {
+                auto v0 = vm_char_value(o0);
+                auto v1 = vm_char_value(o1);
+                if (v0 < v1)
+                    return -1;
+                else if (v1 < v0)
+                    return 1;
+                else
+                    return 0;
+            } break;
+            case VM_OBJECT_TEXT: {
+                auto v0 = vm_text_value(o0);
+                auto v1 = vm_text_value(o1);
+                if (v0 < v1)
+                    return -1;
+                else if (v1 < v0)
+                    return 1;
+                else
+                    return 0;
+            } break;
+            case VM_OBJECT_OPAQUE: {
+                auto s0 = vm_opaque_value(o0)->symbol();
+                auto s1 = vm_opaque_value(o1)->symbol();
+                if (s0 < s1)
+                    return -1;
+                else if (s1 < s0)
+                    return 1;
+                else
+                    return vm_opaque_value(o0)->vm_object_compare(o0, o1);
+            } break;
+            case VM_OBJECT_COMBINATOR: {
+                auto v0 = vm_combinator_value(o0)->symbol();
+                auto v1 = vm_combinator_value(o1)->symbol();
+                if (v0 < v1)
+                    return -1;
+                else if (v1 < v0)
+                    return 1;
+                else
+                    return 0;
+            } break;
+            case VM_OBJECT_ARRAY: {
+                auto s0 = vm_array_size(o0);
+                auto s1 = vm_array_size(o1);
+
+                if (s0 < s1)
+                    return -1;
+                else if (s1 < s0)
+                    return 1;
+                else {
+                    for (int n = 0; n < s0; n++) {
+                        auto c = vm_object_compare(vm_array_get(o0,n), vm_array_get(o1,n));
+                        if (c < 0) return -1;
+                        if (c > 0) return 1;
+                    }
+                    return 0;
+                }
+            } break;
+        }
+    }
+    PANIC("switch failed");
+    return 0;
+};
+
+bool vm_object_less(const vm_object_t* o0, const vm_object_t* o1) {
+    return (vm_object_compare(o0, o1) == -1)
+};
+
 
 using UnicodeStrings = std::vector<icu::UnicodeString>;
 
