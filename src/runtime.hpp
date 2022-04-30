@@ -95,6 +95,19 @@ enum vm_tag_t {
     VM_OBJECT_ARRAY,
 };
 
+icu::UnicodeString combine(const icu::UnicodeString &n0, const icu::UnicodeString &n1) {
+        return n0 + STRING_DCOLON + n1;
+};
+
+icu::UnicodeString combine(const UnicodeStrings &nn, const icu::UnicodeString &n) {
+        icu::UnicodeString s;
+        for (auto &n0 : nn) {
+            s += n0 + STRING_DCOLON;
+        }
+        s += n;
+        return s;
+};
+
 /**
  * VM objects can have subtypes which are _unique_ 'magic' numbers.
  */
@@ -1218,19 +1231,12 @@ inline vm_object_t* VMObjectArray::reduce(const vm_object_t *thunk) const {
 
 class VMObjectOpaque : public VMObject {
 public:
-    VMObjectOpaque(const vm_subtag_t t, VM *m, const symbol_t s)
-        : VMObject(VM_OBJECT_OPAQUE, t), _machine(m), _symbol(s){};
-
-    VMObjectOpaque(const vm_subtag_t t, VM *m, const icu::UnicodeString &n)
-        : VMObject(VM_OBJECT_OPAQUE, t),
-          _machine(m),
-          _symbol(m->enter_symbol(n)){};
+    VMObjectOpaque(const vm_subtag_t t, const icu::UnicodeString &n)
+        : VMObject(VM_OBJECT_OPAQUE, t, n) {};
 
     VMObjectOpaque(const vm_subtag_t t, VM *m, const icu::UnicodeString &n0,
                    const icu::UnicodeString &n1)
-        : VMObject(VM_OBJECT_OPAQUE, t),
-          _machine(m),
-          _symbol(m->enter_symbol(n0, n1)){};
+        : VMObject(VM_OBJECT_OPAQUE, t, n0, n1) {};
 
     VMObjectOpaque(const vm_subtag_t t, VM *m,
                    const std::vector<icu::UnicodeString> &nn,
