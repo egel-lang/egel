@@ -1,6 +1,6 @@
 #pragma once
 
-#include <atomic>>
+#include <atomic>
 #include <functional>
 #include <iostream>
 #include <limits>
