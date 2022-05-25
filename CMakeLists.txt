@@ -119,6 +119,7 @@ find_package(Threads REQUIRED)
 find_package(fmt 7.1 REQUIRED)
 
 include_directories("${CMAKE_SOURCE_DIR}/src")
+include_directories("${ICU_INCLUDE_DIRS}")
 
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
