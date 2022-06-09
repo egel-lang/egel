@@ -145,7 +145,7 @@ public:
     }
 };
 
-//## System::+ x y - substraction
+//## System::- x y - subtraction
 class Min : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Min, "System", "-");
