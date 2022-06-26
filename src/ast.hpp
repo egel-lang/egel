@@ -214,6 +214,13 @@ public:
     static std::shared_ptr<AstExprInteger> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprInteger>(a);
     }
+
+    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprInteger::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
+    }
 };
 
 using AstExprIntegerPtr = std::shared_ptr<AstExprInteger>;
@@ -238,6 +245,13 @@ public:
 
     static std::shared_ptr<AstExprHexInteger> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprHexInteger>(a);
+    }
+
+    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprHexInteger::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
     }
 };
 
@@ -264,6 +278,13 @@ public:
     static std::shared_ptr<AstExprFloat> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprFloat>(a);
     }
+
+    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprFloat::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
+    }
 };
 
 using AstExprFloatPtr = std::shared_ptr<AstExprFloat>;
@@ -289,6 +310,13 @@ public:
     static std::shared_ptr<AstExprCharacter> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprCharacter>(a);
     }
+
+    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprCharacter::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
+    }
 };
 
 using AstExprCharacterPtr = std::shared_ptr<AstExprCharacter>;
@@ -312,6 +340,13 @@ public:
 
     static std::shared_ptr<AstExprText> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprText>(a);
+    }
+
+    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprText::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
     }
 };
 
@@ -340,6 +375,13 @@ public:
     static std::shared_ptr<AstExprVariable> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprVariable>(a);
     }
+
+    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprVariable::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
+    }
 };
 
 using AstExprVariablePtr = std::shared_ptr<AstExprVariable>;
@@ -364,6 +406,13 @@ public:
 
     static std::shared_ptr<AstExprWildcard> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprWildcard>(a);
+    }
+
+    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprWildcard::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
     }
 };
 
@@ -390,6 +439,13 @@ public:
 
     static std::shared_ptr<AstExprTag> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprTag>(a);
+    }
+
+    static std::tuple<AstPtr, AstPtr> split(const AstPtr &a) {
+        auto a0 = AstExprTag::cast(a);
+        auto p = a0->expression();
+        auto t = a0->tag();
+        return {p, t};
     }
 
     AstPtr expression() const {
@@ -478,6 +534,14 @@ public:
         return std::static_pointer_cast<AstExprCombinator>(a);
     }
 
+    static std::tuple<Position, std::vector<icu::UnicodeString>, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprCombinator::cast(a);
+        auto p = a0->position();
+        auto cc = a0->path();
+        auto c = a0->combinator();
+        return {p, cc, c};
+    }
+
     UnicodeStrings path() const {
         return _path;
     }
@@ -559,6 +623,14 @@ public:
         return std::static_pointer_cast<AstExprOperator>(a);
     }
 
+    static std::tuple<Position, std::vector<icu::UnicodeString>, icu::UnicodeString> split(const AstPtr &a) {
+        auto a0 = AstExprOperator::cast(a);
+        auto p = a0->position();
+        auto cc = a0->path();
+        auto c = a0->combinator();
+        return {p, cc, c};
+    }
+
     UnicodeStrings path() const {
         return _path;
     }
@@ -632,6 +704,14 @@ public:
 
     static std::shared_ptr<AstExprList> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprList>(a);
+    }
+
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstExprList::cast(a);
+        auto p = a0->position();
+        auto cc = a0->content();
+        auto c = a0->tail();
+        return {p, cc, c};
     }
 
     AstPtrs content() const {
@@ -724,6 +804,13 @@ public:
 
     static std::shared_ptr<AstExprTuple> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprTuple>(a);
+    }
+
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+        auto a0 = AstExprTuple::cast(a);
+        auto p = a0->position();
+        auto cc = a0->content();
+        return {p, cc};
     }
 
     AstPtrs content() const {
@@ -836,6 +923,13 @@ public:
         return std::static_pointer_cast<AstExprApplication>(a);
     }
 
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+        auto a0 = AstExprApplication::cast(a);
+        auto p  = a0->position();
+        auto aa = a0->arguments();
+        return {p, aa};
+    }
+
     AstPtrs arguments() const {
         return _arguments;
     }
@@ -912,6 +1006,17 @@ public:
     static std::shared_ptr<AstExprMatch> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprMatch>(a);
     }
+
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> 
+        split(const AstPtr &a) {
+        auto a0 = AstExprMatch::cast(a);
+        auto p = a0->position();
+        auto pp = a0->patterns();
+        auto g = a0->guard();
+        auto r = a0->result();
+        return {p, pp, g, r};
+    }
+
 
     AstPtrs patterns() const {
         return _patterns;
@@ -1025,6 +1130,13 @@ public:
         return std::static_pointer_cast<AstExprBlock>(a);
     }
 
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+        auto a0 = AstExprBlock::cast(a);
+        auto p = a0->position();
+        auto mm = a0->matches();
+        return {p, mm};
+    }
+
     AstPtrs matches() const {
         return _matches;
     }
@@ -1108,6 +1220,13 @@ public:
         return std::static_pointer_cast<AstExprLambda>(a);
     }
 
+    static std::tuple<Position, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstExprLambda::cast(a);
+        auto p = a0->position();
+        auto m = a0->match();
+        return {p, m};
+    }
+
     AstPtr match() const {
         return _match;
     }
@@ -1156,6 +1275,15 @@ public:
 
     static std::shared_ptr<AstExprLet> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprLet>(a);
+    }
+
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstExprLet::cast(a);
+        auto p = a0->position();
+        auto l = a0->left_hand_side();
+        auto r = a0->right_hand_side();
+        auto e = a0->expression();
+        return {p, l, r, e};
     }
 
     AstPtrs left_hand_side() const {
@@ -1243,6 +1371,14 @@ public:
         return std::static_pointer_cast<AstExprTry>(a);
     }
 
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstExprTry::cast(a);
+        auto p = a0->position();
+        auto t = a0->try0();
+        auto c = a0->catch0();
+        return {p, t, c};
+    }
+
     AstPtr try0() const {
         return _try;
     }
@@ -1314,6 +1450,13 @@ public:
         return std::static_pointer_cast<AstExprThrow>(a);
     }
 
+    static std::tuple<Position, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstExprThrow::cast(a);
+        auto p = a0->position();
+        auto t = a0->throw0();
+        return {p, t};
+    }
+
     AstPtr throw0() const {
         return _throw;
     }
@@ -1367,6 +1510,15 @@ public:
 
     static std::shared_ptr<AstExprIf> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstExprIf>(a);
+    }
+
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstExprIf::cast(a);
+        auto p = a0->position();
+        auto i = a0->if0();
+        auto t = a0->then0();
+        auto e = a0->else0();
+        return {p, i, t, e};
     }
 
     AstPtr if0() const {
@@ -1452,6 +1604,14 @@ public:
         return std::static_pointer_cast<AstExprStatement>(a);
     }
 
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstExprIf::cast(a);
+        auto p = a0->position();
+        auto l = a0->lhs();
+        auto r = a0->rhs();
+        return {p, l, r};
+    }
+
     AstPtr lhs() const {
         return _lhs;
     }
@@ -1518,6 +1678,14 @@ public:
         return std::static_pointer_cast<AstDeclNamespace>(a);
     }
 
+    static std::tuple<Position, std::vector<icu::UnicodeString>, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+        auto a0 = AstDeclNamespace::cast(a);
+        auto p = a0->position();
+        auto n = a0->name();
+        auto c = a0->content();
+        return {p, n, c};
+    }
+
     UnicodeStrings name() const {
         return _name;
     }
@@ -1575,6 +1743,13 @@ public:
 
     static std::shared_ptr<AstDeclData> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclData>(a);
+    }
+
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+        auto a0 = AstDeclData::cast(a);
+        auto p = a0->position();
+        auto nn = a0->names();
+        return {p, nn};
     }
 
     AstPtrs names() const {
@@ -1652,6 +1827,14 @@ public:
         return std::static_pointer_cast<AstDeclDefinition>(a);
     }
 
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstDeclDefinition::cast(a);
+        auto p = a0->position();
+        auto n = a0->name();
+        auto e = a0->expression();
+        return {p, n, e};
+    }
+
     AstPtr name() const {
         return _name;
     }
@@ -1720,6 +1903,14 @@ public:
         return std::static_pointer_cast<AstDeclValue>(a);
     }
 
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstDeclValue::cast(a);
+        auto p = a0->position();
+        auto n = a0->name();
+        auto e = a0->expression();
+        return {p, n, e};
+    }
+
     AstPtr name() const {
         return _name;
     }
@@ -1784,6 +1975,14 @@ public:
 
     static std::shared_ptr<AstDeclOperator> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclOperator>(a);
+    }
+
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+        auto a0 = AstDeclOperator::cast(a);
+        auto p = a0->position();
+        auto n = a0->combinator();
+        auto e = a0->expression();
+        return {p, n, e};
     }
 
     AstPtr combinator() const {
@@ -1859,6 +2058,21 @@ public:
 
     static std::shared_ptr<AstDeclObject> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDeclObject>(a);
+    }
+
+    static std::tuple<Position, 
+            std::shared_ptr<Ast>,
+            std::vector<std::shared_ptr<Ast>>,
+            std::vector<std::shared_ptr<Ast>>,
+            std::vector<std::shared_ptr<Ast>>
+            > split(const AstPtr &a) {
+        auto a0 = AstDeclObject::cast(a);
+        auto p = a0->position();
+        auto n = a0->name();
+        auto vv = a0->variables();
+        auto ff = a0->fields();
+        auto ee = a0->extends();
+        return {p, n, vv, ff, ee};
     }
 
     AstPtr name() const {
@@ -1946,6 +2160,15 @@ public:
         return std::static_pointer_cast<AstDirectImport>(a);
     }
 
+    static std::tuple<Position, 
+            icu::UnicodeString
+            > split(const AstPtr &a) {
+        auto a0 = AstDirectImport::cast(a);
+        auto p = a0->position();
+        auto s = a0->import();
+        return {p, s};
+    }
+
     icu::UnicodeString import() const {
         return _import;
     }
@@ -1988,6 +2211,15 @@ public:
 
     static std::shared_ptr<AstDirectUsing> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstDirectUsing>(a);
+    }
+
+    static std::tuple<Position, 
+            std::vector<icu::UnicodeString>
+            > split(const AstPtr &a) {
+        auto a0 = AstDirectUsing::cast(a);
+        auto p = a0->position();
+        auto uu = a0->using0();
+        return {p, uu};
     }
 
     UnicodeStrings using0() const {
@@ -2040,6 +2272,15 @@ public:
 
     static std::shared_ptr<AstWrapper> cast(const AstPtr &a) {
         return std::static_pointer_cast<AstWrapper>(a);
+    }
+
+    static std::tuple<Position, 
+            std::vector<std::shared_ptr<Ast>>
+            > split(const AstPtr &a) {
+        auto a0 = AstWrapper::cast(a);
+        auto p = a0->position();
+        auto ee = a0->content();
+        return {p, ee};
     }
 
     AstPtrs content() const {

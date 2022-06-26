@@ -1,5 +1,5 @@
 {
-    "cmake.configureArgs": [
-        "-DCMAKE_PREFIX_PATH=C:/Users/marco/Programming/icu4c"
-    ]
+    "cmake.configureSettings" : {
+        "CMAKE_PREFIX_PATH": "/opt/homebrew/opt/icu4c"
+    }
 }

@@ -12,7 +12,6 @@
 #include <chrono>
 
 #include "runtime.hpp"
-#include "allocate.hpp"
 #include "environment.hpp"
 #include "assembler.hpp"
 #include "eval.hpp"
@@ -22,33 +21,34 @@ class SymbolTable {
 public:
     SymbolTable()
     :
-    _texts(std::vector<icu::UnicodeString>),
-    _objects(std::vector<const vm_object_t*>),
-    _index(std::map<icu::UnicodeString, symbol_t>)
-    }
+    _texts(std::vector<icu::UnicodeString> {}),
+    _objects(std::vector<vm_object_t*> {}),
+    _index(std::map<icu::UnicodeString, symbol_t> {}) {}
 
     bool member(const icu::UnicodeString &s) const {
         return (_index.count(s) > 0);
     }
 
-    symbol_t enter(const icu::UnicodeString &s, const vm_object_t *o) {
+    symbol_t enter(const icu::UnicodeString &s, vm_object_t *o) {
         if (member(s)) {
-            auto n = _index(s);
+            auto n = _index[s];
             _objects[n] = o;
+            return n;
         } else {
             symbol_t n = _texts.size();
             _index[s] = n;
             _texts[n] = s;
             _objects[n] = o;
+            return n;
         }
     }
 
-    symbol_t enter(const icu::UnicodeString &n0, const icu::UnicodeString &n1, const vm_object_t* o) {
+    symbol_t enter(const icu::UnicodeString &n0, const icu::UnicodeString &n1, vm_object_t* o) {
         icu::UnicodeString n = n0 + STRING_DCOLON + n1;
         return enter(n, o);
     }
 
-    symbol_t enter(const UnicodeStrings &nn, const icu::UnicodeString &n, const vm_object_t *o) {
+    symbol_t enter(const UnicodeStrings &nn, const icu::UnicodeString &n, vm_object_t *o) {
         icu::UnicodeString s;
         for (auto &n0 : nn) {
             s += n0 + STRING_DCOLON;
@@ -58,19 +58,21 @@ public:
     }
 
     int size() const {
-        return _text.size();
+        return _texts.size();
     }
 
-    symbol_t get_index(const icu::UnicodeString &s) {
+    symbol_t get_index(const icu::UnicodeString &s) const {
         return _index[s];
     }
 
-    icu::UnicodeString get_text(const symbol_t &s) {
-        return _text[s];
+    icu::UnicodeString get_text(const symbol_t &s) const {
+        return _texts[s];
     }
-    vm_object_t* get_object(const symbol_t &s) {
+
+    vm_object_t* get_object(const symbol_t &s) const {
         return _objects[s];
     }
+
     vm_object_t* get_object(const icu::UnicodeString &s) {
         if (member(s)) {
             auto n = get_index(s);
@@ -88,7 +90,7 @@ public:
 
 private:
     std::vector<icu::UnicodeString> _texts;
-    std::vector<const vm_object_t*> _objects;
+    std::vector<vm_object_t*> _objects;
     std::map<icu::UnicodeString, symbol_t> _index;
 };
 
