@@ -1606,7 +1606,7 @@ public:
     }
 
     static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
-        auto a0 = AstExprIf::cast(a);
+        auto a0 = AstExprStatement::cast(a);
         auto p = a0->position();
         auto l = a0->lhs();
         auto r = a0->rhs();
