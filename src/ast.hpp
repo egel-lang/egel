@@ -441,11 +441,12 @@ public:
         return std::static_pointer_cast<AstExprTag>(a);
     }
 
-    static std::tuple<AstPtr, AstPtr> split(const AstPtr &a) {
+    static std::tuple<Position, AstPtr, AstPtr> split(const AstPtr &a) {
         auto a0 = AstExprTag::cast(a);
-        auto p = a0->expression();
+        auto p = a0->position();
+        auto e = a0->expression();
         auto t = a0->tag();
-        return {p, t};
+        return {p, e, t};
     }
 
     AstPtr expression() const {
