@@ -759,7 +759,6 @@ public:
             // wrapper
             case AST_WRAPPER: {
                 auto [p, dd] = AstWrapper::split(a);
-                AST_WRAPPER_SPLIT(a, p, dd);
                 return rewrite_wrapper(p, dd);
             }
             default:
