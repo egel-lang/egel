@@ -608,156 +608,157 @@ public:
             }
             // literals
             case AST_EXPR_INTEGER: {
-                AST_EXPR_INTEGER_SPLIT(a, p, t);
+                auto [p, t] = AstExprInteger::split(a);
                 return rewrite_expr_integer(p, t);
                 break;
             }
             case AST_EXPR_HEXINTEGER: {
-                AST_EXPR_HEXINTEGER_SPLIT(a, p, t);
+                auto [p, t] = AstExprHexInteger::split(a);
                 return rewrite_expr_hexinteger(p, t);
                 break;
             }
             case AST_EXPR_FLOAT: {
-                AST_EXPR_FLOAT_SPLIT(a, p, t);
+                auto [p, t] = AstExprFloat::split(a);
                 return rewrite_expr_float(p, t);
                 break;
             }
             case AST_EXPR_CHARACTER: {
-                AST_EXPR_CHARACTER_SPLIT(a, p, t);
+                auto [p, t] = AstExprCharacter::split(a);
                 return rewrite_expr_character(p, t);
                 break;
             }
             case AST_EXPR_TEXT: {
-                AST_EXPR_TEXT_SPLIT(a, p, t);
+                auto [p, t] = AstExprText::split(a);
                 return rewrite_expr_text(p, t);
                 break;
             }
             // variables and constants
             case AST_EXPR_VARIABLE: {
-                AST_EXPR_VARIABLE_SPLIT(a, p, t);
+                auto [p, t] = AstExprVariable::split(a);
                 return rewrite_expr_variable(p, t);
                 break;
             }
             case AST_EXPR_WILDCARD: {
-                AST_EXPR_WILDCARD_SPLIT(a, p, t);
+                auto [p, t] = AstExprWildcard::split(a);
                 return rewrite_expr_wildcard(p, t);
                 break;
             }
             case AST_EXPR_COMBINATOR: {
-                AST_EXPR_COMBINATOR_SPLIT(a, p, nn, n);
+                auto [p, nn, n] = AstExprCombinator::split(a);
                 return rewrite_expr_combinator(p, nn, n);
                 break;
             }
             case AST_EXPR_OPERATOR: {
-                AST_EXPR_OPERATOR_SPLIT(a, p, nn, n);
+                auto [p, nn, n] = AstExprOperator::split(a);
                 return rewrite_expr_operator(p, nn, n);
                 break;
             }
             // tuple and list
             case AST_EXPR_TUPLE: {
-                AST_EXPR_TUPLE_SPLIT(a, p, tt);
+                auto [p, tt] = AstExprTuple::split(a);
                 return rewrite_expr_tuple(p, tt);
                 break;
             }
             case AST_EXPR_LIST: {
-                AST_EXPR_LIST_SPLIT(a, p, tt, tl);
+                auto [p, tt, tl] = AstExprList::split(a);
                 return rewrite_expr_list(p, tt, tl);
                 break;
             }
             // compound statements
             case AST_EXPR_APPLICATION: {
-                AST_EXPR_APPLICATION_SPLIT(a, p, aa);
+                auto [p, aa] = AstExprApplication::split(a);
                 return rewrite_expr_application(p, aa);
                 break;
             }
             case AST_EXPR_LAMBDA: {
-                AST_EXPR_LAMBDA_SPLIT(a, p, m);
+                auto [p, m] = AstExprLambda::split(a);
                 return rewrite_expr_lambda(p, m);
                 break;
             }
             case AST_EXPR_BLOCK: {
-                AST_EXPR_BLOCK_SPLIT(a, p, mm);
+                auto [p, mm] = AstExprBlock::split(a);
                 return rewrite_expr_block(p, mm);
                 break;
             }
             case AST_EXPR_MATCH: {
-                AST_EXPR_MATCH_SPLIT(a, p, mm, g, e);
+                auto [p, mm, g, e] = AstExprMatch::split(a);
                 return rewrite_expr_match(p, mm, g, e);
                 break;
             }
             case AST_EXPR_LET: {
-                AST_EXPR_LET_SPLIT(a, p, l, r, e);
+                auto [p, l, r, e] = AstExprLet::split(a);
                 return rewrite_expr_let(p, l, r, e);
                 break;
             }
             case AST_EXPR_TAG: {
-                AST_EXPR_TAG_SPLIT(a, p, e, t);
+                auto [p, e, t] = AstExprTag::split(a);
                 return rewrite_expr_tag(p, e, t);
                 break;
             }
             case AST_EXPR_IF: {
-                AST_EXPR_IF_SPLIT(a, p, i, t, e);
+                auto [p, i, t, e] = AstExprIf::split(a);
                 return rewrite_expr_if(p, i, t, e);
                 break;
             }
             case AST_EXPR_STATEMENT: {
-                AST_EXPR_STATEMENT_SPLIT(a, p, r, l);
+                auto [p, r, l] = AstExprStatement::split(a);
                 return rewrite_expr_statement(p, r, l);
                 break;
             }
             case AST_EXPR_TRY: {
-                AST_EXPR_TRY_SPLIT(a, p, t, c);
+                auto [p, t, c] = AstExprTry::split(a);
                 return rewrite_expr_try(p, t, c);
                 break;
             }
             case AST_EXPR_THROW: {
-                AST_EXPR_THROW_SPLIT(a, p, exc);
+                auto [p, exc] = AstExprThrow::split(a);
                 return rewrite_expr_throw(p, exc);
                 break;
             }
             // directives
             case AST_DIRECT_IMPORT: {
-                AST_DIRECT_IMPORT_SPLIT(a, p, i);
+                auto [p, i] = AstDirectImport::split(a);
                 return rewrite_directive_import(p, i);
                 break;
             }
             case AST_DIRECT_USING: {
-                AST_DIRECT_USING_SPLIT(a, p, i);
+                auto [p, i] = AstDirectUsing::split(a);
                 return rewrite_directive_using(p, i);
                 break;
             }
             // declarations
             case AST_DECL_DATA: {
-                AST_DECL_DATA_SPLIT(a, p, nn);
+                auto [p, nn] = AstDeclData::split(a);
                 return rewrite_decl_data(p, nn);
                 break;
             }
             case AST_DECL_DEFINITION: {
-                AST_DECL_DEFINITION_SPLIT(a, p, n, e);
+                auto [p, n, e] = AstDeclDefinition::split(a);
                 return rewrite_decl_definition(p, n, e);
                 break;
             }
             case AST_DECL_VALUE: {
-                AST_DECL_VALUE_SPLIT(a, p, l, r);
+                auto [p, l, r] = AstDeclValue::split(a);
                 return rewrite_decl_value(p, l, r);
             }
             case AST_DECL_OPERATOR: {
-                AST_DECL_OPERATOR_SPLIT(a, p, c, e);
+                auto [p, c, e] = AstDeclOperator::split(a);
                 return rewrite_decl_operator(p, c, e);
                 break;
             }
             case AST_DECL_OBJECT: {
-                AST_DECL_OBJECT_SPLIT(a, p, c, vv, ff, ee);
+                auto [p, c, vv, ff, ee] = AstDeclObject::split(a);
                 return rewrite_decl_object(p, c, vv, ff, ee);
                 break;
             }
             case AST_DECL_NAMESPACE: {
-                AST_DECL_NAMESPACE_SPLIT(a, p, nn, dd);
+                auto [p, nn, dd] = AstDeclNamespace::split(a);
                 return rewrite_decl_namespace(p, nn, dd);
                 break;
             }
             // wrapper
             case AST_WRAPPER: {
+                auto [p, dd] = AstWrapper::split(a);
                 AST_WRAPPER_SPLIT(a, p, dd);
                 return rewrite_wrapper(p, dd);
             }
