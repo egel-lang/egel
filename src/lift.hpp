@@ -16,7 +16,7 @@ public:
     AstPtr push_fv_front(const AstPtrs &fv, const AstPtr &m) {
         switch (m->tag()) {
             case AST_EXPR_MATCH: {
-                AST_EXPR_MATCH_SPLIT(m, p, pp, g, e);
+                auto [p, pp, g, e] = AstExprMatch::split(m);
                 AstPtrs pp0;
                 for (auto &v : fv) {
                     pp0.push_back(v);
@@ -87,7 +87,7 @@ public:
                                     const AstPtrs &aa) override {
         auto &a = aa[0];
         if (a->tag() == AST_EXPR_APPLICATION) {
-            AST_EXPR_APPLICATION_SPLIT(a, p, aa0);
+            auto [p, aa0] = AstExprApplication::split(a);
             AstPtrs aa1;
             for (auto &a0 : aa0) aa1.push_back(a0);
             for (size_t n = 1; n < aa.size(); n++) aa1.push_back(aa[n]);
@@ -146,13 +146,12 @@ public:
 
     AstPtr combinator_expand(const AstPtr &c, icu::UnicodeString s) {
         if (c->tag() == AST_EXPR_COMBINATOR) {
-            AST_EXPR_COMBINATOR_SPLIT(c, p, nn, n);
+            auto [p, nn, n] = AstExprCombinator::split(c);
             icu::UnicodeString n0 = n + s;
             auto nn0 = localize(nn);
             return AstExprCombinator::create(p, nn0, n0);
         } else if (c->tag() == AST_EXPR_OPERATOR) {
-            AST_EXPR_OPERATOR_SPLIT(c, p, nn,
-                                    n);  // XXX: keep source to source correct
+            auto [p, nn, n] = AstExprOperator::split(c); // XXX: keep source to source correct
             icu::UnicodeString n0 = n + s;
             auto nn0 = localize(nn);
             return AstExprOperator::create(p, nn0, n0);
@@ -206,7 +205,7 @@ public:
         set_scope(c);
         AstPtr e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
-            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto [p0, mm] = AstExprBlock::split(e);
             auto mm0 = rewrites(mm);
             e0 = AstExprBlock::create(p0, mm0);
         } else {
@@ -226,7 +225,7 @@ public:
         set_scope(c);
         AstPtr e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
-            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto [p0, mm] = AstExprBlock::split(e);
             auto mm0 = rewrites(mm);
             e0 = AstExprBlock::create(p0, mm0);
         } else {
@@ -246,7 +245,7 @@ public:
         set_scope(c);
         AstPtr e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
-            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto [p0, mm] = AstExprBlock::split(e);
             auto mm0 = rewrites(mm);
             e0 = AstExprBlock::create(p0, mm0);
         } else {
@@ -300,7 +299,7 @@ public:
                                  const AstPtr &e) override {
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
-            AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
+            auto [p1, c1, e1] = AstDeclDefinition::split(e0);
             return AstDeclOperator::create(p1, c1, e1);
         } else {
             PANIC("didn't find a definition");
@@ -313,7 +312,7 @@ public:
                               const AstPtr &e) override {
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
-            AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
+            auto [p1, c1, e1] = AstDeclDefinition::split(e0);
             return AstDeclValue::create(p1, c1, e1);
         } else {
             PANIC("didn't find a definition");

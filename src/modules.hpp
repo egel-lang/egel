@@ -479,7 +479,7 @@ public:
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DIRECT_IMPORT) {
-                AST_DIRECT_IMPORT_SPLIT(a, p, s);
+                auto [p, s] = AstDirectImport::split(a);
                 ii.push_back(QualifiedString(p, unicode_strip_quotes(s)));
             }
         }
@@ -491,7 +491,7 @@ public:
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DECL_VALUE) {
-                AST_DECL_VALUE_SPLIT(a, p, n, f);
+                auto [p, n, f] = AstDeclData::split(a);
                 ii.push_back(QualifiedString(p, n->to_text()));
             }
         }

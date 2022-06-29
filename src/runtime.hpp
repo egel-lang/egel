@@ -95,6 +95,8 @@ enum vm_tag_t {
     VM_OBJECT_ARRAY,
 };
 
+const auto STRING_DCOLON = ":";
+
 icu::UnicodeString combine(const icu::UnicodeString &n0, const icu::UnicodeString &n1) {
         return n0 + STRING_DCOLON + n1;
 };
@@ -196,6 +198,8 @@ public:
         os << o.text();
         return os;
     }
+
+    virtual int compare(const VMObject &o) = 0;
 
     virtual vm_object_t* reduce(const vm_object_t *thunk) const = 0;
 
@@ -769,9 +773,7 @@ using UnicodeStrings = std::vector<icu::UnicodeString>;
 
 // the virtual machine
 
-class Options;
-using OptionsPtr = std::shared_ptr<Options>;
-
+// stringlify this once
 class Options {
 public:
     Options()
@@ -811,7 +813,7 @@ public:
           _library_path(o._library_path) {
     }
 
-    static OptionsPtr create() {
+    static std::shared_ptr<Options> create() {
         return std::make_shared<Options>();
     }
 
@@ -915,7 +917,7 @@ public:
         os << std::endl;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const OptionsPtr &m) {
+    friend std::ostream &operator<<(std::ostream &os, const std::shared_ptr<Options> &m) {
         m->render(os);
         return os;
     }
@@ -952,7 +954,7 @@ public:
         // FIX: give a virtual destructor to keep the compiler(-s) happy
     };
 
-    virtual void initialize(OptionsPtr oo) = 0;
+    virtual void initialize(std::shared_ptr<Options> oo) = 0;
 
     // symbol table manipulation
     virtual bool has_symbol(const icu::UnicodeString &n) = 0;
@@ -1290,9 +1292,6 @@ public:
     void render(std::ostream &os) const override {
         os << '<' << text() << '>';
     }
-
-    // compare should implement a total order, even if the state changes..
-    virtual int compare(const vm_object_t *o) = 0;
 
 private:
     VM *_machine;

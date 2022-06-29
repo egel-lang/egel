@@ -11,8 +11,8 @@
 #include "utils.hpp"
 
 // XXX: rewrite all the code once to make use of the next templates
-template <typename T> using Ptr = std::shared_ptr<T>;
-template <typename T> using Ptrs = std::vector<std::shared_ptr<T>>;
+template <typename T> using ptr = std::shared_ptr<T>;
+template <typename T> using ptrs = std::vector<std::shared_ptr<T>>;
 template <typename T, typename... Args>
 std::shared_ptr<T> make_ptr(Args&&... args) {
     return std::make_shared<T>(std::forward<Args>(args)...);

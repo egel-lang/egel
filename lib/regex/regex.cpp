@@ -13,8 +13,8 @@
 typedef std::vector<icu::UnicodeString> UnicodeStrings;
 
 // convenience function
-VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
-    VMObjectPtrs oo;
+vm_object_t* strings_to_list(VM* vm, UnicodeStrings ss) {
+    std::vector<vm_object_t*> oo;
 
     for (int n = 0; n < (int)ss.size(); n++) {
         auto t = vm->create_text(ss[n]);

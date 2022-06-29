@@ -402,12 +402,12 @@ public:
                 bool head_flag;  // generate more efficient code for vars and
                                  // combinators
                 if (a->tag() == AST_EXPR_VARIABLE) {
-                    AST_EXPR_VARIABLE_SPLIT(a, p, n);
+                    auto [p, n] = AstExprVariable::split(a);
                     auto r = get_variable_binding(n);
                     get_coder()->emit_op_mov(c, r);
                     head_flag = true;
                 } else if (a->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(a, p, nn, n);
+                    auto [p, nn, n] = AstExprCombinator::split(a);
                     auto v = machine()->get_combinator(nn, n);
                     auto d = get_coder()->emit_data(v);
                     get_coder()->emit_op_data(c, d);
@@ -483,7 +483,7 @@ public:
                 }
 
                 if (t->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(t, p, nn, n);
+                    auto [p, nn, n] = AstExprCombinator::split(t);
                     auto o = machine()->get_combinator(nn, n);
                     auto d = get_coder()->emit_data(o);
 
@@ -620,7 +620,7 @@ public:
         for (auto n : nn) {
             switch (n->tag()) {
                 case AST_EXPR_COMBINATOR: {
-                    AST_EXPR_COMBINATOR_SPLIT(n, p, ss, s);
+                    auto [p, ss, s] = AstExprCombinator::split(t);
                     auto d = VMObjectData::create(machine(), ss, s);
                     machine()->define_data(d);
                 } break;
@@ -668,7 +668,7 @@ public:
         auto code = get_coder()->code();
         auto data = get_coder()->data();
 
-        AST_EXPR_COMBINATOR_SPLIT(n, p0, ss, s);
+        auto [p0, ss, s] = AstExprCombinator::split(n);
         auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
         machine()->define_data(b);
 
@@ -719,7 +719,7 @@ public:
         auto code = get_coder()->code();
         auto data = get_coder()->data();
 
-        AST_EXPR_OPERATOR_SPLIT(o, p0, ss, s);
+        auto [p0, ss, s] = AstExprOperator::split(o);
         auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
         machine()->define_data(b);
 

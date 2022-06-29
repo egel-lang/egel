@@ -224,12 +224,12 @@ public:
             AstExprCombinator::create(p, STRING_SYSTEM, STRING_OBJECT));
         for (auto f : ff) {
             if (f->tag() == AST_DECL_DATA) {
-                AST_DECL_DATA_SPLIT(f, p, dd0);
+                auto [p, dd0] = AstDeclData::split(f);
                 oo.push_back(dd0[0]);
                 oo.push_back(dd0[1]);
                 dd.push_back(dd0[0]);
             } else if (f->tag() == AST_DECL_DEFINITION) {
-                AST_DECL_DEFINITION_SPLIT(f, p, c, e);
+                auto [p, c, e] = AstDeclDefinition::split(f);
                 oo.push_back(c);
                 oo.push_back(e);
                 dd.push_back(c);
@@ -334,7 +334,7 @@ public:
                 auto s = op->to_text();
                 auto arg0 = ee[1];
                 if ((s == "System:!-") && (arg0->tag() == AST_EXPR_INTEGER)) {
-                    AST_EXPR_INTEGER_SPLIT(arg0, p, s);
+                    auto [p, s] = AstExprInteger::split(arg0);
                     return AstExprInteger::create(p, "-" + s);
                 } else {
                     return AstExprApplication::create(p, rewrites(ee));

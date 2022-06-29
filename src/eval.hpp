@@ -207,7 +207,7 @@ public:
     void handle_import(const AstPtr &a) {
         auto mm = get_manager();
         if (a->tag() == AST_DIRECT_IMPORT) {
-            AST_DIRECT_IMPORT_SPLIT(a, p, s);
+            auto [p, s] = AstDirectImport::split(a);
             try {
                 mm->load(p, unicode_strip_quotes(s));
             } catch (ErrorIO &e) {
@@ -239,9 +239,9 @@ public:
         // mode.
         if (d->tag() ==
             AST_DECL_DEFINITION) {  // start off by (re-)declaring the def
-            AST_DECL_DEFINITION_SPLIT(d, p0, c0, e0);
+            auto [p0, c0, e0] = AstDeclDefinition::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
-                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
+                auto [p, nn0, n0] = AstExprCombinator::split(c0);
                 auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
                 ::declare_implicit(mm->get_environment(), nn0, n0,
                                    c1->to_text());
@@ -250,9 +250,9 @@ public:
         if (d->tag() ==
             AST_DECL_OPERATOR) {  // or the operator.. (time to get rid
             // of this alternative?)
-            AST_DECL_OPERATOR_SPLIT(d, p0, c0, e0);
+            auto [p0, c0, e0] = AstDeclOperator::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
-                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
+                auto [p, nn0, n0] = AstExprCombinator::split(c0);
                 auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
                 ::declare_implicit(mm->get_environment(), nn0, n0,
                                    c1->to_text());
@@ -280,10 +280,10 @@ public:
         // bypass standard semantical analysis and declare the data in the
         // context. that manner, data may be overridded in interactive mode.
         if (d->tag() == AST_DECL_DATA) {  // start off by (re-)declaring the def
-            AST_DECL_DATA_SPLIT(d, p0, nn);
+            auto [p0, nn] = AstDeclData::split(d);
             for (auto &e : nn) {
                 if (e->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(e, p, nn0, n0);
+                    auto [p, nn0, n0] = AstExprCombinator::split(e);
                     auto e1 = AST_EXPR_COMBINATOR_CAST(e);
                     ::declare_implicit(mm->get_environment(), nn0, n0,
                                        e1->to_text());
@@ -341,10 +341,10 @@ public:
 
         if (d->tag() ==
             AST_DECL_VALUE) {  // start off by treating the val as a def
-            AST_DECL_VALUE_SPLIT(d, p0, c0, e0);
+            auto [p0, c0, e0] = AstDeclValue::split(d);
             handle_definition(AstDeclDefinition::create(p, c0, e0));
             if (c0->tag() == AST_EXPR_COMBINATOR) {
-                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                auto c1 = AstExprCombinator::cast(c0);
                 auto o = vm->get_combinator(c1->to_text());
                 if (o->subtag() != VM_SUB_STUB) {
                     // XXX: handle exceptions properly once
@@ -393,7 +393,7 @@ public:
 
         // handle the commands
         if (aa->tag() == AST_WRAPPER) {
-            AST_WRAPPER_SPLIT(aa, p, aa0);
+            auto [p, aa0] = AstWrapper::split(aa);
             for (auto &a : aa0) {
                 if (a != nullptr) {
                     if (a->tag() == AST_DIRECT_IMPORT) {
