@@ -63,8 +63,8 @@ enum ast_tag_t {
 };
 
 class Ast;
-using AstPtr = std::shared_ptr<Ast>;
-using AstPtrs = std::vector<AstPtr>;
+using ptr<Ast> = std::shared_ptr<Ast>;
+using ptrs<Ast> = std::vector<ptr<Ast>>;
 
 using text_index_t = int;
 
@@ -84,7 +84,7 @@ public:
         return _tag;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const AstPtr &a) {
+    friend std::ostream &operator<<(std::ostream &os, const ptr<Ast> &a) {
         a->render(os, 0);
         return os;
     }
@@ -112,35 +112,35 @@ public:
         return u;
     }
 
-    static int compare(const AstPtr &a0, const AstPtr &a1);
+    static int compare(const ptr<Ast> &a0, const ptr<Ast> &a1);
 
 protected:  // a collection of helper functions
-    static int compare_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1);
-    static int compare_ast2(const AstPtr &a0, const AstPtr &a1,
-                            const AstPtr &a2, const AstPtr &a3);
-    static int compare_ast3(const AstPtr &a0, const AstPtr &a1,
-                            const AstPtr &a2, const AstPtr &a3,
-                            const AstPtr &a4, const AstPtr &a5);
-    static int compare_asts(const AstPtrs &aa0, const AstPtrs &aa1);
+    static int compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1);
+    static int compare_ast2(const ptr<Ast> &a0, const ptr<Ast> &a1,
+                            const ptr<Ast> &a2, const ptr<Ast> &a3);
+    static int compare_ast3(const ptr<Ast> &a0, const ptr<Ast> &a1,
+                            const ptr<Ast> &a2, const ptr<Ast> &a3,
+                            const ptr<Ast> &a4, const ptr<Ast> &a5);
+    static int compare_asts(const ptrs<Ast> &aa0, const ptrs<Ast> &aa1);
 
 private:
     ast_tag_t _tag;
     Position _position;
 };
 
-struct EqualAstPtr {
-    bool operator()(const AstPtr &a0, const AstPtr &a1) const {
+struct Equalptr<Ast> {
+    bool operator()(const ptr<Ast> &a0, const ptr<Ast> &a1) const {
         return (Ast::compare(a0, a1) == 0);
     }
 };
 
-struct LessAstPtr {
-    bool operator()(const AstPtr &a0, const AstPtr &a1) const {
+struct Lessptr<Ast> {
+    bool operator()(const ptr<Ast> &a0, const ptr<Ast> &a1) const {
         return (Ast::compare(a0, a1) == -1);
     }
 };
 
-using AstPtrSet = std::set<AstPtr, LessAstPtr>;
+using ptr<Ast>Set = std::set<ptr<Ast>, Lessptr<Ast>>;
 
 // filler for optional cases
 
@@ -152,11 +152,11 @@ public:
     AstEmpty(const AstEmpty &) : AstEmpty() {
     }
 
-    static AstPtr create() {
+    static ptr<Ast> create() {
         return std::make_shared<AstEmpty>();
     }
 
-    static std::shared_ptr<AstEmpty> cast(const AstPtr &a) {
+    static std::shared_ptr<AstEmpty> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstEmpty>(a);
     }
 
@@ -207,15 +207,15 @@ public:
         : AstExprInteger(l.position(), l.text()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &text) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
         return std::make_shared<AstExprInteger>(p, text);
     }
 
-    static std::shared_ptr<AstExprInteger> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprInteger> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprInteger>(a);
     }
 
-    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprInteger::cast(a);
         auto p = a0->position();
         auto s = a0->text();
@@ -239,15 +239,15 @@ public:
         : AstExprHexInteger(l.position(), l.text()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &hex) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &hex) {
         return std::make_shared<AstExprHexInteger>(p, hex);
     }
 
-    static std::shared_ptr<AstExprHexInteger> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprHexInteger> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprHexInteger>(a);
     }
 
-    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprHexInteger::cast(a);
         auto p = a0->position();
         auto s = a0->text();
@@ -271,15 +271,15 @@ public:
     AstExprFloat(const AstExprFloat &l) : AstExprFloat(l.position(), l.text()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &text) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
         return std::make_shared<AstExprFloat>(p, text);
     }
 
-    static std::shared_ptr<AstExprFloat> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprFloat> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprFloat>(a);
     }
 
-    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprFloat::cast(a);
         auto p = a0->position();
         auto s = a0->text();
@@ -298,15 +298,15 @@ public:
         : AstExprCharacter(l.position(), l.text()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &text) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
         return std::make_shared<AstExprCharacter>(p, text);
     }
 
-    static std::shared_ptr<AstExprCharacter> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprCharacter> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprCharacter>(a);
     }
 
-    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprCharacter::cast(a);
         auto p = a0->position();
         auto s = a0->text();
@@ -324,15 +324,15 @@ public:
     AstExprText(const AstExprFloat &l) : AstExprText(l.position(), l.text()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &text) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
         return std::make_shared<AstExprText>(p, text);
     }
 
-    static std::shared_ptr<AstExprText> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprText> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprText>(a);
     }
 
-    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprText::cast(a);
         auto p = a0->position();
         auto s = a0->text();
@@ -353,15 +353,15 @@ public:
         : AstExprVariable(l.position(), l.text()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &text) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
         return std::make_shared<AstExprVariable>(p, text);
     }
 
-    static std::shared_ptr<AstExprVariable> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprVariable> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprVariable>(a);
     }
 
-    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprVariable::cast(a);
         auto p = a0->position();
         auto s = a0->text();
@@ -380,15 +380,15 @@ public:
         : AstExprWildcard(l.position(), l.text()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &text) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
         return std::make_shared<AstExprWildcard>(p, text);
     }
 
-    static std::shared_ptr<AstExprWildcard> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprWildcard> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprWildcard>(a);
     }
 
-    static std::tuple<Position, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprWildcard::cast(a);
         auto p = a0->position();
         auto s = a0->text();
@@ -400,7 +400,7 @@ using AstExprWildcardPtr = std::shared_ptr<AstExprWildcard>;
 
 class AstExprTag : public Ast {
 public:
-    AstExprTag(const Position &p, const AstPtr &e, const AstPtr &t)
+    AstExprTag(const Position &p, const ptr<Ast> &e, const ptr<Ast> &t)
         : Ast(AST_EXPR_TAG, p), _expression(e), _tag(t) {
     }
 
@@ -408,15 +408,15 @@ public:
         : AstExprTag(a.position(), a.expression(), a.tag()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &e, const AstPtr &t) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e, const ptr<Ast> &t) {
         return std::make_shared<AstExprTag>(p, e, t);
     }
 
-    static std::shared_ptr<AstExprTag> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprTag> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprTag>(a);
     }
 
-    static std::tuple<Position, AstPtr, AstPtr> split(const AstPtr &a) {
+    static std::tuple<Position, ptr<Ast>, ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprTag::cast(a);
         auto p = a0->position();
         auto e = a0->expression();
@@ -424,11 +424,11 @@ public:
         return {p, e, t};
     }
 
-    AstPtr expression() const {
+    ptr<Ast> expression() const {
         return _expression;
     }
 
-    AstPtr tag() const {
+    ptr<Ast> tag() const {
         return _tag;
     }
 
@@ -456,8 +456,8 @@ public:
     }
 
 private:
-    AstPtr _expression;
-    AstPtr _tag;
+    ptr<Ast> _expression;
+    ptr<Ast> _tag;
 };
 
 using AstExprTagPtr = std::shared_ptr<AstExprTag>;
@@ -486,25 +486,25 @@ public:
         : AstExprCombinator(c.position(), c.path(), c.combinator()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &c) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &c) {
         return std::make_shared<AstExprCombinator>(p, c);
     }
 
-    static AstPtr create(const Position &p, const UnicodeStrings &pp,
+    static ptr<Ast> create(const Position &p, const UnicodeStrings &pp,
                          const icu::UnicodeString &c) {
         return std::make_shared<AstExprCombinator>(p, pp, c);
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &n,
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &n,
                          const icu::UnicodeString &c) {
         return std::make_shared<AstExprCombinator>(p, n, c);
     }
 
-    static std::shared_ptr<AstExprCombinator> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprCombinator> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprCombinator>(a);
     }
 
-    static std::tuple<Position, std::vector<icu::UnicodeString>, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<icu::UnicodeString>, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprCombinator::cast(a);
         auto p = a0->position();
         auto cc = a0->path();
@@ -572,21 +572,21 @@ public:
         : AstExprOperator(c.position(), c.path(), c.combinator()) {
     }
 
-    static AstPtr create(const Position &p, const UnicodeStrings &pp,
+    static ptr<Ast> create(const Position &p, const UnicodeStrings &pp,
                          const icu::UnicodeString &c) {
         return std::make_shared<AstExprOperator>(p, pp, c);
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &n,
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &n,
                          const icu::UnicodeString &c) {
         return std::make_shared<AstExprOperator>(p, n, c);
     }
 
-    static std::shared_ptr<AstExprOperator> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprOperator> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprOperator>(a);
     }
 
-    static std::tuple<Position, std::vector<icu::UnicodeString>, icu::UnicodeString> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<icu::UnicodeString>, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprOperator::cast(a);
         auto p = a0->position();
         auto cc = a0->path();
@@ -644,11 +644,11 @@ using AstExprOperatorPtr = std::shared_ptr<AstExprOperator>;
 
 class AstExprList : public Ast {
 public:
-    AstExprList(const Position &p, const AstPtrs &c)
+    AstExprList(const Position &p, const ptrs<Ast> &c)
         : Ast(AST_EXPR_LIST, p), _content(c), _tail(nullptr) {
     }
 
-    AstExprList(const Position &p, const AstPtrs &c, const AstPtr &tl)
+    AstExprList(const Position &p, const ptrs<Ast> &c, const ptr<Ast> &tl)
         : Ast(AST_EXPR_LIST, p), _content(c), _tail(tl) {
     }
 
@@ -656,20 +656,20 @@ public:
         : AstExprList(c.position(), c.content(), c.tail()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &c) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &c) {
         return std::make_shared<AstExprList>(p, c);
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &c,
-                         const AstPtr &tl) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &c,
+                         const ptr<Ast> &tl) {
         return std::make_shared<AstExprList>(p, c, tl);
     }
 
-    static std::shared_ptr<AstExprList> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprList> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprList>(a);
     }
 
-    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprList::cast(a);
         auto p = a0->position();
         auto cc = a0->content();
@@ -677,11 +677,11 @@ public:
         return {p, cc, c};
     }
 
-    AstPtrs content() const {
+    ptrs<Ast> content() const {
         return _content;
     }
 
-    AstPtr tail() const {
+    ptr<Ast> tail() const {
         return _tail;
     }
 
@@ -739,15 +739,15 @@ public:
     }
 
 private:
-    AstPtrs _content;
-    AstPtr _tail;
+    ptrs<Ast> _content;
+    ptr<Ast> _tail;
 };
 
 using AstExprListPtr = std::shared_ptr<AstExprList>;
 
 class AstExprTuple : public Ast {
 public:
-    AstExprTuple(const Position &p, const AstPtrs &c)
+    AstExprTuple(const Position &p, const ptrs<Ast> &c)
         : Ast(AST_EXPR_TUPLE, p), _content(c) {
     }
 
@@ -755,22 +755,22 @@ public:
         : AstExprTuple(c.position(), c.content()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &c) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &c) {
         return std::make_shared<AstExprTuple>(p, c);
     }
 
-    static std::shared_ptr<AstExprTuple> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprTuple> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprTuple>(a);
     }
 
-    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const ptr<Ast> &a) {
         auto a0 = AstExprTuple::cast(a);
         auto p = a0->position();
         auto cc = a0->content();
         return {p, cc};
     }
 
-    AstPtrs content() const {
+    ptrs<Ast> content() const {
         return _content;
     }
 
@@ -816,7 +816,7 @@ public:
     }
 
 private:
-    AstPtrs _content;
+    ptrs<Ast> _content;
 };
 
 using AstExprTuplePtr = std::shared_ptr<AstExprTuple>;
@@ -825,29 +825,29 @@ using AstExprTuplePtr = std::shared_ptr<AstExprTuple>;
 
 class AstExprApplication : public Ast {
 public:
-    AstExprApplication(const Position &p, const AstPtrs &aa)
+    AstExprApplication(const Position &p, const ptrs<Ast> &aa)
         : Ast(AST_EXPR_APPLICATION, p), _arguments(aa) {
     }
 
-    AstExprApplication(const Position &p, const AstPtr &l, const AstPtr &r)
+    AstExprApplication(const Position &p, const ptr<Ast> &l, const ptr<Ast> &r)
         : Ast(AST_EXPR_APPLICATION, p) {
-        _arguments = AstPtrs();
+        _arguments = ptrs<Ast>();
         _arguments.push_back(l);
         _arguments.push_back(r);
     }
 
-    AstExprApplication(const Position &p, const AstPtr &op, const AstPtr &e0,
-                       const AstPtr &e1)
+    AstExprApplication(const Position &p, const ptr<Ast> &op, const ptr<Ast> &e0,
+                       const ptr<Ast> &e1)
         : Ast(AST_EXPR_APPLICATION, p) {
-        _arguments = AstPtrs();
+        _arguments = ptrs<Ast>();
         _arguments.push_back(op);
         _arguments.push_back(e0);
         _arguments.push_back(e1);
     }
 
-    AstExprApplication(const Position &p, const AstPtr &c, const AstPtrs &aa)
+    AstExprApplication(const Position &p, const ptr<Ast> &c, const ptrs<Ast> &aa)
         : Ast(AST_EXPR_APPLICATION, p) {
-        _arguments = AstPtrs();
+        _arguments = ptrs<Ast>();
         _arguments.push_back(c);
         for (auto &a : aa) {
             _arguments.push_back(a);
@@ -858,31 +858,31 @@ public:
         : AstExprApplication(a.position(), a.arguments()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &aa) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &aa) {
         return std::make_shared<AstExprApplication>(p, aa);
     }
 
-    static AstPtr create(const Position &p, const AstPtr &l, const AstPtr &r) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &l, const ptr<Ast> &r) {
         return std::make_shared<AstExprApplication>(p, l, r);
     }
 
-    static AstPtr create(const Position &p, const AstPtr &op, const AstPtr &e0,
-                         const AstPtr &e1) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &op, const ptr<Ast> &e0,
+                         const ptr<Ast> &e1) {
         return std::make_shared<AstExprApplication>(p, op, e0, e1);
     }
 
-    static std::shared_ptr<AstExprApplication> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprApplication> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprApplication>(a);
     }
 
-    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const ptr<Ast> &a) {
         auto a0 = AstExprApplication::cast(a);
         auto p  = a0->position();
         auto aa = a0->arguments();
         return {p, aa};
     }
 
-    AstPtrs arguments() const {
+    ptrs<Ast> arguments() const {
         return _arguments;
     }
 
@@ -928,15 +928,15 @@ public:
     }
 
 private:
-    AstPtrs _arguments;
+    ptrs<Ast> _arguments;
 };
 
 using AstExprApplicationPtr = std::shared_ptr<AstExprApplication>;
 
 class AstExprMatch : public Ast {
 public:
-    AstExprMatch(const Position &p, const AstPtrs &pp, const AstPtr &g,
-                 const AstPtr &r)
+    AstExprMatch(const Position &p, const ptrs<Ast> &pp, const ptr<Ast> &g,
+                 const ptr<Ast> &r)
         : Ast(AST_EXPR_MATCH, p), _patterns(pp), _guard(g), _result(r) {
     }
 
@@ -944,17 +944,17 @@ public:
         : AstExprMatch(c.position(), c.patterns(), c.guard(), c.result()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &pp, const AstPtr &g,
-                         const AstPtr &r) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &pp, const ptr<Ast> &g,
+                         const ptr<Ast> &r) {
         return std::make_shared<AstExprMatch>(p, pp, g, r);
     }
 
-    static std::shared_ptr<AstExprMatch> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprMatch> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprMatch>(a);
     }
 
     static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> 
-        split(const AstPtr &a) {
+        split(const ptr<Ast> &a) {
         auto a0 = AstExprMatch::cast(a);
         auto p = a0->position();
         auto pp = a0->patterns();
@@ -964,15 +964,15 @@ public:
     }
 
 
-    AstPtrs patterns() const {
+    ptrs<Ast> patterns() const {
         return _patterns;
     }
 
-    AstPtr guard() const {
+    ptr<Ast> guard() const {
         return _guard;
     }
 
-    AstPtr result() const {
+    ptr<Ast> result() const {
         return _result;
     }
 
@@ -1034,21 +1034,21 @@ public:
     }
 
 private:
-    AstPtrs _patterns;
-    AstPtr _guard;
-    AstPtr _result;
+    ptrs<Ast> _patterns;
+    ptr<Ast> _guard;
+    ptr<Ast> _result;
 };
 
 using AstExprMatchPtr = std::shared_ptr<AstExprMatch>;
 
 class AstExprBlock : public Ast {
 public:
-    AstExprBlock(const Position &p, const AstPtrs &mm)
+    AstExprBlock(const Position &p, const ptrs<Ast> &mm)
         : Ast(AST_EXPR_BLOCK, p), _matches(mm) {
     }
 
-    AstExprBlock(const Position &p, const AstPtr &m) : Ast(AST_EXPR_BLOCK, p) {
-        AstPtrs mm;
+    AstExprBlock(const Position &p, const ptr<Ast> &m) : Ast(AST_EXPR_BLOCK, p) {
+        ptrs<Ast> mm;
         mm.push_back(m);
         _matches = mm;
     }
@@ -1057,26 +1057,26 @@ public:
         : AstExprBlock(c.position(), c.matches()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &m) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &m) {
         return std::make_shared<AstExprBlock>(p, m);
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &mm) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &mm) {
         return std::make_shared<AstExprBlock>(p, mm);
     }
 
-    static std::shared_ptr<AstExprBlock> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprBlock> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprBlock>(a);
     }
 
-    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const ptr<Ast> &a) {
         auto a0 = AstExprBlock::cast(a);
         auto p = a0->position();
         auto mm = a0->matches();
         return {p, mm};
     }
 
-    AstPtrs matches() const {
+    ptrs<Ast> matches() const {
         return _matches;
     }
 
@@ -1131,14 +1131,14 @@ public:
     }
 
 private:
-    AstPtrs _matches;
+    ptrs<Ast> _matches;
 };
 
 using AstExprBlockPtr = std::shared_ptr<AstExprBlock>;
 
 class AstExprLambda : public Ast {
 public:
-    AstExprLambda(const Position &p, const AstPtr &m)
+    AstExprLambda(const Position &p, const ptr<Ast> &m)
         : Ast(AST_EXPR_LAMBDA, p), _match(m) {
     }
 
@@ -1146,22 +1146,22 @@ public:
         : AstExprLambda(c.position(), c.match()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &m) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &m) {
         return std::make_shared<AstExprLambda>(p, m);
     }
 
-    static std::shared_ptr<AstExprLambda> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprLambda> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprLambda>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprLambda::cast(a);
         auto p = a0->position();
         auto m = a0->match();
         return {p, m};
     }
 
-    AstPtr match() const {
+    ptr<Ast> match() const {
         return _match;
     }
 
@@ -1180,15 +1180,15 @@ public:
     }
 
 private:
-    AstPtr _match;
+    ptr<Ast> _match;
 };
 
 using AstExprLambdaPtr = std::shared_ptr<AstExprLambda>;
 
 class AstExprLet : public Ast {
 public:
-    AstExprLet(const Position &p, const AstPtrs &ee, const AstPtr &e1,
-               const AstPtr e2)
+    AstExprLet(const Position &p, const ptrs<Ast> &ee, const ptr<Ast> &e1,
+               const ptr<Ast> e2)
         : Ast(AST_EXPR_LET, p), _lhs(ee), _rhs(e1), _expression(e2) {
     }
 
@@ -1197,16 +1197,16 @@ public:
                      a.expression()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &ee, const AstPtr &e1,
-                         const AstPtr e2) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &ee, const ptr<Ast> &e1,
+                         const ptr<Ast> e2) {
         return std::make_shared<AstExprLet>(p, ee, e1, e2);
     }
 
-    static std::shared_ptr<AstExprLet> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprLet> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprLet>(a);
     }
 
-    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprLet::cast(a);
         auto p = a0->position();
         auto l = a0->left_hand_side();
@@ -1215,15 +1215,15 @@ public:
         return {p, l, r, e};
     }
 
-    AstPtrs left_hand_side() const {
+    ptrs<Ast> left_hand_side() const {
         return _lhs;
     }
 
-    AstPtr right_hand_side() const {
+    ptr<Ast> right_hand_side() const {
         return _rhs;
     }
 
-    AstPtr expression() const {
+    ptr<Ast> expression() const {
         return _expression;
     }
 
@@ -1267,16 +1267,16 @@ public:
     }
 
 private:
-    AstPtrs _lhs;
-    AstPtr _rhs;
-    AstPtr _expression;
+    ptrs<Ast> _lhs;
+    ptr<Ast> _rhs;
+    ptr<Ast> _expression;
 };
 
 using AstExprLetPtr = std::shared_ptr<AstExprLet>;
 
 class AstExprTry : public Ast {
 public:
-    AstExprTry(const Position &p, const AstPtr &e0, const AstPtr &e1)
+    AstExprTry(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1)
         : Ast(AST_EXPR_TRY, p), _try(e0), _catch(e1) {
     }
 
@@ -1284,16 +1284,16 @@ public:
         : AstExprTry(a.position(), a.try0(), a.catch0()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &e0,
-                         const AstPtr &e1) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0,
+                         const ptr<Ast> &e1) {
         return std::make_shared<AstExprTry>(p, e0, e1);
     }
 
-    static std::shared_ptr<AstExprTry> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprTry> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprTry>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprTry::cast(a);
         auto p = a0->position();
         auto t = a0->try0();
@@ -1301,11 +1301,11 @@ public:
         return {p, t, c};
     }
 
-    AstPtr try0() const {
+    ptr<Ast> try0() const {
         return _try;
     }
 
-    AstPtr catch0() const {
+    ptr<Ast> catch0() const {
         return _catch;
     }
 
@@ -1342,15 +1342,15 @@ public:
     }
 
 private:
-    AstPtr _try;
-    AstPtr _catch;
+    ptr<Ast> _try;
+    ptr<Ast> _catch;
 };
 
 using AstExprTryPtr = std::shared_ptr<AstExprTry>;
 
 class AstExprThrow : public Ast {
 public:
-    AstExprThrow(const Position &p, const AstPtr &e0)
+    AstExprThrow(const Position &p, const ptr<Ast> &e0)
         : Ast(AST_EXPR_THROW, p), _throw(e0) {
     }
 
@@ -1358,22 +1358,22 @@ public:
         : AstExprThrow(a.position(), a.throw0()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &e0) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0) {
         return std::make_shared<AstExprThrow>(p, e0);
     }
 
-    static std::shared_ptr<AstExprThrow> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprThrow> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprThrow>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprThrow::cast(a);
         auto p = a0->position();
         auto t = a0->throw0();
         return {p, t};
     }
 
-    AstPtr throw0() const {
+    ptr<Ast> throw0() const {
         return _throw;
     }
 
@@ -1398,15 +1398,15 @@ public:
     }
 
 private:
-    AstPtr _throw;
+    ptr<Ast> _throw;
 };
 
 using AstExprThrowPtr = std::shared_ptr<AstExprThrow>;
 
 class AstExprIf : public Ast {
 public:
-    AstExprIf(const Position &p, const AstPtr &e0, const AstPtr &e1,
-              const AstPtr &e2)
+    AstExprIf(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1,
+              const ptr<Ast> &e2)
         : Ast(AST_EXPR_IF, p), _if(e0), _then(e1), _else(e2) {
     }
 
@@ -1414,16 +1414,16 @@ public:
         : AstExprIf(a.position(), a.if0(), a.then0(), a.else0()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &e0, const AstPtr &e1,
-                         const AstPtr &e2) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1,
+                         const ptr<Ast> &e2) {
         return std::make_shared<AstExprIf>(p, e0, e1, e2);
     }
 
-    static std::shared_ptr<AstExprIf> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprIf> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprIf>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprIf::cast(a);
         auto p = a0->position();
         auto i = a0->if0();
@@ -1432,15 +1432,15 @@ public:
         return {p, i, t, e};
     }
 
-    AstPtr if0() const {
+    ptr<Ast> if0() const {
         return _if;
     }
 
-    AstPtr then0() const {
+    ptr<Ast> then0() const {
         return _then;
     }
 
-    AstPtr else0() const {
+    ptr<Ast> else0() const {
         return _else;
     }
 
@@ -1482,16 +1482,16 @@ public:
     }
 
 private:
-    AstPtr _if;
-    AstPtr _then;
-    AstPtr _else;
+    ptr<Ast> _if;
+    ptr<Ast> _then;
+    ptr<Ast> _else;
 };
 
 using AstExprIfPtr = std::shared_ptr<AstExprIf>;
 
 class AstExprStatement : public Ast {
 public:
-    AstExprStatement(const Position &p, const AstPtr &e0, const AstPtr &e1)
+    AstExprStatement(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1)
         : Ast(AST_EXPR_STATEMENT, p), _lhs(e0), _rhs(e1) {
     }
 
@@ -1499,16 +1499,16 @@ public:
         : AstExprStatement(a.position(), a.lhs(), a.rhs()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &e0,
-                         const AstPtr &e1) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0,
+                         const ptr<Ast> &e1) {
         return std::make_shared<AstExprStatement>(p, e0, e1);
     }
 
-    static std::shared_ptr<AstExprStatement> cast(const AstPtr &a) {
+    static std::shared_ptr<AstExprStatement> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprStatement>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstExprStatement::cast(a);
         auto p = a0->position();
         auto l = a0->lhs();
@@ -1516,11 +1516,11 @@ public:
         return {p, l, r};
     }
 
-    AstPtr lhs() const {
+    ptr<Ast> lhs() const {
         return _lhs;
     }
 
-    AstPtr rhs() const {
+    ptr<Ast> rhs() const {
         return _rhs;
     }
 
@@ -1549,8 +1549,8 @@ public:
     }
 
 private:
-    AstPtr _lhs;
-    AstPtr _rhs;
+    ptr<Ast> _lhs;
+    ptr<Ast> _rhs;
 };
 
 using AstExprStatementPtr = std::shared_ptr<AstExprStatement>;
@@ -1559,7 +1559,7 @@ using AstExprStatementPtr = std::shared_ptr<AstExprStatement>;
 class AstDeclNamespace : public Ast {
 public:
     AstDeclNamespace(const Position &p, const UnicodeStrings &name,
-                     const AstPtrs &c)
+                     const ptrs<Ast> &c)
         : Ast(AST_DECL_NAMESPACE, p), _name(name), _content(c) {
     }
 
@@ -1567,16 +1567,16 @@ public:
         : AstDeclNamespace(c.position(), c.name(), c.content()) {
     }
 
-    static AstPtr create(const Position &p, const UnicodeStrings &name,
-                         const AstPtrs &c) {
+    static ptr<Ast> create(const Position &p, const UnicodeStrings &name,
+                         const ptrs<Ast> &c) {
         return std::make_shared<AstDeclNamespace>(p, name, c);
     }
 
-    static std::shared_ptr<AstDeclNamespace> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDeclNamespace> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclNamespace>(a);
     }
 
-    static std::tuple<Position, std::vector<icu::UnicodeString>, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<icu::UnicodeString>, std::vector<std::shared_ptr<Ast>>> split(const ptr<Ast> &a) {
         auto a0 = AstDeclNamespace::cast(a);
         auto p = a0->position();
         auto n = a0->name();
@@ -1588,7 +1588,7 @@ public:
         return _name;
     }
 
-    AstPtrs content() const {
+    ptrs<Ast> content() const {
         return _content;
     }
 
@@ -1615,36 +1615,36 @@ public:
 
 private:
     UnicodeStrings _name;
-    AstPtrs _content;
+    ptrs<Ast> _content;
 };
 
 using AstDeclNamespacePtr = std::shared_ptr<AstDeclNamespace>;
 
 class AstDeclData : public Ast {
 public:
-    AstDeclData(const Position &p, const AstPtrs &nn)
+    AstDeclData(const Position &p, const ptrs<Ast> &nn)
         : Ast(AST_DECL_DATA, p), _names(nn) {
     }
 
     AstDeclData(const AstDeclData &a) : AstDeclData(a.position(), a.names()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &nn) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &nn) {
         return std::make_shared<AstDeclData>(p, nn);
     }
 
-    static std::shared_ptr<AstDeclData> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDeclData> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclData>(a);
     }
 
-    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const AstPtr &a) {
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(const ptr<Ast> &a) {
         auto a0 = AstDeclData::cast(a);
         auto p = a0->position();
         auto nn = a0->names();
         return {p, nn};
     }
 
-    AstPtrs names() const {
+    ptrs<Ast> names() const {
         return _names;
     }
 
@@ -1691,14 +1691,14 @@ public:
     }
 
 private:
-    AstPtrs _names;
+    ptrs<Ast> _names;
 };
 
 using AstDeclDataPtr = std::shared_ptr<AstDeclData>;
 
 class AstDeclDefinition : public Ast {
 public:
-    AstDeclDefinition(const Position &p, const AstPtr &n, const AstPtr &e)
+    AstDeclDefinition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &e)
         : Ast(AST_DECL_DEFINITION, p), _name(n), _expression(e) {
     }
 
@@ -1706,15 +1706,15 @@ public:
         : AstDeclDefinition(a.position(), a.name(), a.expression()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &n, const AstPtr &e) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &n, const ptr<Ast> &e) {
         return std::make_shared<AstDeclDefinition>(p, n, e);
     }
 
-    static std::shared_ptr<AstDeclDefinition> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDeclDefinition> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclDefinition>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstDeclDefinition::cast(a);
         auto p = a0->position();
         auto n = a0->name();
@@ -1722,11 +1722,11 @@ public:
         return {p, n, e};
     }
 
-    AstPtr name() const {
+    ptr<Ast> name() const {
         return _name;
     }
 
-    AstPtr expression() const {
+    ptr<Ast> expression() const {
         return _expression;
     }
 
@@ -1758,15 +1758,15 @@ public:
     }
 
 private:
-    AstPtr _name;
-    AstPtr _expression;
+    ptr<Ast> _name;
+    ptr<Ast> _expression;
 };
 
 using AstDeclDefinitionPtr = std::shared_ptr<AstDeclDefinition>;
 
 class AstDeclValue : public Ast {
 public:
-    AstDeclValue(const Position &p, const AstPtr &e0, const AstPtr &e1)
+    AstDeclValue(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1)
         : Ast(AST_DECL_VALUE, p), _name(e0), _expression(e1) {
     }
 
@@ -1774,16 +1774,16 @@ public:
         : AstDeclValue(a.position(), a.name(), a.expression()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &e0,
-                         const AstPtr &e1) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0,
+                         const ptr<Ast> &e1) {
         return std::make_shared<AstDeclValue>(p, e0, e1);
     }
 
-    static std::shared_ptr<AstDeclValue> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDeclValue> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclValue>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstDeclValue::cast(a);
         auto p = a0->position();
         auto n = a0->name();
@@ -1791,11 +1791,11 @@ public:
         return {p, n, e};
     }
 
-    AstPtr name() const {
+    ptr<Ast> name() const {
         return _name;
     }
 
-    AstPtr expression() const {
+    ptr<Ast> expression() const {
         return _expression;
     }
 
@@ -1827,15 +1827,15 @@ public:
     }
 
 private:
-    AstPtr _name;
-    AstPtr _expression;
+    ptr<Ast> _name;
+    ptr<Ast> _expression;
 };
 
 using AstDeclValuePtr = std::shared_ptr<AstDeclValue>;
 
 class AstDeclOperator : public Ast {
 public:
-    AstDeclOperator(const Position &p, const AstPtr &c, const AstPtr &e)
+    AstDeclOperator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &e)
         : Ast(AST_DECL_OPERATOR, p), _combinator(c), _expression(e) {
     }
 
@@ -1843,15 +1843,15 @@ public:
         : AstDeclOperator(a.position(), a.combinator(), a.expression()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &c, const AstPtr &e) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &c, const ptr<Ast> &e) {
         return std::make_shared<AstDeclOperator>(p, c, e);
     }
 
-    static std::shared_ptr<AstDeclOperator> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDeclOperator> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclOperator>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const AstPtr &a) {
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
         auto a0 = AstDeclOperator::cast(a);
         auto p = a0->position();
         auto n = a0->combinator();
@@ -1859,11 +1859,11 @@ public:
         return {p, n, e};
     }
 
-    AstPtr combinator() const {
+    ptr<Ast> combinator() const {
         return _combinator;
     }
 
-    AstPtr expression() const {
+    ptr<Ast> expression() const {
         return _expression;
     }
 
@@ -1897,16 +1897,16 @@ public:
     }
 
 private:
-    AstPtr _combinator;
-    AstPtr _expression;
+    ptr<Ast> _combinator;
+    ptr<Ast> _expression;
 };
 
 using AstDeclOperatorPtr = std::shared_ptr<AstDeclOperator>;
 
 class AstDeclObject : public Ast {
 public:
-    AstDeclObject(const Position &p, const AstPtr &n, const AstPtrs &vv,
-                  const AstPtrs &ff, const AstPtrs &ee)
+    AstDeclObject(const Position &p, const ptr<Ast> &n, const ptrs<Ast> &vv,
+                  const ptrs<Ast> &ff, const ptrs<Ast> &ee)
         : Ast(AST_DECL_OBJECT, p),
           _name(n),
           _variables(vv),
@@ -1919,12 +1919,12 @@ public:
                         a.extends()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtr &n, const AstPtrs &vv,
-                         const AstPtrs &ff, const AstPtrs &ee) {
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &n, const ptrs<Ast> &vv,
+                         const ptrs<Ast> &ff, const ptrs<Ast> &ee) {
         return std::make_shared<AstDeclObject>(p, n, vv, ff, ee);
     }
 
-    static std::shared_ptr<AstDeclObject> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDeclObject> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclObject>(a);
     }
 
@@ -1933,7 +1933,7 @@ public:
             std::vector<std::shared_ptr<Ast>>,
             std::vector<std::shared_ptr<Ast>>,
             std::vector<std::shared_ptr<Ast>>
-            > split(const AstPtr &a) {
+            > split(const ptr<Ast> &a) {
         auto a0 = AstDeclObject::cast(a);
         auto p = a0->position();
         auto n = a0->name();
@@ -1943,19 +1943,19 @@ public:
         return {p, n, vv, ff, ee};
     }
 
-    AstPtr name() const {
+    ptr<Ast> name() const {
         return _name;
     }
 
-    AstPtrs variables() const {
+    ptrs<Ast> variables() const {
         return _variables;
     }
 
-    AstPtrs fields() const {
+    ptrs<Ast> fields() const {
         return _fields;
     }
 
-    AstPtrs extends() const {
+    ptrs<Ast> extends() const {
         return _extends;
     }
 
@@ -1994,10 +1994,10 @@ public:
     }
 
 private:
-    AstPtr _name;
-    AstPtrs _variables;
-    AstPtrs _fields;
-    AstPtrs _extends;
+    ptr<Ast> _name;
+    ptrs<Ast> _variables;
+    ptrs<Ast> _fields;
+    ptrs<Ast> _extends;
 };
 
 using AstDeclObjectPtr = std::shared_ptr<AstDeclObject>;
@@ -2012,17 +2012,17 @@ public:
         : AstDirectImport(c.position(), c.import()) {
     }
 
-    static AstPtr create(const Position &p, const icu::UnicodeString &v) {
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &v) {
         return std::make_shared<AstDirectImport>(p, v);
     }
 
-    static std::shared_ptr<AstDirectImport> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDirectImport> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDirectImport>(a);
     }
 
     static std::tuple<Position, 
             icu::UnicodeString
-            > split(const AstPtr &a) {
+            > split(const ptr<Ast> &a) {
         auto a0 = AstDirectImport::cast(a);
         auto p = a0->position();
         auto s = a0->import();
@@ -2060,17 +2060,17 @@ public:
         : AstDirectUsing(c.position(), c.using0()) {
     }
 
-    static AstPtr create(const Position &p, const UnicodeStrings &v) {
+    static ptr<Ast> create(const Position &p, const UnicodeStrings &v) {
         return std::make_shared<AstDirectUsing>(p, v);
     }
 
-    static std::shared_ptr<AstDirectUsing> cast(const AstPtr &a) {
+    static std::shared_ptr<AstDirectUsing> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDirectUsing>(a);
     }
 
     static std::tuple<Position, 
             std::vector<icu::UnicodeString>
-            > split(const AstPtr &a) {
+            > split(const ptr<Ast> &a) {
         auto a0 = AstDirectUsing::cast(a);
         auto p = a0->position();
         auto uu = a0->using0();
@@ -2114,31 +2114,31 @@ using AstDirectUsingPtr = std::shared_ptr<AstDirectUsing>;
 
 class AstWrapper : public Ast {
 public:
-    AstWrapper(const Position &p, const AstPtrs &c)
+    AstWrapper(const Position &p, const ptrs<Ast> &c)
         : Ast(AST_WRAPPER, p), _content(c) {
     }
 
     AstWrapper(const AstWrapper &c) : AstWrapper(c.position(), c.content()) {
     }
 
-    static AstPtr create(const Position &p, const AstPtrs &c) {
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &c) {
         return std::make_shared<AstWrapper>(p, c);
     }
 
-    static std::shared_ptr<AstWrapper> cast(const AstPtr &a) {
+    static std::shared_ptr<AstWrapper> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstWrapper>(a);
     }
 
     static std::tuple<Position, 
             std::vector<std::shared_ptr<Ast>>
-            > split(const AstPtr &a) {
+            > split(const ptr<Ast> &a) {
         auto a0 = AstWrapper::cast(a);
         auto p = a0->position();
         auto ee = a0->content();
         return {p, ee};
     }
 
-    AstPtrs content() const {
+    ptrs<Ast> content() const {
         return _content;
     }
 
@@ -2153,7 +2153,7 @@ public:
     }
 
 private:
-    AstPtrs _content;
+    ptrs<Ast> _content;
 };
 
 using AstWrapperPtr = std::shared_ptr<AstWrapper>;
@@ -2163,7 +2163,7 @@ using AstWrapperPtr = std::shared_ptr<AstWrapper>;
     auto p = _##a->position();       \
     auto dd = _##a->content();
 
-int Ast::compare(const AstPtr &a0, const AstPtr &a1) {
+int Ast::compare(const ptr<Ast> &a0, const ptr<Ast> &a1) {
     if ((a0 == nullptr) && (a1 == nullptr)) return true;
     if (a0 == nullptr) return 1;
     if (a1 == nullptr) return -1;
@@ -2178,7 +2178,7 @@ int Ast::compare(const AstPtr &a0, const AstPtr &a1) {
     }
 }
 
-int Ast::compare_asts(const AstPtrs &aa0, const AstPtrs &aa1) {
+int Ast::compare_asts(const ptrs<Ast> &aa0, const ptrs<Ast> &aa1) {
     int sz0 = aa0.size();
     int sz1 = aa1.size();
     if (sz0 < sz1) {
@@ -2221,15 +2221,15 @@ static int compare_texts(const UnicodeStrings &aa0, const UnicodeStrings &aa1) {
     }
 }
 
-int Ast::compare_ast2(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
-                      const AstPtr &a3) {
+int Ast::compare_ast2(const ptr<Ast> &a0, const ptr<Ast> &a1, const ptr<Ast> &a2,
+                      const ptr<Ast> &a3) {
     int c = compare(a0, a1);
     if (c != 0) return c;
     return compare(a2, a3);
 }
 
-int Ast::compare_ast3(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
-                      const AstPtr &a3, const AstPtr &a4, const AstPtr &a5) {
+int Ast::compare_ast3(const ptr<Ast> &a0, const ptr<Ast> &a1, const ptr<Ast> &a2,
+                      const ptr<Ast> &a3, const ptr<Ast> &a4, const ptr<Ast> &a5) {
     int c = compare(a0, a1);
     if (c != 0) return c;
     c = compare(a2, a3);
@@ -2237,7 +2237,7 @@ int Ast::compare_ast3(const AstPtr &a0, const AstPtr &a1, const AstPtr &a2,
     return compare(a4, a5);
 }
 
-int Ast::compare_tag(ast_tag_t t, const AstPtr &a0, const AstPtr &a1) {
+int Ast::compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1) {
     int c;
 
     switch (t) {
