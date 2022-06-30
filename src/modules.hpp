@@ -184,7 +184,7 @@ public:
 
     int compare(const VMObjectPtr &o) override {
         if (is_module(o)) {
-            auto m = module_cast(o);
+            auto m = cast(o);
             auto n0 = value()->get_filename();
             auto n1 = m->value()->get_filename();
             if (n0 < n1) {
@@ -203,7 +203,7 @@ public:
         return (o->subtag() == VM_SUB_MODULE);
     }
 
-    static VMModulePtr module_cast(const VMObjectPtr &o) {
+    static VMModulePtr cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMModule>(o);
     }
 

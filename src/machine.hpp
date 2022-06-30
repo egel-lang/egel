@@ -300,7 +300,7 @@ public:
         while ((trampoline != nullptr) && (*run != HALTED)) {
             if (*run == RUNNING) {
                 ASSERT(trampoline->tag() == VM_OBJECT_ARRAY);
-                auto f = VM_OBJECT_ARRAY_CAST(trampoline)->get(4);
+                auto f = VMObjectArray::cast(trampoline)->get(4);
 #ifdef DEBUG
                 std::cout << "trace: " << f << std::endl;
                 std::cout << "on : " << trampoline << std::endl;

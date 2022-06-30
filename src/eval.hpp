@@ -242,7 +242,7 @@ public:
             auto [p0, c0, e0] = AstDeclDefinition::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
-                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                auto c1 = AstExprCombinator::cast(c0);
                 ::declare_implicit(mm->get_environment(), nn0, n0,
                                    c1->to_text());
             }
@@ -253,7 +253,7 @@ public:
             auto [p0, c0, e0] = AstDeclOperator::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
-                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                auto c1 = AstExprCombinator::cast(c0);
                 ::declare_implicit(mm->get_environment(), nn0, n0,
                                    c1->to_text());
             }
@@ -284,7 +284,7 @@ public:
             for (auto &e : nn) {
                 if (e->tag() == AST_EXPR_COMBINATOR) {
                     auto [p, nn0, n0] = AstExprCombinator::split(e);
-                    auto e1 = AST_EXPR_COMBINATOR_CAST(e);
+                    auto e1 = AstExprCombinator::cast(e);
                     ::declare_implicit(mm->get_environment(), nn0, n0,
                                        e1->to_text());
                 }

@@ -202,6 +202,10 @@ public:
         return std::make_shared<PythonMachine>(m);  // XXX: closes and creates?
     }
 
+    static std::shared_ptr<PythonMachine> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<PythonMachine>(o);
+    }
+
     ~PythonMachine() {
         if (_value) delete _value;
     }
@@ -309,7 +313,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_none(arg0)) {
             auto m = PythonMachine::create(machine());
-            PYTHON_MACHINE_CAST(m)->run();
+            PythonMachine::cast(m)->run();
             return m;
         } else {
             throw machine()->bad_args(this, arg0);

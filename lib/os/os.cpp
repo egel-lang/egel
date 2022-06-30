@@ -738,6 +738,10 @@ public:
         return VMObjectPtr(new ServerObject(vm));
     }
 
+    static std::shared_ptr<ServerObject> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<ServerObject>(o);
+    }
+
     int compare(const VMObjectPtr& o) override {
         // XXX: not the foggiest idea whether this words.
         // I assume file descriptors are unique.
@@ -805,7 +809,7 @@ public:
         if (sym == 0) sym = machine()->enter_symbol("OS", "serverobject");
 
         if (SERVER_OBJECT_TEST(arg0, sym)) {
-            auto so = SERVER_OBJECT_CAST(arg0);
+            auto so = ServerObject::cast(arg0);
             auto chan = so->accept();
             return chan;
         } else {
@@ -826,7 +830,7 @@ public:
             auto in = machine()->get_integer(arg1);
 
             auto so = ServerObject::create(machine());
-            SERVER_OBJECT_CAST(so)->bind(port, in);
+            ServerObject::cast(so)->bind(port, in);
 
             return so;
         } else {
