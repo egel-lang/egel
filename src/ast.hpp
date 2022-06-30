@@ -63,8 +63,6 @@ enum ast_tag_t {
 };
 
 class Ast;
-using ptr<Ast> = std::shared_ptr<Ast>;
-using ptrs<Ast> = std::vector<ptr<Ast>>;
 
 using text_index_t = int;
 
@@ -128,19 +126,19 @@ private:
     Position _position;
 };
 
-struct Equalptr<Ast> {
+struct EqualAst {
     bool operator()(const ptr<Ast> &a0, const ptr<Ast> &a1) const {
         return (Ast::compare(a0, a1) == 0);
     }
 };
 
-struct Lessptr<Ast> {
+struct LessAst {
     bool operator()(const ptr<Ast> &a0, const ptr<Ast> &a1) const {
         return (Ast::compare(a0, a1) == -1);
     }
 };
 
-using ptr<Ast>Set = std::set<ptr<Ast>, Lessptr<Ast>>;
+using AstSet = std::set<ptr<Ast>, LessAst>;
 
 // filler for optional cases
 
