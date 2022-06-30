@@ -515,7 +515,7 @@ public:
             exit(EXIT_SUCCESS);
         };
 
-        AstPtr a = parse(tt);
+        ptr<Ast> a = parse(tt);
 
         if (get_options()->only_unparse()) {
             std::cout << a << std::endl;
@@ -581,7 +581,7 @@ public:
 
 private:
     icu::UnicodeString _source;
-    AstPtr _ast;
+    ptr<Ast> _ast;
 };
 
 using ModulePtrs = std::vector<ModulePtr>;

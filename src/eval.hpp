@@ -110,7 +110,7 @@ public:
     Eval() {
     }
 
-    Eval(ModuleManagerPtr mm) : _manager(mm), _usings(AstPtrs()) {
+    Eval(ModuleManagerPtr mm) : _manager(mm), _usings(ptrs<Ast>()) {
     }
 
     Eval(const Eval &e) : Eval(e.get_manager()) {
@@ -125,7 +125,7 @@ public:
 
     void init(ModuleManagerPtr mm) {
         _manager = mm;
-        _usings = AstPtrs();
+        _usings = ptrs<Ast>();
     }
 
     ModuleManagerPtr get_manager() const {
@@ -136,7 +136,7 @@ public:
         return _manager->machine();
     }
 
-    AstPtrs get_usings() {
+    ptrs<Ast> get_usings() {
         return _usings;
     }
 
@@ -204,7 +204,7 @@ public:
      *
      * An expression is put into a definition, compiled, and reduced.
      */
-    void handle_import(const AstPtr &a) {
+    void handle_import(const ptr<Ast> &a) {
         auto mm = get_manager();
         if (a->tag() == AST_DIRECT_IMPORT) {
             auto [p, s] = AstDirectImport::split(a);
@@ -218,16 +218,16 @@ public:
         }
     }
 
-    void handle_using(const AstPtr &a) {
+    void handle_using(const ptr<Ast> &a) {
         _usings.push_back(a);
     }
 
-    void handle_definition(const AstPtr &d) {
+    void handle_definition(const ptr<Ast> &d) {
         auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
-        auto dd = AstPtrs();
+        auto dd = ptrs<Ast>();
         for (auto &u : get_usings()) {
             dd.push_back(u);
         }
@@ -265,12 +265,12 @@ public:
         ::emit_code(vm, w);
     }
 
-    void handle_data(const AstPtr &d) {
+    void handle_data(const ptr<Ast> &d) {
         auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
-        auto dd = AstPtrs();
+        auto dd = ptrs<Ast>();
         for (auto &u : get_usings()) {
             dd.push_back(u);
         }
@@ -314,7 +314,7 @@ public:
      * combinators at the moment I just let it leak. Probably the worst decision
      * I made yet.
      */
-    void handle_expression(const AstPtr &a, const VMObjectPtr &r,
+    void handle_expression(const ptr<Ast> &a, const VMObjectPtr &r,
                            const VMObjectPtr &exc) {
         auto fv = generate_fresh_combinator();
         auto vm = machine();
@@ -334,7 +334,7 @@ public:
 
     // XXX: very much wrong probably. A val declaration should not call the
     // callbacks handlers but either throw a parse error or return none.
-    void handle_value(const AstPtr &d) {
+    void handle_value(const ptr<Ast> &d) {
         auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
@@ -380,7 +380,7 @@ public:
         auto vm = machine();
 
         // parse the line
-        AstPtr aa;
+        ptr<Ast> aa;
         StringCharReader r = StringCharReader("internal", in);
         TokenReaderPtr tt = tokenize_from_reader(r);
         aa = ::parse_line(tt);
@@ -431,7 +431,7 @@ public:
     }
 
     void eval_interactive() {
-        auto uu = AstPtrs();
+        auto uu = ptrs<Ast>();
 
         const char *env_p = std::getenv("EGEL_PS0");
         icu::UnicodeString ps0;
@@ -457,5 +457,5 @@ public:
 
 private:
     ModuleManagerPtr _manager;
-    AstPtrs _usings;
+    ptrs<Ast> _usings;
 };

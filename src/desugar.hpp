@@ -11,7 +11,7 @@
 
 class RewriteWildcard : public Rewrite {
 public:
-    AstPtr wildcard(const AstPtr &a) {
+    ptr<Ast> wildcard(const ptr<Ast> &a) {
         _tick = 0;
         return rewrite(a);
     }
@@ -20,7 +20,7 @@ public:
         return _tick++;
     }
 
-    AstPtr rewrite_expr_wildcard(const Position &p,
+    ptr<Ast> rewrite_expr_wildcard(const Position &p,
                                  const icu::UnicodeString &v) override {
         icu::UnicodeString w = "WILD";
         w = w + unicode_convert_uint(tick());
@@ -31,35 +31,35 @@ private:
     int _tick;
 };
 
-AstPtr pass_wildcard(const AstPtr &a) {
+ptr<Ast> pass_wildcard(const ptr<Ast> &a) {
     RewriteWildcard wildcard;
     return wildcard.wildcard(a);
 }
 
 class RewriteCondition : public Rewrite {
 public:
-    AstPtr condition(const AstPtr &a) {
+    ptr<Ast> condition(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F(if i then t else e) -> ([ true -> F(t) | _ -> F(e) ] F(i))
-    AstPtr rewrite_expr_if(const Position &p, const AstPtr &i, const AstPtr &t,
-                           const AstPtr &e) override {
+    ptr<Ast> rewrite_expr_if(const Position &p, const ptr<Ast> &i, const ptr<Ast> &t,
+                           const ptr<Ast> &e) override {
         auto i0 = rewrite(i);
         auto t0 = rewrite(t);
         auto e0 = rewrite(e);
 
         auto a0 = AstExprCombinator::create(p, STRING_SYSTEM, STRING_TRUE);
-        AstPtrs aa0;
+        ptrs<Ast> aa0;
         aa0.push_back(a0);
         auto a1 = AstExprMatch::create(p, aa0, AstEmpty::create(), t0);
 
         auto b0 = AstExprWildcard::create(p, "_");
-        AstPtrs bb0;
+        ptrs<Ast> bb0;
         bb0.push_back(b0);
         auto b1 = AstExprMatch::create(p, bb0, AstEmpty::create(), e0);
 
-        AstPtrs cc0;
+        ptrs<Ast> cc0;
         cc0.push_back(a1);
         cc0.push_back(b1);
 
@@ -71,19 +71,19 @@ public:
     }
 };
 
-AstPtr pass_condition(const AstPtr &a) {
+ptr<Ast> pass_condition(const ptr<Ast> &a) {
     RewriteCondition condition;
     return condition.condition(a);
 }
 
 class RewriteTuple : public Rewrite {
 public:
-    AstPtr tuple(const AstPtr &a) {
+    ptr<Ast> tuple(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F( (e0, .., en) ) -> ( tuple F(e0) .. F(en) )
-    AstPtr rewrite_expr_tuple(const Position &p, const AstPtrs &ee) override {
+    ptr<Ast> rewrite_expr_tuple(const Position &p, const ptrs<Ast> &ee) override {
         auto t = AstExprCombinator::create(p, STRING_SYSTEM, STRING_TUPLE);
         for (auto &e : ee) {
             auto e0 = rewrite(e);
@@ -93,20 +93,20 @@ public:
     }
 };
 
-AstPtr pass_tuple(const AstPtr &a) {
+ptr<Ast> pass_tuple(const ptr<Ast> &a) {
     RewriteTuple tuple;
     return tuple.tuple(a);
 }
 
 class RewriteList : public Rewrite {
 public:
-    AstPtr list(const AstPtr &a) {
+    ptr<Ast> list(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F( {e0, .., en|ee} ) -> (cons F(e0) (.. (cons F(en) F(ee) ))) )
-    AstPtr rewrite_expr_list(const Position &p, const AstPtrs &ee,
-                             const AstPtr &tl) override {
+    ptr<Ast> rewrite_expr_list(const Position &p, const ptrs<Ast> &ee,
+                             const ptr<Ast> &tl) override {
         auto nil = AstExprCombinator::create(p, STRING_SYSTEM, STRING_NIL);
         auto cons = AstExprCombinator::create(p, STRING_SYSTEM, STRING_CONS);
         auto l = nil;
@@ -120,73 +120,73 @@ public:
     }
 };
 
-AstPtr pass_list(const AstPtr &a) {
+ptr<Ast> pass_list(const ptr<Ast> &a) {
     RewriteList list;
     return list.list(a);
 }
 
 class RewriteStatement : public Rewrite {
 public:
-    AstPtr stat(const AstPtr &a) {
+    ptr<Ast> stat(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F( r; l ) ) -> ( let _ = F(r) in F(l) )
-    AstPtr rewrite_expr_statement(const Position &p, const AstPtr &r,
-                                  const AstPtr &l) override {
+    ptr<Ast> rewrite_expr_statement(const Position &p, const ptr<Ast> &r,
+                                  const ptr<Ast> &l) override {
         auto r0 = rewrite(r);
         auto l0 = rewrite(l);
 
         auto k = AstExprCombinator::create(p, STRING_SYSTEM, STRING_K);
 
         auto b0 = AstExprWildcard::create(p, "_");
-        AstPtrs bb0;
+        ptrs<Ast> bb0;
         bb0.push_back(b0);
 
         return AstExprLet::create(p, bb0, r0, l0);
     }
 };
 
-AstPtr pass_statement(const AstPtr &a) {
+ptr<Ast> pass_statement(const ptr<Ast> &a) {
     RewriteStatement stat;
     return stat.stat(a);
 }
 
 class RewriteLambda : public Rewrite {
 public:
-    AstPtr lambda(const AstPtr &a) {
+    ptr<Ast> lambda(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F( (\v0, .., vn -> e) ) -> ( [ v0, .., vn ->  F(e) ] )
-    AstPtr rewrite_expr_lambda(const Position &p, const AstPtr &m) override {
-        AstPtrs mm;
+    ptr<Ast> rewrite_expr_lambda(const Position &p, const ptr<Ast> &m) override {
+        ptrs<Ast> mm;
         auto m0 = rewrite(m);
         mm.push_back(m0);
         return AstExprBlock::create(p, mm);
     }
 };
 
-AstPtr pass_lambda(const AstPtr &a) {
+ptr<Ast> pass_lambda(const ptr<Ast> &a) {
     RewriteLambda lambda;
     return lambda.lambda(a);
 }
 
 class RewriteLet : public Rewrite {
 public:
-    AstPtr let(const AstPtr &a) {
+    ptr<Ast> let(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F( (let l = r in b) ) -> ( [ l -> F(b) ] (F(r)) )
-    AstPtr rewrite_expr_let(const Position &p, const AstPtrs &ll,
-                            const AstPtr &r, const AstPtr &b) override {
+    ptr<Ast> rewrite_expr_let(const Position &p, const ptrs<Ast> &ll,
+                            const ptr<Ast> &r, const ptr<Ast> &b) override {
         auto r0 = rewrite(r);
         auto b0 = rewrite(b);
 
         auto m = AstExprMatch::create(p, ll, AstEmpty::create(), b0);
 
-        AstPtrs mm;
+        ptrs<Ast> mm;
         mm.push_back(m);
         auto q = AstExprBlock::create(p, mm);
 
@@ -194,32 +194,32 @@ public:
     }
 };
 
-AstPtr pass_let(const AstPtr &a) {
+ptr<Ast> pass_let(const ptr<Ast> &a) {
     RewriteLet let;
     return let.let(a);
 }
 
 class RewriteObject : public Rewrite {
 public:
-    AstPtr object(const AstPtr &a) {
+    ptr<Ast> object(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    AstPtr rewrite_decl_definition(const Position &p, const AstPtr &c,
-                                   const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
+                                   const ptr<Ast> &e) override {
         return AstDeclDefinition::create(p, c, e);  // cut
     }
 
-    AstPtr rewrite_decl_operator(const Position &p, const AstPtr &c,
-                                 const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+                                 const ptr<Ast> &e) override {
         return AstDeclOperator::create(p, c, e);  // cut
     }
 
-    AstPtr rewrite_decl_object(const Position &p, const AstPtr &c,
-                               const AstPtrs &vv, const AstPtrs &ff,
-                               const AstPtrs &ee) override {
-        AstPtrs oo;
-        AstPtrs dd;
+    ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
+                               const ptrs<Ast> &vv, const ptrs<Ast> &ff,
+                               const ptrs<Ast> &ee) override {
+        ptrs<Ast> oo;
+        ptrs<Ast> dd;
         oo.push_back(
             AstExprCombinator::create(p, STRING_SYSTEM, STRING_OBJECT));
         for (auto f : ff) {
@@ -237,11 +237,11 @@ public:
                 PANIC("failed to rewrite field");
             }
         }
-        AstPtr body = AstExprApplication::create(p, oo);
+        ptr<Ast> body = AstExprApplication::create(p, oo);
         for (auto e : ee) {
             auto ex =
                 AstExprCombinator::create(p, STRING_SYSTEM, STRING_EXTEND);
-            AstPtrs bb;
+            ptrs<Ast> bb;
             bb.push_back(ex);
             bb.push_back(e);
             bb.push_back(body);
@@ -252,26 +252,26 @@ public:
             auto l = AstExprBlock::create(p, m);
             body = l;
         }
-        AstPtrs decls;
+        ptrs<Ast> decls;
         decls.push_back(AstDeclData::create(p, dd));
         decls.push_back(AstDeclDefinition::create(p, c, body));
         return AstWrapper::create(p, decls);
     }
 };
 
-AstPtr pass_object(const AstPtr &a) {
+ptr<Ast> pass_object(const ptr<Ast> &a) {
     RewriteObject object;
     return object.object(a);
 }
 
 class RewriteThrow : public Rewrite {
 public:
-    AstPtr dethrow(const AstPtr &a) {
+    ptr<Ast> dethrow(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F( throw e ) -> ( (System.throw e) )
-    AstPtr rewrite_expr_throw(const Position &p, const AstPtr &e) override {
+    ptr<Ast> rewrite_expr_throw(const Position &p, const ptr<Ast> &e) override {
         auto t0 = AstExprCombinator::create(p, STRING_SYSTEM, STRING_THROW);
         auto e0 = rewrite(e);
 
@@ -279,20 +279,20 @@ public:
     }
 };
 
-AstPtr pass_throw(const AstPtr &a) {
+ptr<Ast> pass_throw(const ptr<Ast> &a) {
     RewriteThrow t;
     return t.dethrow(a);
 }
 
 class RewriteTry : public Rewrite {
 public:
-    AstPtr idtry(const AstPtr &a) {
+    ptr<Ast> idtry(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
     //  F( throw e ) -> ( (System.throw e) )
-    AstPtr rewrite_expr_try(const Position &p, const AstPtr &t,
-                            const AstPtr &c) override {
+    ptr<Ast> rewrite_expr_try(const Position &p, const ptr<Ast> &t,
+                            const ptr<Ast> &c) override {
         auto id = AstExprCombinator::create(p, STRING_SYSTEM, STRING_ID);
         auto t0 = rewrite(t);
         auto c0 = rewrite(c);
@@ -303,31 +303,31 @@ public:
     }
 };
 
-AstPtr pass_try(const AstPtr &a) {
+ptr<Ast> pass_try(const ptr<Ast> &a) {
     RewriteTry t;
     return t.idtry(a);
 }
 
 class RewriteMonmin : public Rewrite {
 public:
-    AstPtr monmin(const AstPtr &a) {
+    ptr<Ast> monmin(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    AstPtr lambdify(const AstPtr &e) {
+    ptr<Ast> lambdify(const ptr<Ast> &e) {
         auto p = e->position();
         auto v = AstExprVariable::create(p, "WILD0");
-        AstPtrs vv;
+        ptrs<Ast> vv;
         vv.push_back(v);
         auto m = AstExprMatch::create(p, vv, AstEmpty::create(), e);
-        AstPtrs mm;
+        ptrs<Ast> mm;
         mm.push_back(m);
         return AstExprBlock::create(p, mm);
     }
 
     // (- x) -> -x
-    AstPtr rewrite_expr_application(const Position &p,
-                                    const AstPtrs &ee) override {
+    ptr<Ast> rewrite_expr_application(const Position &p,
+                                    const ptrs<Ast> &ee) override {
         if (ee.size() == 2) {
             auto op = ee[0];
             if (op->tag() == AST_EXPR_COMBINATOR) {
@@ -348,31 +348,31 @@ public:
     }
 };
 
-AstPtr pass_monmin(const AstPtr &a) {
+ptr<Ast> pass_monmin(const ptr<Ast> &a) {
     RewriteMonmin t;
     return t.monmin(a);
 }
 
 class RewriteLazyOp : public Rewrite {
 public:
-    AstPtr lazyop(const AstPtr &a) {
+    ptr<Ast> lazyop(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    AstPtr lambdify(const AstPtr &e) {
+    ptr<Ast> lambdify(const ptr<Ast> &e) {
         auto p = e->position();
         auto v = AstExprVariable::create(p, "WILD0");
-        AstPtrs vv;
+        ptrs<Ast> vv;
         vv.push_back(v);
         auto m = AstExprMatch::create(p, vv, AstEmpty::create(), e);
-        AstPtrs mm;
+        ptrs<Ast> mm;
         mm.push_back(m);
         return AstExprBlock::create(p, mm);
     }
 
     //  e0 || e1 -> e0 || [ _ -> e1 ] and e0 && e1 -> e0 && [ _ -> e1 ]
-    AstPtr rewrite_expr_application(const Position &p,
-                                    const AstPtrs &ee) override {
+    ptr<Ast> rewrite_expr_application(const Position &p,
+                                    const ptrs<Ast> &ee) override {
         if (ee.size() == 3) {
             auto op = ee[0];
             if (op->tag() == AST_EXPR_COMBINATOR) {
@@ -381,7 +381,7 @@ public:
                     auto arg0 = rewrite(ee[1]);
                     auto arg1 = lambdify(rewrite(ee[2]));
 
-                    AstPtrs ff;
+                    ptrs<Ast> ff;
                     ff.push_back(op);
                     ff.push_back(arg0);
                     ff.push_back(arg1);
@@ -399,12 +399,12 @@ public:
     }
 };
 
-AstPtr pass_lazyop(const AstPtr &a) {
+ptr<Ast> pass_lazyop(const ptr<Ast> &a) {
     RewriteLazyOp t;
     return t.lazyop(a);
 }
 
-AstPtr desugar(const AstPtr &a) {
+ptr<Ast> desugar(const ptr<Ast> &a) {
     auto a0 = pass_condition(a);
     a0 = pass_wildcard(a0);
     a0 = pass_tuple(a0);
