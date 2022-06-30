@@ -288,11 +288,6 @@ public:
 };
 
 using AstExprFloatPtr = std::shared_ptr<AstExprFloat>;
-#define AST_EXPR_FLOAT_CAST(a) std::static_pointer_cast<AstExprFloat>(a)
-#define AST_EXPR_FLOAT_SPLIT(a, p, t)   \
-    auto _##a = AST_EXPR_FLOAT_CAST(a); \
-    auto p = _##a->position();          \
-    auto t = _##a->text();
 
 class AstExprCharacter : public AstAtom {
 public:
@@ -320,11 +315,6 @@ public:
 };
 
 using AstExprCharacterPtr = std::shared_ptr<AstExprCharacter>;
-#define AST_EXPR_CHARACTER_CAST(a) std::static_pointer_cast<AstExprCharacter>(a)
-#define AST_EXPR_CHARACTER_SPLIT(a, p, t)   \
-    auto _##a = AST_EXPR_CHARACTER_CAST(a); \
-    auto p = _##a->position();              \
-    auto t = _##a->text();
 
 class AstExprText : public AstAtom {
 public:
@@ -351,11 +341,6 @@ public:
 };
 
 using AstExprTextPtr = std::shared_ptr<AstExprText>;
-#define AST_EXPR_TEXT_CAST(a) std::static_pointer_cast<AstExprText>(a)
-#define AST_EXPR_TEXT_SPLIT(a, p, t)   \
-    auto _##a = AST_EXPR_TEXT_CAST(a); \
-    auto p = _##a->position();         \
-    auto t = _##a->text();
 
 // expression variables and constants
 
@@ -385,11 +370,6 @@ public:
 };
 
 using AstExprVariablePtr = std::shared_ptr<AstExprVariable>;
-#define AST_EXPR_VARIABLE_CAST(a) std::static_pointer_cast<AstExprVariable>(a)
-#define AST_EXPR_VARIABLE_SPLIT(a, p, t)   \
-    auto _##a = AST_EXPR_VARIABLE_CAST(a); \
-    auto p = _##a->position();             \
-    auto t = _##a->text();
 
 class AstExprWildcard : public AstAtom {
 public:
@@ -417,11 +397,6 @@ public:
 };
 
 using AstExprWildcardPtr = std::shared_ptr<AstExprWildcard>;
-#define AST_EXPR_WILDCARD_CAST(a) std::static_pointer_cast<AstExprWildcard>(a)
-#define AST_EXPR_WILDCARD_SPLIT(a, p, t)   \
-    auto _##a = AST_EXPR_WILDCARD_CAST(a); \
-    auto p = _##a->position();             \
-    auto t = _##a->text();
 
 class AstExprTag : public Ast {
 public:
@@ -486,12 +461,6 @@ private:
 };
 
 using AstExprTagPtr = std::shared_ptr<AstExprTag>;
-#define AST_EXPR_TAG_CAST(a) std::static_pointer_cast<AstExprTag>(a)
-#define AST_EXPR_TAG_SPLIT(a, p, e, t) \
-    auto _##a = AST_EXPR_TAG_CAST(a);  \
-    auto p = _##a->position();         \
-    auto e = _##a->expression();       \
-    auto t = _##a->tag();
 
 class AstExprCombinator : public Ast {
 public:
@@ -584,13 +553,6 @@ private:
 };
 
 using AstExprCombinatorPtr = std::shared_ptr<AstExprCombinator>;
-#define AST_EXPR_COMBINATOR_CAST(a) \
-    std::static_pointer_cast<AstExprCombinator>(a)
-#define AST_EXPR_COMBINATOR_SPLIT(a, p, pp, c) \
-    auto _##a = AST_EXPR_COMBINATOR_CAST(a);   \
-    auto p = _##a->position();                 \
-    auto pp = _##a->path();                    \
-    auto c = _##a->combinator();
 
 class AstExprOperator : public Ast {
 public:
@@ -782,12 +744,6 @@ private:
 };
 
 using AstExprListPtr = std::shared_ptr<AstExprList>;
-#define AST_EXPR_LIST_CAST(a) std::static_pointer_cast<AstExprList>(a)
-#define AST_EXPR_LIST_SPLIT(a, p, dd, tl) \
-    auto _##a = AST_EXPR_LIST_CAST(a);    \
-    auto p = _##a->position();            \
-    auto dd = _##a->content();            \
-    auto tl = _##a->tail();
 
 class AstExprTuple : public Ast {
 public:
@@ -864,11 +820,6 @@ private:
 };
 
 using AstExprTuplePtr = std::shared_ptr<AstExprTuple>;
-#define AST_EXPR_TUPLE_CAST(a) std::static_pointer_cast<AstExprTuple>(a)
-#define AST_EXPR_TUPLE_SPLIT(a, p, dd)  \
-    auto _##a = AST_EXPR_TUPLE_CAST(a); \
-    auto p = _##a->position();          \
-    auto dd = _##a->content();
 
 // expression compound statements
 
@@ -981,12 +932,6 @@ private:
 };
 
 using AstExprApplicationPtr = std::shared_ptr<AstExprApplication>;
-#define AST_EXPR_APPLICATION_CAST(a) \
-    std::static_pointer_cast<AstExprApplication>(a)
-#define AST_EXPR_APPLICATION_SPLIT(a, p, aa)  \
-    auto _##a = AST_EXPR_APPLICATION_CAST(a); \
-    auto p = _##a->position();                \
-    auto aa = _##a->arguments();
 
 class AstExprMatch : public Ast {
 public:
@@ -1095,13 +1040,6 @@ private:
 };
 
 using AstExprMatchPtr = std::shared_ptr<AstExprMatch>;
-#define AST_EXPR_MATCH_CAST(a) std::static_pointer_cast<AstExprMatch>(a)
-#define AST_EXPR_MATCH_SPLIT(a, p, pp, g, r) \
-    auto _##a = AST_EXPR_MATCH_CAST(a);      \
-    auto p = _##a->position();               \
-    auto pp = _##a->patterns();              \
-    auto g = _##a->guard();                  \
-    auto r = _##a->result();
 
 class AstExprBlock : public Ast {
 public:
@@ -1197,11 +1135,6 @@ private:
 };
 
 using AstExprBlockPtr = std::shared_ptr<AstExprBlock>;
-#define AST_EXPR_BLOCK_CAST(a) std::static_pointer_cast<AstExprBlock>(a)
-#define AST_EXPR_BLOCK_SPLIT(a, p, mm)  \
-    auto _##a = AST_EXPR_BLOCK_CAST(a); \
-    auto p = _##a->position();          \
-    auto mm = _##a->matches();
 
 class AstExprLambda : public Ast {
 public:
@@ -1251,11 +1184,6 @@ private:
 };
 
 using AstExprLambdaPtr = std::shared_ptr<AstExprLambda>;
-#define AST_EXPR_LAMBDA_CAST(a) std::static_pointer_cast<AstExprLambda>(a)
-#define AST_EXPR_LAMBDA_SPLIT(a, p, m)   \
-    auto _##a = AST_EXPR_LAMBDA_CAST(a); \
-    auto p = _##a->position();           \
-    auto m = _##a->match();
 
 class AstExprLet : public Ast {
 public:
@@ -1345,13 +1273,6 @@ private:
 };
 
 using AstExprLetPtr = std::shared_ptr<AstExprLet>;
-#define AST_EXPR_LET_CAST(a) std::static_pointer_cast<AstExprLet>(a)
-#define AST_EXPR_LET_SPLIT(a, p, l, r, e) \
-    auto _##a = AST_EXPR_LET_CAST(a);     \
-    auto p = _##a->position();            \
-    auto l = _##a->left_hand_side();      \
-    auto r = _##a->right_hand_side();     \
-    auto e = _##a->expression();
 
 class AstExprTry : public Ast {
 public:
@@ -1426,12 +1347,6 @@ private:
 };
 
 using AstExprTryPtr = std::shared_ptr<AstExprTry>;
-#define AST_EXPR_TRY_CAST(a) std::static_pointer_cast<AstExprTry>(a)
-#define AST_EXPR_TRY_SPLIT(a, p, t, c) \
-    auto _##a = AST_EXPR_TRY_CAST(a);  \
-    auto p = _##a->position();         \
-    auto t = _##a->try0();             \
-    auto c = _##a->catch0();
 
 class AstExprThrow : public Ast {
 public:
@@ -1487,11 +1402,6 @@ private:
 };
 
 using AstExprThrowPtr = std::shared_ptr<AstExprThrow>;
-#define AST_EXPR_THROW_CAST(a) std::static_pointer_cast<AstExprThrow>(a)
-#define AST_EXPR_THROW_SPLIT(a, p, e)   \
-    auto _##a = AST_EXPR_THROW_CAST(a); \
-    auto p = _##a->position();          \
-    auto e = _##a->throw0();
 
 class AstExprIf : public Ast {
 public:
@@ -1578,13 +1488,6 @@ private:
 };
 
 using AstExprIfPtr = std::shared_ptr<AstExprIf>;
-#define AST_EXPR_IF_CAST(a) std::static_pointer_cast<AstExprIf>(a)
-#define AST_EXPR_IF_SPLIT(a, p, i, t, e) \
-    auto _##a = AST_EXPR_IF_CAST(a);     \
-    auto p = _##a->position();           \
-    auto i = _##a->if0();                \
-    auto t = _##a->then0();              \
-    auto e = _##a->else0();
 
 class AstExprStatement : public Ast {
 public:
@@ -1651,12 +1554,6 @@ private:
 };
 
 using AstExprStatementPtr = std::shared_ptr<AstExprStatement>;
-#define AST_EXPR_STATEMENT_CAST(a) std::static_pointer_cast<AstExprStatement>(a)
-#define AST_EXPR_STATEMENT_SPLIT(a, p, l, r) \
-    auto _##a = AST_EXPR_STATEMENT_CAST(a);  \
-    auto p = _##a->position();               \
-    auto l = _##a->lhs();                    \
-    auto r = _##a->rhs();
 
 // declarations
 class AstDeclNamespace : public Ast {
@@ -1722,12 +1619,6 @@ private:
 };
 
 using AstDeclNamespacePtr = std::shared_ptr<AstDeclNamespace>;
-#define AST_DECL_NAMESPACE_CAST(a) std::static_pointer_cast<AstDeclNamespace>(a)
-#define AST_DECL_NAMESPACE_SPLIT(a, p, n, dd) \
-    auto _##a = AST_DECL_NAMESPACE_CAST(a);   \
-    auto p = _##a->position();                \
-    auto n = _##a->name();                    \
-    auto dd = _##a->content();
 
 class AstDeclData : public Ast {
 public:
@@ -1804,11 +1695,6 @@ private:
 };
 
 using AstDeclDataPtr = std::shared_ptr<AstDeclData>;
-#define AST_DECL_DATA_CAST(a) std::static_pointer_cast<AstDeclData>(a)
-#define AST_DECL_DATA_SPLIT(a, p, nn)  \
-    auto _##a = AST_DECL_DATA_CAST(a); \
-    auto p = _##a->position();         \
-    auto nn = _##a->names();
 
 class AstDeclDefinition : public Ast {
 public:
@@ -1877,13 +1763,6 @@ private:
 };
 
 using AstDeclDefinitionPtr = std::shared_ptr<AstDeclDefinition>;
-#define AST_DECL_DEFINITION_CAST(a) \
-    std::static_pointer_cast<AstDeclDefinition>(a)
-#define AST_DECL_DEFINITION_SPLIT(a, p, n, e) \
-    auto _##a = AST_DECL_DEFINITION_CAST(a);  \
-    auto p = _##a->position();                \
-    auto n = _##a->name();                    \
-    auto e = _##a->expression();
 
 class AstDeclValue : public Ast {
 public:
@@ -1953,12 +1832,6 @@ private:
 };
 
 using AstDeclValuePtr = std::shared_ptr<AstDeclValue>;
-#define AST_DECL_VALUE_CAST(a) std::static_pointer_cast<AstDeclValue>(a)
-#define AST_DECL_VALUE_SPLIT(a, p, l, r) \
-    auto _##a = AST_DECL_VALUE_CAST(a);  \
-    auto p = _##a->position();           \
-    auto l = _##a->name();               \
-    auto r = _##a->expression();
 
 class AstDeclOperator : public Ast {
 public:
@@ -2029,12 +1902,6 @@ private:
 };
 
 using AstDeclOperatorPtr = std::shared_ptr<AstDeclOperator>;
-#define AST_DECL_OPERATOR_CAST(a) std::static_pointer_cast<AstDeclOperator>(a)
-#define AST_DECL_OPERATOR_SPLIT(a, p, c, e) \
-    auto _##a = AST_DECL_OPERATOR_CAST(a);  \
-    auto p = _##a->position();              \
-    auto c = _##a->combinator();            \
-    auto e = _##a->expression();
 
 class AstDeclObject : public Ast {
 public:
@@ -2134,14 +2001,6 @@ private:
 };
 
 using AstDeclObjectPtr = std::shared_ptr<AstDeclObject>;
-#define AST_DECL_OBJECT_CAST(a) std::static_pointer_cast<AstDeclObject>(a)
-#define AST_DECL_OBJECT_SPLIT(a, p, n, vv, ff, ee) \
-    auto _##a = AST_DECL_OBJECT_CAST(a);           \
-    auto p = _##a->position();                     \
-    auto n = _##a->name();                         \
-    auto vv = _##a->variables();                   \
-    auto ff = _##a->fields();                      \
-    auto ee = _##a->extends();
 
 class AstDirectImport : public Ast {
 public:
@@ -2190,11 +2049,6 @@ private:
 };
 
 using AstDirectImportPtr = std::shared_ptr<AstDirectImport>;
-#define AST_DIRECT_IMPORT_CAST(a) std::static_pointer_cast<AstDirectImport>(a)
-#define AST_DIRECT_IMPORT_SPLIT(a, p, i)   \
-    auto _##a = AST_DIRECT_IMPORT_CAST(a); \
-    auto p = _##a->position();             \
-    auto i = _##a->import();
 
 class AstDirectUsing : public Ast {
 public:

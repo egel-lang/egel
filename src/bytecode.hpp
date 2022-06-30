@@ -63,8 +63,6 @@ constexpr auto STRING_OP_TAG = "tag";
 constexpr auto STRING_OP_FAIL = "fail";
 constexpr auto STRING_OP_RETURN = "return";
 
-#define VM_OBJECT_BYTECODE_CAST(o) std::static_pointer_cast<VMObjectBytecode>(o)
-
 class CodePrinter {
 public:
     CodePrinter(const Code &code) : _code(code), _pc(0) {
