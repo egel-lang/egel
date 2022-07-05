@@ -253,14 +253,6 @@ public:
     }
 };
 
-using AstExprHexIntegerPtr = std::shared_ptr<AstExprHexInteger>;
-#define AST_EXPR_HEXINTEGER_CAST(a) \
-    std::static_pointer_cast<AstExprHexInteger>(a)
-#define AST_EXPR_HEXINTEGER_SPLIT(a, p, t)   \
-    auto _##a = AST_EXPR_HEXINTEGER_CAST(a); \
-    auto p = _##a->position();               \
-    auto t = _##a->text();
-
 class AstExprFloat : public AstAtom {
 public:
     AstExprFloat(const Position &p, const icu::UnicodeString &text)
@@ -284,8 +276,6 @@ public:
         return {p, s};
     }
 };
-
-using AstExprFloatPtr = std::shared_ptr<AstExprFloat>;
 
 class AstExprCharacter : public AstAtom {
 public:
@@ -312,8 +302,6 @@ public:
     }
 };
 
-using AstExprCharacterPtr = std::shared_ptr<AstExprCharacter>;
-
 class AstExprText : public AstAtom {
 public:
     AstExprText(const Position &p, const icu::UnicodeString &text)
@@ -337,8 +325,6 @@ public:
         return {p, s};
     }
 };
-
-using AstExprTextPtr = std::shared_ptr<AstExprText>;
 
 // expression variables and constants
 
@@ -367,8 +353,6 @@ public:
     }
 };
 
-using AstExprVariablePtr = std::shared_ptr<AstExprVariable>;
-
 class AstExprWildcard : public AstAtom {
 public:
     AstExprWildcard(const Position &p, const icu::UnicodeString &text)
@@ -393,8 +377,6 @@ public:
         return {p, s};
     }
 };
-
-using AstExprWildcardPtr = std::shared_ptr<AstExprWildcard>;
 
 class AstExprTag : public Ast {
 public:
@@ -457,8 +439,6 @@ private:
     ptr<Ast> _expression;
     ptr<Ast> _tag;
 };
-
-using AstExprTagPtr = std::shared_ptr<AstExprTag>;
 
 class AstExprCombinator : public Ast {
 public:
@@ -550,8 +530,6 @@ private:
     icu::UnicodeString _combinator;
 };
 
-using AstExprCombinatorPtr = std::shared_ptr<AstExprCombinator>;
-
 class AstExprOperator : public Ast {
 public:
     AstExprOperator(const Position &p, const UnicodeStrings &pp,
@@ -629,14 +607,6 @@ private:
     UnicodeStrings _path;
     icu::UnicodeString _combinator;
 };
-
-using AstExprOperatorPtr = std::shared_ptr<AstExprOperator>;
-#define AST_EXPR_OPERATOR_CAST(a) std::static_pointer_cast<AstExprOperator>(a)
-#define AST_EXPR_OPERATOR_SPLIT(a, p, pp, c) \
-    auto _##a = AST_EXPR_OPERATOR_CAST(a);   \
-    auto p = _##a->position();               \
-    auto pp = _##a->path();                  \
-    auto c = _##a->combinator();
 
 // list and tuple
 
@@ -741,8 +711,6 @@ private:
     ptr<Ast> _tail;
 };
 
-using AstExprListPtr = std::shared_ptr<AstExprList>;
-
 class AstExprTuple : public Ast {
 public:
     AstExprTuple(const Position &p, const ptrs<Ast> &c)
@@ -816,8 +784,6 @@ public:
 private:
     ptrs<Ast> _content;
 };
-
-using AstExprTuplePtr = std::shared_ptr<AstExprTuple>;
 
 // expression compound statements
 
@@ -929,8 +895,6 @@ private:
     ptrs<Ast> _arguments;
 };
 
-using AstExprApplicationPtr = std::shared_ptr<AstExprApplication>;
-
 class AstExprMatch : public Ast {
 public:
     AstExprMatch(const Position &p, const ptrs<Ast> &pp, const ptr<Ast> &g,
@@ -1037,8 +1001,6 @@ private:
     ptr<Ast> _result;
 };
 
-using AstExprMatchPtr = std::shared_ptr<AstExprMatch>;
-
 class AstExprBlock : public Ast {
 public:
     AstExprBlock(const Position &p, const ptrs<Ast> &mm)
@@ -1080,7 +1042,7 @@ public:
 
     text_index_t arity() const {
         if ((_matches.size() > 0) && (_matches[0]->tag() == AST_EXPR_MATCH)) {
-            auto m0 = AST_EXPR_MATCH_CAST(_matches[0]);
+            auto m0 = AstExprMatch::cast(_matches[0]);
             return m0->arity();
         } else {
             return 0;
@@ -1132,8 +1094,6 @@ private:
     ptrs<Ast> _matches;
 };
 
-using AstExprBlockPtr = std::shared_ptr<AstExprBlock>;
-
 class AstExprLambda : public Ast {
 public:
     AstExprLambda(const Position &p, const ptr<Ast> &m)
@@ -1180,8 +1140,6 @@ public:
 private:
     ptr<Ast> _match;
 };
-
-using AstExprLambdaPtr = std::shared_ptr<AstExprLambda>;
 
 class AstExprLet : public Ast {
 public:
@@ -1270,8 +1228,6 @@ private:
     ptr<Ast> _expression;
 };
 
-using AstExprLetPtr = std::shared_ptr<AstExprLet>;
-
 class AstExprTry : public Ast {
 public:
     AstExprTry(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1)
@@ -1344,8 +1300,6 @@ private:
     ptr<Ast> _catch;
 };
 
-using AstExprTryPtr = std::shared_ptr<AstExprTry>;
-
 class AstExprThrow : public Ast {
 public:
     AstExprThrow(const Position &p, const ptr<Ast> &e0)
@@ -1398,8 +1352,6 @@ public:
 private:
     ptr<Ast> _throw;
 };
-
-using AstExprThrowPtr = std::shared_ptr<AstExprThrow>;
 
 class AstExprIf : public Ast {
 public:
@@ -1485,8 +1437,6 @@ private:
     ptr<Ast> _else;
 };
 
-using AstExprIfPtr = std::shared_ptr<AstExprIf>;
-
 class AstExprStatement : public Ast {
 public:
     AstExprStatement(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1)
@@ -1551,8 +1501,6 @@ private:
     ptr<Ast> _rhs;
 };
 
-using AstExprStatementPtr = std::shared_ptr<AstExprStatement>;
-
 // declarations
 class AstDeclNamespace : public Ast {
 public:
@@ -1615,8 +1563,6 @@ private:
     UnicodeStrings _name;
     ptrs<Ast> _content;
 };
-
-using AstDeclNamespacePtr = std::shared_ptr<AstDeclNamespace>;
 
 class AstDeclData : public Ast {
 public:
@@ -1692,8 +1638,6 @@ private:
     ptrs<Ast> _names;
 };
 
-using AstDeclDataPtr = std::shared_ptr<AstDeclData>;
-
 class AstDeclDefinition : public Ast {
 public:
     AstDeclDefinition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &e)
@@ -1759,8 +1703,6 @@ private:
     ptr<Ast> _name;
     ptr<Ast> _expression;
 };
-
-using AstDeclDefinitionPtr = std::shared_ptr<AstDeclDefinition>;
 
 class AstDeclValue : public Ast {
 public:
@@ -1829,8 +1771,6 @@ private:
     ptr<Ast> _expression;
 };
 
-using AstDeclValuePtr = std::shared_ptr<AstDeclValue>;
-
 class AstDeclOperator : public Ast {
 public:
     AstDeclOperator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &e)
@@ -1898,8 +1838,6 @@ private:
     ptr<Ast> _combinator;
     ptr<Ast> _expression;
 };
-
-using AstDeclOperatorPtr = std::shared_ptr<AstDeclOperator>;
 
 class AstDeclObject : public Ast {
 public:
@@ -1998,8 +1936,6 @@ private:
     ptrs<Ast> _extends;
 };
 
-using AstDeclObjectPtr = std::shared_ptr<AstDeclObject>;
-
 class AstDirectImport : public Ast {
 public:
     AstDirectImport(const Position &p, const icu::UnicodeString &v)
@@ -2045,8 +1981,6 @@ public:
 private:
     icu::UnicodeString _import;
 };
-
-using AstDirectImportPtr = std::shared_ptr<AstDirectImport>;
 
 class AstDirectUsing : public Ast {
 public:
@@ -2103,13 +2037,6 @@ private:
     UnicodeStrings _using;
 };
 
-using AstDirectUsingPtr = std::shared_ptr<AstDirectUsing>;
-#define AST_DIRECT_USING_CAST(a) std::static_pointer_cast<AstDirectUsing>(a)
-#define AST_DIRECT_USING_SPLIT(a, p, u)   \
-    auto _##a = AST_DIRECT_USING_CAST(a); \
-    auto p = _##a->position();            \
-    auto u = _##a->using0();
-
 class AstWrapper : public Ast {
 public:
     AstWrapper(const Position &p, const ptrs<Ast> &c)
@@ -2153,13 +2080,6 @@ public:
 private:
     ptrs<Ast> _content;
 };
-
-using AstWrapperPtr = std::shared_ptr<AstWrapper>;
-#define AST_WRAPPER_CAST(a) std::static_pointer_cast<AstWrapper>(a)
-#define AST_WRAPPER_SPLIT(a, p, dd)  \
-    auto _##a = AST_WRAPPER_CAST(a); \
-    auto p = _##a->position();       \
-    auto dd = _##a->content();
 
 int Ast::compare(const ptr<Ast> &a0, const ptr<Ast> &a1) {
     if ((a0 == nullptr) && (a1 == nullptr)) return true;
