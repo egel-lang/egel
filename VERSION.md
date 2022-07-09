@@ -14,6 +14,7 @@ A list of all major changes between versions of the interpreter.
 + integer move instruction in bytecode
 + generators to prelude, generator for dict
 + rewrite generators
++ sane Unicode handling
 + vs code syntax highlighting
 + add local combinator definitions (`where`)
 + add backtick `` `f`` as a shorthand for `quote "f"`

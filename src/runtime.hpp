@@ -199,7 +199,7 @@ public:
         return os;
     }
 
-    virtual int compare(const VMObject &o) = 0;
+    virtual int compare(VMObject* o) = 0;
 
     virtual vm_object_t* reduce(const vm_object_t *thunk) const = 0;
 
@@ -729,7 +729,7 @@ int vm_object_compare(const vm_object_t *o0, const vm_object_t *o1) {
                 else if (s1 < s0)
                     return 1;
                 else
-                    return vm_opaque_value(o0)->vm_object_compare(o0, o1);
+                    return vm_opaque_value(o0)->compare(vm_opaque_value(o1));
             } break;
             case VM_OBJECT_COMBINATOR: {
                 auto v0 = vm_combinator_value(o0)->symbol();
@@ -765,9 +765,69 @@ int vm_object_compare(const vm_object_t *o0, const vm_object_t *o1) {
 };
 
 bool vm_object_less(const vm_object_t* o0, const vm_object_t* o1) {
-    return (vm_object_compare(o0, o1) == -1)
+    return (vm_object_compare(o0, o1) == -1);
 };
 
+vm_object_t* reduce(const vm_object_t *thunk) {
+    if (vm_is_array(thunk) && (vm_array_size(thunk) >= 5)) {
+        auto sz = vm_array_size(thunk);
+        
+        // take apart the thunk
+        auto rt = vm_array_get(thunk, 0);
+        auto rti = vm_array_get(thunk, 1);
+        auto k = vm_array_get(thunk, 2);
+        auto exc = vm_array_get(thunk, 3);
+        auto c = vm_array_get(thunk, 4);
+
+        // rewrite according to head combinator
+
+        vm_object_t* ret = nullptr;
+
+        switch (vm_object_tag(c)) {
+        case VM_OBJECT_INTEGER:
+        case VM_OBJECT_FLOAT:
+        case VM_OBJECT_CHAR:
+        case VM_OBJECT_TEXT:
+        case VM_OBJECT_OPAQUE: {
+            if (sz > 5) {
+                auto tt = vm_array_create(sz - 4);
+                for (int i = 4; i < sz; i++) {
+                    vm_array_set(tt, i - 4, vm_array_get(thunk, i));
+                }
+                ret = tt;
+            } else {
+                ret = c;
+            }
+            break;
+        };
+        case VM_OBJECT_ARRAY: {
+            break;
+        };
+        case VM_OBJECT_COMBINATOR: {
+            break;
+        }
+        }
+
+        vm_object_t* ret;
+        if (tt.size() > 5) {
+            vm_object_t*s rr;
+            for (unsigned int i = 4; i < tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            ret = VMObjectArray::create(rr);
+        } else {
+            ret = tt[4];
+        }
+
+        auto index = VM_OBJECT_INTEGER_VALUE(rti);
+        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        rta->set(index, ret);
+
+        return k;
+    } else {
+        // not an array
+    }
+};
 
 using UnicodeStrings = std::vector<icu::UnicodeString>;
 
