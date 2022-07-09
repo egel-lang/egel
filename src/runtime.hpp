@@ -780,7 +780,6 @@ vm_object_t* reduce(const vm_object_t *thunk) {
         auto c = vm_array_get(thunk, 4);
 
         // rewrite according to head combinator
-
         vm_object_t* ret = nullptr;
 
         switch (vm_object_tag(c)) {
@@ -801,31 +800,30 @@ vm_object_t* reduce(const vm_object_t *thunk) {
             break;
         };
         case VM_OBJECT_ARRAY: {
+            auto sz0 = vm_array_size(c);
+            auto newthunk = vm_array_create(sz + sz0 - 1);
+            for (int i = 0; i < 4; i++) {
+                vm_array_set(newthunk, i, vm_array_get(thunk, i));
+            }
+            for (int i = 4; i < 4+sz0; i++) {
+                vm_array_set(newthunk, i, vm_array_get(c, i-4));
+            }
+            for (int i = 4+sz0; i < sz + sz0 - 1; i++) {
+                vm_array_set(newthunk, i, vm_array_get(thunk, i - sz0 + 1));
+            }
+            ret = newthunk;
             break;
         };
         case VM_OBJECT_COMBINATOR: {
+            ret = vm_combinator_value(c)->reduce(thunk);
             break;
         }
         }
 
-        vm_object_t* ret;
-        if (tt.size() > 5) {
-            vm_object_t*s rr;
-            for (unsigned int i = 4; i < tt.size(); i++) {
-                rr.push_back(tt[i]);
-            }
-            ret = VMObjectArray::create(rr);
-        } else {
-            ret = tt[4];
-        }
-
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
-        rta->set(index, ret);
-
-        return k;
+        return ret;
     } else {
         // not an array
+        return nullptr; // FIXME: STUB FOR NOW
     }
 };
 
