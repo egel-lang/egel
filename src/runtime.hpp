@@ -797,30 +797,31 @@ vm_object_t* reduce(const vm_object_t *thunk) {
             } else {
                 ret = c;
             }
+            vm_array_set(rt, vm_int_value(rti), ret);
+            return k;
             break;
         };
         case VM_OBJECT_ARRAY: {
             auto sz0 = vm_array_size(c);
-            auto newthunk = vm_array_create(sz + sz0 - 1);
+            auto ret = vm_array_create(sz + sz0 - 1);
             for (int i = 0; i < 4; i++) {
-                vm_array_set(newthunk, i, vm_array_get(thunk, i));
+                vm_array_set(ret, i, vm_array_get(thunk, i));
             }
             for (int i = 4; i < 4+sz0; i++) {
-                vm_array_set(newthunk, i, vm_array_get(c, i-4));
+                vm_array_set(ret, i, vm_array_get(c, i-4));
             }
             for (int i = 4+sz0; i < sz + sz0 - 1; i++) {
-                vm_array_set(newthunk, i, vm_array_get(thunk, i - sz0 + 1));
+                vm_array_set(ret, i, vm_array_get(thunk, i - sz0 + 1));
             }
-            ret = newthunk;
+            vm_array_set(rt, vm_int_value(rti), ret);
+            return k;
             break;
         };
         case VM_OBJECT_COMBINATOR: {
-            ret = vm_combinator_value(c)->reduce(thunk);
+            return vm_combinator_value(c)->reduce(thunk);
             break;
         }
         }
-
-        return ret;
     } else {
         // not an array
         return nullptr; // FIXME: STUB FOR NOW

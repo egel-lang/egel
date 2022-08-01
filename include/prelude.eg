@@ -267,4 +267,7 @@ namespace List (
     def range3 =
         [ XG YG ZG F -> flatten (range XG [X -> range2 YG ZG [Y Z  -> F X Y Z]]) ]
 
+    ## List::to_tuple l - convert to tuple
+    def to_tuple = foldl [F X -> F X] tuple
+
 )
