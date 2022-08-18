@@ -87,6 +87,10 @@ namespace List (
         [ F Z nil -> Z
         | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
+    ## List::reduce f l - reduce on list
+    def reduce =
+        [ F (cons X XX) -> foldl F X XX ]
+
     ## List::head l - head of a list
     def head =
         [ (cons X XX) -> X ]
