@@ -329,7 +329,7 @@ public:
         } while ((n > 0) && (ch != '\n'));
 
         auto s = UnicodeString::fromUTF8(StringPiece(str, count));
-        delete str;
+        free(str);
         return s;
     }
 
