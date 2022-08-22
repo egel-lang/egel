@@ -1228,68 +1228,6 @@ public:
 
 
 // here we can safely declare reduce
-inline vm_object_t* VMObjectLiteral::reduce(const vm_object_t *thunk) const {
-    auto tt = VM_OBJECT_ARRAY_CAST(thunk);
-    // optimize a bit for the case it's either a sole literal or an applied
-    // literal
-    if (tt->size() == 5) {
-        auto rt = tt->get(0);
-        auto rti = tt->get(1);
-        auto k = tt->get(2);
-        // auto exc   = tt[3];
-        auto c = tt->get(4);
-
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
-        rta->set(index, c);
-
-        return k;
-    } else {
-        auto rt = tt->get(0);
-        auto rti = tt->get(1);
-        auto k = tt->get(2);
-
-        vm_object_t*s vv;
-        for (size_t n = 4; n < tt->size(); n++) {
-            vv.push_back(tt->get(n));
-        }
-
-        auto r = VMObjectArray::create(vv);
-
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
-        rta->set(index, r);
-
-        return k;
-    }
-};
-
-inline vm_object_t* VMObjectArray::reduce(const vm_object_t *thunk) const {
-    auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
-    auto rt = tt[0];
-    auto rti = tt[1];
-    auto k = tt[2];
-    auto exc = tt[3];
-    auto c = tt[4];
-
-    vm_object_t*s vv;
-    vv.push_back(rt);
-    vv.push_back(rti);
-    vv.push_back(k);
-    vv.push_back(exc);
-    auto aa = VM_OBJECT_ARRAY_VALUE(c);
-    for (auto &a : aa) {
-        vv.push_back(a);
-    }
-    for (unsigned int n = 5; n < tt.size(); n++) {
-        vv.push_back(tt[n]);
-    }
-
-    auto t = VMObjectArray::create(vv);
-
-    return t;
-}
-
 class VMObjectOpaque : public VMObject {
 public:
     VMObjectOpaque(const vm_subtag_t t, const icu::UnicodeString &n)

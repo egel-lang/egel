@@ -91,6 +91,10 @@ namespace List (
     def reduce =
         [ F (cons X XX) -> foldl F X XX ]
 
+    ## List::scanl f z l - left scan on list
+    def scanl =
+        [ F Z {} -> {Z} | F Z {X|XX} -> {Z | scanl (F Z X) XX} ]
+
     ## List::head l - head of a list
     def head =
         [ (cons X XX) -> X ]
