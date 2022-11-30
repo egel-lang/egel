@@ -87,6 +87,11 @@ namespace List (
         [ F Z nil -> Z
         | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
+    ## List::scanl f z l - scan on a list
+    def scanl =
+        [ F Z {} -> {Z}
+        | F Z {X|XX} -> {Z | scanl F (F Z X) XX} ]
+
     ## List::reduce f l - reduce on list
     def reduce =
         [ F (cons X XX) -> foldl F X XX ]
