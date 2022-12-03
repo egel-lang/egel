@@ -29,6 +29,10 @@ namespace System (
     def . =
         [ F G X -> F (G X) ]
 
+    ## System::|> x f - reverse application
+    def |> =
+        [ X F -> F X ]
+
     ## System::flip f x y - flip two arguments
     def flip = [ F X Y -> F Y X ]
 
