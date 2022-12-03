@@ -170,6 +170,18 @@ namespace List (
             [(XX0, XX1) -> if P X then (cons X XX0, XX1) else (XX0, cons X XX1) ]
                 (split P XX) ]
 
+    ## List::break p l - split a list in two parts
+    def break =
+        [ P nil -> (nil, nil)
+        | P (cons X XX) -> if P X then (nil, cons X XX) else 
+            let (YY, ZZ) = break P XX in (cons X YY, ZZ) ]
+
+    ## List::split_on x ll - split a list on a member
+    def split_on =
+        [ X nil -> cons nil nil
+        | X XX  -> [(YY, nil) -> {YY} | (YY,ZZ) -> {YY | split_on X (tail ZZ)}] 
+                    (break ((==) X) XX) ]
+
     ## List::flatten ll - flatten a list of lists to a list
     def flatten =
         [ nil                   -> nil
@@ -214,6 +226,16 @@ namespace List (
     def union =
         [ nil YY            -> YY
         | (cons X XX) YY    -> if elem X YY then union XX YY else cons X (union XX YY) ]
+
+    ## List::intersection x l - intersection of two lists (nˆ2 complexity)
+    def intersection =
+        [ nil YY            -> nil
+        | (cons X XX) YY    -> if elem X YY then cons X (intersection XX YY) else intersection XX YY  ]
+
+    ## List::unique l - make all members unique
+    def unique =
+        [ nil -> nil
+        | (cons X XX) -> if elem X XX then unique XX else cons X (unique XX) ]
 
     ## List::insert_everywhere x l - insert a member in every position of a list
     def insert_everywhere =
