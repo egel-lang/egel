@@ -47,6 +47,8 @@ enum ast_tag_t {
     AST_EXPR_LET,        // desugared
     AST_EXPR_IF,         // desugared
     AST_EXPR_STATEMENT,  // desugared
+    // do sugar
+    AST_EXPR_DO,        // desugared
     // directives
     AST_DIRECT_IMPORT,  // flattened out
     AST_DIRECT_USING,   // flattened out
@@ -107,7 +109,7 @@ public:
 
     virtual icu::UnicodeString to_text() const {
         std::stringstream ss;
-        render(ss, Ast::line_length);
+        render(ss, 0);
         icu::UnicodeString u(ss.str().c_str());
         return u;
     }
@@ -499,7 +501,7 @@ public:
     text_index_t approximate_length(text_index_t indent) const override {
         text_index_t l = indent;
         for (auto &p : _path) {
-            l += p.length() + 1;
+            l += p.length() + 2;
         }
         l += _combinator.length();
         return l;
@@ -580,8 +582,7 @@ public:
     text_index_t approximate_length(text_index_t indent) const {
         text_index_t l = indent;
         for (auto &p : _path) {
-            l += p.length();
-            l += 1;
+            l += p.length() + 2;
             if (l >= line_length) return l;
         }
         l += _combinator.length();
@@ -1327,7 +1328,9 @@ public:
 
     void render(std::ostream &os, text_index_t indent) const {
         if (approximate_length(indent) <= line_length) {
-            os << "throw (" << throw0() << ")";
+            os << "throw (";
+            throw0()->render(os, indent);
+            os << ")";
         } else {
             os << "throw (";
             skip_line(os, indent + 4);
@@ -1496,6 +1499,61 @@ using AstExprStatementPtr = std::shared_ptr<AstExprStatement>;
     auto p = _##a->position();               \
     auto l = _##a->lhs();                    \
     auto r = _##a->rhs();
+
+class AstExprDo : public Ast {
+public:
+    AstExprDo(const Position &p, const AstPtr &e0)
+        : Ast(AST_EXPR_DO, p), _do(e0) {
+    }
+
+    AstExprDo(const AstExprDo &a)
+        : AstExprDo(a.position(), a.do0()) {
+    }
+
+    static AstPtr create(const Position &p, const AstPtr &e0) {
+        return std::make_shared<AstExprDo>(p, e0);
+    }
+
+    static std::shared_ptr<AstExprDo> cast(const AstPtr &a) {
+        return std::static_pointer_cast<AstExprDo>(a);
+    }
+
+    AstPtr do0() const {
+        return _do;
+    }
+
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
+        l += 5;
+        l = do0()->approximate_length(l);
+        return l;
+    }
+
+    void render(std::ostream &os, text_index_t indent) const {
+        if (approximate_length(indent) <= line_length) {
+            os << "(do ";
+            do0()->render(os, indent);
+            os << ")";
+        } else {
+            os << "(do ";
+            skip_line(os, indent + 4);
+            do0()->render(os, indent + 4);
+            skip_line(os, indent);
+            os << ")";
+            skip_line(os, indent);
+        }
+    }
+
+private:
+    AstPtr _do;
+};
+
+using AstExprDoPtr = std::shared_ptr<AstExprDo>;
+#define AST_EXPR_DO_CAST(a) std::static_pointer_cast<AstExprDo>(a)
+#define AST_EXPR_DO_SPLIT(a, p, e)   \
+    auto _##a = AST_EXPR_DO_CAST(a); \
+    auto p = _##a->position();          \
+    auto e = _##a->do0();
 
 // declarations
 class AstDeclNamespace : public Ast {

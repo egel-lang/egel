@@ -159,6 +159,11 @@ public:
         return AstExprThrow::create(p, e0);
     }
 
+    virtual AstPtr transform_expr_do(const AstPtr &a, const Position &p,
+                                        const AstPtr &e) {
+        auto e0 = transform(e);
+        return AstExprDo::create(p, e0);
+    }
     virtual AstPtr transform_directive_import(const AstPtr &a,
                                               const Position &p,
                                               const icu::UnicodeString &i) {
@@ -335,6 +340,11 @@ public:
             case AST_EXPR_THROW: {
                 AST_EXPR_THROW_SPLIT(a, p, exc);
                 return transform_expr_throw(a, p, exc);
+                break;
+            }
+            case AST_EXPR_DO: {
+                AST_EXPR_DO_SPLIT(a, p, e);
+                return transform_expr_do(a, p, e);
                 break;
             }
             // directives
@@ -540,6 +550,11 @@ public:
         return AstExprThrow::create(p, e0);
     }
 
+    virtual AstPtr rewrite_expr_do(const Position &p, const AstPtr &e) {
+        auto e0 = rewrite(e);
+        return AstExprDo::create(p, e0);
+    }
+
     virtual AstPtr rewrite_directive_import(const Position &p,
                                             const icu::UnicodeString &i) {
         return AstDirectImport::create(p, i);
@@ -713,6 +728,11 @@ public:
             case AST_EXPR_THROW: {
                 AST_EXPR_THROW_SPLIT(a, p, exc);
                 return rewrite_expr_throw(p, exc);
+                break;
+            }
+            case AST_EXPR_DO: {
+                AST_EXPR_DO_SPLIT(a, p, e);
+                return rewrite_expr_do(p, e);
                 break;
             }
             // directives
@@ -889,6 +909,10 @@ public:
         visit(e);
     }
 
+    virtual void visit_expr_do(const Position &p, const AstPtr &e) {
+        visit(e);
+    }
+
     virtual void visit_directive_import(const Position &p,
                                         const icu::UnicodeString &i) {
     }
@@ -1053,6 +1077,11 @@ public:
             case AST_EXPR_THROW: {
                 AST_EXPR_THROW_SPLIT(a, p, exc);
                 return visit_expr_throw(p, exc);
+                break;
+            }
+            case AST_EXPR_DO: {
+                AST_EXPR_DO_SPLIT(a, p, e);
+                return visit_expr_do(p, e);
                 break;
             }
             // directives

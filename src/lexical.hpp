@@ -66,12 +66,14 @@ enum token_t {
     TOKEN_LET,
     TOKEN_IN,
 
-    TOKEN_VAL,
+    //  do sugar,
+    TOKEN_DO,
 
     //  declarations
     TOKEN_DATA,
     TOKEN_DEF,
     TOKEN_NAMESPACE,
+    TOKEN_VAL,
 
     // directives
     TOKEN_USING,
@@ -526,11 +528,15 @@ static constexpr token_text_t token_text_table[]{
         TOKEN_ARROW,
         STRING_ARROW,
     },
-
     {
         TOKEN_VAL,
         STRING_VAL,
     },
+    {
+        TOKEN_DO,
+        STRING_DO,
+    },
+
 
     // directives
     {
@@ -638,6 +644,10 @@ static reserved_t reserved_table[]{
     {
         TOKEN_THROW,
         STRING_THROW,
+    },
+    {
+        TOKEN_DO,
+        STRING_DO,
     },
     {
         TOKEN_ARROW,

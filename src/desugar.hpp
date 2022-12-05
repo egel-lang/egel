@@ -308,6 +308,63 @@ AstPtr pass_try(const AstPtr &a) {
     return t.idtry(a);
 }
 
+class RewriteDo : public Rewrite {
+public:
+    AstPtr do0(const AstPtr &a) {
+        _tick = 0;
+        return rewrite(a);
+    }
+
+    int tick() {
+        return _tick++;
+    }
+
+    AstPtr fresh_do_var(const Position &p) {
+        icu::UnicodeString w = "DOVAR";
+        w = w + unicode_convert_uint(tick());
+        return AstExprVariable::create(p, w);
+    }
+
+    AstPtr add_var(const AstPtr &e, const AstPtr &v) {
+        if (e->tag() == AST_EXPR_APPLICATION) {
+            AST_EXPR_APPLICATION_SPLIT(e, p, ee0);
+            if ((ee0[0]->tag() == AST_EXPR_COMBINATOR) && (ee0[0]->to_text() == "System::|>") && (ee0.size() > 2)) {
+                AstPtrs ee1;
+                ee1.push_back(ee0[0]);
+                ee1.push_back(add_var(ee0[1],v));
+                for (unsigned int i = 2; i < ee0.size(); i++) {
+                    ee1.push_back(ee0[i]);
+                }
+                return AstExprApplication::create(e->position(), ee1);
+            } else {
+                return AstExprApplication::create(e->position(), e, v);
+            }
+        } else {
+            return AstExprApplication::create(e->position(), e, v);
+        }
+    }
+
+    //  F( do F |> G ) -> ( [X -> (X |> F) |> G] )
+    AstPtr rewrite_expr_do(const Position &p, const AstPtr &e) override {
+        auto e0 = rewrite(e);
+
+        auto x = fresh_do_var(p);
+        auto e1 = add_var(e0, x);
+        AstPtrs pp;
+        pp.push_back(x);
+        return AstExprBlock::create(p, AstExprMatch::create(p, pp, AstEmpty::create(), e1));
+    }
+
+private:
+    int _tick;
+};
+
+
+AstPtr pass_do(const AstPtr &a) {
+    RewriteDo d;
+    return d.do0(a);
+}
+
 class RewriteMonmin : public Rewrite {
 public:
     AstPtr monmin(const AstPtr &a) {
@@ -409,6 +466,7 @@ AstPtr desugar(const AstPtr &a) {
     a0 = pass_wildcard(a0);
     a0 = pass_tuple(a0);
     a0 = pass_list(a0);
+    a0 = pass_do(a0);
     a0 = pass_statement(a0);
     a0 = pass_let(a0);
     a0 = pass_lambda(a0);

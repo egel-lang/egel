@@ -500,6 +500,13 @@ public:
         return AstExprLet::create(p, ee, e1, e2);
     }
 
+    AstPtr parse_do() {
+        Position p = position();
+        force_token(TOKEN_DO);
+        AstPtr e0 = parse_expression();
+        return AstExprDo::create(p, e0);
+    }
+
     bool is_primary() {
         switch (tag()) {
             case TOKEN_INTEGER:
@@ -563,6 +570,8 @@ public:
                 break;
             case TOKEN_LET:
                 return parse_let();
+            case TOKEN_DO:
+                return parse_do();
             default:
                 if (is_combinator()) {
                     return parse_combinator();
