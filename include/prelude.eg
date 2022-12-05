@@ -99,6 +99,16 @@ namespace List (
     def tail =
         [ (cons X XX) -> XX ]
 
+    ## List::last l - last of a list
+    def last =
+        [ (cons X nil) -> X 
+        | (cons X XX) -> last XX ]
+
+    ## List::init l - init of a list
+    def init =
+        [ (cons X nil) -> nil
+        | (cons X XX)  -> cons X (init XX) ]
+
     ## List::++ l0 l1 - concatenation of two lists
     def ++ =
         [ nil YY -> YY
