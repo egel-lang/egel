@@ -82,6 +82,10 @@ Egel code consist of expression which are evaluated eagerly.
 
    `try 1 + throw "failure" catch [ EXC -> print EXC ]`
 
+ * The do notation composes chains of transformations.
+
+   `(do ((+) 1) |> foldl (*) 1) (from_to 0 4)`
+
  * Parallell programming is achieved  through the `par` and `proc` combinators.
    A `par` starts two computations in parallel and returns a tuple of both values after both complete.
 
