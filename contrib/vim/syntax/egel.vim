@@ -16,6 +16,7 @@ syn case match
 
 syn keyword egelKeyword			if then else
 syn keyword egelKeyword			try catch throw
+syn keyword egelKeyword			do
 syn keyword egelKeyword			data def val
 syn keyword egelKeyword			class extends with
 syn keyword egelKeyword			let in 
