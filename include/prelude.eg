@@ -279,16 +279,16 @@ namespace List (
         | (cons X (cons Y YY)) -> if X == Y then nub (cons Y YY)
                                   else (cons X (nub (cons Y YY))) ]
 
-    # List::sum - summation of list
+    # List::sum l - summation of list
     def sum = foldl (+) 0
 
-    # List::product - product of list
+    # List::product l - product of list
     def product = foldl (*) 1
 
-    # List::maximum - maximum of list
+    # List::maximum l - maximum of list
     def maximum = foldl System::max min_int 
 
-    # List::minimum - minimum of list
+    # List::minimum l - minimum of list
     def minimum = foldl System::min max_int 
 
     ## List::range l f - iterate over elements (reverse map
