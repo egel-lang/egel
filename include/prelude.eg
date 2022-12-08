@@ -213,7 +213,6 @@ namespace List (
         [ (cons nil XX) -> nil
         | XX            -> cons (map head XX) (transpose (map tail XX)) ]
 
-
     ## List::any p l - checks whether any element of a list satisfies a predicate
     def any =
         [ P nil          -> false

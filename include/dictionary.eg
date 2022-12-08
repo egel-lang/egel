@@ -15,6 +15,9 @@ namespace Dict (
     def to_list =
         [ D -> foldl [LL K -> cons (K, Dict::get D K) LL] nil (Dict::keys D) ]
 
+    def values =
+        [ D -> List::map snd (to_list D) ]
+
     def nth =
         [ V D K -> if Dict::has D K then Dict::get D K else V ]
 
