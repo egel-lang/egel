@@ -91,6 +91,11 @@ namespace List (
         [ F Z nil -> Z
         | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
+    ## List::scanl f z l - left scan on a list
+    def scanl =
+        [ F Z nil -> cons Z nil
+        | F Z (cons X XX) -> cons Z (scanl F (F Z X) XX) ]
+
     ## List::head l - head of a list
     def head =
         [ (cons X XX) -> X ]
@@ -161,11 +166,12 @@ namespace List (
         | N L   -> if 0 < N then cons (take N L) (chunks N (drop N L))
                    else nil ]
 
-    ## List::from_to min max - list of numbers for min to max (exclusive)
+    ## List::from_to f t - list of numbers for l to t (inclusive)
     def from_to =
         [ X Y -> 
-            if X <= Y then cons X (from_to (X+1) Y)
-            else nil ]
+            if X < Y then cons X (from_to (X+1) Y)
+            else if Y < X then cons X (from_to (X - 1) Y)
+            else cons X nil ]
 
     ## List::filter p l - filter all members from a list which satisfy a predicate
     def filter =
