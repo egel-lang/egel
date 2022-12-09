@@ -247,11 +247,6 @@ namespace List (
         [ nil YY            -> nil
         | (cons X XX) YY    -> if elem X YY then cons X (intersection XX YY) else intersection XX YY  ]
 
-    ## List::unique l - make all members unique
-    def unique =
-        [ nil -> nil
-        | (cons X XX) -> if elem X XX then unique XX else cons X (unique XX) ]
-
     ## List::insert_everywhere x l - insert a member in every position of a list
     def insert_everywhere =
         [ X nil -> {{X}}
@@ -283,6 +278,9 @@ namespace List (
         [ nil -> nil | (cons X nil) -> cons X nil
         | (cons X (cons Y YY)) -> if X == Y then nub (cons Y YY)
                                   else (cons X (nub (cons Y YY))) ]
+
+    ## List::unique l - make all members unique
+    def unique = nub . sort
 
     # List::sum l - summation of list
     def sum = foldl (+) 0
