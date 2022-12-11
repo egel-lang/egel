@@ -42,6 +42,9 @@ namespace System (
     ## System::iter n f x - iterate a function
     def iter = [ 0 F X -> X | N F X -> iter (N - 1) F (F X) ]
 
+    ## System::trace n f x - trace iteration of a function
+    def trace = [ 0 F X -> {X} | N F X -> {X|trace (N - 1) F (F X)} ]
+
     ## System::fst (x, y) - proj0 on pair
     def fst = [ (X,Y) -> X ]
 
