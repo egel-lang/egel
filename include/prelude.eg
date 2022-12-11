@@ -36,6 +36,9 @@ namespace System (
     ## System::flip f x y - flip two arguments
     def flip = [ F X Y -> F Y X ]
 
+    ## System::join f x - f x x
+    def join = [ F X -> F X X ]
+
     ## System::uncurry f (x, y) - uncurry arguments
     def uncurry = [ F (X,Y) -> F X Y ]
 
