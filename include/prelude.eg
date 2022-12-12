@@ -52,9 +52,16 @@ namespace System (
     def while = [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
     ## System::fst (x, y) - proj0 on pair
+    def proj =
+        [ N (A B)       -> List::nth N {A,B}
+        | N (A B C)     -> List::nth N {A,B,C}
+        | N (A B C D)   -> List::nth N {A,B,C,D}
+        | N (A B C D E) -> List::nth N {A,B,C,D,E} ]
+
+    ## System::fst (x, y) - proj1 on tuple
     def fst = [ (X,Y) -> X ]
 
-    ## System::snd (x, y) - proj1 on pair
+    ## System::snd (x, y) - proj2 on tuple
     def snd = [ (X,Y) -> Y ]
 
     ## System::$ - a very mysterious operator
