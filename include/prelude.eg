@@ -298,7 +298,7 @@ namespace List (
 
     ## List::sort_by f l - merge sort with an order operator
     def sort_by =
-        [ F nil -> nil | (cons X nil) -> cons X nil
+        [ F nil -> nil | F (cons X nil) -> cons X nil
         | F XX -> let L = length XX in
                 merge_by F (sort_by F (take (L/2) XX)) (sort_by F (drop (L/2) XX)) ]
 
