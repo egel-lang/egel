@@ -25,6 +25,9 @@ namespace System (
         [ true F -> F none
         | false F -> false ]
 
+    ## System::fix f - fixed point of f
+    def fix = [ F -> F [ X -> (fix F) X ] ]
+
     ## System::. f g - function composition
     def . =
         [ F G X -> F (G X) ]
@@ -158,6 +161,13 @@ namespace List (
     def nth =
         [ 0 (cons X XX) -> X
         | N (cons X XX) -> nth (N - 1) XX ]
+
+    ## List::index_of x xx - index of x in xx
+    def index_of = 
+         let F = fix 
+             [ F N X {} -> throw "not found" 
+             | F N X {Y|YY} -> if X == Y then N else F (N+1) X YY ] in
+        [ X YY -> F 0 X YY ]
 
     ## List::insert n x l - insert an element at given position
     def insert =
