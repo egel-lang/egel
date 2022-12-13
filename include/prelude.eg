@@ -289,6 +289,19 @@ namespace List (
         | XX -> let L = length XX in
                 merge (sort (take (L/2) XX)) (sort (drop (L/2) XX)) ]
 
+    def merge_by =
+        [ F XX nil -> XX
+        | F nil YY -> YY
+        | F (cons X XX) (cons Y YY) ->
+                if F X Y then cons X (merge_by F XX (cons Y YY))
+                else cons Y (merge_by F (cons X XX) YY) ]
+
+    ## List::sort_by f l - merge sort with an order operator
+    def sort_by =
+        [ F nil -> nil | (cons X nil) -> cons X nil
+        | F XX -> let L = length XX in
+                merge_by F (sort_by F (take (L/2) XX)) (sort_by F (drop (L/2) XX)) ]
+
     ## List::nub l - remove consecutive duplicates
     def nub =
         [ nil -> nil | (cons X nil) -> cons X nil
