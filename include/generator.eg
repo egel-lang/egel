@@ -82,6 +82,12 @@ namespace Gen (
     def repeat =
         [ N -> cons N [ _ -> repeat N ] ]
 
+    ## Gen::cycle l - infinite list of cycling list l
+    def cycle =
+        [ nil -> nil
+        | LL  -> [ (cons X XX) -> cons X [_ -> (XX none) Gen::++ (cycle LL)] ] LL ]
+
+
     ## Gen::from min - list of numbers from min 
     def from =
         [ N -> cons N [ _ -> from (N+1) ] ]
