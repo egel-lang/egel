@@ -186,6 +186,12 @@ namespace List (
         | N nil -> nil
         | N (cons X XX) -> drop (N - 1) XX ]
 
+    ## List::split_at n l - take and drop the first n elements of a list
+    def split_at =
+        [ N XX -> if N <= 0 then (nil, XX) else
+            [ nil -> (nil,nil)
+            | (cons X XX) -> let (XX0,XX1) = split_at (N - 1) XX in (cons X XX0, XX1) ] XX ]
+
     ## List::chunks n l - list to list of chunks of given size
     def chunks =
         [ _ nil -> nil
