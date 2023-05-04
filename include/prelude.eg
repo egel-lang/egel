@@ -157,6 +157,11 @@ namespace List (
         [ 0 -> nil
         | N -> cons (N - 1) (block (N - 1)) ]
 
+    ## List::repeat n x - list of n x elements
+    def repeat =
+        [ 0 X -> nil
+        | N X -> cons X (repeat (N - 1) X) ]
+
     ## List::nth n l - nth element of a list
     def nth =
         [ 0 (cons X XX) -> X
