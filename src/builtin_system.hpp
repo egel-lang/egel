@@ -690,8 +690,11 @@ public:
 
             VMObjectPtrs ss;
             int len = str.countChar32();
+            int32_t index=0;
+ 
             for (int n = 0; n < len; n++) {
-                auto c = machine()->create_char(str.char32At(n));
+                auto c = machine()->create_char(str.char32At(index));
+                index=str.moveIndex32(index, 1);
                 ss.push_back(c);
             }
             return machine()->to_list(ss);
