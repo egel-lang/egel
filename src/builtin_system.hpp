@@ -725,7 +725,10 @@ public:
             if (aa[0]->symbol() != _cons) machine()->bad(this, "invalid");
             if (aa[1]->tag() != VM_OBJECT_CHAR) machine()->bad(this, "invalid");
 
-            auto c = machine()->get_char(aa[1]);
+            UChar32 c = machine()->get_char(aa[1]);
+
+            // workaround for append bug
+            // icu::UnicodeString tmp; tmp += c; ss += tmp;
 
             ss += c;
 
