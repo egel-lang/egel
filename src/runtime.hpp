@@ -38,8 +38,10 @@ inline icu::UnicodeString uescape(const icu::UnicodeString &s) {
     icu::UnicodeString s1;
     int i = 0;
     int len = s.countChar32();
+    int index = 0;
     for (i = 0; i < len; i++) {
-        UChar32 c = s.char32At(i);
+        UChar32 c = s.char32At(index);
+        index = s.moveIndex32(index,1);
         switch (c) {
             case '\a':
                 s1 += "\\a";

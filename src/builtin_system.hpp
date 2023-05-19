@@ -727,10 +727,18 @@ public:
 
             UChar32 c = machine()->get_char(aa[1]);
 
-            // workaround for append bug
-            // icu::UnicodeString tmp; tmp += c; ss += tmp;
+// never touch this code again
 
-            ss += c;
+    if (U_IS_BMP(c)) {
+      ss += UChar(c);
+    } else {
+      UChar buffer[U16_MAX_LENGTH];
+      int32_t length = 0;
+      U16_APPEND_UNSAFE(buffer, length, c); 
+      ss.append(buffer, length);
+    }
+
+            //ss += c;
 
             a = aa[2];
         }
