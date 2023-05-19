@@ -689,7 +689,7 @@ public:
             auto str = machine()->get_text(arg0);
 
             VMObjectPtrs ss;
-            int len = str.length();
+            int len = str.countChar32();
             for (int n = 0; n < len; n++) {
                 auto c = machine()->create_char(str.char32At(n));
                 ss.push_back(c);
