@@ -689,12 +689,8 @@ public:
             auto str = machine()->get_text(arg0);
 
             VMObjectPtrs ss;
-            int len = str.countChar32();
-            int32_t index=0;
- 
-            for (int n = 0; n < len; n++) {
-                auto c = machine()->create_char(str.char32At(index));
-                index=str.moveIndex32(index, 1);
+            for (int i = 0; i < str.length(); i = str.moveIndex32(i,1)) {
+                auto c = machine()->create_char(str.char32At(i));
                 ss.push_back(c);
             }
             return machine()->to_list(ss);
@@ -729,6 +725,7 @@ public:
 
 // never touch this code again
 
+/*
     if (U_IS_BMP(c)) {
       ss += UChar(c);
     } else {
@@ -737,8 +734,9 @@ public:
       U16_APPEND_UNSAFE(buffer, length, c); 
       ss.append(buffer, length);
     }
+*/
 
-            //ss += c;
+            ss += c;
 
             a = aa[2];
         }

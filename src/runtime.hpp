@@ -36,12 +36,8 @@ constexpr unsigned int EGEL_FLOAT_PRECISION =
 
 inline icu::UnicodeString uescape(const icu::UnicodeString &s) {
     icu::UnicodeString s1;
-    int i = 0;
-    int len = s.countChar32();
-    int index = 0;
-    for (i = 0; i < len; i++) {
-        UChar32 c = s.char32At(index);
-        index = s.moveIndex32(index,1);
+    for (int i = 0; i < s.length(); i = s.moveIndex32(i,1)) {
+        UChar32 c = s.char32At(i);
         switch (c) {
             case '\a':
                 s1 += "\\a";

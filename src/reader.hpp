@@ -88,19 +88,11 @@ public:
 
 protected:
     void fill_buffer() {
-        std::string utf8;
-        _content.toUTF8String(utf8);
-        icu::StringPiece sp(utf8);
-        const char *s = sp.data();
-        int32_t length = sp.length();
-        int32_t n = 0;
-        for (int32_t i = 0; i < length;) {
-            UChar32 c;
-            U8_NEXT(s, i, length, c);
+        for (int i = 0; i < _content.length(); i = _content.moveIndex32(i,1)) {
+            auto c = _content.char32At(i);
             _buffer.push_back(c);
-            n++;
         }
-        _length = n;
+        _length = _buffer.size();
     }
 
 private:
