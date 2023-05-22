@@ -31,7 +31,11 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+## v0.1.8 - who cares it's slow?
+
++ removed internal macros with c++ methods
 + removed some utf32 bugs and code smell
++ do syntax
 + BADARGS should report the arguments
 + reintroduction of monadic min
 
