@@ -479,7 +479,7 @@ public:
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DIRECT_IMPORT) {
-                AST_DIRECT_IMPORT_SPLIT(a, p, s);
+                auto [p, s] = AstDirectImport::split(a);
                 ii.push_back(QualifiedString(p, unicode_strip_quotes(s)));
             }
         }
@@ -491,7 +491,7 @@ public:
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DECL_VALUE) {
-                AST_DECL_VALUE_SPLIT(a, p, n, f);
+                auto [p, n, f] = AstDeclValue::split(a);
                 ii.push_back(QualifiedString(p, n->to_text()));
             }
         }
@@ -515,7 +515,7 @@ public:
             exit(EXIT_SUCCESS);
         };
 
-        AstPtr a = parse(tt);
+        auto a = parse(tt);
 
         if (get_options()->only_unparse()) {
             std::cout << a << std::endl;
@@ -581,7 +581,7 @@ public:
 
 private:
     icu::UnicodeString _source;
-    AstPtr _ast;
+    ptr<Ast> _ast;
 };
 
 using ModulePtrs = std::vector<ModulePtr>;

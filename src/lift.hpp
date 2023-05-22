@@ -9,15 +9,15 @@
 // combinator lifting
 class RewriteEta : public Rewrite {
 public:
-    AstPtr eta(const AstPtr &a) {
+    ptr<Ast> eta(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    AstPtr push_fv_front(const AstPtrs &fv, const AstPtr &m) {
+    ptr<Ast> push_fv_front(const ptrs<Ast> &fv, const ptr<Ast> &m) {
         switch (m->tag()) {
             case AST_EXPR_MATCH: {
-                AST_EXPR_MATCH_SPLIT(m, p, pp, g, e);
-                AstPtrs pp0;
+                auto [p, pp, g, e] = AstExprMatch::split(m);
+                ptrs<Ast> pp0;
                 for (auto &v : fv) {
                     pp0.push_back(v);
                 }
@@ -42,7 +42,7 @@ public:
      * the inner lambda.
      */
     // XXX: if FV = 0 do nothing
-    AstPtr rewrite_expr_block(const Position &p, const AstPtrs &mm) override {
+    ptr<Ast> rewrite_expr_block(const Position &p, const ptrs<Ast> &mm) override {
         // rewrite the matches
         auto mm0 = rewrites(mm);
         // determine the freevars
@@ -50,18 +50,18 @@ public:
         auto fv0 = freevars(e0);
         // this conversion is actually completely unnecessary but better safe
         // than sorry
-        AstPtrs fv;
+        ptrs<Ast> fv;
         for (auto &v : fv0) {
             fv.push_back(v);
         }
         // push freevars to the front of matches
-        AstPtrs mm1;
+        ptrs<Ast> mm1;
         for (auto &m : mm0) {
             mm1.push_back(push_fv_front(fv, m));
         }
         // apply the bloch to the freevars
         auto e1 = AstExprBlock::create(p, mm1);
-        AstPtrs aa;
+        ptrs<Ast> aa;
         aa.push_back(e1);
         for (auto &v : fv) {
             aa.push_back(v);
@@ -70,7 +70,7 @@ public:
     }
 };
 
-AstPtr pass_eta(const AstPtr &a) {
+ptr<Ast> pass_eta(const ptr<Ast> &a) {
     RewriteEta eta;
     return eta.eta(a);
 }
@@ -79,16 +79,16 @@ AstPtr pass_eta(const AstPtr &a) {
 // but what a horrible name
 class RewriteDeapply : public Rewrite {
 public:
-    AstPtr deapply(const AstPtr &a) {
+    ptr<Ast> deapply(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    AstPtr rewrite_expr_application(const Position &p,
-                                    const AstPtrs &aa) override {
+    ptr<Ast> rewrite_expr_application(const Position &p,
+                                    const ptrs<Ast> &aa) override {
         auto &a = aa[0];
         if (a->tag() == AST_EXPR_APPLICATION) {
-            AST_EXPR_APPLICATION_SPLIT(a, p, aa0);
-            AstPtrs aa1;
+            auto [p, aa0] = AstExprApplication::split(a);
+            ptrs<Ast> aa1;
             for (auto &a0 : aa0) aa1.push_back(a0);
             for (size_t n = 1; n < aa.size(); n++) aa1.push_back(aa[n]);
             return rewrite(AstExprApplication::create(p, aa1));
@@ -101,33 +101,33 @@ public:
     }
 };
 
-AstPtr pass_deapply(const AstPtr &a) {
+ptr<Ast> pass_deapply(const ptr<Ast> &a) {
     RewriteDeapply deapply;
     return deapply.deapply(a);
 }
 
 class RewriteLift : public Rewrite {
 public:
-    AstPtr lift(const AstPtr &a) {
+    ptr<Ast> lift(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    void set_scope(const AstPtr &a) {
-        AstPtrs aa;
+    void set_scope(const ptr<Ast> &a) {
+        ptrs<Ast> aa;
         _scope = a;
         _counter = 0;
         _lifted = aa;
     }
 
-    AstPtr get_scope() {
+    ptr<Ast> get_scope() {
         return _scope;
     }
 
-    void add_lifted(const AstPtr &a) {
+    void add_lifted(const ptr<Ast> &a) {
         _lifted.push_back(a);
     }
 
-    AstPtrs get_lifted() {
+    ptrs<Ast> get_lifted() {
         return _lifted;
     }
 
@@ -144,15 +144,14 @@ public:
         return ss0;
     }
 
-    AstPtr combinator_expand(const AstPtr &c, icu::UnicodeString s) {
+    ptr<Ast> combinator_expand(const ptr<Ast> &c, icu::UnicodeString s) {
         if (c->tag() == AST_EXPR_COMBINATOR) {
-            AST_EXPR_COMBINATOR_SPLIT(c, p, nn, n);
+            auto [p, nn, n] = AstExprCombinator::split(c);
             icu::UnicodeString n0 = n + s;
             auto nn0 = localize(nn);
             return AstExprCombinator::create(p, nn0, n0);
         } else if (c->tag() == AST_EXPR_OPERATOR) {
-            AST_EXPR_OPERATOR_SPLIT(c, p, nn,
-                                    n);  // XXX: keep source to source correct
+            auto [p, nn, n] = AstExprOperator::split(c); // XXX: keep source to source correct
             icu::UnicodeString n0 = n + s;
             auto nn0 = localize(nn);
             return AstExprOperator::create(p, nn0, n0);
@@ -162,13 +161,13 @@ public:
         }
     }
 
-    AstPtr fresh_combinator() {
+    ptr<Ast> fresh_combinator() {
         auto c = get_scope();
         auto n = unicode_convert_uint(tick());
         return combinator_expand(c, n);
     }
 
-    AstPtr rewrite_expr_block(const Position &p, const AstPtrs &mm) override {
+    ptr<Ast> rewrite_expr_block(const Position &p, const ptrs<Ast> &mm) override {
         auto mm0 = rewrites(mm);
         auto e = AstExprBlock::create(p, mm0);
         auto c = fresh_combinator();
@@ -178,15 +177,15 @@ public:
     }
 
     /*
-    AstPtr rewrite_expr_try(const Position& p, const AstPtr& t, const AstPtr& c)
-    override { AstPtr t0; if (t->tag() == AST_EXPR_COMBINATOR) { // keep
+    ptr<Ast> rewrite_expr_try(const Position& p, const ptr<Ast>& t, const ptr<Ast>& c)
+    override { ptr<Ast> t0; if (t->tag() == AST_EXPR_COMBINATOR) { // keep
     combinator definitions t0 = t; } else { auto t1   = rewrite(t); auto tnew =
     fresh_combinator(); auto td   = AstDeclDefinition::create(p, tnew, t1);
             add_lifted(td);
             t0 = tnew;
         }
 
-        AstPtr c0;
+        ptr<Ast> c0;
         if (c->tag() == AST_EXPR_COMBINATOR) { // keep combinator definitions
             c0 = c;
         } else {
@@ -201,12 +200,12 @@ public:
     }
     */
 
-    AstPtr rewrite_decl_definition(const Position &p, const AstPtr &c,
-                                   const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
+                                   const ptr<Ast> &e) override {
         set_scope(c);
-        AstPtr e0;
+        ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
-            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto [p0, mm] = AstExprBlock::split(e);
             auto mm0 = rewrites(mm);
             e0 = AstExprBlock::create(p0, mm0);
         } else {
@@ -221,12 +220,12 @@ public:
         }
     }
 
-    AstPtr rewrite_decl_operator(const Position &p, const AstPtr &c,
-                                 const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+                                 const ptr<Ast> &e) override {
         set_scope(c);
-        AstPtr e0;
+        ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
-            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto [p0, mm] = AstExprBlock::split(e);
             auto mm0 = rewrites(mm);
             e0 = AstExprBlock::create(p0, mm0);
         } else {
@@ -241,12 +240,12 @@ public:
         }
     }
 
-    AstPtr rewrite_decl_value(const Position &p, const AstPtr &c,
-                              const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &c,
+                              const ptr<Ast> &e) override {
         set_scope(c);
-        AstPtr e0;
+        ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
-            AST_EXPR_BLOCK_SPLIT(e, p0, mm);
+            auto [p0, mm] = AstExprBlock::split(e);
             auto mm0 = rewrites(mm);
             e0 = AstExprBlock::create(p0, mm0);
         } else {
@@ -262,33 +261,33 @@ public:
     }
 
 private:
-    AstPtr _scope;
+    ptr<Ast> _scope;
     int _counter;
-    AstPtrs _lifted;
+    ptrs<Ast> _lifted;
 };
 
-inline AstPtr pass_lift(const AstPtr &a) {
+inline ptr<Ast> pass_lift(const ptr<Ast> &a) {
     RewriteLift lift;
     return lift.lift(a);
 }
 
 class RewriteRelambda : public Rewrite {
 public:
-    AstPtr relambda(const AstPtr &a) {
+    ptr<Ast> relambda(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    AstPtr rewrite_decl_definition(const Position &p, const AstPtr &c,
-                                   const AstPtr &e) override {
-        AstPtr e0;
+    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
+                                   const ptr<Ast> &e) override {
+        ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
             e0 = e;
         } else {  // wrap all expressions in a nullary lambda to simplify code
             // generation
             // (i.e., generate a return instruction at the end of each match)
-            AstPtrs vv;
+            ptrs<Ast> vv;
             auto m = AstExprMatch::create(p, vv, AstEmpty::create(), e);
-            AstPtrs mm;
+            ptrs<Ast> mm;
             mm.push_back(m);
             e0 = AstExprBlock::create(p, mm);
         }
@@ -296,11 +295,11 @@ public:
     }
 
     // treat as a definition
-    AstPtr rewrite_decl_operator(const Position &p, const AstPtr &c,
-                                 const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+                                 const ptr<Ast> &e) override {
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
-            AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
+            auto [p1, c1, e1] = AstDeclDefinition::split(e0);
             return AstDeclOperator::create(p1, c1, e1);
         } else {
             PANIC("didn't find a definition");
@@ -309,11 +308,11 @@ public:
     }
 
     // treat as a definition
-    AstPtr rewrite_decl_value(const Position &p, const AstPtr &c,
-                              const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &c,
+                              const ptr<Ast> &e) override {
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
-            AST_DECL_DEFINITION_SPLIT(e0, p1, c1, e1);
+            auto [p1, c1, e1] = AstDeclDefinition::split(e0);
             return AstDeclValue::create(p1, c1, e1);
         } else {
             PANIC("didn't find a definition");
@@ -322,13 +321,13 @@ public:
     }
 };
 
-inline AstPtr pass_relambda(const AstPtr &a) {
+inline ptr<Ast> pass_relambda(const ptr<Ast> &a) {
     RewriteRelambda relambda;
     return relambda.relambda(a);
 }
 
-inline AstPtr lift(const AstPtr &a) {
-    AstPtr a0;
+inline ptr<Ast> lift(const ptr<Ast> &a) {
+    ptr<Ast> a0;
     a0 = pass_eta(a);
     a0 = pass_deapply(a0);
     a0 = pass_lift(a0);

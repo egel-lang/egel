@@ -7,8 +7,8 @@
 #include "semantical.hpp"
 #include "transform.hpp"
 
-inline void declare(NamespacePtr env, const AstPtr &a);
-inline AstPtr identify(NamespacePtr env, const AstPtr &a);
+inline void declare(NamespacePtr env, const ptr<Ast> &a);
+inline ptr<Ast> identify(NamespacePtr env, const ptr<Ast> &a);
 
 // XXX this is a concat we use pretty often and should be moved to a template?
 UnicodeStrings concat(const UnicodeStrings &qq0, const UnicodeStrings &qq1) {
@@ -32,7 +32,7 @@ public:
     VisitDeclare() {
     }
 
-    void declare(NamespacePtr &env, const AstPtr &a) {
+    void declare(NamespacePtr &env, const ptr<Ast> &a) {
         _spaces = env;
         set_declare_state(STATE_DECLARE_GLOBAL);
         visit(a);
@@ -96,7 +96,7 @@ public:
         }
     }
 
-    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
         if (get_declare_state() == STATE_DECLARE_GLOBAL) {
             visits(nn);
         } else {
@@ -104,24 +104,24 @@ public:
         }
     }
 
-    void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &e) override {
         visit(n);
     }
 
-    void visit_decl_value(const Position &p, const AstPtr &l,
-                          const AstPtr &r) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &l,
+                          const ptr<Ast> &r) override {
         visit(l);
     }
 
-    void visit_decl_operator(const Position &p, const AstPtr &c,
-                             const AstPtr &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &e) override {
         visit(c);
     }
 
-    void visit_decl_object(const Position &p, const AstPtr &c,
-                           const AstPtrs &vv, const AstPtrs &ff,
-                           const AstPtrs &ee) override {
+    void visit_decl_object(const Position &p, const ptr<Ast> &c,
+                           const ptrs<Ast> &vv, const ptrs<Ast> &ff,
+                           const ptrs<Ast> &ee) override {
         visit(c);
         set_declare_state(STATE_DECLARE_FIELD);
         visits(ff);
@@ -129,7 +129,7 @@ public:
     }
 
     void visit_decl_namespace(const Position &p, const UnicodeStrings &nn,
-                              const AstPtrs &dd) override {
+                              const ptrs<Ast> &dd) override {
         auto nn0 = get_qualifications();
         auto nn1 = concat(nn0, nn);
         set_qualifications(nn1);
@@ -143,7 +143,7 @@ private:
     declare_state_t _declare_state;
 };
 
-void declare(NamespacePtr env, const AstPtr &a) {
+void declare(NamespacePtr env, const ptr<Ast> &a) {
     VisitDeclare declare;
     declare.declare(env, a);
 }
@@ -162,7 +162,7 @@ enum identify_state_t {
  */
 class RewriteIdentify : public Rewrite {
 public:
-    AstPtr identify(NamespacePtr env, AstPtr a) {
+    ptr<Ast> identify(NamespacePtr env, ptr<Ast> a) {
         _identify_state = STATE_IDENTIFY_USE;
         _range = range_nil(env);
         _counter = 0;
@@ -241,16 +241,16 @@ public:
     }
 
     // push/pop declarations
-    void push_declaration(const AstPtr &d) {
+    void push_declaration(const ptr<Ast> &d) {
         _declarations.push_back(d);
     }
 
-    AstPtrs pop_declarations() {
+    ptrs<Ast> pop_declarations() {
         return _declarations;
     }
 
     // rewrites
-    AstPtr rewrite_expr_variable(const Position &p,
+    ptr<Ast> rewrite_expr_variable(const Position &p,
                                  const icu::UnicodeString &v) override {
         switch (get_identify_state()) {
             case STATE_IDENTIFY_USE: {
@@ -269,7 +269,7 @@ public:
         }
     }
 
-    AstPtr rewrite_expr_combinator(const Position &p, const UnicodeStrings &nn,
+    ptr<Ast> rewrite_expr_combinator(const Position &p, const UnicodeStrings &nn,
                                    const icu::UnicodeString &t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
@@ -287,7 +287,7 @@ public:
         return nullptr;  // play nice with -Wall
     }
 
-    AstPtr rewrite_expr_operator(const Position &p, const UnicodeStrings &nn,
+    ptr<Ast> rewrite_expr_operator(const Position &p, const UnicodeStrings &nn,
                                  const icu::UnicodeString &t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
@@ -305,8 +305,8 @@ public:
         return nullptr;  // play nice with -Wall
     }
 
-    AstPtr rewrite_expr_match(const Position &p, const AstPtrs &mm,
-                              const AstPtr &g, const AstPtr &e) override {
+    ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
+                              const ptr<Ast> &g, const ptr<Ast> &e) override {
         enter_range();
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto mm0 = rewrites(mm);
@@ -318,8 +318,8 @@ public:
         return AstExprMatch::create(p, mm0, g0, e0);
     }
 
-    AstPtr rewrite_expr_let(const Position &p, const AstPtrs &lhs,
-                            const AstPtr &rhs, const AstPtr &body) override {
+    ptr<Ast> rewrite_expr_let(const Position &p, const ptrs<Ast> &lhs,
+                            const ptr<Ast> &rhs, const ptr<Ast> &body) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto rhs0 = rewrite(rhs);
         enter_range();
@@ -331,8 +331,8 @@ public:
         return AstExprLet::create(p, lhs0, rhs0, body0);
     }
 
-    AstPtr rewrite_expr_tag(const Position &p, const AstPtr &e,
-                            const AstPtr &t) override {
+    ptr<Ast> rewrite_expr_tag(const Position &p, const ptr<Ast> &e,
+                            const ptr<Ast> &t) override {
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto e0 = rewrite(e);
         set_identify_state(STATE_IDENTIFY_USE);
@@ -341,13 +341,13 @@ public:
         return AstExprTag::create(p, e0, t0);
     }
 
-    AstPtr rewrite_directive_using(const Position &p,
+    ptr<Ast> rewrite_directive_using(const Position &p,
                                    const UnicodeStrings &nn) override {
         add_using(nn);
         return AstDirectUsing::create(p, nn);
     }
 
-    AstPtr rewrite_decl_data(const Position &p, const AstPtrs &ee) override {
+    ptr<Ast> rewrite_decl_data(const Position &p, const ptrs<Ast> &ee) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
             auto ee0 = rewrites(ee);
@@ -363,8 +363,8 @@ public:
         }
     }
 
-    AstPtr rewrite_decl_definition(const Position &p, const AstPtr &n,
-                                   const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n,
+                                   const ptr<Ast> &e) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
             auto n0 = rewrite(n);
@@ -382,8 +382,8 @@ public:
         }
     }
 
-    AstPtr rewrite_decl_value(const Position &p, const AstPtr &l,
-                              const AstPtr &r) override {
+    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
+                              const ptr<Ast> &r) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
@@ -392,8 +392,8 @@ public:
         return a;
     }
 
-    AstPtr rewrite_decl_operator(const Position &p, const AstPtr &c,
-                                 const AstPtr &e) override {
+    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+                                 const ptr<Ast> &e) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
         auto e0 = rewrite(e);
@@ -402,9 +402,9 @@ public:
         return a;
     }
 
-    AstPtr rewrite_decl_object(const Position &p, const AstPtr &c,
-                               const AstPtrs &vv, const AstPtrs &ff,
-                               const AstPtrs &ee) override {
+    ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
+                               const ptrs<Ast> &vv, const ptrs<Ast> &ff,
+                               const ptrs<Ast> &ee) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
         enter_range();
@@ -421,8 +421,8 @@ public:
         return a;
     }
 
-    AstPtr rewrite_decl_namespace(const Position &p, const UnicodeStrings &nn,
-                                  const AstPtrs &dd) override {
+    ptr<Ast> rewrite_decl_namespace(const Position &p, const UnicodeStrings &nn,
+                                  const ptrs<Ast> &dd) override {
         auto nn0 = get_namespace();
         auto nn1 = concat(nn0, nn);
         set_namespace(nn1);
@@ -434,7 +434,7 @@ public:
         return AstDeclNamespace::create(p, nn, dd0);
     }
 
-    AstPtr rewrite_wrapper(const Position &p, const AstPtrs &dd) override {
+    ptr<Ast> rewrite_wrapper(const Position &p, const ptrs<Ast> &dd) override {
         auto dd0 = rewrites(dd);
         auto aa = pop_declarations();
         return AstWrapper::create(p, aa);
@@ -443,12 +443,12 @@ public:
 private:
     identify_state_t _identify_state;
     RangePtr _range;
-    AstPtrs _declarations;
+    ptrs<Ast> _declarations;
     UnicodeStrings _namespace;
     int _counter;
 };
 
-AstPtr identify(NamespacePtr env, const AstPtr &a) {
+ptr<Ast> identify(NamespacePtr env, const ptr<Ast> &a) {
     RewriteIdentify identify;
     return identify.identify(env, a);
 }

@@ -110,7 +110,7 @@ public:
     Eval() {
     }
 
-    Eval(ModuleManagerPtr mm) : _manager(mm), _usings(AstPtrs()) {
+    Eval(ModuleManagerPtr mm) : _manager(mm), _usings(ptrs<Ast>()) {
     }
 
     Eval(const Eval &e) : Eval(e.get_manager()) {
@@ -125,7 +125,7 @@ public:
 
     void init(ModuleManagerPtr mm) {
         _manager = mm;
-        _usings = AstPtrs();
+        _usings = ptrs<Ast>();
     }
 
     ModuleManagerPtr get_manager() const {
@@ -136,7 +136,7 @@ public:
         return _manager->machine();
     }
 
-    AstPtrs get_usings() {
+    ptrs<Ast> get_usings() {
         return _usings;
     }
 
@@ -204,10 +204,10 @@ public:
      *
      * An expression is put into a definition, compiled, and reduced.
      */
-    void handle_import(const AstPtr &a) {
+    void handle_import(const ptr<Ast> &a) {
         auto mm = get_manager();
         if (a->tag() == AST_DIRECT_IMPORT) {
-            AST_DIRECT_IMPORT_SPLIT(a, p, s);
+            auto [p, s] = AstDirectImport::split(a);
             try {
                 mm->load(p, unicode_strip_quotes(s));
             } catch (ErrorIO &e) {
@@ -218,16 +218,16 @@ public:
         }
     }
 
-    void handle_using(const AstPtr &a) {
+    void handle_using(const ptr<Ast> &a) {
         _usings.push_back(a);
     }
 
-    void handle_definition(const AstPtr &d) {
+    void handle_definition(const ptr<Ast> &d) {
         auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
-        auto dd = AstPtrs();
+        auto dd = ptrs<Ast>();
         for (auto &u : get_usings()) {
             dd.push_back(u);
         }
@@ -239,10 +239,10 @@ public:
         // mode.
         if (d->tag() ==
             AST_DECL_DEFINITION) {  // start off by (re-)declaring the def
-            AST_DECL_DEFINITION_SPLIT(d, p0, c0, e0);
+            auto [p0, c0, e0] = AstDeclDefinition::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
-                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
-                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                auto [p, nn0, n0] = AstExprCombinator::split(c0);
+                auto c1 = AstExprCombinator::cast(c0);
                 ::declare_implicit(mm->get_environment(), nn0, n0,
                                    c1->to_text());
             }
@@ -250,10 +250,10 @@ public:
         if (d->tag() ==
             AST_DECL_OPERATOR) {  // or the operator.. (time to get rid
             // of this alternative?)
-            AST_DECL_OPERATOR_SPLIT(d, p0, c0, e0);
+            auto [p0, c0, e0] = AstDeclOperator::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
-                AST_EXPR_COMBINATOR_SPLIT(c0, p, nn0, n0);
-                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                auto [p, nn0, n0] = AstExprCombinator::split(c0);
+                auto c1 = AstExprCombinator::cast(c0);
                 ::declare_implicit(mm->get_environment(), nn0, n0,
                                    c1->to_text());
             }
@@ -265,12 +265,12 @@ public:
         ::emit_code(vm, w);
     }
 
-    void handle_data(const AstPtr &d) {
+    void handle_data(const ptr<Ast> &d) {
         auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
-        auto dd = AstPtrs();
+        auto dd = ptrs<Ast>();
         for (auto &u : get_usings()) {
             dd.push_back(u);
         }
@@ -280,11 +280,11 @@ public:
         // bypass standard semantical analysis and declare the data in the
         // context. that manner, data may be overridded in interactive mode.
         if (d->tag() == AST_DECL_DATA) {  // start off by (re-)declaring the def
-            AST_DECL_DATA_SPLIT(d, p0, nn);
+            auto [p0, nn] = AstDeclData::split(d);
             for (auto &e : nn) {
                 if (e->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(e, p, nn0, n0);
-                    auto e1 = AST_EXPR_COMBINATOR_CAST(e);
+                    auto [p, nn0, n0] = AstExprCombinator::split(e);
+                    auto e1 = AstExprCombinator::cast(e);
                     ::declare_implicit(mm->get_environment(), nn0, n0,
                                        e1->to_text());
                 }
@@ -314,7 +314,7 @@ public:
      * combinators at the moment I just let it leak. Probably the worst decision
      * I made yet.
      */
-    void handle_expression(const AstPtr &a, const VMObjectPtr &r,
+    void handle_expression(const ptr<Ast> &a, const VMObjectPtr &r,
                            const VMObjectPtr &exc) {
         auto fv = generate_fresh_combinator();
         auto vm = machine();
@@ -334,17 +334,17 @@ public:
 
     // XXX: very much wrong probably. A val declaration should not call the
     // callbacks handlers but either throw a parse error or return none.
-    void handle_value(const AstPtr &d) {
+    void handle_value(const ptr<Ast> &d) {
         auto vm = machine();
         auto mm = get_manager();
         auto p = d->position();
 
         if (d->tag() ==
             AST_DECL_VALUE) {  // start off by treating the val as a def
-            AST_DECL_VALUE_SPLIT(d, p0, c0, e0);
+            auto [p0, c0, e0] = AstDeclValue::split(d);
             handle_definition(AstDeclDefinition::create(p, c0, e0));
             if (c0->tag() == AST_EXPR_COMBINATOR) {
-                auto c1 = AST_EXPR_COMBINATOR_CAST(c0);
+                auto c1 = AstExprCombinator::cast(c0);
                 auto o = vm->get_combinator(c1->to_text());
                 if (o->subtag() != VM_SUB_STUB) {
                     // XXX: handle exceptions properly once
@@ -380,7 +380,7 @@ public:
         auto vm = machine();
 
         // parse the line
-        AstPtr aa;
+        ptr<Ast> aa;
         StringCharReader r = StringCharReader("internal", in);
         TokenReaderPtr tt = tokenize_from_reader(r);
         aa = ::parse_line(tt);
@@ -393,7 +393,7 @@ public:
 
         // handle the commands
         if (aa->tag() == AST_WRAPPER) {
-            AST_WRAPPER_SPLIT(aa, p, aa0);
+            auto [p, aa0] = AstWrapper::split(aa);
             for (auto &a : aa0) {
                 if (a != nullptr) {
                     if (a->tag() == AST_DIRECT_IMPORT) {
@@ -431,7 +431,7 @@ public:
     }
 
     void eval_interactive() {
-        auto uu = AstPtrs();
+        auto uu = ptrs<Ast>();
 
         const char *env_p = std::getenv("EGEL_PS0");
         icu::UnicodeString ps0;
@@ -457,5 +457,5 @@ public:
 
 private:
     ModuleManagerPtr _manager;
-    AstPtrs _usings;
+    ptrs<Ast> _usings;
 };

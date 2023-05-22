@@ -43,37 +43,37 @@ public:
     }
 
     // literals
-    AstPtr parse_integer() {
+    ptr<Ast> parse_integer() {
         check_token(TOKEN_INTEGER);
-        AstPtr a = AstExprInteger::create(position(), look().text());
+        auto a = AstExprInteger::create(position(), look().text());
         skip();
         return a;
     }
 
-    AstPtr parse_hexinteger() {
+    ptr<Ast> parse_hexinteger() {
         check_token(TOKEN_HEXINTEGER);
-        AstPtr a = AstExprHexInteger::create(position(), look().text());
+        auto a = AstExprHexInteger::create(position(), look().text());
         skip();
         return a;
     }
 
-    AstPtr parse_float() {
+    ptr<Ast> parse_float() {
         check_token(TOKEN_FLOAT);
-        AstPtr a = AstExprFloat::create(position(), look().text());
+        auto a = AstExprFloat::create(position(), look().text());
         skip();
         return a;
     }
 
-    AstPtr parse_character() {
+    ptr<Ast> parse_character() {
         check_token(TOKEN_CHAR);
-        AstPtr a = AstExprCharacter::create(position(), look().text());
+        auto a = AstExprCharacter::create(position(), look().text());
         skip();
         return a;
     }
 
-    AstPtr parse_text() {
+    ptr<Ast> parse_text() {
         check_token(TOKEN_TEXT);
-        AstPtr a = AstExprText::create(position(), look().text());
+        auto a = AstExprText::create(position(), look().text());
         skip();
         return a;
     }
@@ -139,7 +139,7 @@ public:
         return true;
     }
 
-    AstPtr parse_variable() {
+    ptr<Ast> parse_variable() {
         check_token(TOKEN_UPPERCASE);
         Position p = position();
         icu::UnicodeString s = look().text();
@@ -147,7 +147,7 @@ public:
         return AstExprVariable::create(p, s);
     }
 
-    AstPtr parse_wildcard() {
+    ptr<Ast> parse_wildcard() {
         Position p = position();
         icu::UnicodeString s = look().text();
         if (s != "_") throw ErrorSyntactical(p, "wildcard expected");
@@ -155,7 +155,7 @@ public:
         return AstExprWildcard::create(p, s);
     }
 
-    AstPtr parse_combinator() {
+    ptr<Ast> parse_combinator() {
         Position p = position();
         UnicodeStrings nn;
         while ((tag(0) == TOKEN_UPPERCASE) && (tag(1) == TOKEN_DCOLON)) {
@@ -170,7 +170,7 @@ public:
         return AstExprCombinator::create(p, nn, n);
     }
 
-    AstPtr parse_operator() {
+    ptr<Ast> parse_operator() {
         Position p = position();
         UnicodeStrings nn;
         while ((tag(0) == TOKEN_UPPERCASE) && (tag(1) == TOKEN_DCOLON)) {
@@ -185,7 +185,7 @@ public:
         return AstExprCombinator::create(p, nn, n);
     }
 
-    AstPtr parse_prefix_operator() {
+    ptr<Ast> parse_prefix_operator() {
         Position p = position();
         UnicodeStrings nn;
         while ((tag(0) == TOKEN_UPPERCASE) && (tag(1) == TOKEN_DCOLON)) {
@@ -200,9 +200,9 @@ public:
         return AstExprCombinator::create(p, nn, n);
     }
 
-    AstPtr parse_enclosed_operator() {
+    ptr<Ast> parse_enclosed_operator() {
         force_token(TOKEN_LPAREN);
-        AstPtr o = parse_operator();
+        auto o = parse_operator();
         force_token(TOKEN_RPAREN);
         return o;
     }
@@ -240,7 +240,7 @@ public:
         }
     }
 
-    AstPtr parse_pattern_primary() {
+    ptr<Ast> parse_pattern_primary() {
         switch (tag()) {
             case TOKEN_INTEGER:
                 return parse_integer();
@@ -264,7 +264,7 @@ public:
                 return parse_pattern_list();
                 break;
             default:
-                AstPtr e;
+                ptr<Ast> e;
                 if (is_wildcard()) {
                     e = parse_wildcard();
                 } else if (is_combinator()) {
@@ -287,15 +287,15 @@ public:
         throw ErrorSyntactical(position(), "pattern expected");
     }
 
-    AstPtr parse_pattern_primaries() {
+    ptr<Ast> parse_pattern_primaries() {
         Position p = position();
         if (is_pattern_primary()) {
-            AstPtr q = parse_pattern_primary();
+            auto q = parse_pattern_primary();
             if (is_pattern_primary()) {
-                AstPtrs qq = AstPtrs();
+                ptrs<Ast> qq = ptrs<Ast>();
                 qq.push_back(q);
                 while (is_pattern_primary()) {
-                    AstPtr q = parse_pattern_primary();
+                    ptr<Ast> q = parse_pattern_primary();
                     qq.push_back(q);
                 }
                 return AstExprApplication::create(p, qq);
@@ -307,17 +307,17 @@ public:
         }
     }
 
-    AstPtr parse_pattern_enclosed() {
+    ptr<Ast> parse_pattern_enclosed() {
         if (is_enclosed_operator()) return parse_enclosed_operator();
         Position p = position();
         force_token(TOKEN_LPAREN);
-        AstPtr q = parse_pattern_primaries();
+        auto q = parse_pattern_primaries();
         if (tag() == TOKEN_COMMA) {
-            AstPtrs qq = AstPtrs();
+            auto qq = ptrs<Ast>();
             qq.push_back(q);
             while (tag() == TOKEN_COMMA) {
                 skip();
-                AstPtr q = parse_pattern_primaries();
+                ptr<Ast> q = parse_pattern_primaries();
                 qq.push_back(q);
             }
             force_token(TOKEN_RPAREN);
@@ -328,19 +328,19 @@ public:
         }
     }
 
-    AstPtr parse_pattern_list() {
+    ptr<Ast> parse_pattern_list() {
         Position p = position();
         force_token(TOKEN_LCURLY);
-        AstPtrs qq = AstPtrs();
+        auto qq = ptrs<Ast>();
         if (tag() == TOKEN_RCURLY) {
             skip();
             return AstExprList::create(p, qq);
         } else {
-            AstPtr q = parse_pattern();
+            ptr<Ast> q = parse_pattern();
             qq.push_back(q);
             while (tag() == TOKEN_COMMA) {
                 skip();
-                AstPtr q = parse_pattern();
+                ptr<Ast> q = parse_pattern();
                 qq.push_back(q);
             }
             q = nullptr;
@@ -353,7 +353,7 @@ public:
         }
     }
 
-    AstPtr parse_pattern() {
+    ptr<Ast> parse_pattern() {
         Position p = position();
         if (is_pattern_primary()) {
             return parse_pattern_primary();
@@ -362,71 +362,71 @@ public:
         }
     }
 
-    AstPtrs parse_patterns() {
-        AstPtrs pp = AstPtrs();
+    ptrs<Ast> parse_patterns() {
+        auto pp = ptrs<Ast>();
         while (is_pattern_primary()) {
-            AstPtr p = parse_pattern();
+            ptr<Ast> p = parse_pattern();
             pp.push_back(p);
         }
         return pp;
     }
 
     // expressions
-    AstPtr parse_match() {
+    ptr<Ast> parse_match() {
         Position p = position();
-        AstPtrs mm = parse_patterns();
+        auto mm = parse_patterns();
         /*
         if (tag() == TOKEN_QUESTION) {
             skip();
-            AstPtr q = parse_expression();
+            ptr<Ast> q = parse_expression();
             force_token(TOKEN_ARROW);
-            AstPtr e = parse_expression();
+            ptr<Ast> e = parse_expression();
             return AstExprMatch::create(p, mm, q, e);
         } else {
-            AstPtr q = AstEmpty::create();
+            ptr<Ast> q = AstEmpty::create();
             force_token(TOKEN_ARROW);
-            AstPtr e = parse_expression();
+            ptr<Ast> e = parse_expression();
             return AstExprMatch::create(p, mm, q, e);
         }
         */
-        AstPtr q = AstEmpty::create();
+        auto q = AstEmpty::create();
         force_token(TOKEN_ARROW);
-        AstPtr e = parse_expression();
+        auto e = parse_expression();
         return AstExprMatch::create(p, mm, q, e);
     }
 
-    AstPtr parse_block() {
+    ptr<Ast> parse_block() {
         Position p = position();
-        AstPtrs mm = AstPtrs();
+        auto mm = ptrs<Ast>();
         check_token(TOKEN_LSQUARE);
         do {
             skip();
-            AstPtr m = parse_match();
+            ptr<Ast> m = parse_match();
             mm.push_back(m);
         } while (tag() == TOKEN_BAR);
         force_token(TOKEN_RSQUARE);
         return AstExprBlock::create(p, mm);
     }
 
-    AstPtr parse_lambda() {
+    ptr<Ast> parse_lambda() {
         Position p = position();
-        AstPtrs mm = AstPtrs();
+        auto mm = ptrs<Ast>();
         force_token(TOKEN_LAMBDA);
-        AstPtr m = parse_match();
+        auto m = parse_match();
         return AstExprLambda::create(p, m);
     }
 
-    AstPtr parse_enclosed() {
+    ptr<Ast> parse_enclosed() {
         if (is_enclosed_operator()) return parse_enclosed_operator();
         Position p = position();
         force_token(TOKEN_LPAREN);
-        AstPtr q = parse_expression();
+        auto q = parse_expression();
         if (tag() == TOKEN_COMMA) {
-            AstPtrs qq = AstPtrs();
+            ptrs<Ast> qq = ptrs<Ast>();
             qq.push_back(q);
             while (tag() == TOKEN_COMMA) {
                 skip();
-                AstPtr q = parse_expression();
+                ptr<Ast> q = parse_expression();
                 qq.push_back(q);
             }
             force_token(TOKEN_RPAREN);
@@ -437,19 +437,19 @@ public:
         }
     }
 
-    AstPtr parse_list() {
+    ptr<Ast> parse_list() {
         Position p = position();
         force_token(TOKEN_LCURLY);
-        AstPtrs qq = AstPtrs();
+        auto qq = ptrs<Ast>();
         if (tag() == TOKEN_RCURLY) {
             skip();
             return AstExprList::create(p, qq);
         } else {
-            AstPtr q = parse_expression();
+            ptr<Ast> q = parse_expression();
             qq.push_back(q);
             while (tag() == TOKEN_COMMA) {
                 skip();
-                AstPtr q = parse_expression();
+                ptr<Ast> q = parse_expression();
                 qq.push_back(q);
             }
             q = nullptr;
@@ -462,48 +462,48 @@ public:
         }
     }
 
-    AstPtr parse_if() {
+    ptr<Ast> parse_if() {
         Position p = position();
         force_token(TOKEN_IF);
-        AstPtr e0 = parse_expression();
+        auto e0 = parse_expression();
         force_token(TOKEN_THEN);
-        AstPtr e1 = parse_expression();
+        auto e1 = parse_expression();
         force_token(TOKEN_ELSE);
-        AstPtr e2 = parse_expression();
+        auto e2 = parse_expression();
         return AstExprIf::create(p, e0, e1, e2);
     }
 
-    AstPtr parse_try() {
+    ptr<Ast> parse_try() {
         Position p = position();
         force_token(TOKEN_TRY);
-        AstPtr e0 = parse_expression();
+        auto e0 = parse_expression();
         force_token(TOKEN_CATCH);
-        AstPtr e1 = parse_expression();
+        auto e1 = parse_expression();
         return AstExprTry::create(p, e0, e1);
     }
 
-    AstPtr parse_throw() {
+    ptr<Ast> parse_throw() {
         Position p = position();
         force_token(TOKEN_THROW);
-        AstPtr e0 = parse_expression();
+        auto e0 = parse_expression();
         return AstExprThrow::create(p, e0);
     }
 
-    AstPtr parse_let() {
+    ptr<Ast> parse_let() {
         Position p = position();
         force_token(TOKEN_LET);
-        AstPtrs ee = parse_patterns();
+        auto ee = parse_patterns();
         force_token(TOKEN_EQ);
-        AstPtr e1 = parse_expression();
+        auto e1 = parse_expression();
         force_token(TOKEN_IN);
-        AstPtr e2 = parse_expression();
+        auto e2 = parse_expression();
         return AstExprLet::create(p, ee, e1, e2);
     }
 
-    AstPtr parse_do() {
+    ptr<Ast> parse_do() {
         Position p = position();
         force_token(TOKEN_DO);
-        AstPtr e0 = parse_expression();
+        auto e0 = parse_expression();
         return AstExprDo::create(p, e0);
     }
 
@@ -530,7 +530,7 @@ public:
         }
     }
 
-    AstPtr parse_primary() {
+    ptr<Ast> parse_primary() {
         switch (tag()) {
             case TOKEN_INTEGER:
                 return parse_integer();
@@ -585,25 +585,25 @@ public:
         }
     }
 
-    AstPtr parse_primary_prefix() {
+    ptr<Ast> parse_primary_prefix() {
         icu::UnicodeString s = peek_operator();
         if ((s != "") && operator_is_prefix(s)) {
-            AstPtr o = parse_prefix_operator();
-            AstPtr e = parse_primary_prefix();
+            ptr<Ast> o = parse_prefix_operator();
+            ptr<Ast> e = parse_primary_prefix();
             return app(o, e);
         } else {
             return parse_primary();
         }
     }
 
-    AstPtr parse_primaries() {
+    ptr<Ast> parse_primaries() {
         Position p = position();
-        AstPtr e = parse_primary_prefix();
+        auto e = parse_primary_prefix();
         if (is_primary()) {
-            AstPtrs ee;
+            ptrs<Ast> ee;
             ee.push_back(e);
             while (is_primary()) {
-                AstPtr e = parse_primary_prefix();
+                auto e = parse_primary_prefix();
                 ee.push_back(e);
             }
             return AstExprApplication::create(p, ee);
@@ -627,15 +627,15 @@ public:
      * applying op with operands lhs and rhs return lhs
      */
 
-    AstPtr parse_arithmetic_expression_1(AstPtr e0, icu::UnicodeString mp) {
-        AstPtr lhs = e0;
+    ptr<Ast> parse_arithmetic_expression_1(ptr<Ast> e0, icu::UnicodeString mp) {
+        auto lhs = e0;
         icu::UnicodeString la = peek_operator();
         while (((la.compare("") != 0) && operator_is_infix(la)) &&
                (operator_compare(la, mp) >= 0)) {
             Position p = position();
             icu::UnicodeString opt = la;
-            AstPtr op = parse_operator();
-            AstPtr rhs = parse_primaries();
+            auto op = parse_operator();
+            auto rhs = parse_primaries();
             la = peek_operator();
             while (((la.compare("") != 0) && operator_is_infix(la)) &&
                    ((operator_compare(la, opt) > 0) ||
@@ -649,17 +649,17 @@ public:
         return lhs;
     }
 
-    AstPtr parse_arithmetic_expression() {
-        AstPtr e = parse_primaries();
+    ptr<Ast> parse_arithmetic_expression() {
+        auto e = parse_primaries();
         return parse_arithmetic_expression_1(e, OPERATOR_BOTTOM);
     }
 
-    AstPtr parse_expression() {
+    ptr<Ast> parse_expression() {
         Position p = position();
-        AstPtr e0 = parse_arithmetic_expression();
+        auto e0 = parse_arithmetic_expression();
         if (tag() == TOKEN_SEMICOLON) {
             skip();
-            AstPtr e1 = parse_expression();
+            ptr<Ast> e1 = parse_expression();
             return AstExprStatement::create(p, e0, e1);
         } else {
             return e0;
@@ -679,10 +679,10 @@ public:
         }
     }
 
-    AstPtr parse_field_data() {
+    ptr<Ast> parse_field_data() {
         Position p = position();
         force_token(TOKEN_DATA);
-        AstPtrs ee = AstPtrs();
+        auto ee = ptrs<Ast>();
         auto n = parse_combinator();
         ee.push_back(n);
         force_token(TOKEN_COMMA);
@@ -691,19 +691,19 @@ public:
         return AstDeclData::create(p, ee);
     }
 
-    AstPtr parse_field_definition() {
+    ptr<Ast> parse_field_definition() {
         Position p = position();
         force_token(TOKEN_DEF);
         if (is_combinator()) {
-            AstPtr c = parse_combinator();
+            auto c = parse_combinator();
             force_token(TOKEN_EQ);
-            AstPtr e = parse_expression();
+            auto e = parse_expression();
             return AstDeclDefinition::create(p, c, e);
             /*
         } else if (is_operator()) {
-            AstPtr c = parse_operator();
+            ptr<Ast> c = parse_operator();
             force_token(TOKEN_EQ);
-            AstPtr e = parse_expression();
+            ptr<Ast> e = parse_expression();
             return AstDeclOperator::create(p, c, e);
             */
         } else {
@@ -711,7 +711,7 @@ public:
         }
     }
 
-    AstPtr parse_field() {
+    ptr<Ast> parse_field() {
         switch (tag()) {
             case TOKEN_DATA:
                 return parse_field_data();
@@ -725,8 +725,8 @@ public:
         }
     }
 
-    AstPtrs parse_fields() {
-        AstPtrs ff;
+    ptrs<Ast> parse_fields() {
+        ptrs<Ast> ff;
         while (is_field()) {
             auto f = parse_field();
             ff.push_back(f);
@@ -735,11 +735,11 @@ public:
     }
 
     // declarations
-    AstPtr parse_decl_data() {
+    ptr<Ast> parse_decl_data() {
         Position p = position();
         force_token(TOKEN_DATA);
-        AstPtrs ee = AstPtrs();
-        AstPtr e = parse_combinator();
+        auto ee = ptrs<Ast>();
+        auto e = parse_combinator();
         ee.push_back(e);
         while ((tag() == TOKEN_COMMA)) {
             force_token(TOKEN_COMMA);
@@ -749,47 +749,47 @@ public:
         return AstDeclData::create(p, ee);
     }
 
-    AstPtr parse_decl_definition() {
+    ptr<Ast> parse_decl_definition() {
         Position p = position();
         force_token(TOKEN_DEF);
         if (is_combinator()) {
-            AstPtr c = parse_combinator();
+            ptr<Ast> c = parse_combinator();
             force_token(TOKEN_EQ);
-            AstPtr e = parse_expression();
+            ptr<Ast> e = parse_expression();
             return AstDeclDefinition::create(p, c, e);
         } else if (is_operator()) {
-            AstPtr c = parse_operator();
+            ptr<Ast> c = parse_operator();
             force_token(TOKEN_EQ);
-            AstPtr e = parse_expression();
+            ptr<Ast> e = parse_expression();
             return AstDeclOperator::create(p, c, e);
         } else {
             throw ErrorSyntactical(p, "combinator or operator expected");
         }
     }
 
-    AstPtr parse_decl_value() {
+    ptr<Ast> parse_decl_value() {
         Position p = position();
         force_token(TOKEN_VAL);
         if (is_combinator()) {
-            AstPtr c = parse_combinator();
+            auto c = parse_combinator();
             force_token(TOKEN_EQ);
-            AstPtr e = parse_expression();
+            auto e = parse_expression();
             return AstDeclValue::create(p, c, e);
         } else {
             throw ErrorSyntactical(p, "combinator expected");
         }
     }
 
-    AstPtr parse_decl_class() {
+    ptr<Ast> parse_decl_class() {
         Position p = position();
         force_token(TOKEN_CLASS);
-        AstPtr c = parse_combinator();
-        AstPtrs vv;
+        auto c = parse_combinator();
+        ptrs<Ast> vv;
         while (is_variable()) {
             auto v = parse_variable();
             vv.push_back(v);
         }
-        AstPtrs ee;
+        ptrs<Ast> ee;
         if (tag() == TOKEN_EXTENDS) {
             force_token(TOKEN_EXTENDS);
             auto e = parse_expression();
@@ -807,14 +807,14 @@ public:
         return AstDeclObject::create(p, c, vv, ff, ee);
     }
 
-    AstPtr parse_decl_namespace() {
+    ptr<Ast> parse_decl_namespace() {
         Position p = position();
         force_token(TOKEN_NAMESPACE);
         UnicodeStrings n = parse_namespace();
         force_token(TOKEN_LPAREN);
-        AstPtrs dd = AstPtrs();
+        auto dd = ptrs<Ast>();
         while (tag() != TOKEN_RPAREN) {
-            AstPtr d = parse_decl_or_directive();
+            auto d = parse_decl_or_directive();
             dd.push_back(d);
         }
         force_token(TOKEN_RPAREN);
@@ -836,7 +836,7 @@ public:
         }
     }
 
-    AstPtr parse_decl() {
+    ptr<Ast> parse_decl() {
         switch (tag()) {
             case TOKEN_DATA:
                 return parse_decl_data();
@@ -874,14 +874,14 @@ public:
         }
     }
 
-    AstPtr parse_using() {
+    ptr<Ast> parse_using() {
         Position p = position();
         force_token(TOKEN_USING);
         UnicodeStrings n = parse_namespace();
         return AstDirectUsing::create(p, n);
     }
 
-    AstPtr parse_import() {
+    ptr<Ast> parse_import() {
         Position p = position();
         force_token(TOKEN_IMPORT);
         check_token(TOKEN_TEXT);
@@ -890,7 +890,7 @@ public:
         return AstDirectImport::create(p, n);
     }
 
-    AstPtr parse_directive() {
+    ptr<Ast> parse_directive() {
         switch (tag()) {
             case TOKEN_USING:
                 return parse_using();
@@ -905,7 +905,7 @@ public:
         throw ErrorSyntactical(p, "directive expected");
     }
 
-    AstPtr parse_decl_or_directive() {
+    ptr<Ast> parse_decl_or_directive() {
         if (is_decl()) {
             return parse_decl();
         } else if (is_directive()) {
@@ -916,11 +916,11 @@ public:
         }
     }
 
-    AstPtr parse() {
+    ptr<Ast> parse() {
         Position p = position();
-        AstPtrs dd = AstPtrs();
+        auto dd = ptrs<Ast>();
         while (tag() != TOKEN_EOF) {
-            AstPtr d = parse_decl_or_directive();
+            auto d = parse_decl_or_directive();
             dd.push_back(d);
         }
         return AstWrapper::create(p, dd);
@@ -928,7 +928,7 @@ public:
 
 protected:
     // convenience methods
-    AstPtr app(AstPtr e0, AstPtr e1) {
+    ptr<Ast> app(ptr<Ast> e0, ptr<Ast> e1) {
         return AstExprApplication::create(e0->position(), e0, e1);
     }
 
@@ -941,7 +941,7 @@ public:
     LineParser(TokenReaderPtr &r) : Parser(r) {
     }
 
-    AstPtr parse_command() {
+    ptr<Ast> parse_command() {
         if (is_directive()) {
             return parse_directive();
         } else if (tag() == TOKEN_DEF) {
@@ -955,9 +955,9 @@ public:
         }
     }
 
-    AstPtr parse_line() {
+    ptr<Ast> parse_line() {
         Position p = position();
-        AstPtrs aa;
+        ptrs<Ast> aa;
         if (tag() == TOKEN_EOF) return AstWrapper::create(p, aa);
         auto a = parse_command();
         aa.push_back(a);
@@ -975,16 +975,16 @@ public:
     }
 };
 
-AstPtrs imports(const AstPtr &a);  // XXX: didn't know where to place this
-AstPtrs values(const AstPtr &a);   // XXX: didn't know where to place this
+ptrs<Ast> imports(const ptr<Ast> &a);  // XXX: didn't know where to place this
+ptrs<Ast> values(const ptr<Ast> &a);   // XXX: didn't know where to place this
 
-AstPtr parse(TokenReaderPtr &r);
+ptr<Ast> parse(TokenReaderPtr &r);
 
-AstPtr parse_line(TokenReaderPtr &r);
+ptr<Ast> parse_line(TokenReaderPtr &r);
 
 class Imports : public Visit {
 public:
-    AstPtrs imports(const AstPtr &a) {
+    ptrs<Ast> imports(const ptr<Ast> &a) {
         visit(a);
         return _imports;
     }
@@ -995,71 +995,71 @@ public:
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
     }
 
-    void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &e) override {
     }
 
-    void visit_decl_value(const Position &p, const AstPtr &n,
-                          const AstPtr &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+                          const ptr<Ast> &e) override {
     }
 
-    void visit_decl_operator(const Position &p, const AstPtr &c,
-                             const AstPtr &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &e) override {
     }
 
 private:
-    AstPtrs _imports;
+    ptrs<Ast> _imports;
 };
 
-AstPtrs imports(const AstPtr &a) {
+ptrs<Ast> imports(const ptr<Ast> &a) {
     Imports imports;
     return imports.imports(a);
 }
 
 class Values : public Visit {
 public:
-    AstPtrs values(const AstPtr &a) {
+    ptrs<Ast> values(const ptr<Ast> &a) {
         visit(a);
         return _values;
     }
 
-    void visit_decl_value(const Position &p, const AstPtr &n,
-                          const AstPtr &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+                          const ptr<Ast> &e) override {
         _values.push_back(AstDeclValue::create(p, n, e));
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
     }
 
-    void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &e) override {
     }
 
-    void visit_decl_operator(const Position &p, const AstPtr &c,
-                             const AstPtr &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &e) override {
     }
 
 private:
-    AstPtrs _values;
+    ptrs<Ast> _values;
 };
 
-AstPtrs values(const AstPtr &a) {
+ptrs<Ast> values(const ptr<Ast> &a) {
     Values values;
     return values.values(a);
 }
 
-AstPtr parse(TokenReaderPtr &r) {
+ptr<Ast> parse(TokenReaderPtr &r) {
     Parser p(r);
-    AstPtr a = p.parse();
+    auto a = p.parse();
     return a;
 }
 
-AstPtr parse_line(TokenReaderPtr &r) {
+ptr<Ast> parse_line(TokenReaderPtr &r) {
     LineParser p(r);
-    AstPtr a = p.parse_line();
+    auto a = p.parse_line();
     return a;
 }

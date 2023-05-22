@@ -1,7 +1,7 @@
 #pragma once
 
-inline void emit_data(VM *vm, const AstPtr &a);
-inline void emit_code(VM *vm, const AstPtr &a);
+inline void emit_data(VM *vm, const ptr<Ast> &a);
+inline void emit_code(VM *vm, const ptr<Ast> &a);
 
 #include <memory>
 #include <vector>
@@ -16,7 +16,7 @@ using CoderPtr = std::unique_ptr<Coder>;
 
 class EmitData : public Visit {
 public:
-    void emit(VM *m, const AstPtr &a) {
+    void emit(VM *m, const ptr<Ast> &a) {
         _machine = m;
         visit(a);
     }
@@ -31,30 +31,30 @@ public:
         _machine->define_data(c);
     }
 
-    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
         visits(nn);
     }
 
     // cut
-    void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &e) override {
     }
 
     // cut
-    void visit_decl_value(const Position &p, const AstPtr &n,
-                          const AstPtr &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+                          const ptr<Ast> &e) override {
     }
 
     // cut
-    void visit_decl_operator(const Position &p, const AstPtr &c,
-                             const AstPtr &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &e) override {
     }
 
 private:
     VM *_machine;
 };
 
-void emit_data(VM *m, const AstPtr &a) {
+void emit_data(VM *m, const ptr<Ast> &a) {
     EmitData emit;
     emit.emit(m, a);
 }
@@ -68,7 +68,7 @@ enum emit_state_t {
 
 class EmitCode : public Visit {
 public:
-    void emit(VM *vm, const AstPtr &a) {
+    void emit(VM *vm, const ptr<Ast> &a) {
         _machine = vm;
         _coder = std::unique_ptr<Coder>(new Coder(vm));
         visit(a);
@@ -349,7 +349,7 @@ public:
         }
     }
 
-    void visit_expr_application(const Position &p, const AstPtrs &aa) override {
+    void visit_expr_application(const Position &p, const ptrs<Ast> &aa) override {
         switch (get_state()) {
             case EMIT_PATTERN: {
                 auto r = get_current_register();
@@ -402,12 +402,12 @@ public:
                 bool head_flag;  // generate more efficient code for vars and
                                  // combinators
                 if (a->tag() == AST_EXPR_VARIABLE) {
-                    AST_EXPR_VARIABLE_SPLIT(a, p, n);
+                    auto [p, n] = AstExprVariable::split(a);
                     auto r = get_variable_binding(n);
                     get_coder()->emit_op_mov(c, r);
                     head_flag = true;
                 } else if (a->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(a, p, nn, n);
+                    auto [p, nn, n] = AstExprCombinator::split(a);
                     auto v = machine()->get_combinator(nn, n);
                     auto d = get_coder()->emit_data(v);
                     get_coder()->emit_op_data(c, d);
@@ -469,8 +469,8 @@ public:
         }
     }
 
-    void visit_expr_tag(const Position &p, const AstPtr &v,
-                        const AstPtr &t) override {
+    void visit_expr_tag(const Position &p, const ptr<Ast> &v,
+                        const ptr<Ast> &t) override {
         switch (get_state()) {
             case EMIT_PATTERN: {
                 auto r = get_current_register();
@@ -483,7 +483,7 @@ public:
                 }
 
                 if (t->tag() == AST_EXPR_COMBINATOR) {
-                    AST_EXPR_COMBINATOR_SPLIT(t, p, nn, n);
+                    auto [p, nn, n] = AstExprCombinator::split(t);
                     auto o = machine()->get_combinator(nn, n);
                     auto d = get_coder()->emit_data(o);
 
@@ -503,8 +503,8 @@ public:
         }
     }
 
-    void visit_expr_match(const Position &p, const AstPtrs &mm, const AstPtr &g,
-                          const AstPtr &e) override {
+    void visit_expr_match(const Position &p, const ptrs<Ast> &mm, const ptr<Ast> &g,
+                          const ptr<Ast> &e) override {
         // we have memberberries
         auto member = get_coder()->peek_register();
         auto r = get_register_frame();
@@ -545,7 +545,7 @@ public:
         get_coder()->restore_register(member);
     }
 
-    void visit_expr_block(const Position &p, const AstPtrs &alts) override {
+    void visit_expr_block(const Position &p, const ptrs<Ast> &alts) override {
         // keep link registers invariant
         auto rt = get_register_rt();
         auto rti = get_register_rti();
@@ -561,8 +561,8 @@ public:
         }
     }
 
-    void visit_expr_try(const Position &p, const AstPtr &t,
-                        const AstPtr &c) override {
+    void visit_expr_try(const Position &p, const ptr<Ast> &t,
+                        const ptr<Ast> &c) override {
         auto rt = get_register_rt();
         auto rti = get_register_rti();
         auto k = get_register_k();
@@ -608,7 +608,7 @@ public:
         set_register_rti(rti);
     }
 
-    void visit_expr_throw(const Position &p, const AstPtr &e) override {
+    void visit_expr_throw(const Position &p, const ptr<Ast> &e) override {
         PANIC("throw is combinator");
     }
 
@@ -616,11 +616,11 @@ public:
                                 const icu::UnicodeString &i) override {
     }
 
-    void visit_decl_data(const Position &p, const AstPtrs &nn) override {
+    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
         for (auto n : nn) {
             switch (n->tag()) {
                 case AST_EXPR_COMBINATOR: {
-                    AST_EXPR_COMBINATOR_SPLIT(n, p, ss, s);
+                    auto [p, ss, s] = AstExprCombinator::split(n);
                     auto d = VMObjectData::create(machine(), ss, s);
                     machine()->define_data(d);
                 } break;
@@ -630,8 +630,8 @@ public:
         }
     }
 
-    void visit_decl_definition(const Position &p, const AstPtr &n,
-                               const AstPtr &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &e) override {
         auto frame = get_coder()->generate_register();
 
         auto l = get_coder()->generate_label();
@@ -668,7 +668,7 @@ public:
         auto code = get_coder()->code();
         auto data = get_coder()->data();
 
-        AST_EXPR_COMBINATOR_SPLIT(n, p0, ss, s);
+        auto [p0, ss, s] = AstExprCombinator::split(n);
         auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
         machine()->define_data(b);
 
@@ -676,13 +676,13 @@ public:
     }
 
     // treat as a definition
-    void visit_decl_value(const Position &p, const AstPtr &o,
-                          const AstPtr &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &o,
+                          const ptr<Ast> &e) override {
         visit_decl_definition(p, o, e);
     }
 
-    void visit_decl_operator(const Position &p, const AstPtr &o,
-                             const AstPtr &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &o,
+                             const ptr<Ast> &e) override {
         auto frame = get_coder()->generate_register();
 
         auto l = get_coder()->generate_label();
@@ -719,7 +719,7 @@ public:
         auto code = get_coder()->code();
         auto data = get_coder()->data();
 
-        AST_EXPR_OPERATOR_SPLIT(o, p0, ss, s);
+        auto [p0, ss, s] = AstExprOperator::split(o);
         auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
         machine()->define_data(b);
 
@@ -744,7 +744,7 @@ private:
     RegisterMap _variables;
 };
 
-void emit_code(VM *m, const AstPtr &a) {
+void emit_code(VM *m, const ptr<Ast> &a) {
     EmitCode emit;
     emit.emit(m, a);
 }

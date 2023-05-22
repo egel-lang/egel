@@ -31,6 +31,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ removed some utf32 bugs and code smell
 + BADARGS should report the arguments
 + reintroduction of monadic min
 
