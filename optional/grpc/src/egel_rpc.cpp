@@ -6,10 +6,9 @@
 #include <string>
 
 
-#include <egel/runtime.hpp> // build against an installed egel
-#include "utils.hpp"        // same as egel's but only the runtime should be included
+// #include <src/runtime.hpp> // build against the current distribution
 
-#include <grpc/grpc.h>
+// #include <grpc/grpc.h>
 #include <grpcpp/security/server_credentials.h>
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
