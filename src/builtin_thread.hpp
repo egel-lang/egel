@@ -88,8 +88,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("System", "thread");
+        auto sym = machine()->enter_symbol("System", "thread");
 
         auto tuple = machine()->create_tuple();
         auto none = machine()->create_none();
