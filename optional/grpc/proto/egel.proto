@@ -9,5 +9,5 @@ service EgelRpc {
 }
 
 message EgelText {
-    string term = 1;
+    string text = 1;
 }
