@@ -18,6 +18,8 @@
 #include <egel.pb.h>
 #include <egel.grpc.pb.h>
 
+#include <egel/runtime.hpp>
+
 
 using grpc::Server;
 using grpc::ServerBuilder;
