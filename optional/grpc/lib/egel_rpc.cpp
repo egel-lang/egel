@@ -57,6 +57,15 @@ public:
     virtual Status EgelNodeInfo(ServerContext* context, const EgelText* in, EgelText* out) override {
         return Status::OK;
     }
+
+    void run_server(const std::string& server_address) {
+        ServerBuilder builder;
+        builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+        builder.RegisterService(this);
+        std::unique_ptr<Server> server(builder.BuildAndStart());
+        std::cout << "Server listening on " << server_address << std::endl;
+        server->Wait();
+    };
 };
 
 class EgelRpcConnection {
@@ -86,16 +95,23 @@ public:
         }
     }
 
+    std::string EgelInfo(const std::string& name) {
+        EgelText request;
+        request.set_text(name);
+
+        EgelText reply;
+
+        ClientContext context;
+
+        Status status = _stub->EgelNodeInfo(&context, request, &reply);
+
+        if (status.ok()) {
+          return reply.text();
+        } else {
+          return ""; // default empty
+        }
+    }
+
 private:
     std::unique_ptr<EgelRpc::Stub> _stub;
-};
-
-void run_server(const std::string& server_address) {
-  EgelRpcImpl service;
-  ServerBuilder builder;
-  builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-  builder.RegisterService(&service);
-  std::unique_ptr<Server> server(builder.BuildAndStart());
-  std::cout << "Server listening on " << server_address << std::endl;
-  server->Wait();
 };
