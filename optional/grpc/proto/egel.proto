@@ -4,7 +4,6 @@ package egel_rpc;
 
 service EgelRpc {
     rpc EgelCall(EgelText) returns (EgelText) {}
-    rpc EgelStream(stream EgelText) returns (stream EgelText) {}
     rpc EgelNodeInfo(EgelText) returns (EgelText) {}
 }
 

@@ -20,7 +20,6 @@
 
 #include <egel/runtime.hpp>
 
-
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -36,23 +35,60 @@ using grpc::Status;
 using egel_rpc::EgelText;
 using egel_rpc::EgelRpc;
 
-
 #define LIBRARY_VERSION_MAJOR "0"
 #define LIBRARY_VERSION_MINOR "0"
 #define LIBRARY_VERSION_PATCH "1"
 
+using icu::UnicodeString;
+using icu::StringPiece;;
+
+inline std::string unicode_to_string(const UnicodeString s) {
+    std::string utf8;
+    s.toUTF8String(utf8);
+    return utf8;
+};
+
+inline UnicodeString unicode_from_string(const std::string& s) {
+    StringPiece sp(s);
+    return UnicodeString::fromUTF8(sp);
+};
+
+inline char* char_from_string(const std::string& s) {
+    std::string utf8;
+    s.toUTF8String(utf8);
+    char *cstr = new char[utf8.length() + 1];
+    std::strcpy(cstr, utf8.c_str());
+    return cstr;
+};
+
 class EgelRpcImpl final : public egel_rpc::EgelRpc::Service {
 public:
-    virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelText* out) override {
-        auto s = in->text();
-        return Status::OK;
+
+    void set_machine(VM* vm) {
+        _machine = vm;
     }
 
-    virtual Status EgelStream(ServerContext* context, ServerReaderWriter<EgelText, EgelText>* stream) override {
-        EgelText text;
-        while (stream->Read(&text)) {
-            stream->Write(text); // XXX
-        }
+    VM* machine() {
+        return _machine;
+    }
+
+    void set_program(VMObjectPtr &p) {
+        _program = p;
+    }
+
+    VMObjectPtr program() const {
+        return _program;
+    }
+
+    virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelText* out) override {
+        auto str_in = machine()->create_text(char_from_string(in->text()));
+        VMObjectPtrs thunk;
+        thunk.push_back(_program);
+        thunk.push_back(in);  // NOTE: _program and in are reduced
+        auto app = machine()->create_array(thunk);
+        auto r = machine()->reduce(app, &_state);
+
+        auto s = in->text();
         return Status::OK;
     }
 
@@ -68,6 +104,9 @@ public:
         std::cout << "Server listening on " << server_address << std::endl;
         server->Wait();
     };
+private:
+    VM*         _machine;
+    VMObjectPtr _program;
 };
 
 class EgelRpcConnection {
