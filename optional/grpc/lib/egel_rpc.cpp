@@ -54,10 +54,8 @@ inline UnicodeString unicode_from_string(const std::string& s) {
 };
 
 inline char* char_from_string(const std::string& s) {
-    std::string utf8;
-    s.toUTF8String(utf8);
-    char *cstr = new char[utf8.length() + 1];
-    std::strcpy(cstr, utf8.c_str());
+    char *cstr = new char[s.length() + 1];
+    std::strcpy(cstr, s.c_str());
     return cstr;
 };
 
