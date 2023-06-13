@@ -121,12 +121,13 @@ const int SYMBOL_CONS = 10;
  */
 using vm_subtag_t = unsigned int;
 
-const vm_subtag_t VM_SUB_DATA = 0x00;      // a combinator data object
-const vm_subtag_t VM_SUB_BUILTIN = 0x01;   // a combinator internally defined
-const vm_subtag_t VM_SUB_BYTECODE = 0x02;  // a bytecode combinator
-const vm_subtag_t VM_SUB_COMPILED = 0x03;  // a compiled bytecode combinator
-const vm_subtag_t VM_SUB_EGO = 0x04;       // a combinator from a .ego
-const vm_subtag_t VM_SUB_STUB = 0x05;      // a stub combinator
+const vm_subtag_t VM_SUB_LITERAL = 0x00;   // a combinator literal object
+const vm_subtag_t VM_SUB_DATA = 0x01;      // a combinator data object
+const vm_subtag_t VM_SUB_BUILTIN = 0x02;   // a combinator internally defined
+const vm_subtag_t VM_SUB_BYTECODE = 0x03;  // a bytecode combinator
+const vm_subtag_t VM_SUB_COMPILED = 0x04;  // a compiled bytecode combinator
+const vm_subtag_t VM_SUB_EGO = 0x05;       // a combinator from a .ego
+const vm_subtag_t VM_SUB_STUB = 0x06;      // a stub combinator
 
 const vm_subtag_t VM_SUB_MODULE = 0x0a;  // opaque module combinator
 
