@@ -228,7 +228,7 @@ public:
                 get_coder()->emit_op_test(r, ri);
                 get_coder()->emit_op_fail(l);
             } break;
-            case EMIT_EXPR: 
+            case EMIT_EXPR:
             case EMIT_EXPR_ROOT: {
                 auto rt = get_coder()->generate_register();
                 auto rti = get_coder()->generate_register();
@@ -349,7 +349,8 @@ public:
         }
     }
 
-    void visit_expr_application(const Position &p, const ptrs<Ast> &aa) override {
+    void visit_expr_application(const Position &p,
+                                const ptrs<Ast> &aa) override {
         switch (get_state()) {
             case EMIT_PATTERN: {
                 auto r = get_current_register();
@@ -503,8 +504,8 @@ public:
         }
     }
 
-    void visit_expr_match(const Position &p, const ptrs<Ast> &mm, const ptr<Ast> &g,
-                          const ptr<Ast> &e) override {
+    void visit_expr_match(const Position &p, const ptrs<Ast> &mm,
+                          const ptr<Ast> &g, const ptr<Ast> &e) override {
         // we have memberberries
         auto member = get_coder()->peek_register();
         auto r = get_register_frame();

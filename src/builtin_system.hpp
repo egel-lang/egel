@@ -689,7 +689,7 @@ public:
             auto str = machine()->get_text(arg0);
 
             VMObjectPtrs ss;
-            for (int i = 0; i < str.length(); i = str.moveIndex32(i,1)) {
+            for (int i = 0; i < str.length(); i = str.moveIndex32(i, 1)) {
                 auto c = machine()->create_char(str.char32At(i));
                 ss.push_back(c);
             }
@@ -723,18 +723,18 @@ public:
 
             UChar32 c = machine()->get_char(aa[1]);
 
-// never touch this code again
+            // never touch this code again
 
-/*
-    if (U_IS_BMP(c)) {
-      ss += UChar(c);
-    } else {
-      UChar buffer[U16_MAX_LENGTH];
-      int32_t length = 0;
-      U16_APPEND_UNSAFE(buffer, length, c); 
-      ss.append(buffer, length);
-    }
-*/
+            /*
+                if (U_IS_BMP(c)) {
+                  ss += UChar(c);
+                } else {
+                  UChar buffer[U16_MAX_LENGTH];
+                  int32_t length = 0;
+                  U16_APPEND_UNSAFE(buffer, length, c);
+                  ss.append(buffer, length);
+                }
+            */
 
             ss += c;
 

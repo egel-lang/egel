@@ -537,7 +537,6 @@ static constexpr token_text_t token_text_table[]{
         STRING_DO,
     },
 
-
     // directives
     {
         TOKEN_USING,

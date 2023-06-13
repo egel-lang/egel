@@ -260,7 +260,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
-            auto t = machine()->disassemble(arg0);// XXX XXX: cut this?
+            auto t = machine()->disassemble(arg0);  // XXX XXX: cut this?
             return machine()->create_text(t);
         } else {
             throw machine()->bad_args(this, arg0);
@@ -282,7 +282,7 @@ public:
     }
 };
 
-class Bundle: public Monadic {
+class Bundle : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Bundle, "System", "bundle");
 

@@ -690,54 +690,54 @@ inline VMObjectPtr deserialize_from_string(VM *m, const icu::UnicodeString &s) {
     return o;
 };
 
-inline VMObjectPtrs bundle(VM* m, const VMObjectPtr &o) {
-        VMObjectsStack work0;
-        work0.push(o);
+inline VMObjectPtrs bundle(VM *m, const VMObjectPtr &o) {
+    VMObjectsStack work0;
+    work0.push(o);
 
-        VMObjectsSet visited;
-        VMObjectsStack work1;
+    VMObjectsSet visited;
+    VMObjectsStack work1;
 
-        // first run through the dag and collect all data and bytecode objects
-        while (!work0.empty()) {
-            auto o = work0.top();
-            work0.pop();
-            if (!visited.contains(o)) {
-                visited.insert(o);
-                if (m->is_data(o)) {
-                     work1.push(o);
-                } else if (m->is_bytecode(o)) {
-                    work1.push(o);
-                } else if (m->is_array(o)) {
-                    auto n = m->array_size(o);
-                    for (unsigned int i = 0; i < n; i++) {
-                        auto o0 = m->array_get(o, i);
-                        work0.push(o0);
+    // first run through the dag and collect all data and bytecode objects
+    while (!work0.empty()) {
+        auto o = work0.top();
+        work0.pop();
+        if (!visited.contains(o)) {
+            visited.insert(o);
+            if (m->is_data(o)) {
+                work1.push(o);
+            } else if (m->is_bytecode(o)) {
+                work1.push(o);
+            } else if (m->is_array(o)) {
+                auto n = m->array_size(o);
+                for (unsigned int i = 0; i < n; i++) {
+                    auto o0 = m->array_get(o, i);
+                    work0.push(o0);
+                }
+            }
+        }
+    }
+    visited.clear();
+
+    // then close over all bytecode combinators
+    VMObjectPtrs oo;
+    while (!work1.empty()) {
+        auto o = work1.top();
+        work1.pop();
+        if (!visited.contains(o)) {
+            visited.insert(o);
+            oo.push_back(o);
+            if (m->is_bytecode(o)) {
+                auto oo0 = m->get_bytedata(o);
+                for (auto o0 : oo0) {
+                    if (m->is_data(o0)) {
+                        work1.push(o0);
+                    } else if (m->is_bytecode(o0)) {
+                        work1.push(o0);
                     }
                 }
             }
         }
-        visited.clear();
+    }
 
-        // then close over all bytecode combinators
-        VMObjectPtrs oo;
-        while (!work1.empty()) {
-            auto o = work1.top();
-            work1.pop();
-            if (!visited.contains(o)) {
-                visited.insert(o);
-                oo.push_back(o);
-                if (m->is_bytecode(o)) {
-                    auto oo0 = m->get_bytedata(o);
-                    for (auto o0 : oo0) {
-                        if (m->is_data(o0)) {
-                             work1.push(o0);
-                        } else if (m->is_bytecode(o0)) {
-                             work1.push(o0);
-                        }
-                    }
-                }
-            }
-        }
-                
-        return oo;
+    return oo;
 }

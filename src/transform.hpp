@@ -22,61 +22,69 @@ public:
     virtual void transform_pre(const ptr<Ast> &a) {
     }
 
-    virtual ptr<Ast> transform_expr_integer(const ptr<Ast> &a, const Position &p,
-                                          const icu::UnicodeString &v) {
-        return a;
-    }
-
-    virtual ptr<Ast> transform_expr_hexinteger(const ptr<Ast> &a, const Position &p,
-                                             const icu::UnicodeString &v) {
-        return a;
-    }
-
-    virtual ptr<Ast> transform_expr_float(const ptr<Ast> &a, const Position &p,
-                                        const icu::UnicodeString &v) {
-        return a;
-    }
-
-    virtual ptr<Ast> transform_expr_character(const ptr<Ast> &a, const Position &p,
+    virtual ptr<Ast> transform_expr_integer(const ptr<Ast> &a,
+                                            const Position &p,
                                             const icu::UnicodeString &v) {
         return a;
     }
 
+    virtual ptr<Ast> transform_expr_hexinteger(const ptr<Ast> &a,
+                                               const Position &p,
+                                               const icu::UnicodeString &v) {
+        return a;
+    }
+
+    virtual ptr<Ast> transform_expr_float(const ptr<Ast> &a, const Position &p,
+                                          const icu::UnicodeString &v) {
+        return a;
+    }
+
+    virtual ptr<Ast> transform_expr_character(const ptr<Ast> &a,
+                                              const Position &p,
+                                              const icu::UnicodeString &v) {
+        return a;
+    }
+
     virtual ptr<Ast> transform_expr_text(const ptr<Ast> &a, const Position &p,
-                                       const icu::UnicodeString &v) {
+                                         const icu::UnicodeString &v) {
         return a;
     }
 
-    virtual ptr<Ast> transform_expr_variable(const ptr<Ast> &a, const Position &p,
-                                           const icu::UnicodeString &n) {
+    virtual ptr<Ast> transform_expr_variable(const ptr<Ast> &a,
+                                             const Position &p,
+                                             const icu::UnicodeString &n) {
         return a;
     }
 
-    virtual ptr<Ast> transform_expr_wildcard(const ptr<Ast> &a, const Position &p,
-                                           const icu::UnicodeString &n) {
+    virtual ptr<Ast> transform_expr_wildcard(const ptr<Ast> &a,
+                                             const Position &p,
+                                             const icu::UnicodeString &n) {
         return a;
     }
 
-    virtual ptr<Ast> transform_expr_combinator(const ptr<Ast> &a, const Position &p,
+    virtual ptr<Ast> transform_expr_combinator(const ptr<Ast> &a,
+                                               const Position &p,
+                                               const UnicodeStrings &nn,
+                                               const icu::UnicodeString &n) {
+        return a;
+    }
+
+    virtual ptr<Ast> transform_expr_operator(const ptr<Ast> &a,
+                                             const Position &p,
                                              const UnicodeStrings &nn,
                                              const icu::UnicodeString &n) {
         return a;
     }
 
-    virtual ptr<Ast> transform_expr_operator(const ptr<Ast> &a, const Position &p,
-                                           const UnicodeStrings &nn,
-                                           const icu::UnicodeString &n) {
-        return a;
-    }
-
     virtual ptr<Ast> transform_expr_tuple(const ptr<Ast> &a, const Position &p,
-                                        const ptrs<Ast> &tt) {
+                                          const ptrs<Ast> &tt) {
         auto tt0 = transforms(tt);
         return AstExprTuple::create(p, tt0);
     }
 
     virtual ptr<Ast> transform_expr_list(const ptr<Ast> &a, const Position &p,
-                                       const ptrs<Ast> &tt, const ptr<Ast> &tl) {
+                                         const ptrs<Ast> &tt,
+                                         const ptr<Ast> &tl) {
         auto tt0 = transforms(tt);
         if (tl == nullptr) {
             return AstExprList::create(p, tt0);
@@ -87,21 +95,22 @@ public:
     }
 
     virtual ptr<Ast> transform_expr_application(const ptr<Ast> &a,
-                                              const Position &p,
-                                              const ptrs<Ast> &tt) {
+                                                const Position &p,
+                                                const ptrs<Ast> &tt) {
         auto tt0 = transforms(tt);
         return AstExprApplication::create(p, tt0);
     }
 
     virtual ptr<Ast> transform_expr_lambda(const ptr<Ast> &a, const Position &p,
-                                         const ptr<Ast> &m) {
+                                           const ptr<Ast> &m) {
         auto m0 = transform(m);
         return AstExprLambda::create(p, m0);
     }
 
     virtual ptr<Ast> transform_expr_match(const ptr<Ast> &a, const Position &p,
-                                        const ptrs<Ast> &mm, const ptr<Ast> &g,
-                                        const ptr<Ast> &e) {
+                                          const ptrs<Ast> &mm,
+                                          const ptr<Ast> &g,
+                                          const ptr<Ast> &e) {
         auto mm0 = transforms(mm);
         auto g0 = transform(g);
         auto e0 = transform(e);
@@ -109,14 +118,15 @@ public:
     }
 
     virtual ptr<Ast> transform_expr_block(const ptr<Ast> &a, const Position &p,
-                                        const ptrs<Ast> &alts) {
+                                          const ptrs<Ast> &alts) {
         auto alts0 = transforms(alts);
         return AstExprBlock::create(p, alts0);
     }
 
     virtual ptr<Ast> transform_expr_let(const ptr<Ast> &a, const Position &p,
-                                      const ptrs<Ast> &lhs, const ptr<Ast> &rhs,
-                                      const ptr<Ast> &body) {
+                                        const ptrs<Ast> &lhs,
+                                        const ptr<Ast> &rhs,
+                                        const ptr<Ast> &body) {
         auto lhs0 = transforms(lhs);
         auto rhs0 = transform(rhs);
         auto body0 = transform(body);
@@ -124,88 +134,98 @@ public:
     }
 
     virtual ptr<Ast> transform_expr_tag(const ptr<Ast> &a, const Position &p,
-                                      const ptr<Ast> &e, const ptr<Ast> &t) {
+                                        const ptr<Ast> &e, const ptr<Ast> &t) {
         auto e0 = transform(e);
         auto t0 = transform(t);
         return AstExprTag::create(p, e0, t0);
     }
 
     virtual ptr<Ast> transform_expr_if(const ptr<Ast> &a, const Position &p,
-                                     const ptr<Ast> &i, const ptr<Ast> &t,
-                                     const ptr<Ast> &e) {
+                                       const ptr<Ast> &i, const ptr<Ast> &t,
+                                       const ptr<Ast> &e) {
         auto i0 = transform(i);
         auto t0 = transform(t);
         auto e0 = transform(e);
         return AstExprIf::create(p, i0, t0, e0);
     }
 
-    virtual ptr<Ast> transform_expr_statement(const ptr<Ast> &a, const Position &p,
-                                            const ptr<Ast> &l, const ptr<Ast> &r) {
+    virtual ptr<Ast> transform_expr_statement(const ptr<Ast> &a,
+                                              const Position &p,
+                                              const ptr<Ast> &l,
+                                              const ptr<Ast> &r) {
         auto r0 = transform(r);
         auto l0 = transform(l);
         return AstExprStatement::create(p, r0, l0);
     }
 
     virtual ptr<Ast> transform_expr_try(const ptr<Ast> &a, const Position &p,
-                                      const ptr<Ast> &t, const ptr<Ast> &c) {
+                                        const ptr<Ast> &t, const ptr<Ast> &c) {
         auto t0 = transform(t);
         auto c0 = transform(c);
         return AstExprTry::create(p, t0, c0);
     }
 
     virtual ptr<Ast> transform_expr_throw(const ptr<Ast> &a, const Position &p,
-                                        const ptr<Ast> &e) {
+                                          const ptr<Ast> &e) {
         auto e0 = transform(e);
         return AstExprThrow::create(p, e0);
     }
 
     virtual ptr<Ast> transform_expr_do(const ptr<Ast> &a, const Position &p,
-                                        const ptr<Ast> &e) {
+                                       const ptr<Ast> &e) {
         auto e0 = transform(e);
         return AstExprDo::create(p, e0);
     }
 
     virtual ptr<Ast> transform_directive_import(const ptr<Ast> &a,
-                                              const Position &p,
-                                              const icu::UnicodeString &i) {
+                                                const Position &p,
+                                                const icu::UnicodeString &i) {
         return a;
     }
 
-    virtual ptr<Ast> transform_directive_using(const ptr<Ast> &a, const Position &p,
-                                             const UnicodeStrings &uu) {
+    virtual ptr<Ast> transform_directive_using(const ptr<Ast> &a,
+                                               const Position &p,
+                                               const UnicodeStrings &uu) {
         return a;
     }
 
     virtual ptr<Ast> transform_decl_data(const ptr<Ast> &a, const Position &p,
-                                       const ptrs<Ast> &nn) {
+                                         const ptrs<Ast> &nn) {
         auto nn0 = transforms(nn);
         return AstDeclData::create(p, nn0);
     }
 
-    virtual ptr<Ast> transform_decl_definition(const ptr<Ast> &a, const Position &p,
-                                             const ptr<Ast> &n, const ptr<Ast> &e) {
+    virtual ptr<Ast> transform_decl_definition(const ptr<Ast> &a,
+                                               const Position &p,
+                                               const ptr<Ast> &n,
+                                               const ptr<Ast> &e) {
         auto n0 = transform(n);
         auto e0 = transform(e);
         return AstDeclDefinition::create(p, n0, e0);
     }
 
     virtual ptr<Ast> transform_decl_value(const ptr<Ast> &a, const Position &p,
-                                        const ptr<Ast> &l, const ptr<Ast> &r) {
+                                          const ptr<Ast> &l,
+                                          const ptr<Ast> &r) {
         auto l0 = transform(l);
         auto r0 = transform(r);
         return AstDeclValue::create(p, l0, r0);
     }
 
-    virtual ptr<Ast> transform_decl_operator(const ptr<Ast> &a, const Position &p,
-                                           const ptr<Ast> &c, const ptr<Ast> &e) {
+    virtual ptr<Ast> transform_decl_operator(const ptr<Ast> &a,
+                                             const Position &p,
+                                             const ptr<Ast> &c,
+                                             const ptr<Ast> &e) {
         auto c0 = transform(c);
         auto e0 = transform(e);
         return AstDeclOperator::create(p, c0, e0);
     }
 
     virtual ptr<Ast> transform_decl_object(const ptr<Ast> &a, const Position &p,
-                                         const ptr<Ast> &c, const ptrs<Ast> &vv,
-                                         const ptrs<Ast> &ff, const ptrs<Ast> &ee) {
+                                           const ptr<Ast> &c,
+                                           const ptrs<Ast> &vv,
+                                           const ptrs<Ast> &ff,
+                                           const ptrs<Ast> &ee) {
         auto c0 = transform(c);
         auto vv0 = transforms(vv);
         auto ff0 = transforms(ff);
@@ -213,15 +233,16 @@ public:
         return AstDeclObject::create(p, c0, vv0, ff0, ee0);
     }
 
-    virtual ptr<Ast> transform_decl_namespace(const ptr<Ast> &a, const Position &p,
-                                            const UnicodeStrings &nn,
-                                            const ptrs<Ast> &dd) {
+    virtual ptr<Ast> transform_decl_namespace(const ptr<Ast> &a,
+                                              const Position &p,
+                                              const UnicodeStrings &nn,
+                                              const ptrs<Ast> &dd) {
         auto dd0 = transforms(dd);
         return AstDeclNamespace::create(p, nn, dd0);
     }
 
     virtual ptr<Ast> transform_wrapper(const ptr<Ast> &a, const Position &p,
-                                     const ptrs<Ast> &dd) {
+                                       const ptrs<Ast> &dd) {
         auto dd0 = transforms(dd);
         return AstWrapper::create(p, dd0);
     }
@@ -344,7 +365,7 @@ public:
                 break;
             }
             case AST_EXPR_DO: {
-                auto [p,e] = AstExprDo::split(a);
+                auto [p, e] = AstExprDo::split(a);
                 return transform_expr_do(a, p, e);
                 break;
             }
@@ -420,61 +441,62 @@ public:
 
     // literals
     virtual ptr<Ast> rewrite_expr_integer(const Position &p,
-                                        const icu::UnicodeString &v) {
+                                          const icu::UnicodeString &v) {
         return AstExprInteger::create(p, v);
     }
 
     virtual ptr<Ast> rewrite_expr_hexinteger(const Position &p,
-                                           const icu::UnicodeString &v) {
+                                             const icu::UnicodeString &v) {
         return AstExprHexInteger::create(p, v);
     }
 
     virtual ptr<Ast> rewrite_expr_float(const Position &p,
-                                      const icu::UnicodeString &v) {
+                                        const icu::UnicodeString &v) {
         return AstExprFloat::create(p, v);
     }
 
     virtual ptr<Ast> rewrite_expr_character(const Position &p,
-                                          const icu::UnicodeString &v) {
+                                            const icu::UnicodeString &v) {
         return AstExprCharacter::create(p, v);
     }
 
     virtual ptr<Ast> rewrite_expr_text(const Position &p,
-                                     const icu::UnicodeString &v) {
+                                       const icu::UnicodeString &v) {
         return AstExprText::create(p, v);
     }
 
     // variables and constants
     virtual ptr<Ast> rewrite_expr_variable(const Position &p,
-                                         const icu::UnicodeString &n) {
+                                           const icu::UnicodeString &n) {
         return AstExprVariable::create(p, n);
     }
 
     virtual ptr<Ast> rewrite_expr_wildcard(const Position &p,
-                                         const icu::UnicodeString &n) {
+                                           const icu::UnicodeString &n) {
         return AstExprWildcard::create(p, n);
     }
 
     virtual ptr<Ast> rewrite_expr_combinator(const Position &p,
-                                           const UnicodeStrings &nn,
-                                           const icu::UnicodeString &n) {
+                                             const UnicodeStrings &nn,
+                                             const icu::UnicodeString &n) {
         return AstExprCombinator::create(p, nn, n);
     }
 
     virtual ptr<Ast> rewrite_expr_operator(const Position &p,
-                                         const UnicodeStrings &nn,
-                                         const icu::UnicodeString &n) {
+                                           const UnicodeStrings &nn,
+                                           const icu::UnicodeString &n) {
         return AstExprOperator::create(p, nn, n);
     }
 
     // tuple and list
-    virtual ptr<Ast> rewrite_expr_tuple(const Position &p, const ptrs<Ast> &tt) {
+    virtual ptr<Ast> rewrite_expr_tuple(const Position &p,
+                                        const ptrs<Ast> &tt) {
         auto tt0 = rewrites(tt);
         return AstExprTuple::create(p, tt0);
     }
 
     virtual ptr<Ast> rewrite_expr_list(const Position &p, const ptrs<Ast> &tt,
-                                     const ptr<Ast> &tl) {
+                                       const ptr<Ast> &tl) {
         auto tt0 = rewrites(tt);
         if (tl == nullptr) {
             return AstExprList::create(p, tt0);
@@ -486,7 +508,7 @@ public:
 
     // compound statements
     virtual ptr<Ast> rewrite_expr_application(const Position &p,
-                                            const ptrs<Ast> &aa) {
+                                              const ptrs<Ast> &aa) {
         auto aa0 = rewrites(aa);
         return AstExprApplication::create(p, aa0);
     }
@@ -497,20 +519,22 @@ public:
     }
 
     virtual ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
-                                      const ptr<Ast> &g, const ptr<Ast> &e) {
+                                        const ptr<Ast> &g, const ptr<Ast> &e) {
         auto mm0 = rewrites(mm);
         auto g0 = rewrite(g);
         auto e0 = rewrite(e);
         return AstExprMatch::create(p, mm0, g0, e0);
     }
 
-    virtual ptr<Ast> rewrite_expr_block(const Position &p, const ptrs<Ast> &alts) {
+    virtual ptr<Ast> rewrite_expr_block(const Position &p,
+                                        const ptrs<Ast> &alts) {
         auto alts0 = rewrites(alts);
         return AstExprBlock::create(p, alts0);
     }
 
     virtual ptr<Ast> rewrite_expr_let(const Position &p, const ptrs<Ast> &lhs,
-                                    const ptr<Ast> &rhs, const ptr<Ast> &body) {
+                                      const ptr<Ast> &rhs,
+                                      const ptr<Ast> &body) {
         auto lhs0 = rewrites(lhs);
         auto rhs0 = rewrite(rhs);
         auto body0 = rewrite(body);
@@ -518,29 +542,30 @@ public:
     }
 
     virtual ptr<Ast> rewrite_expr_tag(const Position &p, const ptr<Ast> &e,
-                                    const ptr<Ast> &t) {
+                                      const ptr<Ast> &t) {
         auto e0 = rewrite(e);
         auto t0 = rewrite(t);
         return AstExprTag::create(p, e0, t0);
     }
 
     virtual ptr<Ast> rewrite_expr_if(const Position &p, const ptr<Ast> &i,
-                                   const ptr<Ast> &t, const ptr<Ast> &e) {
+                                     const ptr<Ast> &t, const ptr<Ast> &e) {
         auto i0 = rewrite(i);
         auto t0 = rewrite(t);
         auto e0 = rewrite(e);
         return AstExprIf::create(p, i0, t0, e0);
     }
 
-    virtual ptr<Ast> rewrite_expr_statement(const Position &p, const ptr<Ast> &r,
-                                          const ptr<Ast> &l) {
+    virtual ptr<Ast> rewrite_expr_statement(const Position &p,
+                                            const ptr<Ast> &r,
+                                            const ptr<Ast> &l) {
         auto r0 = rewrite(r);
         auto l0 = rewrite(l);
         return AstExprStatement::create(p, r0, l0);
     }
 
     virtual ptr<Ast> rewrite_expr_try(const Position &p, const ptr<Ast> &t,
-                                    const ptr<Ast> &c) {
+                                      const ptr<Ast> &c) {
         auto t0 = rewrite(t);
         auto c0 = rewrite(c);
         return AstExprTry::create(p, t0, c0);
@@ -557,12 +582,12 @@ public:
     }
 
     virtual ptr<Ast> rewrite_directive_import(const Position &p,
-                                            const icu::UnicodeString &i) {
+                                              const icu::UnicodeString &i) {
         return AstDirectImport::create(p, i);
     }
 
     virtual ptr<Ast> rewrite_directive_using(const Position &p,
-                                           const UnicodeStrings &nn) {
+                                             const UnicodeStrings &nn) {
         return AstDirectUsing::create(p, nn);
     }
 
@@ -571,30 +596,32 @@ public:
         return AstDeclData::create(p, nn0);
     }
 
-    virtual ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n,
-                                           const ptr<Ast> &e) {
+    virtual ptr<Ast> rewrite_decl_definition(const Position &p,
+                                             const ptr<Ast> &n,
+                                             const ptr<Ast> &e) {
         auto n0 = rewrite(n);
         auto e0 = rewrite(e);
         return AstDeclDefinition::create(p, n0, e0);
     }
 
     virtual ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
-                                      const ptr<Ast> &r) {
+                                        const ptr<Ast> &r) {
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
         return AstDeclValue::create(p, l0, r0);
     }
 
     virtual ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
-                                         const ptr<Ast> &e) {
+                                           const ptr<Ast> &e) {
         auto c0 = rewrite(c);
         auto e0 = rewrite(e);
         return AstDeclOperator::create(p, c0, e0);
     }
 
     virtual ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
-                                       const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                                       const ptrs<Ast> &ee) {
+                                         const ptrs<Ast> &vv,
+                                         const ptrs<Ast> &ff,
+                                         const ptrs<Ast> &ee) {
         auto c0 = rewrite(c);
         auto vv0 = rewrites(vv);
         auto ff0 = rewrites(ff);
@@ -603,8 +630,8 @@ public:
     }
 
     virtual ptr<Ast> rewrite_decl_namespace(const Position &p,
-                                          const UnicodeStrings &nn,
-                                          const ptrs<Ast> &dd) {
+                                            const UnicodeStrings &nn,
+                                            const ptrs<Ast> &dd) {
         auto dd0 = rewrites(dd);
         return AstDeclNamespace::create(p, nn, dd0);
     }
@@ -855,7 +882,8 @@ public:
         }
     }
 
-    virtual void visit_expr_application(const Position &p, const ptrs<Ast> &tt) {
+    virtual void visit_expr_application(const Position &p,
+                                        const ptrs<Ast> &tt) {
         visits(tt);
     }
 
@@ -1171,14 +1199,15 @@ inline bool occurs(const ptr<Ast> &t0, const ptr<Ast> &t1) {
 
 class Substitute : public Rewrite {
 public:
-    ptr<Ast> substitute(const ptr<Ast> &term, const ptr<Ast> &s0, const ptr<Ast> &s1) {
+    ptr<Ast> substitute(const ptr<Ast> &term, const ptr<Ast> &s0,
+                        const ptr<Ast> &s1) {
         _source = s0;
         _target = s1;
         return rewrite(term);
     }
 
     ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
-                              const ptr<Ast> &g, const ptr<Ast> &e) override {
+                                const ptr<Ast> &g, const ptr<Ast> &e) override {
         for (auto m : mm) {
             if (occurs(_source, m)) {
                 return AstExprMatch::create(p, mm, g, e);
@@ -1190,7 +1219,8 @@ public:
     }
 
     ptr<Ast> rewrite_expr_let(const Position &p, const ptrs<Ast> &lhs,
-                            const ptr<Ast> &rhs, const ptr<Ast> &body) override {
+                              const ptr<Ast> &rhs,
+                              const ptr<Ast> &body) override {
         for (auto m : lhs) {
             if (occurs(_source, m)) {
                 return AstExprLet::create(p, lhs, rhs, body);
@@ -1215,7 +1245,7 @@ private:
 };
 
 inline ptr<Ast> substitute(const ptr<Ast> &term, const ptr<Ast> &s0,
-                         const ptr<Ast> &s1) {
+                           const ptr<Ast> &s1) {
     Substitute subs;
     return subs.substitute(term, s0, s1);
 }
@@ -1261,8 +1291,8 @@ public:
         }
     }
 
-    void visit_expr_match(const Position &p, const ptrs<Ast> &mm, const ptr<Ast> &g,
-                          const ptr<Ast> &e) override {
+    void visit_expr_match(const Position &p, const ptrs<Ast> &mm,
+                          const ptr<Ast> &g, const ptr<Ast> &e) override {
         visit(g);
         visit(e);
         set_state(FREEVARS_REMOVE);

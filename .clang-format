@@ -3,7 +3,7 @@ Language:        Cpp
 # BasedOnStyle:  Google
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
-AlignArrayOfStructures: None
+#AlignArrayOfStructures: None
 AlignConsecutiveMacros: None
 AlignConsecutiveAssignments: None
 AlignConsecutiveBitFields: None
@@ -68,7 +68,7 @@ Cpp11BracedListStyle: true
 DeriveLineEnding: true
 DerivePointerAlignment: true
 DisableFormat:   false
-EmptyLineAfterAccessModifier: Never
+#EmptyLineAfterAccessModifier: false
 EmptyLineBeforeAccessModifier: LogicalBlock
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
@@ -76,8 +76,8 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
-IfMacros:
-  - KJ_IF_MAYBE
+#IfMacros:
+#  - KJ_IF_MAYBE
 IncludeBlocks:   Regroup
 IncludeCategories:
   - Regex:           '^<ext/.*\.h>'
@@ -98,7 +98,7 @@ IncludeCategories:
     CaseSensitive:   false
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IncludeIsMainSourceRegex: ''
-IndentAccessModifiers: false
+#IndentAccessModifiers: false
 IndentCaseLabels: true
 IndentCaseBlocks: false
 IndentGotoLabels: true
@@ -111,7 +111,7 @@ InsertTrailingCommas: None
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
-LambdaBodyIndentation: Signature
+#LambdaBodyIndentation: Signature
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
@@ -131,7 +131,7 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
 PenaltyIndentedWhitespace: 0
 PointerAlignment: Left
-PPIndentWidth:   -1
+#PPIndentWidth:   -1
 RawStringFormats:
   - Language:        Cpp
     Delimiters:
@@ -162,10 +162,10 @@ RawStringFormats:
       - ParsePartialTestProto
     CanonicalDelimiter: pb
     BasedOnStyle:    google
-ReferenceAlignment: Pointer
+#ReferenceAlignment: Pointer
 ReflowComments:  true
-ShortNamespaceLines: 1
-SortIncludes:    CaseSensitive
+#ShortNamespaceLines: 1
+#SortIncludes:    CaseSensitive
 SortJavaStaticImport: Before
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
@@ -182,13 +182,13 @@ SpaceBeforeRangeBasedForLoopColon: true
 SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 2
-SpacesInAngles:  Never
+SpacesInAngles:  false
 SpacesInConditionalStatement: false
 SpacesInContainerLiterals: true
 SpacesInCStyleCastParentheses: false
-SpacesInLineCommentPrefix:
-  Minimum:         1
-  Maximum:         -1
+#SpacesInLineCommentPrefix:
+#  Minimum:         1
+#  Maximum:         -1
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceBeforeSquareBrackets: false

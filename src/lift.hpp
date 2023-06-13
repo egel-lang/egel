@@ -42,7 +42,8 @@ public:
      * the inner lambda.
      */
     // XXX: if FV = 0 do nothing
-    ptr<Ast> rewrite_expr_block(const Position &p, const ptrs<Ast> &mm) override {
+    ptr<Ast> rewrite_expr_block(const Position &p,
+                                const ptrs<Ast> &mm) override {
         // rewrite the matches
         auto mm0 = rewrites(mm);
         // determine the freevars
@@ -84,7 +85,7 @@ public:
     }
 
     ptr<Ast> rewrite_expr_application(const Position &p,
-                                    const ptrs<Ast> &aa) override {
+                                      const ptrs<Ast> &aa) override {
         auto &a = aa[0];
         if (a->tag() == AST_EXPR_APPLICATION) {
             auto [p, aa0] = AstExprApplication::split(a);
@@ -151,7 +152,8 @@ public:
             auto nn0 = localize(nn);
             return AstExprCombinator::create(p, nn0, n0);
         } else if (c->tag() == AST_EXPR_OPERATOR) {
-            auto [p, nn, n] = AstExprOperator::split(c); // XXX: keep source to source correct
+            auto [p, nn, n] = AstExprOperator::split(
+                c);  // XXX: keep source to source correct
             icu::UnicodeString n0 = n + s;
             auto nn0 = localize(nn);
             return AstExprOperator::create(p, nn0, n0);
@@ -167,7 +169,8 @@ public:
         return combinator_expand(c, n);
     }
 
-    ptr<Ast> rewrite_expr_block(const Position &p, const ptrs<Ast> &mm) override {
+    ptr<Ast> rewrite_expr_block(const Position &p,
+                                const ptrs<Ast> &mm) override {
         auto mm0 = rewrites(mm);
         auto e = AstExprBlock::create(p, mm0);
         auto c = fresh_combinator();
@@ -177,12 +180,11 @@ public:
     }
 
     /*
-    ptr<Ast> rewrite_expr_try(const Position& p, const ptr<Ast>& t, const ptr<Ast>& c)
-    override { ptr<Ast> t0; if (t->tag() == AST_EXPR_COMBINATOR) { // keep
-    combinator definitions t0 = t; } else { auto t1   = rewrite(t); auto tnew =
-    fresh_combinator(); auto td   = AstDeclDefinition::create(p, tnew, t1);
-            add_lifted(td);
-            t0 = tnew;
+    ptr<Ast> rewrite_expr_try(const Position& p, const ptr<Ast>& t, const
+    ptr<Ast>& c) override { ptr<Ast> t0; if (t->tag() == AST_EXPR_COMBINATOR) {
+    // keep combinator definitions t0 = t; } else { auto t1   = rewrite(t); auto
+    tnew = fresh_combinator(); auto td   = AstDeclDefinition::create(p, tnew,
+    t1); add_lifted(td); t0 = tnew;
         }
 
         ptr<Ast> c0;
@@ -201,7 +203,7 @@ public:
     */
 
     ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
-                                   const ptr<Ast> &e) override {
+                                     const ptr<Ast> &e) override {
         set_scope(c);
         ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
@@ -221,7 +223,7 @@ public:
     }
 
     ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
-                                 const ptr<Ast> &e) override {
+                                   const ptr<Ast> &e) override {
         set_scope(c);
         ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
@@ -241,7 +243,7 @@ public:
     }
 
     ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &c,
-                              const ptr<Ast> &e) override {
+                                const ptr<Ast> &e) override {
         set_scope(c);
         ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
@@ -278,7 +280,7 @@ public:
     }
 
     ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
-                                   const ptr<Ast> &e) override {
+                                     const ptr<Ast> &e) override {
         ptr<Ast> e0;
         if (e->tag() == AST_EXPR_BLOCK) {  // keep direct block definitions
             e0 = e;
@@ -296,7 +298,7 @@ public:
 
     // treat as a definition
     ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
-                                 const ptr<Ast> &e) override {
+                                   const ptr<Ast> &e) override {
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
             auto [p1, c1, e1] = AstDeclDefinition::split(e0);
@@ -309,7 +311,7 @@ public:
 
     // treat as a definition
     ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &c,
-                              const ptr<Ast> &e) override {
+                                const ptr<Ast> &e) override {
         auto e0 = rewrite_decl_definition(p, c, e);
         if (e0->tag() == AST_DECL_DEFINITION) {
             auto [p1, c1, e1] = AstDeclDefinition::split(e0);

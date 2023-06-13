@@ -1,21 +1,21 @@
 #pragma once
 
+#include <chrono>
 #include <iomanip>
-#include <sstream>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <set>
+#include <sstream>
+#include <thread>
 #include <tuple>
 #include <vector>
-#include <thread>
-#include <chrono>
 
-#include "runtime.hpp"
-#include "environment.hpp"
 #include "assembler.hpp"
+#include "environment.hpp"
 #include "eval.hpp"
 #include "modules.hpp"
+#include "runtime.hpp"
 
 class SymbolTable {
 public:
@@ -164,7 +164,7 @@ private:
     bool _exception;
 };
 
-class Machine final: public VM {
+class Machine final : public VM {
 public:
     Machine() {
         populate();
@@ -614,7 +614,8 @@ public:
     }
 
     VMObjectPtrs to_bundle(const VMObjectPtr &o) override {
-        return bundle(this, o);;
+        return bundle(this, o);
+        ;
     }
 
     VMObjectPtr from_bundle(const VMObjectPtrs &oo) override {

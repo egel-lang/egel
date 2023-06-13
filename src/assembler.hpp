@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "runtime.hpp"
 #include "bytecode.hpp"
+#include "runtime.hpp"
 #include "utils.hpp"
 
 const int BYTECODEVERSION = '0';
@@ -14,11 +14,11 @@ const int SEPARATOR = ' ';
 
 class Disassembler {
 public:
-    Disassembler(VM* m, const VMObjectPtr &o)
+    Disassembler(VM *m, const VMObjectPtr &o)
         : _machine(m), _object(o), _code(Code()), _data(Data()), _pc(0) {
     }
 
-    VM* machine() {
+    VM *machine() {
         return _machine;
     }
 
@@ -264,8 +264,8 @@ public:
             write_i8(os, DATA_TAG);
             write_separator(os);
             write_text(
-                        os,
-                        machine()->symbol(o));  // output the combinator not {} or ()
+                os,
+                machine()->symbol(o));  // output the combinator not {} or ()
         } else {
             PANIC("disassemble failed");
         }
@@ -278,7 +278,7 @@ public:
     }
 
 private:
-    VM*     _machine;
+    VM *_machine;
     VMObjectPtr _object;
     Code _code;
     Data _data;
@@ -530,4 +530,3 @@ private:
     VM *_machine;
     icu::UnicodeString _source;
 };
-

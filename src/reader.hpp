@@ -88,7 +88,7 @@ public:
 
 protected:
     void fill_buffer() {
-        for (int i = 0; i < _content.length(); i = _content.moveIndex32(i,1)) {
+        for (int i = 0; i < _content.length(); i = _content.moveIndex32(i, 1)) {
             auto c = _content.char32At(i);
             _buffer.push_back(c);
         }

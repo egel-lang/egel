@@ -21,7 +21,7 @@ public:
     }
 
     ptr<Ast> rewrite_expr_wildcard(const Position &p,
-                                 const icu::UnicodeString &v) override {
+                                   const icu::UnicodeString &v) override {
         icu::UnicodeString w = "WILD";
         w = w + unicode_convert_uint(tick());
         return AstExprVariable::create(p, w);
@@ -43,8 +43,8 @@ public:
     }
 
     //  F(if i then t else e) -> ([ true -> F(t) | _ -> F(e) ] F(i))
-    ptr<Ast> rewrite_expr_if(const Position &p, const ptr<Ast> &i, const ptr<Ast> &t,
-                           const ptr<Ast> &e) override {
+    ptr<Ast> rewrite_expr_if(const Position &p, const ptr<Ast> &i,
+                             const ptr<Ast> &t, const ptr<Ast> &e) override {
         auto i0 = rewrite(i);
         auto t0 = rewrite(t);
         auto e0 = rewrite(e);
@@ -83,7 +83,8 @@ public:
     }
 
     //  F( (e0, .., en) ) -> ( tuple F(e0) .. F(en) )
-    ptr<Ast> rewrite_expr_tuple(const Position &p, const ptrs<Ast> &ee) override {
+    ptr<Ast> rewrite_expr_tuple(const Position &p,
+                                const ptrs<Ast> &ee) override {
         auto t = AstExprCombinator::create(p, STRING_SYSTEM, STRING_TUPLE);
         for (auto &e : ee) {
             auto e0 = rewrite(e);
@@ -106,7 +107,7 @@ public:
 
     //  F( {e0, .., en|ee} ) -> (cons F(e0) (.. (cons F(en) F(ee) ))) )
     ptr<Ast> rewrite_expr_list(const Position &p, const ptrs<Ast> &ee,
-                             const ptr<Ast> &tl) override {
+                               const ptr<Ast> &tl) override {
         auto nil = AstExprCombinator::create(p, STRING_SYSTEM, STRING_NIL);
         auto cons = AstExprCombinator::create(p, STRING_SYSTEM, STRING_CONS);
         auto l = nil;
@@ -133,7 +134,7 @@ public:
 
     //  F( r; l ) ) -> ( let _ = F(r) in F(l) )
     ptr<Ast> rewrite_expr_statement(const Position &p, const ptr<Ast> &r,
-                                  const ptr<Ast> &l) override {
+                                    const ptr<Ast> &l) override {
         auto r0 = rewrite(r);
         auto l0 = rewrite(l);
 
@@ -159,7 +160,8 @@ public:
     }
 
     //  F( (\v0, .., vn -> e) ) -> ( [ v0, .., vn ->  F(e) ] )
-    ptr<Ast> rewrite_expr_lambda(const Position &p, const ptr<Ast> &m) override {
+    ptr<Ast> rewrite_expr_lambda(const Position &p,
+                                 const ptr<Ast> &m) override {
         ptrs<Ast> mm;
         auto m0 = rewrite(m);
         mm.push_back(m0);
@@ -180,7 +182,7 @@ public:
 
     //  F( (let l = r in b) ) -> ( [ l -> F(b) ] (F(r)) )
     ptr<Ast> rewrite_expr_let(const Position &p, const ptrs<Ast> &ll,
-                            const ptr<Ast> &r, const ptr<Ast> &b) override {
+                              const ptr<Ast> &r, const ptr<Ast> &b) override {
         auto r0 = rewrite(r);
         auto b0 = rewrite(b);
 
@@ -206,18 +208,18 @@ public:
     }
 
     ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
-                                   const ptr<Ast> &e) override {
+                                     const ptr<Ast> &e) override {
         return AstDeclDefinition::create(p, c, e);  // cut
     }
 
     ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
-                                 const ptr<Ast> &e) override {
+                                   const ptr<Ast> &e) override {
         return AstDeclOperator::create(p, c, e);  // cut
     }
 
     ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
-                               const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                               const ptrs<Ast> &ee) override {
+                                 const ptrs<Ast> &vv, const ptrs<Ast> &ff,
+                                 const ptrs<Ast> &ee) override {
         ptrs<Ast> oo;
         ptrs<Ast> dd;
         oo.push_back(
@@ -292,7 +294,7 @@ public:
 
     //  F( throw e ) -> ( (System.throw e) )
     ptr<Ast> rewrite_expr_try(const Position &p, const ptr<Ast> &t,
-                            const ptr<Ast> &c) override {
+                              const ptr<Ast> &c) override {
         auto id = AstExprCombinator::create(p, STRING_SYSTEM, STRING_ID);
         auto t0 = rewrite(t);
         auto c0 = rewrite(c);
@@ -328,10 +330,11 @@ public:
     ptr<Ast> add_var(const ptr<Ast> &e, const ptr<Ast> &v) {
         if (e->tag() == AST_EXPR_APPLICATION) {
             auto [p, ee0] = AstExprApplication::split(e);
-            if ((ee0[0]->tag() == AST_EXPR_COMBINATOR) && (ee0[0]->to_text() == "System::|>") && (ee0.size() > 2)) {
+            if ((ee0[0]->tag() == AST_EXPR_COMBINATOR) &&
+                (ee0[0]->to_text() == "System::|>") && (ee0.size() > 2)) {
                 ptrs<Ast> ee1;
                 ee1.push_back(ee0[0]);
-                ee1.push_back(add_var(ee0[1],v));
+                ee1.push_back(add_var(ee0[1], v));
                 for (unsigned int i = 2; i < ee0.size(); i++) {
                     ee1.push_back(ee0[i]);
                 }
@@ -352,13 +355,13 @@ public:
         auto e1 = add_var(e0, x);
         ptrs<Ast> pp;
         pp.push_back(x);
-        return AstExprBlock::create(p, AstExprMatch::create(p, pp, AstEmpty::create(), e1));
+        return AstExprBlock::create(
+            p, AstExprMatch::create(p, pp, AstEmpty::create(), e1));
     }
 
 private:
     int _tick;
 };
-
 
 ptr<Ast> pass_do(const ptr<Ast> &a) {
     RewriteDo d;
@@ -384,7 +387,7 @@ public:
 
     // (- x) -> -x
     ptr<Ast> rewrite_expr_application(const Position &p,
-                                    const ptrs<Ast> &ee) override {
+                                      const ptrs<Ast> &ee) override {
         if (ee.size() == 2) {
             auto op = ee[0];
             if (op->tag() == AST_EXPR_COMBINATOR) {
@@ -429,7 +432,7 @@ public:
 
     //  e0 || e1 -> e0 || [ _ -> e1 ] and e0 && e1 -> e0 && [ _ -> e1 ]
     ptr<Ast> rewrite_expr_application(const Position &p,
-                                    const ptrs<Ast> &ee) override {
+                                      const ptrs<Ast> &ee) override {
         if (ee.size() == 3) {
             auto op = ee[0];
             if (op->tag() == AST_EXPR_COMBINATOR) {

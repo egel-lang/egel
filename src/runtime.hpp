@@ -36,7 +36,7 @@ constexpr unsigned int EGEL_FLOAT_PRECISION =
 
 inline icu::UnicodeString uescape(const icu::UnicodeString &s) {
     icu::UnicodeString s1;
-    for (int i = 0; i < s.length(); i = s.moveIndex32(i,1)) {
+    for (int i = 0; i < s.length(); i = s.moveIndex32(i, 1)) {
         UChar32 c = s.char32At(i);
         switch (c) {
             case '\a':
@@ -151,7 +151,7 @@ typedef unsigned int vm_tagbits_t;
 
 union vm_object_t {
     std::atomic<vm_tagbits_t> tagbits;
-    vm_object_t* next;
+    vm_object_t *next;
 };
 
 class VMObject;
@@ -162,7 +162,6 @@ using VMWeakObjectPtr = std::weak_ptr<VMObject>;
 inline void render_tuple(const VMObjectPtr &tt, std::ostream &os);
 inline void render_nil(const VMObjectPtr &n, std::ostream &os);
 inline void render_cons(const VMObjectPtr &cc, std::ostream &os);
-
 
 class VMObject {
 public:
@@ -519,7 +518,7 @@ public:
     virtual icu::UnicodeString disassemble(const VMObjectPtr &o) = 0;
     virtual VMObjectPtrs get_bytedata(const VMObjectPtr &o) = 0;
 
-    virtual icu::UnicodeString serialize(const VMObjectPtr& o) = 0;
+    virtual icu::UnicodeString serialize(const VMObjectPtr &o) = 0;
     virtual VMObjectPtr deserialize(const icu::UnicodeString &s) = 0;
 
     virtual VMObjectPtrs to_bundle(const VMObjectPtr &o) = 0;
@@ -1170,7 +1169,7 @@ public:
         return VMObjectData::create(vm, sym);
     }
 
-    static std::shared_ptr<VMObjectData> cast (const VMObjectPtr &o) {
+    static std::shared_ptr<VMObjectData> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectData>(o);
     }
 

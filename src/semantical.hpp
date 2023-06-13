@@ -251,7 +251,7 @@ public:
 
     // rewrites
     ptr<Ast> rewrite_expr_variable(const Position &p,
-                                 const icu::UnicodeString &v) override {
+                                   const icu::UnicodeString &v) override {
         switch (get_identify_state()) {
             case STATE_IDENTIFY_USE: {
                 auto v1 = get(p, v);
@@ -269,8 +269,9 @@ public:
         }
     }
 
-    ptr<Ast> rewrite_expr_combinator(const Position &p, const UnicodeStrings &nn,
-                                   const icu::UnicodeString &t) override {
+    ptr<Ast> rewrite_expr_combinator(const Position &p,
+                                     const UnicodeStrings &nn,
+                                     const icu::UnicodeString &t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
             case STATE_IDENTIFY_PATTERN:
@@ -288,7 +289,7 @@ public:
     }
 
     ptr<Ast> rewrite_expr_operator(const Position &p, const UnicodeStrings &nn,
-                                 const icu::UnicodeString &t) override {
+                                   const icu::UnicodeString &t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
             case STATE_IDENTIFY_PATTERN:
@@ -306,7 +307,7 @@ public:
     }
 
     ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
-                              const ptr<Ast> &g, const ptr<Ast> &e) override {
+                                const ptr<Ast> &g, const ptr<Ast> &e) override {
         enter_range();
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto mm0 = rewrites(mm);
@@ -319,7 +320,8 @@ public:
     }
 
     ptr<Ast> rewrite_expr_let(const Position &p, const ptrs<Ast> &lhs,
-                            const ptr<Ast> &rhs, const ptr<Ast> &body) override {
+                              const ptr<Ast> &rhs,
+                              const ptr<Ast> &body) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto rhs0 = rewrite(rhs);
         enter_range();
@@ -332,7 +334,7 @@ public:
     }
 
     ptr<Ast> rewrite_expr_tag(const Position &p, const ptr<Ast> &e,
-                            const ptr<Ast> &t) override {
+                              const ptr<Ast> &t) override {
         set_identify_state(STATE_IDENTIFY_PATTERN);
         auto e0 = rewrite(e);
         set_identify_state(STATE_IDENTIFY_USE);
@@ -342,12 +344,13 @@ public:
     }
 
     ptr<Ast> rewrite_directive_using(const Position &p,
-                                   const UnicodeStrings &nn) override {
+                                     const UnicodeStrings &nn) override {
         add_using(nn);
         return AstDirectUsing::create(p, nn);
     }
 
-    ptr<Ast> rewrite_decl_data(const Position &p, const ptrs<Ast> &ee) override {
+    ptr<Ast> rewrite_decl_data(const Position &p,
+                               const ptrs<Ast> &ee) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
             auto ee0 = rewrites(ee);
@@ -364,7 +367,7 @@ public:
     }
 
     ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n,
-                                   const ptr<Ast> &e) override {
+                                     const ptr<Ast> &e) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
             auto n0 = rewrite(n);
@@ -383,7 +386,7 @@ public:
     }
 
     ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
-                              const ptr<Ast> &r) override {
+                                const ptr<Ast> &r) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
@@ -393,7 +396,7 @@ public:
     }
 
     ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
-                                 const ptr<Ast> &e) override {
+                                   const ptr<Ast> &e) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
         auto e0 = rewrite(e);
@@ -403,8 +406,8 @@ public:
     }
 
     ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
-                               const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                               const ptrs<Ast> &ee) override {
+                                 const ptrs<Ast> &vv, const ptrs<Ast> &ff,
+                                 const ptrs<Ast> &ee) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
         enter_range();
@@ -422,7 +425,7 @@ public:
     }
 
     ptr<Ast> rewrite_decl_namespace(const Position &p, const UnicodeStrings &nn,
-                                  const ptrs<Ast> &dd) override {
+                                    const ptrs<Ast> &dd) override {
         auto nn0 = get_namespace();
         auto nn1 = concat(nn0, nn);
         set_namespace(nn1);
