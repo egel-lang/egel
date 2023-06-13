@@ -703,9 +703,11 @@ inline VMObjectPtrs bundle(VM* m, const VMObjectPtr &o) {
             work0.pop();
             if (!visited.contains(o)) {
                 visited.insert(o);
-                if (m->is_bytecode(o)) work1.push(o);
-                if (m->is_data(o)) work1.push(o);
-                if (m->is_array(o)) {
+                if (m->is_data(o)) {
+                     work1.push(o);
+                } else if (m->is_bytecode(o)) {
+                    work1.push(o);
+                } else if (m->is_array(o)) {
                     auto n = m->array_size(o);
                     for (unsigned int i = 0; i < n; i++) {
                         auto o0 = m->array_get(o, i);
@@ -727,8 +729,11 @@ inline VMObjectPtrs bundle(VM* m, const VMObjectPtr &o) {
                 if (m->is_bytecode(o)) {
                     auto oo0 = m->get_bytedata(o);
                     for (auto o0 : oo0) {
-                        if (m->is_bytecode(o0)) work1.push(o0);
-                        if (m->is_data(o0)) work1.push(o0);
+                        if (m->is_data(o0)) {
+                             work1.push(o0);
+                        } else if (m->is_bytecode(o0)) {
+                             work1.push(o0);
+                        }
                     }
                 }
             }

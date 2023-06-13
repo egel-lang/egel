@@ -183,19 +183,25 @@ public:
         auto f = _symbols.enter(STRING_SYSTEM, STRING_FLOAT);
         auto c = _symbols.enter(STRING_SYSTEM, STRING_CHAR);
         auto t = _symbols.enter(STRING_SYSTEM, STRING_TEXT);
+        auto a = _symbols.enter(STRING_SYSTEM, STRING_ARRAY);
         ASSERT(i == SYMBOL_INT);
         ASSERT(f == SYMBOL_FLOAT);
         ASSERT(c == SYMBOL_CHAR);
         ASSERT(t == SYMBOL_TEXT);
+        ASSERT(a == SYMBOL_ARRAY);
+
         // necessary 'type' definitions
         _int = VMObjectData::create(this, i);
         _float = VMObjectData::create(this, f);
         _char = VMObjectData::create(this, c);
         _text = VMObjectData::create(this, t);
+        auto array = VMObjectData::create(this, a);
         _data.enter(_int);
         _data.enter(_float);
         _data.enter(_char);
         _data.enter(_text);
+        _data.enter(array);
+
         auto none0 = _symbols.enter(STRING_SYSTEM, STRING_NONE);
         auto true0 = _symbols.enter(STRING_SYSTEM, STRING_TRUE);
         auto false0 = _symbols.enter(STRING_SYSTEM, STRING_FALSE);
@@ -549,7 +555,7 @@ public:
     }
 
     bool is_array(const VMObjectPtr &o) override {
-        return VM_OBJECT_ARRAY_TEST(o);
+        return o->tag() == VM_OBJECT_ARRAY;
     }
 
     unsigned int array_size(const VMObjectPtr &o) override {
@@ -577,11 +583,11 @@ public:
     }
 
     bool is_data(const VMObjectPtr &o) override {
-        return VM_OBJECT_DATA_TEST(o);
+        return o->subtag_test(VM_SUB_DATA);
     }
 
     bool is_bytecode(const VMObjectPtr &o) override {
-        return (o->subtag_test(VM_SUB_BYTECODE));
+        return o->subtag_test(VM_SUB_BYTECODE);
     }
 
     icu::UnicodeString disassemble(const VMObjectPtr &o) override {

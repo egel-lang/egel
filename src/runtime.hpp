@@ -99,13 +99,15 @@ const int SYMBOL_FLOAT = 1;
 const int SYMBOL_CHAR = 2;
 const int SYMBOL_TEXT = 3;
 
-const int SYMBOL_NONE = 4;
-const int SYMBOL_TRUE = 5;
-const int SYMBOL_FALSE = 6;
+const int SYMBOL_ARRAY = 4;
 
-const int SYMBOL_TUPLE = 7;
-const int SYMBOL_NIL = 8;
-const int SYMBOL_CONS = 9;
+const int SYMBOL_NONE = 5;
+const int SYMBOL_TRUE = 6;
+const int SYMBOL_FALSE = 7;
+
+const int SYMBOL_TUPLE = 8;
+const int SYMBOL_NIL = 9;
+const int SYMBOL_CONS = 10;
 
 #define VM_OBJECT_NONE_TEST(o) (o->symbol() == SYMBOL_NONE)
 #define VM_OBJECT_FALSE_TEST(o) (o->symbol() == SYMBOL_FALSE)
@@ -851,7 +853,7 @@ public:
     }
 
     symbol_t symbol() const override {
-        return _value[0]->symbol();
+        return SYMBOL_ARRAY;
     }
 
     size_t size() const {

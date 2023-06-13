@@ -120,6 +120,8 @@ inline constexpr auto STRING_PTR = "ptr";
 
 inline constexpr auto STRING_TEXT = "text";
 
+inline constexpr auto STRING_ARRAY = "array";
+
 inline constexpr auto STRING_LIST = "list";
 inline constexpr auto STRING_NIL = "nil";
 inline constexpr auto STRING_CONS = "cons";
