@@ -584,8 +584,8 @@ public:
         return (o->subtag_test(VM_SUB_BYTECODE));
     }
 
-    icu::UnicodeString get_bytecode(const VMObjectPtr &o) override {
-        Disassembler d(o);
+    icu::UnicodeString disassemble(const VMObjectPtr &o) override {
+        Disassembler d(this, o);
         return d.disassemble();
     }
 
@@ -594,9 +594,17 @@ public:
         return b->get_data_list();
     }
 
-    VMObjectPtr create_bytecode(const icu::UnicodeString &s) override {
+    VMObjectPtr assemble(const icu::UnicodeString &s) override {
         Assembler a(this, s);
         return a.assemble();
+    }
+
+    icu::UnicodeString serialize(const VMObjectPtr &o) override {
+        return serialize_to_string(this, o);
+    }
+
+    VMObjectPtr deserialize(const icu::UnicodeString &s) override {
+        return deserialize_from_string(this, s);
     }
 
     VMObjectPtrs to_bundle(const VMObjectPtr &o) override {

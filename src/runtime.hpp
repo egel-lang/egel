@@ -513,13 +513,16 @@ public:
 
     virtual vm_text_t symbol(const VMObjectPtr &o) = 0;
 
-    virtual icu::UnicodeString get_bytecode(const VMObjectPtr &o) = 0;
+    virtual icu::UnicodeString disassemble(const VMObjectPtr &o) = 0;
     virtual VMObjectPtrs get_bytedata(const VMObjectPtr &o) = 0;
+
+    virtual icu::UnicodeString serialize(const VMObjectPtr& o) = 0;
+    virtual VMObjectPtr deserialize(const icu::UnicodeString &s) = 0;
 
     virtual VMObjectPtrs to_bundle(const VMObjectPtr &o) = 0;
     virtual VMObjectPtr from_bundle(const VMObjectPtrs &oo) = 0;
 
-    virtual VMObjectPtr create_bytecode(const icu::UnicodeString &s) = 0;
+    virtual VMObjectPtr assemble(const icu::UnicodeString &s) = 0;
 
     virtual VMObjectPtr create_data(const icu::UnicodeString &s) = 0;
     virtual VMObjectPtr create_data(const icu::UnicodeString &s0,
@@ -1162,6 +1165,10 @@ public:
                               const icu::UnicodeString &s) {
         auto sym = vm->enter_symbol(ss, s);
         return VMObjectData::create(vm, sym);
+    }
+
+    static std::shared_ptr<VMObjectData> cast (const VMObjectPtr &o) {
+        return std::static_pointer_cast<VMObjectData>(o);
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {

@@ -7,13 +7,19 @@
 #include "bytecode.hpp"
 #include "utils.hpp"
 
-const int BYTECODEVERSION = 0x00;
+const int BYTECODEVERSION = '0';
+const int BYTECODE_TAG = 'b';
+const int DATA_TAG = 'd';
 const int SEPARATOR = ' ';
 
 class Disassembler {
 public:
-    Disassembler(const VMObjectPtr &o)
-        : _object(o), _code(Code()), _data(Data()), _pc(0) {
+    Disassembler(VM* m, const VMObjectPtr &o)
+        : _machine(m), _object(o), _code(Code()), _data(Data()), _pc(0) {
+    }
+
+    VM* machine() {
+        return _machine;
     }
 
     void reset() {
@@ -246,11 +252,20 @@ public:
         if (o->subtag_test(VM_SUB_BYTECODE)) {
             auto b = VMObjectBytecode::cast(o);
             write_i8(os, BYTECODEVERSION);
+            write_i8(os, BYTECODE_TAG);
             write_separator(os);
             write_text(os, b->to_text());
             write_separator(os);
-            write_code(os, b->code(), b->machine());
-            write_data(os, b->data(), b->machine());
+            write_code(os, b->code(), machine());
+            write_data(os, b->data(), machine());
+        } else if (o->subtag_test(VM_SUB_DATA)) {
+            auto d = VMObjectData::cast(o);
+            write_i8(os, BYTECODEVERSION);
+            write_i8(os, DATA_TAG);
+            write_separator(os);
+            write_text(
+                        os,
+                        machine()->symbol(o));  // output the combinator not {} or ()
         } else {
             PANIC("disassemble failed");
         }
@@ -263,6 +278,7 @@ public:
     }
 
 private:
+    VM*     _machine;
     VMObjectPtr _object;
     Code _code;
     Data _data;
@@ -429,6 +445,13 @@ public:
         auto version = read_byte(in);
         if (version != BYTECODEVERSION)
             throw machine()->create_text("wrong bytecode version");
+
+        auto tag = read_byte(in);
+        if (tag == DATA_TAG) {
+            auto t = read_combinator(in);
+            return machine()->create_data(t);
+        }
+        // else XXX
 
         skip_white(in);
         auto c = read_combinator(in);

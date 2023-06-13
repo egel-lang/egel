@@ -18,7 +18,10 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
-            auto s = machine()->get_bytecode(arg0);
+            auto s = machine()->disassemble(arg0);
+            return machine()->create_text(s);
+        } else if (machine()->is_data(arg0)) {
+            auto s = machine()->disassemble(arg0);
             return machine()->create_text(s);
         } else {
             throw machine()->bad_args(this, arg0);
@@ -34,7 +37,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
-            return machine()->create_bytecode(s);
+            return machine()->assemble(s);
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -48,7 +51,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto m = machine();
-        auto s = serialize_to_string(m, arg0);
+        auto s = m->serialize(arg0);
         return m->create_text(s);
     }
 };
@@ -62,7 +65,7 @@ public:
         auto m = machine();
         if (m->is_text(arg0)) {
             auto s = m->get_text(arg0);
-            auto o = deserialize_from_string(m, s);
+            auto o = m->deserialize(s);
             return o;
         } else {
             throw machine()->bad_args(this, arg0);
@@ -257,7 +260,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
-            auto t = machine()->get_bytecode(arg0);
+            auto t = machine()->disassemble(arg0);// XXX XXX: cut this?
             return machine()->create_text(t);
         } else {
             throw machine()->bad_args(this, arg0);

@@ -70,22 +70,20 @@ public:
         return _machine;
     }
 
-    void set_program(VMObjectPtr &p) {
-        _program = p;
-    }
-
-    VMObjectPtr program() const {
-        return _program;
-    }
-
     virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelText* out) override {
         auto str_in = machine()->create_text(char_from_string(in->text()));
         VMObjectPtrs thunk;
         thunk.push_back(_program);
-        thunk.push_back(in);  // NOTE: _program and in are reduced
+        thunk.push_back(str_in);  // NOTE: _program and in are reduced
         auto app = machine()->create_array(thunk);
         auto r = machine()->reduce(app, &_state);
 
+
+        if (r.exception) {
+            _exception = r.result;
+        } else {
+            auto t = r.result;
+        }
         auto s = in->text();
         return Status::OK;
     }
@@ -104,7 +102,6 @@ public:
     };
 private:
     VM*         _machine;
-    VMObjectPtr _program;
 };
 
 class EgelRpcConnection {
