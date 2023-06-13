@@ -279,6 +279,16 @@ public:
     }
 };
 
+class Bundle: public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Bundle, "System", "bundle");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        auto oo = machine()->to_bundle(arg0);
+        return machine()->to_list(oo);
+    }
+};
+
 /*
 //## System::symbols - list all symbols in the runtime
 class Symbols: public Medadic {
@@ -385,5 +395,6 @@ std::vector<VMObjectPtr> builtin_runtime(VM *vm) {
     oo.push_back(GetArray::create(vm));
     oo.push_back(GetBytecode::create(vm));
     oo.push_back(GetBytedata::create(vm));
+    oo.push_back(Bundle::create(vm));
     return oo;
 }

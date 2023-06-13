@@ -507,3 +507,4 @@ private:
     VM *_machine;
     icu::UnicodeString _source;
 };
+

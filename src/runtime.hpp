@@ -515,6 +515,10 @@ public:
 
     virtual icu::UnicodeString get_bytecode(const VMObjectPtr &o) = 0;
     virtual VMObjectPtrs get_bytedata(const VMObjectPtr &o) = 0;
+
+    virtual VMObjectPtrs to_bundle(const VMObjectPtr &o) = 0;
+    virtual VMObjectPtr from_bundle(const VMObjectPtrs &oo) = 0;
+
     virtual VMObjectPtr create_bytecode(const icu::UnicodeString &s) = 0;
 
     virtual VMObjectPtr create_data(const icu::UnicodeString &s) = 0;

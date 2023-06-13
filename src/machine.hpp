@@ -149,6 +149,7 @@ public:
         return VMObjectPtr(new VMObjectResult(m, s, r, exc));
     }
 
+    // XXX wut?
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto arg0 = tt[5];
@@ -596,6 +597,14 @@ public:
     VMObjectPtr create_bytecode(const icu::UnicodeString &s) override {
         Assembler a(this, s);
         return a.assemble();
+    }
+
+    VMObjectPtrs to_bundle(const VMObjectPtr &o) override {
+        return bundle(this, o);;
+    }
+
+    VMObjectPtr from_bundle(const VMObjectPtrs &oo) override {
+        return nullptr;
     }
 
     icu::UnicodeString symbol(const VMObjectPtr &o) override {
