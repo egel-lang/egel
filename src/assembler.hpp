@@ -7,9 +7,9 @@
 #include "runtime.hpp"
 #include "utils.hpp"
 
-const int BYTECODEVERSION = '0';
-const int BYTECODE_TAG = 'b';
-const int DATA_TAG = 'd';
+const int BYTECODEVERSION = 0x00;
+const int BYTECODE_TAG = 0x01;
+const int DATA_TAG = 0x02;
 const int SEPARATOR = ' ';
 
 class Disassembler {
@@ -448,6 +448,7 @@ public:
 
         auto tag = read_byte(in);
         if (tag == DATA_TAG) {
+            skip_white(in);
             auto t = read_combinator(in);
             return machine()->create_data(t);
         }
