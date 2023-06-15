@@ -32,6 +32,7 @@ using grpc::Status;
 
 using egel_rpc::EgelText;
 using egel_rpc::EgelTexts;
+using egel_rpc::EgelResult;
 using egel_rpc::EgelRpc;
 
 #define LIBRARY_VERSION_MAJOR "0"
@@ -84,15 +85,16 @@ public:
         } else {
             out->set_exception(false);
         }
-        auto s = machine()->serialize(r.result);
-        out->set_text(unicode_to_string(s));
+        auto t = machine()->serialize(r.result);
+        out->set_text(unicode_to_string(t));
         return Status::OK;
     }
     
     virtual Status EgelBundle(ServerContext* context, const EgelTexts* in, EgelText* out) override {
         auto texts = in->texts();
         for (auto &t : texts) {
-            auto o = machine()->disassemble(icu::UnicodeString(t));
+            auto s = unicode_from_string(t);
+            auto o = machine()->assemble(s);
         }
         out->set_text("none");
         return Status::OK;
@@ -104,8 +106,8 @@ public:
     }
 
     virtual Status EgelImport(ServerContext* context, const EgelText* in, EgelText* out) override {
-        auto m = icu::UnicodeString(in->text());
-        machine->eval_module(m);
+        auto m = unicode_from_string(in->text());
+        machine()->eval_module(m);
         out->set_text("none");
         return Status::OK;
     }
@@ -122,6 +124,12 @@ private:
     VM*         _machine;
 };
 
+struct EgelRpcReturn {
+    std::string text;
+    bool exception;
+    bool okay;
+};
+
 class EgelRpcConnection {
 public:
     EgelRpcConnection(std::shared_ptr<Channel> channel)
@@ -132,37 +140,94 @@ public:
                                             grpc::InsecureChannelCredentials())) {
     }
 
-    std::string EgelCall(const std::string& name) {
-        EgelText request;
-        request.set_text(name);
+    EgelRpcReturn EgelCall(const std::string& data) {
+        EgelText in;
+        EgelResult out;
 
-        EgelText reply;
-
+        in.set_text(data);
         ClientContext context;
 
-        Status status = _stub->EgelCall(&context, request, &reply);
+        Status status = _stub->EgelCall(&context, in, &out);
 
         if (status.ok()) {
-          return reply.text();
+            EgelRpcReturn r;
+            r.okay = true;
+            r.exception = out.exception();
+            r.text = out.text();
+            return r;
         } else {
-          return ""; // default empty
+            EgelRpcReturn r;
+            r.okay = false;;
+            return r;
         }
     }
 
-    std::string EgelInfo(const std::string& name) {
-        EgelText request;
-        request.set_text(name);
+    EgelRpcReturn EgelBundle(const std::vector<std::string>& data) {
+        EgelTexts in;
+        EgelText out;
 
-        EgelText reply;
+        for (const auto& d : data) {
+            in.add_texts(d);
+        }
 
         ClientContext context;
 
-        Status status = _stub->EgelNodeInfo(&context, request, &reply);
+        Status status = _stub->EgelBundle(&context, in, &out);
 
         if (status.ok()) {
-          return reply.text();
+            EgelRpcReturn r;
+            r.okay = true;
+            r.exception = false;
+            r.text = out.text();
+            return r;
         } else {
-          return ""; // default empty
+            EgelRpcReturn r;
+            r.okay = false;;
+            return r;
+        }
+    }
+
+    EgelRpcReturn EgelImport(const std::string& data) {
+        EgelText in;
+        EgelText out;
+
+        in.set_text(data);
+        ClientContext context;
+
+        Status status = _stub->EgelImport(&context, in, &out);
+
+        if (status.ok()) {
+            EgelRpcReturn r;
+            r.okay = true;
+            r.exception = false;
+            r.text = out.text();
+            return r;
+        } else {
+            EgelRpcReturn r;
+            r.okay = false;;
+            return r;
+        }
+    }
+
+    EgelRpcReturn EgelInfo(const std::string& s) {
+        EgelText in;
+        EgelText out;
+
+        in.set_text(s);
+        ClientContext context;
+
+        Status status = _stub->EgelNodeInfo(&context, in, &out);
+
+        if (status.ok()) {
+            EgelRpcReturn r;
+            r.okay = true;
+            r.exception = false;
+            r.text = out.text();
+            return r;
+        } else {
+            EgelRpcReturn r;
+            r.okay = false;;
+            return r;
         }
     }
 

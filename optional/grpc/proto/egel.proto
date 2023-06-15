@@ -19,5 +19,5 @@ message EgelResult {
 }
 
 message EgelTexts {
-    repeated texts = 1;
+    repeated string texts = 1;
 }
