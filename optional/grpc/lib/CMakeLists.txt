@@ -14,14 +14,14 @@ set(SOURCES
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
-
 #
 # Target
 #
-add_library(egel_rpc ${SOURCES})
+add_library(egel_rpc SHARED ${SOURCES})
 target_link_libraries(egel_rpc
     PUBLIC
         ICU::uc ICU::i18n ICU::io
     PRIVATE
         egel-proto
 )
+set_target_properties(egel_rpc PROPERTIES PREFIX "" SUFFIX ".ego")
