@@ -381,6 +381,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(RpcServer::create(vm));
+    oo.push_back(RpcClient::create(vm));
     oo.push_back(RpcCall::create(vm));
     oo.push_back(RpcImport::create(vm));
 
