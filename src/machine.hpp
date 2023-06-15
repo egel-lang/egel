@@ -613,13 +613,8 @@ public:
         return deserialize_from_string(this, s);
     }
 
-    VMObjectPtrs to_bundle(const VMObjectPtr &o) override {
-        return bundle(this, o);
-        ;
-    }
-
-    VMObjectPtr from_bundle(const VMObjectPtrs &oo) override {
-        return nullptr;
+    VMObjectPtrs bundle(const VMObjectPtr &o) override {
+        return ::bundle(this, o);
     }
 
     icu::UnicodeString symbol(const VMObjectPtr &o) override {

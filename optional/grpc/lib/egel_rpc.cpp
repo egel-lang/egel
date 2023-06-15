@@ -6,8 +6,6 @@
 #include <string>
 
 
-// #include <src/runtime.hpp> // build against the current distribution
-
 #include <grpc/grpc.h>
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/security/server_credentials.h>
@@ -18,7 +16,7 @@
 #include <egel.pb.h>
 #include <egel.grpc.pb.h>
 
-#include <egel/runtime.hpp>
+#include <egel/runtime.hpp> // compile against an installed egel
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -33,6 +31,7 @@ using grpc::ClientContext;
 using grpc::Status;
 
 using egel_rpc::EgelText;
+using egel_rpc::EgelTexts;
 using egel_rpc::EgelRpc;
 
 #define LIBRARY_VERSION_MAJOR "0"
@@ -70,25 +69,44 @@ public:
         return _machine;
     }
 
-    virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelText* out) override {
-        auto str_in = machine()->create_text(char_from_string(in->text()));
+    virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelResult* out) override {
+        auto s = unicode_from_string(in->text());
+        auto o = machine()->deserialize(s);
+        auto n = machine()->create_none();
         VMObjectPtrs thunk;
-        thunk.push_back(_program);
-        thunk.push_back(str_in);  // NOTE: _program and in are reduced
+        thunk.push_back(o);
+        thunk.push_back(n);
         auto app = machine()->create_array(thunk);
-        auto r = machine()->reduce(app, &_state);
-
+        auto r = machine()->reduce(app);
 
         if (r.exception) {
-            _exception = r.result;
+            out->set_exception(true);
         } else {
-            auto t = r.result;
+            out->set_exception(false);
         }
-        auto s = in->text();
+        auto s = machine()->serialize(r.result);
+        out->set_text(unicode_to_string(s));
+        return Status::OK;
+    }
+    
+    virtual Status EgelBundle(ServerContext* context, const EgelTexts* in, EgelText* out) override {
+        auto texts = in->texts();
+        for (auto &t : texts) {
+            auto o = machine()->disassemble(icu::UnicodeString(t));
+        }
+        out->set_text("none");
         return Status::OK;
     }
 
     virtual Status EgelNodeInfo(ServerContext* context, const EgelText* in, EgelText* out) override {
+        out->set_text("none");
+        return Status::OK;
+    }
+
+    virtual Status EgelImport(ServerContext* context, const EgelText* in, EgelText* out) override {
+        auto m = icu::UnicodeString(in->text());
+        machine->eval_module(m);
+        out->set_text("none");
         return Status::OK;
     }
 
@@ -97,7 +115,7 @@ public:
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(this);
         std::unique_ptr<Server> server(builder.BuildAndStart());
-        std::cout << "Server listening on " << server_address << std::endl;
+//        std::cout << "Server listening on " << server_address << std::endl;
         server->Wait();
     };
 private:

@@ -3,7 +3,7 @@ syntax = "proto3";
 package egel_rpc;
 
 service EgelRpc {
-    rpc EgelCall(EgelText) returns (EgelText) {}
+    rpc EgelCall(EgelText) returns (EgelResult) {}
     rpc EgelBundle(EgelTexts) returns (EgelText) {}
     rpc EgelImport(EgelText) returns (EgelText) {}
     rpc EgelNodeInfo(EgelText) returns (EgelText) {}
@@ -11,6 +11,11 @@ service EgelRpc {
 
 message EgelText {
     string text = 1;
+}
+
+message EgelResult {
+    string text = 1;
+    bool exception = 2;
 }
 
 message EgelTexts {

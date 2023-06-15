@@ -515,17 +515,6 @@ public:
 
     virtual vm_text_t symbol(const VMObjectPtr &o) = 0;
 
-    virtual icu::UnicodeString disassemble(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtrs get_bytedata(const VMObjectPtr &o) = 0;
-
-    virtual icu::UnicodeString serialize(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtr deserialize(const icu::UnicodeString &s) = 0;
-
-    virtual VMObjectPtrs to_bundle(const VMObjectPtr &o) = 0;
-    virtual VMObjectPtr from_bundle(const VMObjectPtrs &oo) = 0;
-
-    virtual VMObjectPtr assemble(const icu::UnicodeString &s) = 0;
-
     virtual VMObjectPtr create_data(const icu::UnicodeString &s) = 0;
     virtual VMObjectPtr create_data(const icu::UnicodeString &s0,
                                     const icu::UnicodeString &s1) = 0;
@@ -610,6 +599,14 @@ public:
     virtual VMObjectPtr query_module_imports(const VMObjectPtr &m) = 0;
     virtual VMObjectPtr query_module_exports(const VMObjectPtr &m) = 0;
     virtual VMObjectPtr query_module_values(const VMObjectPtr &m) = 0;
+
+    // serialization etc
+    virtual VMObjectPtr assemble(const icu::UnicodeString &s) = 0;
+    virtual icu::UnicodeString disassemble(const VMObjectPtr &o) = 0;
+    virtual VMObjectPtrs get_bytedata(const VMObjectPtr &o) = 0;
+    virtual icu::UnicodeString serialize(const VMObjectPtr &o) = 0;
+    virtual VMObjectPtr deserialize(const icu::UnicodeString &s) = 0;
+    virtual VMObjectPtrs bundle(const VMObjectPtr &o) = 0;
 
     // machine state
     virtual VMObjectPtr query_symbols() = 0;

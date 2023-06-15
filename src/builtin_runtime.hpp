@@ -287,7 +287,7 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Bundle, "System", "bundle");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        auto oo = machine()->to_bundle(arg0);
+        auto oo = machine()->bundle(arg0);
         return machine()->to_list(oo);
     }
 };
