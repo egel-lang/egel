@@ -25,3 +25,10 @@ target_link_libraries(egel_rpc
         egel-proto
 )
 set_target_properties(egel_rpc PROPERTIES PREFIX "" SUFFIX ".ego")
+
+# installation
+include(GNUInstallDirs)
+
+install(TARGETS egel_rpc
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/egel"
+)
