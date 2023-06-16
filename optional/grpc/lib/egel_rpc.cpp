@@ -40,7 +40,9 @@ using egel_rpc::EgelRpc;
 #define LIBRARY_VERSION_PATCH "1"
 
 using icu::UnicodeString;
-using icu::StringPiece;;
+using icu::StringPiece;
+
+const auto MAX_MESSAGE_LENGTH = 128*1024*1024;
 
 inline std::string unicode_to_string(const UnicodeString s) {
     std::string utf8;
@@ -121,6 +123,8 @@ public:
     void run(VM* m, const std::string& server_address) {
         set_machine(m);
         ServerBuilder builder;
+        builder.SetMaxReceiveMessageSize(MAX_MESSAGE_LENGTH);
+        builder.SetMaxSendMessageSize(MAX_MESSAGE_LENGTH);
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(this);
         std::unique_ptr<Server> server(builder.BuildAndStart());
@@ -145,9 +149,13 @@ public:
     EgelRpcConnection(std::shared_ptr<Channel> channel)
       : _stub(EgelRpc::NewStub(channel)) {}
 
-    EgelRpcConnection(const std::string& server_address) :
-        EgelRpcConnection(grpc::CreateChannel(server_address,
-                                            grpc::InsecureChannelCredentials())) {
+    EgelRpcConnection(const std::string& server_address) {
+        grpc::ChannelArguments channel_args;
+        channel_args.SetInt(GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH);
+        channel_args.SetInt(GRPC_ARG_MAX_SEND_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH);
+
+        auto channel = grpc::CreateCustomChannel(server_address, grpc::InsecureChannelCredentials(), channel_args);
+        _stub = EgelRpc::NewStub(channel);
     }
 
     EgelRpcReturn EgelCall(const std::string& data) {
