@@ -6,6 +6,8 @@ off grpc (Google's generic rpc implementation).
 
 Dependency packages 'grpc', 'openssl', and 'protobuf-c'.
 
+This compiles against an already installed egel distribution.
+
 Follow the usual cmake route to build the module.
 
 Note: on macos
