@@ -72,7 +72,7 @@ public:
 
     virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelResult* out) override {
         auto s = unicode_from_string(in->text());
-std::cout << "call received: " << s << "\n";
+//std::cout << "call received: " << s << "\n";
         auto o = machine()->deserialize(s);
         auto n = machine()->create_none();
         VMObjectPtrs thunk;
@@ -87,7 +87,7 @@ std::cout << "call received: " << s << "\n";
             out->set_exception(false);
         }
         auto t = machine()->serialize(r.result);
-std::cout << "call send: " << t << "\n";
+//std::cout << "call send: " << t << "\n";
         out->set_text(unicode_to_string(t));
         return Status::OK;
     }
