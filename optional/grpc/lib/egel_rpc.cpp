@@ -72,6 +72,7 @@ public:
 
     virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelResult* out) override {
         auto s = unicode_from_string(in->text());
+std::cout << "call received: " << s << "\n";
         auto o = machine()->deserialize(s);
         auto n = machine()->create_none();
         VMObjectPtrs thunk;
@@ -86,6 +87,7 @@ public:
             out->set_exception(false);
         }
         auto t = machine()->serialize(r.result);
+std::cout << "call send: " << t << "\n";
         out->set_text(unicode_to_string(t));
         return Status::OK;
     }
@@ -93,9 +95,13 @@ public:
     virtual Status EgelBundle(ServerContext* context, const EgelTexts* in, EgelText* out) override {
         auto texts = in->texts();
         for (auto &t : texts) {
+//std::cout << "received: " << t << "\n";
             auto s = unicode_from_string(t);
             auto o = machine()->assemble(s);
+            machine()->overwrite(o);
         }
+//std::cout << "machine state: \n";
+//machine()->render(std::cout);
         out->set_text("none");
         return Status::OK;
     }
@@ -343,9 +349,9 @@ public:
     }
 };
 
-class RpcCall: public Dyadic {
+class RpcCall: public Binary {
 public:
-    DYADIC_PREAMBLE(VM_SUB_EGO, RpcCall, STRING_SYSTEM, "rpc_call");
+    BINARY_PREAMBLE(VM_SUB_EGO, RpcCall, STRING_SYSTEM, "rpc_call");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();

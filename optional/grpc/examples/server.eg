@@ -1,4 +1,4 @@
-import "prelude.eg"
+#import "prelude.eg"
 import "egel_rpc.ego"
 
 using System

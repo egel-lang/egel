@@ -326,7 +326,7 @@ public:
         // define or overwrite
         auto s = o->to_text();  // XXX: usually works?
         enter_symbol(s);
-        enter_data(o);
+        define_data(o);
     }
 
     VMObjectPtr get(const VMObjectPtr &o) override {

@@ -886,10 +886,14 @@ public:
     }
 
     void render(std::ostream &os) const override {
+        if (size() == 0) {
+            os << "()";
+            return;
+        }
         auto head = value()[0];
-        if (head->symbol() == SYMBOL_TUPLE) {
+        if ((head != nullptr) && (head->symbol() == SYMBOL_TUPLE)) {
             render_tuple(this->clone(), os);
-        } else if ((head->symbol() == SYMBOL_CONS) && (value().size() == 3)) {
+        } else if ((head != nullptr) && (head->symbol() == SYMBOL_CONS) && (value().size() == 3)) {
             render_cons(this->clone(), os);
         } else {
             os << '(';

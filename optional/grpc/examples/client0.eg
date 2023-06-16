@@ -6,5 +6,5 @@ using List
 
 def main = 
     let C = rpc_client "localhost:50001" in
-    rpc_call C [_ -> print "hello"; sum (from_to 1 1000) ]
+    rpc_call C [_ -> none ]
     
