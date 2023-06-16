@@ -1,4 +1,5 @@
-# I increased the grpc message size to 1GB but it still doesn't do this
+# grpc on macos ignores increasing the message size
+# on linux this works
 
 import "prelude.eg"
 import "egel_rpc.ego"
@@ -8,5 +9,5 @@ using List
 
 def main = 
     let C = rpc_client "localhost:50001" in
-    rpc_call C [_ -> from_to 0 10000 ]
+    rpc_call C [_ -> from_to 0 10000 ] |> sum
     
