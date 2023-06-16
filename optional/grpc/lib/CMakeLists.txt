@@ -5,6 +5,8 @@ find_package(Threads)
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 include_directories(/usr/local/include) # compile against a local install
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 #
 # Sources
 #

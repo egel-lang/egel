@@ -3,6 +3,8 @@ find_package(gRPC CONFIG REQUIRED)
 find_package(Threads)
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 #
 # Protobuf/Grpc source files
 #
