@@ -112,13 +112,6 @@ const int SYMBOL_TUPLE = 8;
 const int SYMBOL_NIL = 9;
 const int SYMBOL_CONS = 10;
 
-#define VM_OBJECT_NONE_TEST(o) (o->symbol() == SYMBOL_NONE)
-#define VM_OBJECT_FALSE_TEST(o) (o->symbol() == SYMBOL_FALSE)
-#define VM_OBJECT_TRUE_TEST(o) (o->symbol() == SYMBOL_TRUE)
-#define VM_OBJECT_TUPLE_TEST(o) (o->symbol() == SYMBOL_TUPLE)
-#define VM_OBJECT_NIL_TEST(o) (o->symbol() == SYMBOL_NIL)
-#define VM_OBJECT_CONS_TEST(o) (o->symbol() == SYMBOL_CONS)
-
 /**
  * VM objects can have subtypes which are _unique_ 'magic' numbers.
  */

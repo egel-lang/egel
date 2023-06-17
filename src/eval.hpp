@@ -37,7 +37,7 @@ private:
 };
 
 inline void default_main_callback(VM *vm, const VMObjectPtr &o) {
-    if (!(VM_OBJECT_NONE_TEST(o))) {
+    if (!(vm->is_none(o))) {
         std::cout << o << std::endl;
     }
 }
