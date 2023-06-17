@@ -115,7 +115,10 @@ public:
 
     virtual Status EgelImport(ServerContext* context, const EgelText* in, EgelText* out) override {
         auto m = unicode_from_string(in->text());
+// std::cout << "import : " << m << "\n";
         machine()->eval_module(m);
+// std::cout << "machine state: \n";
+// machine()->render(std::cout);
         out->set_text("none");
         return Status::OK;
     }

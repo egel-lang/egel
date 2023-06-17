@@ -296,20 +296,23 @@ inline SerialObjectPtrs to_dag(VM *m, const VMObjectPtr &o) {
     work0.push(o);
 
     VMObjectsSet visited;
-    VMObjectsStack work1;
+    VMObjectsStack work1; // terminal nodes
+    VMObjectsStack work2; // array nodes
 
     while (!work0.empty()) {
         auto o = work0.top();
         work0.pop();
         if (!visited.contains(o)) {
             visited.insert(o);
-            work1.push(o);
             if (m->is_array(o)) {
+                work2.push(o);
                 auto n = m->array_size(o);
                 for (unsigned int i = 0; i < n; i++) {
                     auto o0 = m->array_get(o, i);
                     work0.push(o0);
                 }
+            } else {
+                work1.push(o);
             }
         }
     }
@@ -321,6 +324,59 @@ inline SerialObjectPtrs to_dag(VM *m, const VMObjectPtr &o) {
     while (!work1.empty()) {
         auto o = work1.top();
         work1.pop();
+        auto sz = dag.size();
+        switch (o->tag()) {
+            case VM_OBJECT_INTEGER: {
+                auto n = m->get_integer(o);
+                auto s = SerialObject::create_integer(sz, n);
+                dag.push_back(s);
+                from[o] = sz;
+            } break;
+            case VM_OBJECT_FLOAT: {
+                auto f = m->get_float(o);
+                auto s = SerialObject::create_float(sz, f);
+                dag.push_back(s);
+                from[o] = sz;
+            } break;
+            case VM_OBJECT_CHAR: {
+                auto c = m->get_char(o);
+                auto s = SerialObject::create_char(sz, c);
+                dag.push_back(s);
+                from[o] = sz;
+            } break;
+            case VM_OBJECT_TEXT: {
+                auto t = m->get_text(o);
+                auto s = SerialObject::create_text(sz, t);
+                dag.push_back(s);
+                from[o] = sz;
+            } break;
+            case VM_OBJECT_COMBINATOR: {
+                auto t = m->symbol(o);
+                auto s = SerialObject::create_combinator(sz, t);
+                dag.push_back(s);
+                from[o] = sz;
+            } break;
+            case VM_OBJECT_ARRAY: {
+                auto oo = m->get_array(o);
+                std::vector<objectid_t> ss;
+                for (auto &o0 : oo) {
+                    ss.push_back(from[o0]);
+                }
+                auto s = SerialObject::create_array(sz, ss);
+                dag.push_back(s);
+                from[o] = sz;
+            } break;
+            case VM_OBJECT_OPAQUE:
+                throw m->create_text(
+                    "cannot serialize opaque");  // change this once
+                break;
+        }
+    }
+
+    // XXX
+    while (!work2.empty()) {
+        auto o = work2.top();
+        work2.pop();
         auto sz = dag.size();
         switch (o->tag()) {
             case VM_OBJECT_INTEGER: {

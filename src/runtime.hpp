@@ -1344,6 +1344,7 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         std::cerr << "symbol = " << symbol() << std::endl;
+        std::cerr << "string = " << machine()->get_combinator_string(symbol()) << std::endl;
         PANIC("reduce on stub");
         return nullptr;
     }
