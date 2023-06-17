@@ -1021,7 +1021,7 @@ using VMObjectArrayPtr = std::shared_ptr<VMObjectArray>;
 
 // here we can safely declare reduce
 inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
-    auto tt = VM_OBJECT_ARRAY_CAST(thunk);
+    auto tt = VMObjectArray::cast(thunk);
     // optimize a bit for the case it's either a sole literal or an applied
     // literal
     if (tt->size() == 5) {
@@ -1031,8 +1031,8 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
         // auto exc   = tt[3];
         auto c = tt->get(4);
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, c);
 
         return k;
@@ -1048,8 +1048,8 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
 
         auto r = VMObjectArray::create(vv);
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, r);
 
         return k;
@@ -1148,8 +1148,8 @@ public:
             ret = tt[4];
         }
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, ret);
 
         return k;
@@ -1310,8 +1310,8 @@ public:
             ret = tt[4];
         }
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, ret);
 
         return k;
@@ -1337,8 +1337,8 @@ struct CompareVMObjectPtr {
         } else {
             switch (t0) {
                 case VM_OBJECT_INTEGER: {
-                    auto v0 = VM_OBJECT_INTEGER_VALUE(a0);
-                    auto v1 = VM_OBJECT_INTEGER_VALUE(a1);
+                    auto v0 = VMObjectInteger::value(a0);
+                    auto v1 = VMObjectInteger::value(a1);
                     if (v0 < v1)
                         return -1;
                     else if (v1 < v0)
@@ -1493,7 +1493,7 @@ public:
         // auto c   = tt[4];
         auto r = tt[5];
 
-        auto ee = VM_OBJECT_ARRAY_CAST(exc);
+        auto ee = VMObjectArray::cast(exc);
         ee->set(5, r);
 
         return exc;
@@ -1585,8 +1585,8 @@ public:
             r = VMObjectArray::create(rr);
         }
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, r);
 
         return k;
@@ -1721,8 +1721,8 @@ public:
             r = VMObjectArray::create(rr);
         }
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, r);
 
         return k;
@@ -1870,8 +1870,8 @@ public:
             r = VMObjectArray::create(rr);
         }
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, r);
 
         return k;
@@ -2025,8 +2025,8 @@ public:
             r = VMObjectArray::create(rr);
         }
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, r);
 
         return k;
@@ -2175,8 +2175,8 @@ public:
             r = VMObjectArray::create(rr);
         }
 
-        auto index = VM_OBJECT_INTEGER_VALUE(rti);
-        auto rta = VM_OBJECT_ARRAY_CAST(rt);
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
         rta->set(index, r);
 
         return k;
@@ -2282,8 +2282,8 @@ public:
                     }
                     r = VMObjectArray::create(rr);
 
-                    auto index = VM_OBJECT_INTEGER_VALUE(rti);
-                    auto rta = VM_OBJECT_ARRAY_CAST(rt);
+                    auto index = VMObjectInteger::value(rti);
+                    auto rta = VMObjectArray::cast(rt);
                     rta->set(index, r);
 
                     return k;
@@ -2309,8 +2309,8 @@ public:
                 rr.push_back(tt[i]);
             }
             r = VMObjectArray::create(rr);
-            auto index = VM_OBJECT_INTEGER_VALUE(rti);
-            auto rta = VM_OBJECT_ARRAY_CAST(rt);
+            auto index = VMObjectInteger::value(rti);
+            auto rta = VMObjectArray::cast(rt);
             rta->set(index, r);
 
             return k;
@@ -2376,8 +2376,8 @@ public:
                     }
                     r = VMObjectArray::create(rr);
 
-                    auto index = VM_OBJECT_INTEGER_VALUE(rti);
-                    auto rta = VM_OBJECT_ARRAY_CAST(rt);
+                    auto index = VMObjectInteger::value(rti);
+                    auto rta = VMObjectArray::cast(rt);
                     rta->set(index, r);
 
                     return k;
@@ -2465,8 +2465,8 @@ public:
                     }
                     r = VMObjectArray::create(rr);
 
-                    auto index = VM_OBJECT_INTEGER_VALUE(rti);
-                    auto rta = VM_OBJECT_ARRAY_CAST(rt);
+                    auto index = VMObjectInteger::value(rti);
+                    auto rta = VMObjectArray::cast(rt);
                     rta->set(index, r);
 
                     return k;

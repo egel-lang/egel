@@ -40,7 +40,7 @@ public:
         auto tt = machine()->get_array(thunk);
         auto arg0 = tt[5];
 
-        auto t = VM_OBJECT_ARRAY_CAST(_tuple);
+        auto t = VMObjectArray::cast(_tuple);
         t->set(_pos, arg0);
 
         return nullptr;
@@ -70,7 +70,7 @@ public:
         auto tt = machine()->get_array(thunk);
         auto arg0 = tt[5];
 
-        auto t = VM_OBJECT_ARRAY_CAST(_tuple);
+        auto t = VMObjectArray::cast(_tuple);
         t->set(_pos, arg0);
 
         return nullptr;
