@@ -1,10 +1,10 @@
 import "prelude.eg"
-import "egel_rpc.ego"
+import "erpc.ego"
 
 using System
 using List
 
 def main = 
     let C = rpc_client "localhost:50001" in
-    rpc_call C [_ -> [X -> X] ] 42
+    rpc_call C [_ -> from_to 1 1000 ] |> sum
     

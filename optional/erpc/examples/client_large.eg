@@ -2,7 +2,7 @@
 # on linux this works
 
 import "prelude.eg"
-import "egel_rpc.ego"
+import "erpc.ego"
 
 using System
 using List

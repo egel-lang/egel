@@ -1,7 +1,5 @@
-#import "prelude.eg"
-import "egel_rpc.ego"
+import "erpc.ego"
 
 using System
-using List
 
 def main = rpc_server "localhost:50001"
