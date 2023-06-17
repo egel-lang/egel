@@ -12,6 +12,5 @@ def some_list =
 def main = 
     let C = rpc_client "localhost:50001" in
     rpc_import C "dict.ego";
-    rpc_call C [_ -> some_list ];
-    some_list
+    rpc_call C [_ -> some_list ]
     
