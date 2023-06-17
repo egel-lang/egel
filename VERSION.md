@@ -10,7 +10,6 @@ A list of all major changes between versions of the interpreter.
 + move to C++20 (modules, egel namespace, modern syntax)
   when libfmt makes it into llvm and gcc?
 + import works on identifiers
-+ remote procedure calls (look at grpc)
 + integer move instruction in bytecode
 + generators to prelude, generator for dict
 + rewrite generators
@@ -30,6 +29,9 @@ A list of all major changes between versions of the interpreter.
 + target MSVC
 
 ## The bleeding, cutting edge
+
++ more macro removal
++ egel remote procedure calls
 
 ## v0.1.8 - who cares it's slow?
 
