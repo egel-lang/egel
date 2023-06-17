@@ -654,6 +654,18 @@ public:
         return std::make_shared<VMObjectInteger>(v);
     }
 
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_INTEGER;
+    }
+
+    static std::shared_ptr<VMObjectInteger> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMObjectInteger>(o);
+    }
+
+    static vm_int_t value(const VMObjectPtr& o) {
+        return cast(o)->value();
+    }
+
     symbol_t symbol() const override {
         return SYMBOL_INT;
     }
@@ -686,6 +698,18 @@ public:
 
     static VMObjectPtr create(const vm_float_t f) {
         return std::make_shared<VMObjectFloat>(f);
+    }
+
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_FLOAT;
+    }
+
+    static std::shared_ptr<VMObjectFloat> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMObjectFloat>(o);
+    }
+
+    static vm_float_t value(const VMObjectPtr& o) {
+        return cast(o)->value();
     }
 
     symbol_t symbol() const override {
@@ -725,6 +749,18 @@ public:
 
     static VMObjectPtr create(const vm_char_t v) {
         return std::make_shared<VMObjectChar>(v);
+    }
+
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_CHAR;
+    }
+
+    static std::shared_ptr<VMObjectChar> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMObjectChar>(o);
+    }
+
+    static vm_char_t value(const VMObjectPtr& o) {
+        return cast(o)->value();
     }
 
     symbol_t symbol() const override {
@@ -771,6 +807,18 @@ public:
 
     static VMObjectPtr create(const char *v) {
         return std::make_shared<VMObjectText>(v);
+    }
+
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_TEXT;
+    }
+
+    static std::shared_ptr<VMObjectText> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMObjectText>(o);
+    }
+
+    static icu::UnicodeString value(const VMObjectPtr& o) {
+        return cast(o)->value();
     }
 
     symbol_t symbol() const override {
@@ -847,6 +895,18 @@ public:
             }
             return aa;
         }
+    }
+
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_ARRAY;;
+    }
+
+    static std::shared_ptr<VMObjectArray> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMObjectArray>(o);
+    }
+
+    static VMObjectPtrs value(const VMObjectPtr& o) {
+        return cast(o)->value();
     }
 
     symbol_t symbol() const override {
@@ -1020,6 +1080,18 @@ public:
         return _machine;
     }
 
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_OPAQUE;
+    }
+
+    static std::shared_ptr<VMObjectOpaque> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMObjectOpaque>(o);
+    }
+
+    static int compare(const VMObjectPtr& o0, const VMObjectPtr& o1) {
+        return cast(o0)->compare(o1);
+    }
+
     symbol_t symbol() const override {
         return _symbol;
     }
@@ -1100,12 +1172,24 @@ public:
           _machine(m),
           _symbol(m->enter_symbol(nn, n)){};
 
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_COMBINATOR;
+    }
+
+    static std::shared_ptr<VMObjectCombinator> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<VMObjectCombinator>(o);
+    }
+
     VM *machine() const {
         return _machine;
     }
 
     symbol_t symbol() const override {
         return _symbol;
+    }
+
+    icu::UnicodeString raw_text() const {
+        return _machine->get_combinator_string(_symbol);
     }
 
     icu::UnicodeString text() const {
@@ -1168,6 +1252,10 @@ public:
                               const icu::UnicodeString &s) {
         auto sym = vm->enter_symbol(ss, s);
         return VMObjectData::create(vm, sym);
+    }
+
+    static bool test(const VMObjectPtr& o) {
+        return o->tag() == VM_OBJECT_COMBINATOR;
     }
 
     static std::shared_ptr<VMObjectData> cast(const VMObjectPtr &o) {
