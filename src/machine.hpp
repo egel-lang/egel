@@ -149,7 +149,6 @@ public:
         return VMObjectPtr(new VMObjectResult(m, s, r, exc));
     }
 
-    // XXX wut?
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
         auto arg0 = tt[5];
@@ -367,8 +366,8 @@ public:
         auto trampoline = t;
         while ((trampoline != nullptr) && (*run != HALTED)) {
             if (*run == RUNNING) {
-                ASSERT(trampoline->tag() == VM_OBJECT_ARRAY);
-                auto f = VM_OBJECT_ARRAY_CAST(trampoline)->get(4);
+                ASSERT(VMObjectArray::test(trampoline));
+                auto f = VMObjectArray::cast(trampoline)->get(4);
 #ifdef DEBUG
                 std::cout << "trace: " << f << std::endl;
                 std::cout << "on : " << trampoline << std::endl;
@@ -470,19 +469,19 @@ public:
     }
 
     vm_int_t get_integer(const VMObjectPtr &o) override {
-        return VM_OBJECT_INTEGER_VALUE(o);
+        return VMObjectInteger::value(o);
     }
 
     vm_float_t get_float(const VMObjectPtr &o) override {
-        return VM_OBJECT_FLOAT_VALUE(o);
+        return VMObjectFloat::value(o);
     }
 
     vm_char_t get_char(const VMObjectPtr &o) override {
-        return VM_OBJECT_CHAR_VALUE(o);
+        return VMObjectChar::value(o);
     }
 
     vm_text_t get_text(const VMObjectPtr &o) override {
-        return VM_OBJECT_TEXT_VALUE(o);
+        return VMObjectText::value(o);
     }
 
     VMObjectPtr create_none() override {
@@ -579,7 +578,7 @@ public:
     }
 
     bool is_opaque(const VMObjectPtr &o) override {
-        return VM_OBJECT_OPAQUE_TEST(o);
+        return VMObjectOpaque::test(o);
     }
 
     bool is_data(const VMObjectPtr &o) override {
