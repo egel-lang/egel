@@ -228,12 +228,12 @@ public:
         _data.enter(_nil);
         _data.enter(_cons);
 
-        ASSERT(VM_OBJECT_NONE_TEST(_none));
-        ASSERT(VM_OBJECT_TRUE_TEST(_true));
-        ASSERT(VM_OBJECT_FALSE_TEST(_false));
-        ASSERT(VM_OBJECT_TUPLE_TEST(_tuple));
-        ASSERT(VM_OBJECT_NIL_TEST(_nil));
-        ASSERT(VM_OBJECT_CONS_TEST(_cons));
+        ASSERT(object_none_test(_none));
+        ASSERT(object_true_test(_true));
+        ASSERT(object_false_test(_false));
+        ASSERT(object_tuple_test(_tuple));
+        ASSERT(object_nil_test(_nil));
+        ASSERT(object_cons_test(_cons));
     }
 
     // initialize
@@ -519,15 +519,15 @@ public:
     }
 
     bool is_none(const VMObjectPtr &o) override {
-        return (VM_OBJECT_NONE_TEST(o));
+        return (object_none_test(o));
     }
 
     bool is_true(const VMObjectPtr &o) override {
-        return (VM_OBJECT_TRUE_TEST(o));
+        return (object_true_test(o));
     }
 
     bool is_false(const VMObjectPtr &o) override {
-        return (VM_OBJECT_FALSE_TEST(o));
+        return (object_false_test(o));
     }
 
     bool is_bool(const VMObjectPtr &o) override {
@@ -535,15 +535,15 @@ public:
     }
 
     bool is_nil(const VMObjectPtr &o) override {
-        return (VM_OBJECT_NIL_TEST(o));
+        return (object_nil_test(o));
     }
 
     bool is_cons(const VMObjectPtr &o) override {
-        return (VM_OBJECT_CONS_TEST(o));
+        return (object_cons_test(o));
     }
 
     bool is_tuple(const VMObjectPtr &o) override {
-        return (VM_OBJECT_TUPLE_TEST(o));
+        return (object_tuple_test(o));
     }
 
     VMObjectPtr create_array(const VMObjectPtrs &oo) override {
@@ -555,27 +555,27 @@ public:
     }
 
     bool is_array(const VMObjectPtr &o) override {
-        return o->tag() == VM_OBJECT_ARRAY;
+        return VMObjectArray::test(o);
     }
 
     unsigned int array_size(const VMObjectPtr &o) override {
-        return VM_OBJECT_ARRAY_CAST(o)->size();
+        return VMObjectArray::cast(o)->size();
     }
 
     VMObjectPtr array_get(const VMObjectPtr &o, int n) override {
-        return VM_OBJECT_ARRAY_CAST(o)->get(n);
+        return VMObjectArray::cast(o)->get(n);
     }
 
     void array_set(VMObjectPtr &o, int n, const VMObjectPtr &e) override {
-        VM_OBJECT_ARRAY_CAST(o)->set(n, e);
+        VMObjectArray::cast(o)->set(n, e);
     }
 
     VMObjectPtrs get_array(const VMObjectPtr &o) override {
-        return VM_OBJECT_ARRAY_VALUE(o);
+        return VMObjectArray::value(o);
     }
 
     bool is_combinator(const VMObjectPtr &o) override {
-        return VM_OBJECT_COMBINATOR_TEST(o);
+        return VMObjectCombinator::test(o);
     }
 
     bool is_opaque(const VMObjectPtr &o) override {

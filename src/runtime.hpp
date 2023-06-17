@@ -94,6 +94,9 @@ enum vm_tag_t {
 };
 
 // predefined symbols (indices in symbol table)
+using symbol_t = uint32_t;
+using data_t = uint32_t;
+
 const int SYMBOL_INT = 0;
 const int SYMBOL_FLOAT = 1;
 const int SYMBOL_CHAR = 2;
@@ -140,8 +143,6 @@ using vm_float_t = double;
 using vm_char_t = UChar32;
 using vm_text_t = icu::UnicodeString;
 
-using symbol_t = uint32_t;
-using data_t = uint32_t;
 
 // tagbits (used internally but declared here for vm_object_t)
 
@@ -214,6 +215,34 @@ public:
 private:
     vm_tag_t _tag;
     vm_subtag_t _subtag;
+};
+
+inline bool object_symbol_test(const VMObjectPtr& o, const symbol_t s) {
+    return o->symbol() == s;
+};
+
+inline bool object_none_test(const VMObjectPtr& o) {
+    return object_symbol_test(o, SYMBOL_NONE);
+};
+
+inline bool object_false_test(const VMObjectPtr& o) {
+    return object_symbol_test(o, SYMBOL_FALSE);
+};
+
+inline bool object_true_test(const VMObjectPtr& o) {
+    return object_symbol_test(o, SYMBOL_TRUE);
+};
+
+inline bool object_tuple_test(const VMObjectPtr& o) {
+    return object_symbol_test(o, SYMBOL_TUPLE);
+};
+
+inline bool object_nil_test(const VMObjectPtr& o) {
+    return object_symbol_test(o, SYMBOL_NIL);
+};
+
+inline bool object_cons_test(const VMObjectPtr& o) {
+    return object_symbol_test(o, SYMBOL_CONS);
 };
 
 using VMObjectPtrs = std::vector<VMObjectPtr>;
