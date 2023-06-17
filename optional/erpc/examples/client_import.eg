@@ -1,0 +1,17 @@
+import "prelude.eg"
+import "erpc.ego"
+import "dictionary.eg"
+
+using System
+using List
+
+def some_list =
+    from_to 1 10 |> map [X -> (X,X) ]
+    |> Dict::from_list |> Dict::to_list
+
+def main = 
+    let C = rpc_client "localhost:50001" in
+    rpc_import C "dict.ego";
+    rpc_call C [_ -> some_list ];
+    some_list
+    
