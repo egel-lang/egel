@@ -65,7 +65,7 @@ public:
     static VMObjectPtr create(VM *vm, const VMObjectPtr &o,
                               const VMReduceResult &r) {
         if (o->tag() == VM_OBJECT_COMBINATOR) {
-            auto c = VM_OBJECT_COMBINATOR_CAST(o);
+            auto c = VMObjectCombinator::cast(o);
             auto v = VarCombinator::create(vm, c->symbol(), r);
             return v;
         } else {

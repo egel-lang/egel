@@ -64,8 +64,6 @@ constexpr auto STRING_OP_TAG = "tag";
 constexpr auto STRING_OP_FAIL = "fail";
 constexpr auto STRING_OP_RETURN = "return";
 
-#define VM_OBJECT_BYTECODE_CAST(o) std::static_pointer_cast<VMObjectBytecode>(o)
-
 class CodePrinter {
 public:
     CodePrinter(const Code &code) : _code(code), _pc(0) {
@@ -725,7 +723,7 @@ public:
                     ASSERT(machine()->is_array(x0));
                     ASSERT(y0->tag() == VM_OBJECT_INTEGER);
 
-                    auto xv = VM_OBJECT_ARRAY_CAST(x0);
+                    auto xv = VMObjectArray::cast(x0);
                     auto yv = machine()->get_integer(y0);
 
                     xv->set(yv, z0);
@@ -739,7 +737,7 @@ public:
 
                     auto z0 = reg[z];
                     if (machine()->is_array(z0)) {
-                        auto zz = VM_OBJECT_ARRAY_CAST(z0);
+                        auto zz = VMObjectArray::cast(z0);
                         flag =
                             (((int)y - (int)x + 1) <= (int)zz->size() - (int)i);
                         if (flag) {
@@ -761,7 +759,7 @@ public:
 
                     auto z0 = reg[z];
                     if (machine()->is_array(z0)) {
-                        auto zz = VM_OBJECT_ARRAY_CAST(z0);
+                        auto zz = VMObjectArray::cast(z0);
                         flag = (((int)y - (int)x + 1) == (int)zz->size());
                         if (flag) {
                             for (reg_t n = x; n <= y; n++) {
@@ -783,14 +781,14 @@ public:
                     size_t sz = (size_t)z - y + 1;
                     if (sz > 0) {  // we do generate empty arrays sometimes
                         auto oo =
-                            VM_OBJECT_ARRAY_CAST(VMObjectArray::create(sz));
+                            VMObjectArray::cast(VMObjectArray::create(sz));
                         for (reg_t n = y; n <= z; n++) {
                             oo->set(n - y, reg[n]);
                         }
                         reg.set(x, oo);
                     } else {
                         auto oo =
-                            VM_OBJECT_ARRAY_CAST(VMObjectArray::create(0));
+                            VMObjectArray::cast(VMObjectArray::create(0));
                         reg.set(x, oo);
                     }
                 } break;
@@ -805,8 +803,8 @@ public:
                     auto z0 = reg[z];
                     if ((machine()->is_array(y0)) &&
                         (machine()->is_array(z0))) {
-                        auto yc = VM_OBJECT_ARRAY_CAST(y0);
-                        auto zc = VM_OBJECT_ARRAY_CAST(z0);
+                        auto yc = VMObjectArray::cast(y0);
+                        auto zc = VMObjectArray::cast(z0);
 
                         size_t sz = yc->size() + zc->size() - i;
 
@@ -814,7 +812,7 @@ public:
                                                // copied
 
                             if (sz > 1) {
-                                auto oo = VM_OBJECT_ARRAY_CAST(
+                                auto oo = VMObjectArray::cast(
                                     VMObjectArray::create(sz));
                                 size_t l = 0;
                                 for (size_t n = 0; n < yc->size(); n++) {

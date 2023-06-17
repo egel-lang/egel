@@ -466,9 +466,8 @@ public:
             }
             // set field
             if ((n + 1) < sz) {
-                auto arr = VM_OBJECT_ARRAY_CAST(
-                    arg2);  // XXX: clean up this cast once. need destructive
-                            // update
+                // XXX: clean up this cast once. need destructive update
+                auto arr = VMObjectArray::cast(arg2);  
                 arr->set(n + 1, arg1);
                 return arg0;
             } else {
