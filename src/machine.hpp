@@ -150,7 +150,7 @@ public:
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto arg0 = tt[5];
 
         _result->result = arg0;

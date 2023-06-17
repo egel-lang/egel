@@ -1057,7 +1057,7 @@ inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
 };
 
 inline VMObjectPtr VMObjectArray::reduce(const VMObjectPtr &thunk) const {
-    auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+    auto tt = VMObjectArray::value(thunk);
     auto rt = tt[0];
     auto rti = tt[1];
     auto k = tt[2];
@@ -1069,7 +1069,7 @@ inline VMObjectPtr VMObjectArray::reduce(const VMObjectPtr &thunk) const {
     vv.push_back(rti);
     vv.push_back(k);
     vv.push_back(exc);
-    auto aa = VM_OBJECT_ARRAY_VALUE(c);
+    auto aa = VMObjectArray::value(c);
     for (auto &a : aa) {
         vv.push_back(a);
     }
@@ -1121,6 +1121,10 @@ public:
         return cast(o0)->compare(o1);
     }
 
+    static symbol_t symbol(const VMObjectPtr& o) {
+        return cast(o)->symbol();
+    }
+
     symbol_t symbol() const override {
         return _symbol;
     }
@@ -1130,7 +1134,7 @@ public:
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -1207,6 +1211,10 @@ public:
 
     static std::shared_ptr<VMObjectCombinator> cast(const VMObjectPtr& o) {
         return std::static_pointer_cast<VMObjectCombinator>(o);
+    }
+
+    static symbol_t symbol(const VMObjectPtr& o) {
+        return cast(o)->symbol();
     }
 
     VM *machine() const {
@@ -1292,7 +1300,7 @@ public:
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -1347,8 +1355,8 @@ struct CompareVMObjectPtr {
                         return 0;
                 } break;
                 case VM_OBJECT_FLOAT: {
-                    auto v0 = VM_OBJECT_FLOAT_VALUE(a0);
-                    auto v1 = VM_OBJECT_FLOAT_VALUE(a1);
+                    auto v0 = VMObjectFloat::value(a0);
+                    auto v1 = VMObjectFloat::value(a1);
                     if (v0 < v1)
                         return -1;
                     else if (v1 < v0)
@@ -1357,8 +1365,8 @@ struct CompareVMObjectPtr {
                         return 0;
                 } break;
                 case VM_OBJECT_CHAR: {
-                    auto v0 = VM_OBJECT_CHAR_VALUE(a0);
-                    auto v1 = VM_OBJECT_CHAR_VALUE(a1);
+                    auto v0 = VMObjectChar::value(a0);
+                    auto v1 = VMObjectChar::value(a1);
                     if (v0 < v1)
                         return -1;
                     else if (v1 < v0)
@@ -1367,8 +1375,8 @@ struct CompareVMObjectPtr {
                         return 0;
                 } break;
                 case VM_OBJECT_TEXT: {
-                    auto v0 = VM_OBJECT_TEXT_VALUE(a0);
-                    auto v1 = VM_OBJECT_TEXT_VALUE(a1);
+                    auto v0 = VMObjectText::value(a0);
+                    auto v1 = VMObjectText::value(a1);
                     if (v0 < v1)
                         return -1;
                     else if (v1 < v0)
@@ -1377,18 +1385,18 @@ struct CompareVMObjectPtr {
                         return 0;
                 } break;
                 case VM_OBJECT_OPAQUE: {
-                    auto s0 = VM_OBJECT_OPAQUE_SYMBOL(a0);
-                    auto s1 = VM_OBJECT_OPAQUE_SYMBOL(a1);
+                    auto s0 = VMObjectOpaque::symbol(a0);
+                    auto s1 = VMObjectOpaque::symbol(a1);
                     if (s0 < s1)
                         return -1;
                     else if (s1 < s0)
                         return 1;
                     else
-                        return VM_OBJECT_OPAQUE_COMPARE(a0, a1);
+                        return VMObjectOpaque::compare(a0, a1);
                 } break;
                 case VM_OBJECT_COMBINATOR: {
-                    auto v0 = VM_OBJECT_COMBINATOR_SYMBOL(a0);
-                    auto v1 = VM_OBJECT_COMBINATOR_SYMBOL(a1);
+                    auto v0 = VMObjectCombinator::symbol(a0);
+                    auto v1 = VMObjectCombinator::symbol(a1);
                     if (v0 < v1)
                         return -1;
                     else if (v1 < v0)
@@ -1397,8 +1405,8 @@ struct CompareVMObjectPtr {
                         return 0;
                 } break;
                 case VM_OBJECT_ARRAY: {
-                    auto v0 = VM_OBJECT_ARRAY_VALUE(a0);
-                    auto v1 = VM_OBJECT_ARRAY_VALUE(a1);
+                    auto v0 = VMObjectArray::value(a0);
+                    auto v1 = VMObjectArray::value(a1);
                     auto s0 = v0.size();
                     auto s1 = v1.size();
 
@@ -1485,7 +1493,7 @@ public:
         // when throw is reduced, it takes the exception, inserts it argument,
         // and reduces that
 
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         // auto rt  = tt[0];
         // auto rti = tt[1];
         // auto k   = tt[2];
@@ -1537,7 +1545,7 @@ public:
     virtual VMObjectPtr apply() const = 0;
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -1555,7 +1563,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -1671,7 +1679,7 @@ public:
     virtual VMObjectPtr apply(const VMObjectPtr &arg0) const = 0;
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -1691,7 +1699,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -1838,7 +1846,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = m->array_get(thunk, 3);
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -1973,7 +1981,7 @@ public:
                               const VMObjectPtr &arg2) const = 0;
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -1995,7 +2003,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2132,7 +2140,7 @@ public:
     virtual VMObjectPtr apply(const VMObjectPtrs &args) const = 0;
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -2155,7 +2163,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2263,7 +2271,7 @@ public:
     virtual VMObjectPtr apply(const VMObjectPtr &arg0) const = 0;
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -2290,7 +2298,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2356,7 +2364,7 @@ public:
                               const VMObjectPtr &arg1) const = 0;
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -2384,7 +2392,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2444,7 +2452,7 @@ public:
                               const VMObjectPtr &arg2) const = 0;
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        auto tt = VM_OBJECT_ARRAY_VALUE(thunk);
+        auto tt = VMObjectArray::value(thunk);
         auto rt = tt[0];
         auto rti = tt[1];
         auto k = tt[2];
@@ -2473,7 +2481,7 @@ public:
                 }
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
-                auto ee = VM_OBJECT_ARRAY_VALUE(exc);
+                auto ee = VMObjectArray::value(exc);
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2525,7 +2533,7 @@ inline void render_tuple(const VMObjectPtr &tt, std::ostream &os) {
         os << '.';
     } else if (tt->tag() == VM_OBJECT_ARRAY) {
         os << '(';
-        auto vv = VM_OBJECT_ARRAY_VALUE(tt);
+        auto vv = VMObjectArray::value(tt);
         int sz = (int)vv.size();
         if (sz == 2) {  // NOTE, handle 'tuple 0 = (0,)' differently
             if (vv[0] == nullptr) {
@@ -2569,7 +2577,7 @@ inline void render_array_raw(const VMObjectPtr &ee, std::ostream &os) {
     if (ee == nullptr) {
         os << '.';
     } else if (ee->tag() == VM_OBJECT_ARRAY) {
-        auto vv = VM_OBJECT_ARRAY_VALUE(ee);
+        auto vv = VMObjectArray::value(ee);
         os << '(';
         bool first = true;
         for (auto &v : vv) {
@@ -2592,7 +2600,7 @@ inline void render_array_raw(const VMObjectPtr &ee, std::ostream &os) {
 
 inline bool is_well_formed_nil(const VMObjectPtr &ee) {
     if (ee->tag() == VM_OBJECT_COMBINATOR) {
-        auto sym = VM_OBJECT_COMBINATOR_SYMBOL(ee);
+        auto sym = VMObjectCombinator::symbol(ee);
         return sym == SYMBOL_NIL;
     } else {
         return false;
@@ -2603,7 +2611,7 @@ inline bool is_well_formed_const(const VMObjectPtr &ee) {
     if (ee == nullptr) {
         return false;
     } else if (ee->tag() == VM_OBJECT_ARRAY) {
-        auto v = VM_OBJECT_ARRAY_VALUE(ee);
+        auto v = VMObjectArray::value(ee);
         if (v.size() != 3) {
             return false;
         } else {
@@ -2625,7 +2633,7 @@ inline void render_cons_elements(const VMObjectPtr &ee, std::ostream &os) {
         os << '.';
     } else if (is_well_formed_nil(ee)) {
     } else if (is_well_formed_const(ee)) {
-        auto v = VM_OBJECT_ARRAY_VALUE(ee);
+        auto v = VMObjectArray::value(ee);
         if ((v[2] != nullptr) && is_well_formed_nil(v[2])) {
             if (v[1] == nullptr) {
                 os << ".";

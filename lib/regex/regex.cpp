@@ -89,7 +89,7 @@ public:
 
     static bool is_regex_pattern(const VMObjectPtr& o) {
         if (o->tag() == VM_OBJECT_OPAQUE) {
-            auto p = VM_OBJECT_OPAQUE_CAST(o);
+            auto p = VMObjectOpaque::cast(o);
             symbol_t sym = p->machine()->enter_symbol(REGEX_STRING, "pattern");
             return (p->symbol() == sym);
         } else {
