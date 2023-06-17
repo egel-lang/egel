@@ -704,12 +704,6 @@ private:
     vm_int_t _value;
 };
 
-using VMObjectIntegerPtr = std::shared_ptr<VMObjectInteger>;
-#define VM_OBJECT_IS_INTEGER(a) (a->tag() == VM_OBJECT_INTEGER)
-#define VM_OBJECT_INTEGER_TEST(a) (a->tag() == VM_OBJECT_INTEGER)
-#define VM_OBJECT_INTEGER_CAST(a) std::static_pointer_cast<VMObjectInteger>(a)
-#define VM_OBJECT_INTEGER_VALUE(a) (VM_OBJECT_INTEGER_CAST(a)->value())
-
 class VMObjectFloat : public VMObjectLiteral {
 public:
     VMObjectFloat(const vm_float_t &v)
@@ -753,14 +747,6 @@ private:
     vm_float_t _value;
 };
 
-using VMObjectFloatPtr = std::shared_ptr<VMObjectFloat>;
-#define VM_OBJECT_FLOAT_TEST(a) (a->tag() == VM_OBJECT_FLOAT)
-#define VM_OBJECT_FLOAT_CAST(a) std::static_pointer_cast<VMObjectFloat>(a)
-#define VM_OBJECT_FLOAT_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_FLOAT_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_FLOAT_VALUE(a) (VM_OBJECT_FLOAT_CAST(a)->value())
-
 class VMObjectChar : public VMObjectLiteral {
 public:
     VMObjectChar(const vm_char_t &v)
@@ -802,14 +788,6 @@ public:
 private:
     vm_char_t _value;
 };
-
-using VMObjectCharPtr = std::shared_ptr<VMObjectChar>;
-#define VM_OBJECT_CHAR_TEST(a) (a->tag() == VM_OBJECT_CHAR)
-#define VM_OBJECT_CHAR_CAST(a) std::static_pointer_cast<VMObjectChar>(a)
-#define VM_OBJECT_CHAR_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_CHAR_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_CHAR_VALUE(a) (VM_OBJECT_CHAR_CAST(a)->value())
 
 class VMObjectText : public VMObjectLiteral {
 public:
@@ -868,14 +846,6 @@ public:
 private:
     icu::UnicodeString _value;
 };
-
-using VMObjectTextPtr = std::shared_ptr<VMObjectText>;
-#define VM_OBJECT_TEXT_TEST(a) (a->tag() == VM_OBJECT_TEXT)
-#define VM_OBJECT_TEXT_CAST(a) std::static_pointer_cast<VMObjectText>(a)
-#define VM_OBJECT_TEXT_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_TEXT_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_TEXT_VALUE(a) (VM_OBJECT_TEXT_CAST(a)->value())
 
 class VMObjectArray : public VMObject {
 public:
@@ -1003,14 +973,6 @@ public:
 private:
     VMObjectPtrs _value;
 };
-
-using VMObjectArrayPtr = std::shared_ptr<VMObjectArray>;
-#define VM_OBJECT_ARRAY_TEST(a) (a->tag() == VM_OBJECT_ARRAY)
-#define VM_OBJECT_ARRAY_CAST(a) std::static_pointer_cast<VMObjectArray>(a)
-#define VM_OBJECT_ARRAY_SPLIT(a, v)      \
-    auto _##a = VM_OBJECT_ARRAY_CAST(a); \
-    auto v = _##a->value();
-#define VM_OBJECT_ARRAY_VALUE(a) (VM_OBJECT_ARRAY_CAST(a)->value())
 
 // here we can safely declare reduce
 inline VMObjectPtr VMObjectLiteral::reduce(const VMObjectPtr &thunk) const {
@@ -1168,13 +1130,6 @@ private:
     symbol_t _symbol;
 };
 
-using VMObjectOpaquePtr = std::shared_ptr<VMObjectOpaque>;
-#define VM_OBJECT_OPAQUE_TEST(a) (a->tag() == VM_OBJECT_OPAQUE)
-#define VM_OBJECT_OPAQUE_CAST(a) std::static_pointer_cast<VMObjectOpaque>(a)
-#define VM_OBJECT_OPAQUE_COMPARE(o0, o1) \
-    (VM_OBJECT_OPAQUE_CAST(o0))->compare(o1);
-#define VM_OBJECT_OPAQUE_SYMBOL(a) (VM_OBJECT_OPAQUE_CAST(a)->symbol())
-
 class VMObjectCombinator : public VMObject {
 public:
     VMObjectCombinator(const vm_subtag_t t, VM *m, const symbol_t s)
@@ -1318,14 +1273,6 @@ public:
         return k;
     }
 };
-using VMObjectDataPtr = std::shared_ptr<VMObjectData>;
-
-using VMObjectCombinatorPtr = std::shared_ptr<VMObjectCombinator>;
-#define VM_OBJECT_COMBINATOR_TEST(a) (a->tag() == VM_OBJECT_COMBINATOR)
-#define VM_OBJECT_COMBINATOR_CAST(a) \
-    std::static_pointer_cast<VMObjectCombinator>(a)
-#define VM_OBJECT_COMBINATOR_SYMBOL(a) (VM_OBJECT_COMBINATOR_CAST(a)->symbol())
-#define VM_OBJECT_DATA_TEST(a) (a->subtag_test(VM_SUB_DATA))
 
 struct CompareVMObjectPtr {
     int operator()(const VMObjectPtr &a0, const VMObjectPtr &a1) const {
@@ -2610,7 +2557,7 @@ inline bool is_well_formed_const(const VMObjectPtr &ee) {
         } else {
             auto head = v[0];
             if (head->tag() == VM_OBJECT_COMBINATOR) {
-                auto h = VM_OBJECT_COMBINATOR_CAST(head);
+                auto h = VMObjectCombinator::cast(head);
                 return h->symbol() == SYMBOL_CONS;
             } else {
                 return false;

@@ -292,7 +292,7 @@ public:
     void declarations(NamespacePtr &env) override {
         for (auto &o : _exports) {
             if (machine()->is_combinator(o)) {
-                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+                auto sym = VMObjectCombinator::symbol(o);
                 auto s = machine()->get_combinator_string(sym);
 
                 UnicodeStrings nn;
@@ -412,7 +412,7 @@ public:
     void declarations(NamespacePtr &env) override {
         for (auto &o : _exports) {
             if (machine()->is_combinator(o)) {
-                auto sym = VM_OBJECT_COMBINATOR_SYMBOL(o);
+                auto sym = VMObjectCombinator::symbol(o);
                 auto s = machine()->get_combinator_string(sym);
 
                 UnicodeStrings nn;

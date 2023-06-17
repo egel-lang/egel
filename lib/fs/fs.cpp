@@ -29,7 +29,7 @@ VMObjectPtr paths_to_list(VM* vm, std::vector<fs::path> ss) {
 }
 
 fs::path object_to_path(const VMObjectPtr& o) {
-    auto str = VM_OBJECT_TEXT_VALUE(o);
+    auto str = VMObjectText::value(o);
     auto len =
         str.extract(0, 2048, nullptr, (uint32_t)0);  // XXX: I hate constants
     auto buffer = new char[len + 1];

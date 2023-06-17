@@ -513,7 +513,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
+        if (PYTHON_OBJECT_TEST(arg0) && machine()->is_text(arg1)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
             auto s = machine()->get_text(arg1);
             char* cc = unicode_to_char(s);
@@ -539,7 +539,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
-        if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1) &&
+        if (PYTHON_OBJECT_TEST(arg0) && machine()->is_text(arg1) &&
             PYTHON_OBJECT_TEST(arg2)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
             auto s = machine()->get_text(arg1);
@@ -634,7 +634,7 @@ public:
         auto m = machine();
         if (m->is_array(arg0) && (m->array_size(arg0) > 0) &&
             (m->is_tuple(m->array_get(arg0, 0)))) {
-            auto aa = VM_OBJECT_ARRAY_CAST(arg0);
+            auto aa = VMObjectArray::cast(arg0);
             auto sz = aa->size();
 
             // well-formedness check
@@ -1168,7 +1168,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        if (PYTHON_OBJECT_TEST(arg0) && VM_OBJECT_TEXT_TEST(arg1)) {
+        if (PYTHON_OBJECT_TEST(arg0) && machine()->is_text(arg1)) {
             auto mod = PYTHON_OBJECT_VALUE(arg0);
             auto s = machine()->get_text(arg1);
             char* cc = unicode_to_char(s);

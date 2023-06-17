@@ -428,7 +428,7 @@ protected:
 };
 
 #define CHANNEL_TEST(o, sym) \
-    ((machine()->is_opaque(o)) && (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
+    ((machine()->is_opaque(o)) && (VMObjectOpaque::symbol(o) == sym))
 #define CHANNEL_VALUE(o) ((std::static_pointer_cast<ChannelValue>(o))->value())
 
 //## OS::cin - standard input channel
@@ -865,7 +865,7 @@ protected:
 };
 
 #define SERVER_OBJECT_TEST(o, sym) \
-    ((machine()->is_opaque(o)) && (VM_OBJECT_OPAQUE_SYMBOL(o) == sym))
+    ((machine()->is_opaque(o)) && (VMObjectOpaque::symbol(o) == sym))
 #define SERVER_OBJECT_CAST(o) (std::static_pointer_cast<ServerObject>(o))
 
 //## OS::accept serverobject - accept connections
