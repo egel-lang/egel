@@ -5,6 +5,7 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
++ move utils to machine
 + don't reduce literals or variables
 + lowercase namespace
 + move to C++20 (modules, egel namespace, modern syntax)

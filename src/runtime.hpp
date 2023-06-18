@@ -32,51 +32,6 @@ using namespace icu;  // use stable namespace
 constexpr unsigned int EGEL_FLOAT_PRECISION =
     16;  // XXX: dbl::maxdigit doesn't seem to be defined on my system?
 
-// libicu doesn't provide escaping..
-
-inline icu::UnicodeString uescape(const icu::UnicodeString &s) {
-    icu::UnicodeString s1;
-    for (int i = 0; i < s.length(); i = s.moveIndex32(i, 1)) {
-        UChar32 c = s.char32At(i);
-        switch (c) {
-            case '\a':
-                s1 += "\\a";
-                break;
-            case '\b':
-                s1 += "\\b";
-                break;
-            case '\t':
-                s1 += "\\t";
-                break;
-            case '\n':
-                s1 += "\\n";
-                break;
-            case '\v':
-                s1 += "\\v";
-                break;
-            case '\f':
-                s1 += "\\f";
-                break;
-            case '\r':
-                s1 += "\\r";
-                break;
-            case '\"':
-                s1 += "\\\"";
-                break;
-            case '\'':
-                s1 += "\\'";
-                break;
-            case '\\':
-                s1 += "\\\\";
-                break;
-            default:
-                s1 += c;
-                break;
-        }
-    }
-    return s1;
-}
-
 /**
  * VM objects are
  * + the literals, integer, float, char, and text,
@@ -668,6 +623,50 @@ public:
         StringPiece sp(s);
         return UnicodeString::fromUTF8(sp);
     }
+
+    static icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
+        icu::UnicodeString s1;
+        for (int i = 0; i < s.length(); i = s.moveIndex32(i, 1)) {
+            UChar32 c = s.char32At(i);
+            switch (c) {
+                case '\a':
+                    s1 += "\\a";
+                    break;
+                case '\b':
+                    s1 += "\\b";
+                    break;
+                case '\t':
+                    s1 += "\\t";
+                    break;
+                case '\n':
+                    s1 += "\\n";
+                    break;
+                case '\v':
+                    s1 += "\\v";
+                    break;
+                case '\f':
+                    s1 += "\\f";
+                    break;
+                case '\r':
+                    s1 += "\\r";
+                    break;
+                case '\"':
+                    s1 += "\\\"";
+                    break;
+                case '\'':
+                    s1 += "\\'";
+                    break;
+                case '\\':
+                    s1 += "\\\\";
+                    break;
+                default:
+                    s1 += c;
+                    break;
+            }
+        }
+        return s1;
+    }
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -802,7 +801,7 @@ public:
 
     void render(std::ostream &os) const override {
         icu::UnicodeString s;
-        s = uescape(s + value());
+        s = VM::unicode_escape(s + value());
         os << "'" << s << "'";
     }
 
@@ -860,7 +859,7 @@ public:
 
     void render(std::ostream &os) const override {
         icu::UnicodeString s;
-        s = uescape(value());
+        s = VM::unicode_escape(value());
         os << '"' << s << '"';
     }
 

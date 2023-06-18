@@ -490,13 +490,12 @@ inline void dag_serialize(VM *m, const SerialObjectPtrs &dag,
             case VM_OBJECT_CHAR: {
                 auto c = SerialObject::get_char(s);
                 icu::UnicodeString cc;
-                cc = uescape(cc + c);
+                cc = VM::unicode_escape(cc + c);
                 os << s->get_id() << ": c '" << cc << "'" << std::endl;
             } break;
             case VM_OBJECT_TEXT: {
                 auto t = SerialObject::get_text(s);
-                icu::UnicodeString cc;
-                cc = uescape(t);
+                auto cc = VM::unicode_escape(t);
                 os << s->get_id() << ": t \"" << cc << "\"" << std::endl;
             } break;
             case VM_OBJECT_COMBINATOR: {
