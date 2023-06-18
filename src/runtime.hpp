@@ -643,6 +643,31 @@ public:
     virtual VMObjectPtr bad_args(const VMObject *o, const VMObjectPtr &a0,
                                  const VMObjectPtr &a1,
                                  const VMObjectPtr &a2) = 0;
+
+    // convenience
+    static std::string unicode_to_string(const icu::UnicodeString& s) {
+        std::string utf8;
+        s.toUTF8String(utf8);
+        return utf8;
+    }
+
+    static icu::UnicodeString unicode_from_string(const std::string& s) {
+        StringPiece sp(s);
+        return UnicodeString::fromUTF8(sp);
+    }
+
+    static char* unicode_to_char(const icu::UnicodeString& s) {
+        std::string utf8;
+        s.toUTF8String(utf8);
+        char *cstr = new char[utf8.length() + 1];
+        std::strcpy(cstr, utf8.c_str());
+        return cstr;
+    }
+
+    static icu::UnicodeString unicode_from_char(const char* s) {
+        StringPiece sp(s);
+        return UnicodeString::fromUTF8(sp);
+    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
