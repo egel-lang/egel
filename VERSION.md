@@ -31,6 +31,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ utilities to vm
 + more macro removal
 + egel remote procedure calls
 
