@@ -9,9 +9,9 @@
  *pure.
  **/
 
-//## namespace String - string support routines
+// ## namespace String - string support routines
 
-//## String::eq s0 s1 - string equality operator
+// ## String::eq s0 s1 - string equality operator
 class StringEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringEq, "String", "eq");
@@ -28,7 +28,7 @@ public:
     }
 };
 
-//## String::neq s0 s1 - inequality operator
+// ## String::neq s0 s1 - inequality operator
 class StringNeq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringNeq, "String", "neq");
@@ -45,7 +45,7 @@ public:
     }
 };
 
-//## String::gt s0 s1 - greater than operator
+// ## String::gt s0 s1 - greater than operator
 class StringGt : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringGt, "String", "gt");
@@ -62,7 +62,7 @@ public:
     }
 };
 
-//## String::ls s0 s1 - string less than operator
+// ## String::ls s0 s1 - string less than operator
 class StringLs : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringLs, "String", "ls");
@@ -79,7 +79,7 @@ public:
     }
 };
 
-//## String::ge s0 s1 - greater than or equal operator
+// ## String::ge s0 s1 - greater than or equal operator
 class StringGe : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringGe, "String", "ge");
@@ -96,7 +96,7 @@ public:
     }
 };
 
-//## String::le s0 s1 - stringLess than or equal operator
+// ## String::le s0 s1 - stringLess than or equal operator
 class StringLe : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StringLe, "String", "le");
@@ -113,8 +113,8 @@ public:
     }
 };
 
-//## String::compare s0 s1 - compare the characters bitwise in this
-// icu::UnicodeString to the characters in text
+// ## String::compare s0 s1 - compare the characters bitwise in this
+//  icu::UnicodeString to the characters in text
 class Compare : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Compare, "String", "compare");
@@ -131,8 +131,8 @@ public:
     }
 };
 
-//## String::compare_order s0 s1 - compare two Unicode strings in code point
-// order
+// ## String::compare_order s0 s1 - compare two Unicode strings in code point
+//  order
 class CompareCodePointOrder : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, CompareCodePointOrder, "String",
@@ -150,8 +150,8 @@ public:
     }
 };
 
-//## String::case_compare s0 s1 - compare two strings case-insensitively using
-// full case folding
+// ## String::case_compare s0 s1 - compare two strings case-insensitively using
+//  full case folding
 class CaseCompare : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, CaseCompare, "String", "case_compare");
@@ -169,8 +169,8 @@ public:
     }
 };
 
-//## String::starts_with s0 s1 - determine if this starts with the characters
-// in text
+// ## String::starts_with s0 s1 - determine if this starts with the characters
+//  in text
 class StartsWith : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StartsWith, "String", "starts_with");
@@ -187,8 +187,8 @@ public:
     }
 };
 
-//## String::ends_with s0 s1 - determine if this ends with the characters in
-// text
+// ## String::ends_with s0 s1 - determine if this ends with the characters in
+//  text
 class EndsWith : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, EndsWith, "String", "ends_with");
@@ -205,8 +205,8 @@ public:
     }
 };
 
-//## String::index_of s0 s1 - locate in this the first occurrence of the
-// characters in text, using bitwise comparison
+// ## String::index_of s0 s1 - locate in this the first occurrence of the
+//  characters in text, using bitwise comparison
 class IndexOf : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, IndexOf, "String", "index_of");
@@ -223,8 +223,8 @@ public:
     }
 };
 
-//## String::last_index_of s0 s1 - locate in this the last occurrence of the
-// characters in text, using bitwise comparison
+// ## String::last_index_of s0 s1 - locate in this the last occurrence of the
+//  characters in text, using bitwise comparison
 class LastIndexOf : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, LastIndexOf, "String", "last_index_of");
@@ -241,8 +241,8 @@ public:
     }
 };
 
-//## String::char_at n s - return the code point that contains the code unit at
-// offset offset
+// ## String::char_at n s - return the code point that contains the code unit at
+//  offset offset
 class CharAt : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, CharAt, "String", "char_at");
@@ -259,8 +259,8 @@ public:
     }
 };
 
-//## String::move_index index delta s - move the code unit index along the
-// string by delta code points
+// ## String::move_index index delta s - move the code unit index along the
+//  string by delta code points
 class MoveIndex : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, MoveIndex, "String", "move_index");
@@ -279,7 +279,7 @@ public:
     }
 };
 
-//## String::count_char s - count Unicode code points in the string
+// ## String::count_char s - count Unicode code points in the string
 class CountChar : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, CountChar, "String", "count_char");
@@ -294,7 +294,7 @@ public:
     }
 };
 
-//## String::is_empty s - test whether the string is empty
+// ## String::is_empty s - test whether the string is empty
 class IsEmpty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsEmpty, "String", "is_empty");
@@ -309,7 +309,7 @@ public:
     }
 };
 
-//## String::hash_code s - generate a hash code for this object
+// ## String::hash_code s - generate a hash code for this object
 class HashCode : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, HashCode, "String", "hash_code");
@@ -324,7 +324,7 @@ public:
     }
 };
 
-//## String::is_bogus s - determine if this object contains a valid string
+// ## String::is_bogus s - determine if this object contains a valid string
 class IsBogus : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsBogus, "String", "is_bogus");
@@ -339,7 +339,7 @@ public:
     }
 };
 
-//## String::append s0 s1 - append the two strings
+// ## String::append s0 s1 - append the two strings
 class Append : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Append, "String", "append");
@@ -360,8 +360,8 @@ public:
     }
 };
 
-//## String::insert s0 n s1 - insert the characters in s0 into the s1 at offset
-// n
+// ## String::insert s0 n s1 - insert the characters in s0 into the s1 at offset
+//  n
 class Insert : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Insert, "String", "insert");
@@ -380,8 +380,8 @@ public:
     }
 };
 
-//## String::replace s0 s1 s2 - replace all occurrences of characters s0 with
-// the characters s2 in s0
+// ## String::replace s0 s1 s2 - replace all occurrences of characters s0 with
+//  the characters s2 in s0
 class FindAndReplace : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, FindAndReplace, "String", "replace");
@@ -400,8 +400,8 @@ public:
     }
 };
 
-//## String::remove n0 n1 s - remove the characters in the range [n0, n1) from
-// s
+// ## String::remove n0 n1 s - remove the characters in the range [n0, n1) from
+//  s
 class Remove : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Remove, "String", "remove");
@@ -420,8 +420,8 @@ public:
     }
 };
 
-//## String::retain n0 n1 s - retain the characters in the range [n0, n1) from
-// s
+// ## String::retain n0 n1 s - retain the characters in the range [n0, n1) from
+//  s
 class Retain : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Retain, "String", "retain");
@@ -440,7 +440,7 @@ public:
     }
 };
 
-//## String::trim s - trims leading and trailing whitespace from this s
+// ## String::trim s - trims leading and trailing whitespace from this s
 class Trim : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Trim, "String", "trim");
@@ -455,7 +455,7 @@ public:
     }
 };
 
-//## String::reverse s - reverse s
+// ## String::reverse s - reverse s
 class Reverse : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Reverse, "String", "reverse");
@@ -470,8 +470,8 @@ public:
     }
 };
 
-//## String::to_upper s - convert the characters in this to upper case
-// following the conventions of the default locale
+// ## String::to_upper s - convert the characters in this to upper case
+//  following the conventions of the default locale
 class ToUpper : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUpper, "String", "to_upper");
@@ -486,8 +486,8 @@ public:
     }
 };
 
-//## String::to_lower s - convert the characters in this to lower case
-// following the conventions of the default locale
+// ## String::to_lower s - convert the characters in this to lower case
+//  following the conventions of the default locale
 class ToLower : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToLower, "String", "to_lower");
@@ -502,7 +502,7 @@ public:
     }
 };
 
-//## String::fold_case s - case-folds the characters in this string
+// ## String::fold_case s - case-folds the characters in this string
 class FoldCase : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, FoldCase, "String", "fold_case");
@@ -517,8 +517,8 @@ public:
     }
 };
 
-//## String::unescape s - unescape a string of characters and return a string
-// containing the result
+// ## String::unescape s - unescape a string of characters and return a string
+//  containing the result
 class Unescape : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unescape, "String", "unescape");
@@ -533,7 +533,7 @@ public:
     }
 };
 
-//## String::ord c - integer value of unicode point/character
+// ## String::ord c - integer value of unicode point/character
 class Ord : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ord, "String", "ord");
@@ -548,7 +548,7 @@ public:
     }
 };
 
-//## String::chr n - unicode point of integer value
+// ## String::chr n - unicode point of integer value
 class Chr : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Chr, "String", "chr");

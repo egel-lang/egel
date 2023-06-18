@@ -2,9 +2,9 @@
 
 #include <functional>
 
-#include "runtime.hpp"
 #include "machine.hpp"
 #include "modules.hpp"
+#include "runtime.hpp"
 
 class EvalResult : public VMObjectCombinator {
 public:

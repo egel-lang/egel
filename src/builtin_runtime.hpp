@@ -2,15 +2,15 @@
 
 #include <stdlib.h>
 
-#include "runtime.hpp"
 #include "bytecode.hpp"
+#include "runtime.hpp"
 #include "serialize.hpp"
 
 /**
  * Egel's runtime querying and modification implementation.
  **/
 
-//## System::dis o - disassemble a combinator object
+// ## System::dis o - disassemble a combinator object
 class Dis : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dis, "System", "dis");
@@ -28,7 +28,7 @@ public:
     }
 };
 
-//## System::asm s - assemble bytecode into a combinator
+// ## System::asm s - assemble bytecode into a combinator
 class Asm : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Asm, "System", "asm");
@@ -43,7 +43,7 @@ public:
     }
 };
 
-//## System::serialize t - serialize a term to a text
+// ## System::serialize t - serialize a term to a text
 class Serialize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Serialize, "System", "serialize");
@@ -55,7 +55,7 @@ public:
     }
 };
 
-//## System::deserialize t - serialize a text to a term
+// ## System::deserialize t - serialize a text to a term
 class Deserialize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Deserialize, "System", "deserialize");
@@ -72,7 +72,7 @@ public:
     }
 };
 
-//## System::modules - list all modules in the runtime
+// ## System::modules - list all modules in the runtime
 class Modules : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Modules, "System", "modules");
@@ -82,7 +82,7 @@ public:
     }
 };
 
-//## System::is_module m - check we have a module
+// ## System::is_module m - check we have a module
 class IsModule : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsModule, "System", "is_module");
@@ -92,7 +92,7 @@ public:
     }
 };
 
-//## System::query_module_name m - get the name of the module
+// ## System::query_module_name m - get the name of the module
 class QueryModuleName : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleName, "System",
@@ -107,7 +107,7 @@ public:
     }
 };
 
-//## System::query_module_path m - get the path of the module
+// ## System::query_module_path m - get the path of the module
 class QueryModulePath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModulePath, "System",
@@ -122,7 +122,7 @@ public:
     }
 };
 
-//## System::query_module_imports m - get the path of the module
+// ## System::query_module_imports m - get the path of the module
 class QueryModuleImports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleImports, "System",
@@ -137,7 +137,7 @@ public:
     }
 };
 
-//## System::query_module_exports m - get the path of the module
+// ## System::query_module_exports m - get the path of the module
 class QueryModuleExports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleExports, "System",
@@ -152,7 +152,7 @@ public:
     }
 };
 
-//## System::query_module_values m - get the path of the module
+// ## System::query_module_values m - get the path of the module
 class QueryModuleValues : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleValues, "System",

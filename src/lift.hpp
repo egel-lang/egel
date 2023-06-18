@@ -1,10 +1,10 @@
 #pragma once
 
-#include "runtime.hpp"
 #include "ast.hpp"
 #include "environment.hpp"
 #include "error.hpp"
 #include "position.hpp"
+#include "runtime.hpp"
 #include "transform.hpp"
 
 // combinator lifting

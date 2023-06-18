@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <limits>
@@ -8,7 +9,6 @@
 #include <set>
 #include <sstream>
 #include <vector>
-#include <filesystem>
 
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
@@ -119,7 +119,6 @@ using vm_float_t = double;
 using vm_char_t = UChar32;
 using vm_text_t = icu::UnicodeString;
 
-
 // tagbits (used internally but declared here for vm_object_t)
 
 typedef unsigned int vm_tagbits_t;
@@ -193,31 +192,31 @@ private:
     vm_subtag_t _subtag;
 };
 
-inline bool object_symbol_test(const VMObjectPtr& o, const symbol_t s) {
+inline bool object_symbol_test(const VMObjectPtr &o, const symbol_t s) {
     return o->symbol() == s;
 };
 
-inline bool object_none_test(const VMObjectPtr& o) {
+inline bool object_none_test(const VMObjectPtr &o) {
     return object_symbol_test(o, SYMBOL_NONE);
 };
 
-inline bool object_false_test(const VMObjectPtr& o) {
+inline bool object_false_test(const VMObjectPtr &o) {
     return object_symbol_test(o, SYMBOL_FALSE);
 };
 
-inline bool object_true_test(const VMObjectPtr& o) {
+inline bool object_true_test(const VMObjectPtr &o) {
     return object_symbol_test(o, SYMBOL_TRUE);
 };
 
-inline bool object_tuple_test(const VMObjectPtr& o) {
+inline bool object_tuple_test(const VMObjectPtr &o) {
     return object_symbol_test(o, SYMBOL_TUPLE);
 };
 
-inline bool object_nil_test(const VMObjectPtr& o) {
+inline bool object_nil_test(const VMObjectPtr &o) {
     return object_symbol_test(o, SYMBOL_NIL);
 };
 
-inline bool object_cons_test(const VMObjectPtr& o) {
+inline bool object_cons_test(const VMObjectPtr &o) {
     return object_symbol_test(o, SYMBOL_CONS);
 };
 
@@ -628,18 +627,18 @@ public:
                                  const VMObjectPtr &a2) = 0;
 
     // convenience
-    static std::string unicode_to_string(const icu::UnicodeString& s) {
+    static std::string unicode_to_string(const icu::UnicodeString &s) {
         std::string utf8;
         s.toUTF8String(utf8);
         return utf8;
     }
 
-    static icu::UnicodeString unicode_from_string(const std::string& s) {
+    static icu::UnicodeString unicode_from_string(const std::string &s) {
         StringPiece sp(s);
         return UnicodeString::fromUTF8(sp);
     }
 
-    static char* unicode_to_utf8_chars(const icu::UnicodeString& s) {
+    static char *unicode_to_utf8_chars(const icu::UnicodeString &s) {
         std::string utf8;
         s.toUTF8String(utf8);
         char *cstr = new char[utf8.length() + 1];
@@ -647,7 +646,7 @@ public:
         return cstr;
     }
 
-    static icu::UnicodeString unicode_from_utf8_chars(const char* s) {
+    static icu::UnicodeString unicode_from_utf8_chars(const char *s) {
         StringPiece sp(s);
         return UnicodeString::fromUTF8(sp);
     }
@@ -699,7 +698,8 @@ public:
         return s.unescape();
     }
 
-    static icu::UnicodeString unicode_strip_quotes(const icu::UnicodeString &s) {
+    static icu::UnicodeString unicode_strip_quotes(
+        const icu::UnicodeString &s) {
         icu::UnicodeString copy(s);
         return copy.retainBetween(1, copy.length() - 1);
     }
@@ -736,7 +736,7 @@ public:
         delete[] buf;
         return f;
     }
-    
+
     static vm_char_t unicode_to_char(const icu::UnicodeString &s) {
         auto s0 = unicode_strip_quotes(s);
         auto s1 = unicode_unescape(s0);
@@ -812,7 +812,8 @@ public:
         return path_to_string(p0);
     }
 
-    static icu::UnicodeString read_utf8_file(const icu::UnicodeString &filename) {
+    static icu::UnicodeString read_utf8_file(
+        const icu::UnicodeString &filename) {
         // XXX: this code smells
         char *fn = unicode_to_utf8_chars(filename);
         long fsize;
@@ -841,7 +842,7 @@ public:
     }
 
     static void write_utf8_file(const icu::UnicodeString &filename,
-                       const icu::UnicodeString &str) {
+                                const icu::UnicodeString &str) {
         // XXX: this code smells
         char *fn = unicode_to_utf8_chars(filename);
 
@@ -860,9 +861,9 @@ public:
         ASSERT(fsize >= 0);
         u_fclose(f);
         delete[] fn;
-        delete[] buffer;;
+        delete[] buffer;
+        ;
     }
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -896,15 +897,15 @@ public:
         return std::make_shared<VMObjectInteger>(v);
     }
 
-    static bool test(const VMObjectPtr& o) {
+    static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_INTEGER;
     }
 
-    static std::shared_ptr<VMObjectInteger> cast(const VMObjectPtr& o) {
+    static std::shared_ptr<VMObjectInteger> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectInteger>(o);
     }
 
-    static vm_int_t value(const VMObjectPtr& o) {
+    static vm_int_t value(const VMObjectPtr &o) {
         return cast(o)->value();
     }
 
@@ -936,15 +937,15 @@ public:
         return std::make_shared<VMObjectFloat>(f);
     }
 
-    static bool test(const VMObjectPtr& o) {
+    static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_FLOAT;
     }
 
-    static std::shared_ptr<VMObjectFloat> cast(const VMObjectPtr& o) {
+    static std::shared_ptr<VMObjectFloat> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectFloat>(o);
     }
 
-    static vm_float_t value(const VMObjectPtr& o) {
+    static vm_float_t value(const VMObjectPtr &o) {
         return cast(o)->value();
     }
 
@@ -979,15 +980,15 @@ public:
         return std::make_shared<VMObjectChar>(v);
     }
 
-    static bool test(const VMObjectPtr& o) {
+    static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_CHAR;
     }
 
-    static std::shared_ptr<VMObjectChar> cast(const VMObjectPtr& o) {
+    static std::shared_ptr<VMObjectChar> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectChar>(o);
     }
 
-    static vm_char_t value(const VMObjectPtr& o) {
+    static vm_char_t value(const VMObjectPtr &o) {
         return cast(o)->value();
     }
 
@@ -1029,15 +1030,15 @@ public:
         return std::make_shared<VMObjectText>(v);
     }
 
-    static bool test(const VMObjectPtr& o) {
+    static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_TEXT;
     }
 
-    static std::shared_ptr<VMObjectText> cast(const VMObjectPtr& o) {
+    static std::shared_ptr<VMObjectText> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectText>(o);
     }
 
-    static icu::UnicodeString value(const VMObjectPtr& o) {
+    static icu::UnicodeString value(const VMObjectPtr &o) {
         return cast(o)->value();
     }
 
@@ -1109,15 +1110,16 @@ public:
         }
     }
 
-    static bool test(const VMObjectPtr& o) {
-        return o->tag() == VM_OBJECT_ARRAY;;
+    static bool test(const VMObjectPtr &o) {
+        return o->tag() == VM_OBJECT_ARRAY;
+        ;
     }
 
-    static std::shared_ptr<VMObjectArray> cast(const VMObjectPtr& o) {
+    static std::shared_ptr<VMObjectArray> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectArray>(o);
     }
 
-    static VMObjectPtrs value(const VMObjectPtr& o) {
+    static VMObjectPtrs value(const VMObjectPtr &o) {
         return cast(o)->value();
     }
 
@@ -1165,7 +1167,8 @@ public:
         auto head = value()[0];
         if ((head != nullptr) && (head->symbol() == SYMBOL_TUPLE)) {
             render_tuple(this->clone(), os);
-        } else if ((head != nullptr) && (head->symbol() == SYMBOL_CONS) && (value().size() == 3)) {
+        } else if ((head != nullptr) && (head->symbol() == SYMBOL_CONS) &&
+                   (value().size() == 3)) {
             render_cons(this->clone(), os);
         } else {
             os << '(';
@@ -1284,19 +1287,19 @@ public:
         return _machine;
     }
 
-    static bool test(const VMObjectPtr& o) {
+    static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_OPAQUE;
     }
 
-    static std::shared_ptr<VMObjectOpaque> cast(const VMObjectPtr& o) {
+    static std::shared_ptr<VMObjectOpaque> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectOpaque>(o);
     }
 
-    static int compare(const VMObjectPtr& o0, const VMObjectPtr& o1) {
+    static int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) {
         return cast(o0)->compare(o1);
     }
 
-    static symbol_t symbol(const VMObjectPtr& o) {
+    static symbol_t symbol(const VMObjectPtr &o) {
         return cast(o)->symbol();
     }
 
@@ -1373,15 +1376,15 @@ public:
           _machine(m),
           _symbol(m->enter_symbol(nn, n)){};
 
-    static bool test(const VMObjectPtr& o) {
+    static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_COMBINATOR;
     }
 
-    static std::shared_ptr<VMObjectCombinator> cast(const VMObjectPtr& o) {
+    static std::shared_ptr<VMObjectCombinator> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectCombinator>(o);
     }
 
-    static symbol_t symbol(const VMObjectPtr& o) {
+    static symbol_t symbol(const VMObjectPtr &o) {
         return cast(o)->symbol();
     }
 
@@ -1459,7 +1462,7 @@ public:
         return VMObjectData::create(vm, sym);
     }
 
-    static bool test(const VMObjectPtr& o) {
+    static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_COMBINATOR;
     }
 
@@ -1629,7 +1632,8 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         std::cerr << "symbol = " << symbol() << std::endl;
-        std::cerr << "string = " << machine()->get_combinator_string(symbol()) << std::endl;
+        std::cerr << "string = " << machine()->get_combinator_string(symbol())
+                  << std::endl;
         PANIC("reduce on stub");
         return nullptr;
     }

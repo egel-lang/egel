@@ -4,10 +4,10 @@
 
 #include "constants.hpp"
 #include "position.hpp"
+#include "runtime.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
-#include "runtime.hpp"
 
 enum error_tag_t {
     ERROR_IO,

@@ -5,10 +5,10 @@
 #include <sstream>
 #include <vector>
 
-#include "runtime.hpp"
 #include "constants.hpp"
 #include "error.hpp"
 #include "position.hpp"
+#include "runtime.hpp"
 
 // XXX: rewrite all the code once to make use of the next templates
 template <typename T>

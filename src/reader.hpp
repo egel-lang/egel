@@ -3,9 +3,9 @@
 #include <vector>
 
 #include "position.hpp"
+#include "runtime.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
-#include "runtime.hpp"
 
 class CharReader {
 public:

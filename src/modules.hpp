@@ -352,8 +352,8 @@ public:
 
         dlerror();
 
-        auto pth = VM::unicode_to_utf8_chars(get_path()); // XXX: leaks?
-        _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL); 
+        auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
+        _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
@@ -693,7 +693,8 @@ public:
 protected:
     icu::UnicodeString search(const UnicodeStrings &path,
                               const icu::UnicodeString &fn) {
-        auto fn_here = VM::path_absolute(fn);  // XXX: shouldn't this be in path?
+        auto fn_here =
+            VM::path_absolute(fn);  // XXX: shouldn't this be in path?
         if (VM::file_exists(fn_here)) return fn_here;
         for (auto p : path) {
             auto fn0 = VM::path_combine(p, fn);

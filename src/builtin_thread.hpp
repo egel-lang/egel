@@ -81,7 +81,7 @@ protected:
     int _pos;
 };
 
-//## System::par f g - concurrently evaluate 'f none' and 'g none'
+// ## System::par f g - concurrently evaluate 'f none' and 'g none'
 class Par : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Par, "System", "par");

@@ -148,7 +148,8 @@ StringPairs parse_options(int argc, char *argv[]) {
             };
         }
 
-        if (pp_size == pp.size()) { // XXX: didn't add an option - not sure this always works
+        if (pp_size == pp.size()) {  // XXX: didn't add an option - not sure
+                                     // this always works
             pp.push_back(std::make_pair(icu::UnicodeString("--"),
                                         icu::UnicodeString(argv[a])));
         }

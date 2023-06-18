@@ -10,7 +10,6 @@
 #include <fmt/args.h>
 #endif
 
-#include "runtime.hpp"
 #include "bytecode.hpp"
 #include "runtime.hpp"
 
@@ -51,7 +50,7 @@ char **application_argv = nullptr;
  * Basic operators, conversions, and some other.
  **/
 
-//## System::k x y - k combinator
+// ## System::k x y - k combinator
 class K : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, K, "System", "k");
@@ -62,7 +61,7 @@ public:
     }
 };
 
-//## System::id x - identity combinator
+// ## System::id x - identity combinator
 class Id : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Id, "System", "id");
@@ -72,7 +71,7 @@ public:
     }
 };
 
-//## System:min_int - maximum for integers
+// ## System:min_int - maximum for integers
 class MinInt : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MinInt, "System", "min_int");
@@ -82,7 +81,7 @@ public:
     }
 };
 
-//## System::max_int - maximum for integers
+// ## System::max_int - maximum for integers
 class MaxInt : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MaxInt, "System", "max_int");
@@ -92,7 +91,7 @@ public:
     }
 };
 
-//## System::!- x - monadic minus
+// ## System::!- x - monadic minus
 class MonMin : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, MonMin, "System", "!-");
@@ -115,7 +114,7 @@ public:
     }
 };
 
-//## System::+ x y - addition
+// ## System::+ x y - addition
 class Add : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Add, "System", "+");
@@ -145,7 +144,7 @@ public:
     }
 };
 
-//## System::+ x y - substraction
+// ## System::+ x y - substraction
 class Min : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Min, "System", "-");
@@ -171,7 +170,7 @@ public:
     }
 };
 
-//## System::* x y - multiplication
+// ## System::* x y - multiplication
 class Mul : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mul, "System", "*");
@@ -197,7 +196,7 @@ public:
     }
 };
 
-//## System::/ x y - division
+// ## System::/ x y - division
 class Div : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Div, "System", "/");
@@ -224,7 +223,7 @@ public:
     }
 };
 
-//## System::% x y - modulo
+// ## System::% x y - modulo
 class Mod : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mod, "System", "%");
@@ -244,7 +243,7 @@ public:
     }
 };
 
-//## System::& x y - bitwise and
+// ## System::& x y - bitwise and
 class BinAnd : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinAnd, "System", "&");
@@ -261,7 +260,7 @@ public:
     }
 };
 
-//## System::$ x y - bitwise or
+// ## System::$ x y - bitwise or
 class BinOr : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinOr, "System", "$");
@@ -278,7 +277,7 @@ public:
     }
 };
 
-//## System::^ x y - bitwise xor
+// ## System::^ x y - bitwise xor
 class BinXOr : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinXOr, "System", "^");
@@ -295,7 +294,7 @@ public:
     }
 };
 
-//## System::!~ x - bitwise complement
+// ## System::!~ x - bitwise complement
 class BinComplement : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, BinComplement, "System", "!~");
@@ -310,7 +309,7 @@ public:
     }
 };
 
-//## System::<< x y - bitwise left shift
+// ## System::<< x y - bitwise left shift
 class BinLeftShift : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinLeftShift, "System", "<<");
@@ -327,7 +326,7 @@ public:
     }
 };
 
-//## System::>> x y - bitwise right shift
+// ## System::>> x y - bitwise right shift
 class BinRightShift : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinRightShift, "System", ">>");
@@ -344,7 +343,7 @@ public:
     }
 };
 
-//## System::< x y - builtin less
+// ## System::< x y - builtin less
 class Less : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Less, "System", "<");
@@ -360,7 +359,7 @@ public:
     }
 };
 
-//## System::<= x y - builtin less or equals
+// ## System::<= x y - builtin less or equals
 class LessEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, LessEq, "System", "<=");
@@ -376,7 +375,7 @@ public:
     }
 };
 
-//## System::== x y - builtin equality
+// ## System::== x y - builtin equality
 class Eq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Eq, "System", "==");
@@ -392,7 +391,7 @@ public:
     }
 };
 
-//## System::/= x y - builtin inequality
+// ## System::/= x y - builtin inequality
 class NegEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, NegEq, "System", "/=");
@@ -408,7 +407,7 @@ public:
     }
 };
 
-//## System::get field obj - retrieve an object field
+// ## System::get field obj - retrieve an object field
 class GetField : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, GetField, "System", "get");
@@ -442,7 +441,7 @@ public:
     }
 };
 
-//## System::set field val obj - set an object field
+// ## System::set field val obj - set an object field
 class SetField : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, SetField, "System", "set");
@@ -467,7 +466,7 @@ public:
             // set field
             if ((n + 1) < sz) {
                 // XXX: clean up this cast once. need destructive update
-                auto arr = VMObjectArray::cast(arg2);  
+                auto arr = VMObjectArray::cast(arg2);
                 arr->set(n + 1, arg1);
                 return arg0;
             } else {
@@ -479,7 +478,7 @@ public:
     }
 };
 
-//## System::extend obj0 obj1 - extend object obj0 with every field from obj1
+// ## System::extend obj0 obj1 - extend object obj0 with every field from obj1
 class ExtendField : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, ExtendField, "System", "extend");
@@ -523,7 +522,7 @@ public:
     }
 };
 
-//## System::to_int x - Try and convert an object to int
+// ## System::to_int x - Try and convert an object to int
 class Toint : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Toint, "System", "to_int");
@@ -548,7 +547,7 @@ public:
     }
 };
 
-//## System::to_float x - try and convert an object to float
+// ## System::to_float x - try and convert an object to float
 class Tofloat : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tofloat, "System", "to_float");
@@ -569,7 +568,7 @@ public:
     }
 };
 
-//## System::to_text x - try and convert an object to text
+// ## System::to_text x - try and convert an object to text
 class Totext : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Totext, "System", "to_text");
@@ -595,7 +594,7 @@ public:
     }
 };
 
-//## System::reference - an opaque reference object
+// ## System::reference - an opaque reference object
 class Reference : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Reference, "System", "reference");
@@ -630,7 +629,7 @@ protected:
     VMObjectPtr _ref = nullptr;
 };
 
-//## System::ref x - create a reference object from x
+// ## System::ref x - create a reference object from x
 class Ref : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ref, "System", "ref");
@@ -642,7 +641,7 @@ public:
     }
 };
 
-//## System::get_ref ref - get the stored value from ref
+// ## System::get_ref ref - get the stored value from ref
 class Getref : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Getref, "System", "get_ref");
@@ -659,7 +658,7 @@ public:
     }
 };
 
-//## System::set_ref ref x - set reference object ref to x
+// ## System::set_ref ref x - set reference object ref to x
 class Setref : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Setref, "System", "set_ref");
@@ -678,7 +677,7 @@ public:
     }
 };
 
-//## System::unpack s - create a list of chars from a string
+// ## System::unpack s - create a list of chars from a string
 class Unpack : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unpack, "System", "unpack");
@@ -699,7 +698,7 @@ public:
     }
 };
 
-//## System::pack s - create a string from a list of code points
+// ## System::pack s - create a string from a list of code points
 class Pack : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Pack, "System", "pack");
@@ -744,7 +743,7 @@ public:
     }
 };
 
-//## System::arg n - return the n-th application argument, otherwise return
+// ## System::arg n - return the n-th application argument, otherwise return
 //'none'
 class Arg : public Monadic {
 public:
@@ -765,8 +764,8 @@ public:
     }
 };
 
-//## System::get_env s - return the value of environment variable s, otherwise
-// return 'none'
+// ## System::get_env s - return the value of environment variable s, otherwise
+//  return 'none'
 class Getenv : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Getenv, "System", "get_env");
@@ -789,7 +788,7 @@ public:
     }
 };
 
-//## System::&& - short-circuited and (deprecated)
+// ## System::&& - short-circuited and (deprecated)
 class LazyAnd : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyAnd, "System", "&&");
@@ -811,7 +810,7 @@ public:
     }
 };
 
-//## System::|| - short-circuited or (deprecated)
+// ## System::|| - short-circuited or (deprecated)
 class LazyOr : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyOr, "System", "||");
@@ -833,7 +832,7 @@ public:
     }
 };
 
-//## System::print o0 .. on - print terms, don't escape characters or texts
+// ## System::print o0 .. on - print terms, don't escape characters or texts
 class Print : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Print, "System", "print");
@@ -859,7 +858,7 @@ public:
     }
 };
 
-//## System::get_line - read a line from standard input
+// ## System::get_line - read a line from standard input
 class Getline : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Getline, "System", "get_line");
@@ -872,8 +871,8 @@ public:
     }
 };
 
-//## System::format fmt x ...  - create a string from formatted string fmt and
-// objects x,..
+// ## System::format fmt x ...  - create a string from formatted string fmt and
+//  objects x,..
 class Format : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Format, "System", "format");
@@ -899,7 +898,7 @@ public:
                         store.push_back(f);
                     } else if (machine()->is_char(arg)) {
                         auto c = machine()->get_char(arg);
-                        auto s0 = icu::UnicodeString(c); // XXX: wut?
+                        auto s0 = icu::UnicodeString(c);  // XXX: wut?
                         auto s1 = VM::unicode_to_utf8_chars(s0);
                         store.push_back(s1);
                         delete s1;

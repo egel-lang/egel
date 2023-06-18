@@ -786,8 +786,7 @@ public:
                         }
                         reg.set(x, oo);
                     } else {
-                        auto oo =
-                            VMObjectArray::cast(VMObjectArray::create(0));
+                        auto oo = VMObjectArray::cast(VMObjectArray::create(0));
                         reg.set(x, oo);
                     }
                 } break;

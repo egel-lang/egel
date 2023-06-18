@@ -6,7 +6,6 @@
 #include <stack>
 #include <vector>
 
-#include "runtime.hpp"
 #include "modules.hpp"
 #include "runtime.hpp"
 
@@ -296,8 +295,8 @@ inline SerialObjectPtrs to_dag(VM *m, const VMObjectPtr &o) {
     work0.push(o);
 
     VMObjectsSet visited;
-    VMObjectsStack work1; // terminal nodes
-    VMObjectsStack work2; // array nodes
+    VMObjectsStack work1;  // terminal nodes
+    VMObjectsStack work2;  // array nodes
 
     while (!work0.empty()) {
         auto o = work0.top();

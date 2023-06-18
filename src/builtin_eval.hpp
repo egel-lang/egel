@@ -4,9 +4,9 @@
 
 #include "runtime.hpp"
 
-//## namespace System - the `eval` combinator
+// ## namespace System - the `eval` combinator
 
-//## System::eval text - evaluatate the expression in `text`
+// ## System::eval text - evaluatate the expression in `text`
 class Evaluate : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Evaluate, "System", "eval");
