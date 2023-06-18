@@ -314,7 +314,7 @@ public:
     }
 
     static bool filetype(const icu::UnicodeString &fn) {
-        return unicode_endswith(fn, ".ego");
+        return fn.endsWith(".ego");
     }
 
 private:
@@ -352,8 +352,8 @@ public:
 
         dlerror();
 
-        _handle = dlopen(unicode_to_char(get_path()),
-                         RTLD_LAZY | RTLD_GLOBAL);  // XXX: leaks?
+        auto pth = VM::unicode_to_utf8_chars(get_path()); // XXX: leaks?
+        _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL); 
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
@@ -434,7 +434,7 @@ public:
     }
 
     static bool filetype(const icu::UnicodeString &fn) {
-        return unicode_endswith(fn, ".ego");
+        return fn.endsWith(".ego");
     }
 
 private:
@@ -464,8 +464,8 @@ public:
     }
 
     void load() override {
-        if (file_exists(get_path())) {
-            _source = file_read(get_path());
+        if (VM::file_exists(get_path())) {
+            _source = VM::read_utf8_file(get_path());
         } else {
             throw ErrorIO("module " + get_path() + " not found");
         };
@@ -480,7 +480,7 @@ public:
         for (auto a : aa) {
             if (a->tag() == AST_DIRECT_IMPORT) {
                 auto [p, s] = AstDirectImport::split(a);
-                ii.push_back(QualifiedString(p, unicode_strip_quotes(s)));
+                ii.push_back(QualifiedString(p, VM::unicode_to_text(s)));
             }
         }
         return ii;
@@ -576,7 +576,7 @@ public:
     }
 
     static bool filetype(const icu::UnicodeString &fn) {
-        return unicode_endswith(fn, ".eg");
+        return fn.endsWith(".eg");
     }
 
 private:
@@ -693,12 +693,12 @@ public:
 protected:
     icu::UnicodeString search(const UnicodeStrings &path,
                               const icu::UnicodeString &fn) {
-        auto fn_here = path_absolute(fn);  // XXX: shouldn't this be in path?
-        if (file_exists(fn_here)) return fn_here;
+        auto fn_here = VM::path_absolute(fn);  // XXX: shouldn't this be in path?
+        if (VM::file_exists(fn_here)) return fn_here;
         for (auto p : path) {
-            auto fn0 = path_combine(p, fn);
-            auto fn1 = path_absolute(fn0);
-            if (file_exists(fn1)) return fn1;
+            auto fn0 = VM::path_combine(p, fn);
+            auto fn1 = VM::path_absolute(fn0);
+            if (VM::file_exists(fn1)) return fn1;
         };
         return "";
     }

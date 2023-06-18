@@ -8,6 +8,7 @@
 #include <set>
 #include <sstream>
 #include <vector>
+#include <filesystem>
 
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
@@ -15,11 +16,38 @@
 #include "unicode/ustream.h"
 #include "unicode/ustring.h"
 
+namespace fs = std::filesystem;
 // this is one stand-alone interface file external libraries can link against.
 // it must be self contained except for standard c++ and unicode (which should
 // be phased out).
 
 using namespace icu;  // use stable namespace
+
+inline void assert_fail(const char *assertion, const char *file,
+                        unsigned int line) {
+    std::cerr << file << ':' << line << ": assertion failed " << assertion
+              << '\n';
+    abort();
+}
+
+inline void panic_fail(const char *message, const char *file,
+                       unsigned int line) {
+    std::cerr << file << ':' << line << ": panic " << message << '\n';
+    abort();
+}
+
+/**
+ * ASSERT macro. Always compiled assertions.
+ */
+#ifndef ASSERT
+#define ASSERT(_e) ((_e) ? (void)0 : assert_fail(#_e, __FILE__, __LINE__));
+#endif
+
+/**
+ * PANIC macro. Aborts with a message (e.g., for non-reachable statements).
+ */
+
+#define PANIC(_m) (panic_fail(_m, __FILE__, __LINE__));
 
 #ifndef PANIC
 #define PANIC(s)                     \
@@ -611,7 +639,7 @@ public:
         return UnicodeString::fromUTF8(sp);
     }
 
-    static char* unicode_to_char(const icu::UnicodeString& s) {
+    static char* unicode_to_utf8_chars(const icu::UnicodeString& s) {
         std::string utf8;
         s.toUTF8String(utf8);
         char *cstr = new char[utf8.length() + 1];
@@ -619,7 +647,7 @@ public:
         return cstr;
     }
 
-    static icu::UnicodeString unicode_from_char(const char* s) {
+    static icu::UnicodeString unicode_from_utf8_chars(const char* s) {
         StringPiece sp(s);
         return UnicodeString::fromUTF8(sp);
     }
@@ -665,6 +693,174 @@ public:
             }
         }
         return s1;
+    }
+
+    static icu::UnicodeString unicode_unescape(const icu::UnicodeString &s) {
+        return s.unescape();
+    }
+
+    static icu::UnicodeString unicode_strip_quotes(const icu::UnicodeString &s) {
+        icu::UnicodeString copy(s);
+        return copy.retainBetween(1, copy.length() - 1);
+    }
+
+    static vm_int_t unicode_to_int(const icu::UnicodeString &s) {
+        char *buf = unicode_to_utf8_chars(s);
+        auto i = atol(buf);
+        delete[] buf;
+        return i;
+    }
+
+    static vm_int_t unicode_to_hexint(const icu::UnicodeString &s) {
+        int i = 0;
+        int64_t n = 0;
+        UChar32 c = s.char32At(i);
+        while (c != 0xffff) {
+            n = n * 16;
+            if (c >= 48 && c <= 57) {  // 0-9
+                n += (((int)(c)) - 48);
+            } else if ((c >= 65 && c <= 70)) {  // A-F
+                n += (((int)(c)) - 55);
+            } else if (c >= 97 && c <= 102) {  // a-f
+                n += (((int)(c)) - 87);
+            }  // just ignore other chars (like starting 0x)
+            i++;
+            c = s.char32At(i);
+        }
+        return n;
+    }
+
+    static vm_float_t unicode_to_float(const icu::UnicodeString &s) {
+        char *buf = unicode_to_utf8_chars(s);
+        auto f = atof(buf);  // XXX: use stream
+        delete[] buf;
+        return f;
+    }
+    
+    static vm_char_t unicode_to_char(const icu::UnicodeString &s) {
+        auto s0 = unicode_strip_quotes(s);
+        auto s1 = unicode_unescape(s0);
+        return s1.char32At(0);
+    }
+
+    static vm_text_t unicode_to_text(const icu::UnicodeString &s) {
+        auto s0 = unicode_strip_quotes(s);
+        auto s1 = unicode_unescape(s0);
+        return s1;
+    }
+
+    static icu::UnicodeString unicode_from_int(const vm_int_t &n) {
+        std::stringstream ss;
+        ss << n;
+        icu::UnicodeString u(ss.str().c_str());
+        return u;
+    }
+
+    static icu::UnicodeString unicode_from_float(const vm_float_t &f) {
+        std::stringstream ss;
+        ss << f;
+        icu::UnicodeString u(ss.str().c_str());
+        return u;
+    }
+
+    static icu::UnicodeString unicode_from_char(const vm_char_t &c) {
+        std::stringstream ss;
+        ss << c;
+        icu::UnicodeString u(ss.str().c_str());
+        auto u1 = unicode_escape(u);
+        return u1;
+    }
+
+    static icu::UnicodeString unicode_from_text(const icu::UnicodeString &s) {
+        auto s0 = unicode_strip_quotes(s);
+        auto s1 = unicode_unescape(s0);
+        return s1;
+    }
+
+private:
+    static fs::path string_to_path(const icu::UnicodeString &s) {
+        char *cc = unicode_to_utf8_chars(s);
+        fs::path p = fs::path(cc);
+        delete[] cc;
+        return p;
+    }
+
+    static icu::UnicodeString path_to_string(const fs::path &p) {
+        icu::UnicodeString s(p.c_str());  // XXX: utf8
+        return s;
+    }
+
+public:
+    static bool file_exists(const icu::UnicodeString &filename) {
+        char *fn = unicode_to_utf8_chars(filename);
+        bool b = fs::exists(fn);
+        delete[] fn;
+        return b;
+    }
+
+    static icu::UnicodeString path_absolute(const icu::UnicodeString &s) {
+        auto p0 = string_to_path(s);
+        auto p1 = fs::absolute(p0);
+        return path_to_string(p1);
+    }
+
+    static icu::UnicodeString path_combine(const icu::UnicodeString &s0,
+                                           const icu::UnicodeString &s1) {
+        auto p0 = string_to_path(s0);
+        auto p1 = string_to_path(s1);
+        p0 /= p1;
+        return path_to_string(p0);
+    }
+
+    static icu::UnicodeString read_utf8_file(const icu::UnicodeString &filename) {
+        // XXX: this code smells
+        char *fn = unicode_to_utf8_chars(filename);
+        long fsize;
+        UFILE *f = u_fopen(fn, "r", NULL, "UTF-8");
+        ASSERT(f != NULL);
+
+        fseek(u_fgetfile(f), 0, SEEK_END);
+        fsize = ftell(u_fgetfile(f));
+        u_frewind(f);
+
+        UChar *chars = new UChar[fsize + 1];
+
+        for (fsize = 0; !u_feof(f); ++fsize) {
+            UChar c = u_fgetc(f);
+            chars[fsize] = c;
+        }
+
+        chars[fsize] = 0;
+
+        u_fclose(f);
+        delete[] fn;
+
+        icu::UnicodeString str = icu::UnicodeString(chars);
+        delete[] chars;
+        return str;
+    }
+
+    static void write_utf8_file(const icu::UnicodeString &filename,
+                       const icu::UnicodeString &str) {
+        // XXX: this code smells
+        char *fn = unicode_to_utf8_chars(filename);
+
+        // to uchar
+        UErrorCode error = U_ZERO_ERROR;
+        UChar *buffer = new UChar[str.length() + 1];
+        int32_t size = str.extract(buffer, sizeof(buffer), error);
+        buffer[size] = 0;
+        ASSERT(U_SUCCESS(error));
+
+        // write
+        int32_t fsize;
+        UFILE *f = u_fopen(fn, "w", NULL, "UTF-8");
+        ASSERT(f != NULL);
+        fsize = u_fputs(buffer, f);
+        ASSERT(fsize >= 0);
+        u_fclose(f);
+        delete[] fn;
+        delete[] buffer;;
     }
 
 };

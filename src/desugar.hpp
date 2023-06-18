@@ -23,7 +23,7 @@ public:
     ptr<Ast> rewrite_expr_wildcard(const Position &p,
                                    const icu::UnicodeString &v) override {
         icu::UnicodeString w = "WILD";
-        w = w + unicode_convert_uint(tick());
+        w = w + VM::unicode_from_int(tick());
         return AstExprVariable::create(p, w);
     }
 
@@ -323,7 +323,7 @@ public:
 
     ptr<Ast> fresh_do_var(const Position &p) {
         icu::UnicodeString w = "DOVAR";
-        w = w + unicode_convert_uint(tick());
+        w = w + VM::unicode_from_int(tick());
         return AstExprVariable::create(p, w);
     }
 

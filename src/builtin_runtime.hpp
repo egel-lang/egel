@@ -2,10 +2,9 @@
 
 #include <stdlib.h>
 
-#include "bytecode.hpp"
 #include "runtime.hpp"
+#include "bytecode.hpp"
 #include "serialize.hpp"
-#include "utils.hpp"
 
 /**
  * Egel's runtime querying and modification implementation.

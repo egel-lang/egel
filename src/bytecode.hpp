@@ -7,7 +7,6 @@
 #include <tuple>
 #include <vector>
 
-#include "utils.hpp"
 #include "runtime.hpp"
 
 class VMObjectBytecode;

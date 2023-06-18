@@ -7,7 +7,7 @@
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
-#include "utils.hpp"
+#include "runtime.hpp"
 
 enum error_tag_t {
     ERROR_IO,

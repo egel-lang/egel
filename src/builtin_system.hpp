@@ -10,9 +10,9 @@
 #include <fmt/args.h>
 #endif
 
+#include "runtime.hpp"
 #include "bytecode.hpp"
 #include "runtime.hpp"
-#include "utils.hpp"
 
 extern int application_argc;  // XXX: get rid of this
 extern char **application_argv;
@@ -536,11 +536,11 @@ public:
             return machine()->create_integer((int)f);
         } else if (machine()->is_char(arg0)) {
             auto c = machine()->get_char(arg0);
-            auto i = convert_to_int(icu::UnicodeString() + c);
+            auto i = VM::unicode_to_int(icu::UnicodeString() + c);
             return machine()->create_integer(i);
         } else if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
-            auto i = convert_to_int(s);
+            auto i = VM::unicode_to_int(s);
             return machine()->create_integer(i);
         } else {
             throw machine()->bad_args(this, arg0);
@@ -561,8 +561,8 @@ public:
             return arg0;
         } else if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
-            auto i = convert_to_float(s);
-            return machine()->create_float(i);
+            auto f = VM::unicode_to_float(s);
+            return machine()->create_float(f);
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -577,15 +577,15 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
-            auto s = convert_from_int(i);
+            auto s = VM::unicode_from_int(i);
             return machine()->create_text(s);
         } else if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            auto s = convert_from_float(f);
+            auto s = VM::unicode_from_float(f);
             return machine()->create_text(s);
         } else if (machine()->is_char(arg0)) {
             auto c = machine()->get_char(arg0);
-            auto s = convert_from_char(c);
+            auto s = VM::unicode_from_char(c);
             return machine()->create_text(s);
         } else if (machine()->is_text(arg0)) {
             return arg0;
@@ -774,7 +774,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto t = machine()->get_text(arg0);
-            char *s = unicode_to_char(t);
+            char *s = VM::unicode_to_utf8_chars(t);
             char *r = std::getenv(s);
             delete s;
             if (r != nullptr) {
@@ -885,7 +885,7 @@ public:
             auto a0 = args[0];
             if (machine()->is_text(a0)) {
                 auto f = machine()->get_text(a0);
-                auto fmt = unicode_to_char(f);
+                auto fmt = VM::unicode_to_utf8_chars(f);
 
                 fmt::dynamic_format_arg_store<fmt::format_context> store;
 
@@ -899,18 +899,18 @@ public:
                         store.push_back(f);
                     } else if (machine()->is_char(arg)) {
                         auto c = machine()->get_char(arg);
-                        auto s0 = icu::UnicodeString(c);
-                        auto s1 = unicode_to_char(s0);
+                        auto s0 = icu::UnicodeString(c); // XXX: wut?
+                        auto s1 = VM::unicode_to_utf8_chars(s0);
                         store.push_back(s1);
                         delete s1;
                     } else if (machine()->is_text(arg)) {
                         auto t = machine()->get_text(arg);
-                        auto s0 = unicode_to_char(t);
+                        auto s0 = VM::unicode_to_utf8_chars(t);
                         store.push_back(s0);
                         delete s0;
                     } else {
                         auto a = arg->to_text();
-                        auto s0 = unicode_to_char(a);
+                        auto s0 = VM::unicode_to_utf8_chars(a);
                         store.push_back(s0);
                         delete s0;
                     }

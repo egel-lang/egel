@@ -5,7 +5,6 @@
 
 #include "bytecode.hpp"
 #include "runtime.hpp"
-#include "utils.hpp"
 
 const int BYTECODEVERSION = 0x00;
 const int BYTECODE_TAG = 0x01;
@@ -274,7 +273,7 @@ public:
     icu::UnicodeString disassemble() {
         std::stringstream ss;
         disassemble(ss);
-        return char_to_unicode(ss.str().c_str());
+        return VM::unicode_from_utf8_chars(ss.str().c_str());
     }
 
 private:
@@ -418,27 +417,27 @@ public:
 
     vm_char_t read_char(std::istream &in) {
         auto cc = read_until_separator(in);
-        auto s = char_to_unicode(cc);
+        auto s = VM::unicode_from_utf8_chars(cc);
         free(cc);
         return s.char32At(0);
     }
 
     icu::UnicodeString read_text(std::istream &in) {
         auto cc = read_until_separator(in);
-        auto s = char_to_unicode(cc);
+        auto s = VM::unicode_from_utf8_chars(cc);
         free(cc);
         return s;
     }
 
     icu::UnicodeString read_combinator(std::istream &in) {
         auto cc = read_until_separator(in);
-        auto s = char_to_unicode(cc);
+        auto s = VM::unicode_from_utf8_chars(cc);
         free(cc);
         return s;
     }
 
     VMObjectPtr assemble() {
-        auto chars = unicode_to_char(_source);
+        auto chars = VM::unicode_to_utf8_chars(_source);
         std::string s(chars);
         auto in = std::stringstream(s);
 
@@ -474,7 +473,7 @@ public:
             if (data.size() != (unsigned long)z)
                 throw machine()->create_text(
                     icu::UnicodeString("wrong data entry count ") +
-                    convert_from_int(z));
+                    VM::unicode_from_int(z));
             skip_white(in);
             switch (look(in)) {
                 case 'i': {

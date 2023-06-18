@@ -171,7 +171,7 @@ public:
 
     // variable
     icu::UnicodeString fresh_variable() {
-        auto v = icu::UnicodeString("V_") + convert_from_int(_counter);
+        auto v = icu::UnicodeString("V_") + VM::unicode_from_int(_counter);
         _counter++;
         return v;
     }

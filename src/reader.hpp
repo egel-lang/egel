@@ -5,7 +5,7 @@
 #include "position.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
-#include "utils.hpp"
+#include "runtime.hpp"
 
 class CharReader {
 public:

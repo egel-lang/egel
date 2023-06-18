@@ -1,5 +1,6 @@
 #pragma once
 
+#include "runtime.hpp"
 #include "ast.hpp"
 #include "environment.hpp"
 #include "error.hpp"
@@ -165,7 +166,7 @@ public:
 
     ptr<Ast> fresh_combinator() {
         auto c = get_scope();
-        auto n = unicode_convert_uint(tick());
+        auto n = VM::unicode_from_int(tick());
         return combinator_expand(c, n);
     }
 

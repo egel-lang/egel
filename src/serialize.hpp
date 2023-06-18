@@ -6,9 +6,9 @@
 #include <stack>
 #include <vector>
 
+#include "runtime.hpp"
 #include "modules.hpp"
 #include "runtime.hpp"
-#include "utils.hpp"
 
 // unfortunately it looks better to copy the entire object
 // hierarchy of the runtime in order not to taint runtimes
@@ -565,8 +565,8 @@ inline vm_char_t parse_char(VM *m, std::istream &is) {
     forced_char(m, is, '\'');
     buffer[n] = '\0';
 
-    auto s = char_to_unicode(buffer);
-    auto u = unicode_unescape(s);
+    auto s = VM::unicode_from_utf8_chars(buffer);
+    auto u = VM::unicode_unescape(s);
     return u.char32At(0);
 };
 
@@ -596,8 +596,8 @@ inline icu::UnicodeString parse_text(VM *m, std::istream &is) {
     forced_char(m, is, '\"');
     buffer[n] = '\0';
 
-    auto s = char_to_unicode(buffer);
-    auto u = unicode_unescape(s);
+    auto s = VM::unicode_from_utf8_chars(buffer);
+    auto u = VM::unicode_unescape(s);
     return u;
 };
 
@@ -625,7 +625,7 @@ inline icu::UnicodeString parse_symbol(VM *m, std::istream &is) {
     }
     buffer[n] = '\0';
 
-    auto s = char_to_unicode((const char *)buffer);
+    auto s = VM::unicode_from_utf8_chars((const char *)buffer);
     free(buffer);
     return s;
 };
@@ -725,7 +725,8 @@ public:
 };
 
 inline SerialObjectPtrs dag_from_text(VM *m, const icu::UnicodeString &s) {
-    auto buffer = (uint8_t *)unicode_to_char(s);
+    // XXX: this code smells a lot. worse, it stinks
+    auto buffer = (uint8_t *)VM::unicode_to_utf8_chars(s);
     membuf sbuf(buffer, (size_t)(buffer + sizeof(buffer)));
     std::istream in(&sbuf);
     auto ss = dag_deserialize(m, in);

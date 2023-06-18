@@ -265,11 +265,11 @@ public:
     void visit_expr_integer(const Position &p,
                             const icu::UnicodeString &v) override {
         if (v.startsWith("0x")) {
-            auto i = convert_to_hexint(v);
+            auto i = VM::unicode_to_hexint(v);
             auto o = machine()->create_integer(i);
             visit_constant(o);
         } else {
-            auto i = convert_to_int(v);
+            auto i = VM::unicode_to_int(v);
             auto o = machine()->create_integer(i);
             visit_constant(o);
         }
@@ -277,21 +277,21 @@ public:
 
     void visit_expr_float(const Position &p,
                           const icu::UnicodeString &v) override {
-        auto f = convert_to_float(v);
+        auto f = VM::unicode_to_float(v);
         auto o = machine()->create_float(f);
         visit_constant(o);
     }
 
     void visit_expr_character(const Position &p,
                               const icu::UnicodeString &v) override {
-        auto c = convert_to_char(v);
+        auto c = VM::unicode_to_char(v);
         auto o = machine()->create_char(c);
         visit_constant(o);
     }
 
     void visit_expr_text(const Position &p,
                          const icu::UnicodeString &v) override {
-        auto t = convert_to_text(v);
+        auto t = VM::unicode_to_text(v);
         auto o = machine()->create_text(t);
         visit_constant(o);
     }

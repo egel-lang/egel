@@ -2,10 +2,9 @@
 
 #include <functional>
 
+#include "runtime.hpp"
 #include "machine.hpp"
 #include "modules.hpp"
-#include "runtime.hpp"
-#include "utils.hpp"
 
 class EvalResult : public VMObjectCombinator {
 public:
@@ -209,7 +208,7 @@ public:
         if (a->tag() == AST_DIRECT_IMPORT) {
             auto [p, s] = AstDirectImport::split(a);
             try {
-                mm->load(p, unicode_strip_quotes(s));
+                mm->load(p, VM::unicode_to_text(s));
             } catch (ErrorIO &e) {
                 std::cerr << e << std::endl;
             } catch (Error &e) {
@@ -305,7 +304,7 @@ public:
         _lock.lock();
         _counter++;
         _lock.unlock();
-        return UnicodeString("Dummy") + unicode_convert_uint(n);
+        return UnicodeString("Dummy") + VM::unicode_from_int(n);
     }
 
     /**
