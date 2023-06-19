@@ -1,6 +1,7 @@
 # Egel supports asynchronous tasks
 # async f       - start task f
 # await f       - block pending a result
+# wait_for f n  - wait for n milliseconds or f to complete
 # is_valid f    - inspect whether f reduced
 
 import "prelude.eg"
