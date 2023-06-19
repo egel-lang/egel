@@ -4,6 +4,8 @@
 
 #include "runtime.hpp"
 
+namespace egel {
+
 // ## namespace System - the `eval` combinator
 
 // ## System::eval text - evaluatate the expression in `text`
@@ -52,3 +54,5 @@ inline std::vector<VMObjectPtr> builtin_eval(VM *vm) {
 
     return oo;
 };
+
+}  // namespace egel

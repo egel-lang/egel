@@ -2,6 +2,8 @@
 
 #include "runtime.hpp"
 
+namespace egel {
+
 constexpr auto OPERATOR_BOTTOM = "=";
 
 inline int operator_compare(const icu::UnicodeString &o0,
@@ -195,3 +197,5 @@ inline icu::UnicodeString operator_to_ascii(const icu::UnicodeString &o) {
     // XXX
     return "";
 }
+
+};  // namespace egel

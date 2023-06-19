@@ -1,8 +1,10 @@
-#include <stdlib.h>
-
 #include "unicode/regex.h"
 
+#include <stdlib.h>
+
 #include "../../src/runtime.hpp"
+
+using namespace egel;
 
 /**
  * Start of a simplistic Regex library lifting most of libicu.
@@ -24,7 +26,7 @@ VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
     return vm->to_list(oo);
 }
 
-//## Regex::pattern - an opaque object holding a pattern
+// ## Regex::pattern - an opaque object holding a pattern
 class Regex;
 typedef std::shared_ptr<Regex> RegexPtr;
 
@@ -105,7 +107,7 @@ private:
     icu::RegexPattern* _pattern;
 };
 
-//## Regex::compile s0 - compile text to a pattern
+// ## Regex::compile s0 - compile text to a pattern
 class Compile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Compile, REGEX_STRING, "compile");
@@ -129,7 +131,7 @@ public:
     }
 };
 
-//## Regex::match pat s0 - true if the pattern matches the entire string
+// ## Regex::match pat s0 - true if the pattern matches the entire string
 class Match : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Match, REGEX_STRING, "match");
@@ -154,7 +156,7 @@ public:
     }
 };
 
-//## Regex::look_at pat s0 - true if the pattern matches the start of string
+// ## Regex::look_at pat s0 - true if the pattern matches the start of string
 class LookAt : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookAt, REGEX_STRING, "look_at");
@@ -179,8 +181,8 @@ public:
     }
 };
 
-//## Regex::look_match pat s0 - returns the initial matched part of the string,
-// or none
+// ## Regex::look_match pat s0 - returns the initial matched part of the string,
+//  or none
 class LookMatch : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
@@ -210,7 +212,7 @@ public:
     }
 };
 
-//## Regex::split pat s0 - split a text according to a pattern
+// ## Regex::split pat s0 - split a text according to a pattern
 class Split : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Split, REGEX_STRING, "split");
@@ -251,7 +253,7 @@ public:
     }
 };
 
-//## Regex::matches pat s0 - return a list of pattern matches in a string
+// ## Regex::matches pat s0 - return a list of pattern matches in a string
 class Matches : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Matches, REGEX_STRING, "matches");
@@ -284,8 +286,8 @@ public:
     }
 };
 
-//## Regex::replace pat s0 s1 - replace the first occurence of pattern in a
-// string with a string
+// ## Regex::replace pat s0 s1 - replace the first occurence of pattern in a
+//  string with a string
 class Replace : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
@@ -316,8 +318,8 @@ public:
     }
 };
 
-//## Regex::replace_all pat s0 s1 - replace the all occurences of pattern in a
-// string with a string
+// ## Regex::replace_all pat s0 s1 - replace the all occurences of pattern in a
+//  string with a string
 class ReplaceAll : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
@@ -348,7 +350,7 @@ public:
     }
 };
 
-//## Regex::group pat s0 - return the matched groups in a string
+// ## Regex::group pat s0 - return the matched groups in a string
 class Group : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Group, REGEX_STRING, "group");

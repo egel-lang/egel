@@ -13,6 +13,8 @@
 // hierarchy of the runtime in order not to taint runtimes
 // when serialized objects are shipped.
 
+namespace egel {
+
 using objectid_t = unsigned int;
 
 class SerialObject;
@@ -796,3 +798,5 @@ inline VMObjectPtrs bundle(VM *m, const VMObjectPtr &o) {
 
     return oo;
 }
+
+};  // namespace egel

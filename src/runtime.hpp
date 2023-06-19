@@ -23,6 +23,8 @@ namespace fs = std::filesystem;
 
 using namespace icu;  // use stable namespace
 
+namespace egel {
+
 inline void assert_fail(const char *assertion, const char *file,
                         unsigned int line) {
     std::cerr << file << ':' << line << ": assertion failed " << assertion
@@ -1070,9 +1072,9 @@ public:
         _array = new VMObjectPtr[0];
     };
 
-    VMObjectArray(const VMObjectPtrs &v)
-        : VMObject(VM_OBJECT_ARRAY) {
-        _size = v.size();;
+    VMObjectArray(const VMObjectPtrs &v) : VMObject(VM_OBJECT_ARRAY) {
+        _size = v.size();
+        ;
         _array = new VMObjectPtr[_size];
         for (int i = 0; i < _size; i++) {
             _array[i] = v[i];
@@ -1087,9 +1089,8 @@ public:
         }
     }
 
-    VMObjectArray(const int size)
-        : VMObject(VM_OBJECT_ARRAY) {
-        _size  = size;
+    VMObjectArray(const int size) : VMObject(VM_OBJECT_ARRAY) {
+        _size = size;
         _array = new VMObjectPtr[size];
     }
 
@@ -1164,11 +1165,11 @@ public:
         _array[i] = o;
     }
 
-/*
-    void push_back(const VMObjectPtr &o) {
-        _value.push_back(o);
-    }
-*/
+    /*
+        void push_back(const VMObjectPtr &o) {
+            _value.push_back(o);
+        }
+    */
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
 
@@ -1183,7 +1184,7 @@ public:
         }
         auto head = value()[0];
         if ((head != nullptr) && (head->symbol() == SYMBOL_TUPLE)) {
-            render_tuple(this->clone(), os); // XXX: still need clone...
+            render_tuple(this->clone(), os);  // XXX: still need clone...
         } else if ((head != nullptr) && (head->symbol() == SYMBOL_CONS) &&
                    (value().size() == 3)) {
             render_cons(this->clone(), os);
@@ -1215,8 +1216,8 @@ public:
     }
 
 private:
-    VMObjectPtr* _array;
-    int          _size;
+    VMObjectPtr *_array;
+    int _size;
 };
 
 // here we can safely declare reduce
@@ -2103,11 +2104,11 @@ public:
         : DyadicCallback(o.machine(), o.symbol(), o.value()) {
     }
 
-/*
-    VMObjectPtr clone() const {
-        return VMObjectPtr((VMObject *)new DyadicCallback(*this));
-    }
-*/
+    /*
+        VMObjectPtr clone() const {
+            return VMObjectPtr((VMObject *)new DyadicCallback(*this));
+        }
+    */
 
     std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
     value() const {
@@ -2860,3 +2861,5 @@ inline void render_cons(const VMObjectPtr &c, std::ostream &os) {
     render_cons_elements(c, os);
     os << "}";
 };
+
+};  // namespace egel

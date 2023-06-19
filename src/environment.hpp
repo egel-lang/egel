@@ -5,6 +5,8 @@
 
 #include "error.hpp"
 
+namespace egel {
+
 using Table = std::map<icu::UnicodeString, icu::UnicodeString>;
 
 class Scope;
@@ -263,3 +265,5 @@ inline void add_using(RangePtr &r, const UnicodeStrings &nn) {
     // insert namespace
     r->add_namespace(n);
 }
+
+}  // namespace egel

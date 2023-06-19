@@ -24,9 +24,7 @@
 #include "semantical.hpp"
 #include "syntactical.hpp"
 
-// extern std::vector<VMObjectPtr> builtin_eval(VM* vm); // XXX: forward
-// declaration
-
+namespace egel {
 // convenience
 inline icu::UnicodeString first(const icu::UnicodeString &s) {
     auto d = s;
@@ -298,7 +296,7 @@ public:
                 UnicodeStrings nn;
                 nn.push_back(first(s));
                 auto n = second(s);
-                ::declare(env, nn, n, s);
+                egel::declare(env, nn, n, s);
             }
         }
     }
@@ -418,7 +416,7 @@ public:
                 UnicodeStrings nn;
                 nn.push_back(first(s));
                 auto n = second(s);
-                ::declare(env, nn, n, s);
+                egel::declare(env, nn, n, s);
             }
         }
     }
@@ -475,7 +473,7 @@ public:
     }
 
     QualifiedStrings imports() override {
-        auto aa = ::imports(_ast);
+        auto aa = egel::imports(_ast);
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DIRECT_IMPORT) {
@@ -487,7 +485,7 @@ public:
     }
 
     QualifiedStrings values() override {
-        auto aa = ::values(_ast);
+        auto aa = egel::values(_ast);
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DECL_VALUE) {
@@ -531,7 +529,7 @@ public:
     }
 
     void semantical(NamespacePtr &env) override {
-        _ast = ::identify(env, _ast);
+        _ast = egel::identify(env, _ast);
 
         if (get_options()->only_semantical()) {
 #ifdef DEBUG
@@ -543,7 +541,7 @@ public:
     }
 
     void desugar() override {
-        _ast = ::desugar(_ast);
+        _ast = egel::desugar(_ast);
         if (get_options()->only_desugar()) {
             std::cout << _ast << std::endl;
             exit(EXIT_SUCCESS);
@@ -551,7 +549,7 @@ public:
     }
 
     void lift() override {
-        _ast = ::lift(_ast);
+        _ast = egel::lift(_ast);
 
         if (get_options()->only_lift()) {
             std::cout << _ast << std::endl;
@@ -560,11 +558,11 @@ public:
     }
 
     void datagen(VM *vm) override {
-        ::emit_data(vm, _ast);
+        egel::emit_data(vm, _ast);
     }
 
     void codegen(VM *vm) override {
-        ::emit_code(vm, _ast);
+        egel::emit_code(vm, _ast);
         if (get_options()->only_bytecode()) {
             vm->render(std::cout);
             exit(EXIT_SUCCESS);
@@ -800,3 +798,4 @@ private:
     ModulePtrs _modules;
     ModulePtrs _loading;
 };
+};  // namespace egel

@@ -197,7 +197,7 @@ protected:
     clock_type _clock_type;
 };
 
-//## Time::clock - opaque values which represent clocks
+// ## Time::clock - opaque values which represent clocks
 class ClockValue : public Opaque {
 public:
     OPAQUE_PREAMBLE(ClockValue, TIME_STRING, "clock");
@@ -229,11 +229,11 @@ protected:
     FlatClock _value;
 };
 
-//## Time::duration - opaque values which represent time durations
-//## Time::time_points - opaque values which represent time points
-//## Time::tm - opaque values which represent calendar times
+// ## Time::duration - opaque values which represent time durations
+// ## Time::time_points - opaque values which represent time points
+// ## Time::tm - opaque values which represent calendar times
 
-//## OS:empty p - checks whether the path is empty
+// ## OS:empty p - checks whether the path is empty
 class Empty : public Monadic {
 public:
     MONADIC_PREAMBLE(Empty, OS_STRING, "empty");
@@ -254,7 +254,7 @@ public:
     }
 };
 
-//## OS:absolute p - composes an absolute path
+// ## OS:absolute p - composes an absolute path
 class Absolute : public Monadic {
 public:
     MONADIC_PREAMBLE(Absolute, OS_STRING, "absolute");

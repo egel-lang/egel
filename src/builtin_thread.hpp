@@ -16,6 +16,8 @@
  *resulting tuple; the other thread is allowed to continue to run.
  **/
 
+namespace egel {
+
 void runthread(VM *vm, const VMObjectPtr &e, const VMObjectPtr &ret,
                const VMObjectPtr &exc) {
     vm->reduce(e, ret, exc);
@@ -133,3 +135,5 @@ inline std::vector<VMObjectPtr> builtin_thread(VM *vm) {
 
     return oo;
 }
+
+}  // namespace egel

@@ -10,6 +10,8 @@
 #include "position.hpp"
 #include "runtime.hpp"
 
+namespace egel {
+
 // XXX: rewrite all the code once to make use of the next templates
 template <typename T>
 using ptr = std::shared_ptr<T>;
@@ -2448,3 +2450,5 @@ int Ast::compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1) {
     }
     return 0;
 }
+
+}  // namespace egel

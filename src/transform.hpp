@@ -5,6 +5,8 @@
 #include "ast.hpp"
 #include "error.hpp"
 
+namespace egel {
+
 class Transform {
 public:
     Transform() {
@@ -1328,3 +1330,5 @@ inline std::set<ptr<Ast>, LessAst> freevars(const ptr<Ast> &t) {
     FreeVars freevars;
     return freevars.freevars(t);
 }
+
+};  // namespace egel

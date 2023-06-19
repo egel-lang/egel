@@ -7,6 +7,8 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
+namespace egel {
+
 class CharReader {
 public:
     virtual UChar32 look() = 0;
@@ -105,3 +107,5 @@ private:
     icu::UnicodeString _content;
     std::vector<UChar32> _buffer;
 };
+
+};  // namespace egel

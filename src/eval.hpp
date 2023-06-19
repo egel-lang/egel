@@ -6,6 +6,8 @@
 #include "modules.hpp"
 #include "runtime.hpp"
 
+namespace egel {
+
 class EvalResult : public VMObjectCombinator {
 public:
     EvalResult(VM *m, const symbol_t s, const callback_t call)
@@ -242,8 +244,8 @@ public:
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
                 auto c1 = AstExprCombinator::cast(c0);
-                ::declare_implicit(mm->get_environment(), nn0, n0,
-                                   c1->to_text());
+                egel::declare_implicit(mm->get_environment(), nn0, n0,
+                                       c1->to_text());
             }
         }
         if (d->tag() ==
@@ -253,15 +255,15 @@ public:
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
                 auto c1 = AstExprCombinator::cast(c0);
-                ::declare_implicit(mm->get_environment(), nn0, n0,
-                                   c1->to_text());
+                egel::declare_implicit(mm->get_environment(), nn0, n0,
+                                       c1->to_text());
             }
         }
-        w = ::identify(mm->get_environment(), w);
-        w = ::desugar(w);
-        w = ::lift(w);
-        ::emit_data(vm, w);
-        ::emit_code(vm, w);
+        w = egel::identify(mm->get_environment(), w);
+        w = egel::desugar(w);
+        w = egel::lift(w);
+        egel::emit_data(vm, w);
+        egel::emit_code(vm, w);
     }
 
     void handle_data(const ptr<Ast> &d) {
@@ -284,16 +286,16 @@ public:
                 if (e->tag() == AST_EXPR_COMBINATOR) {
                     auto [p, nn0, n0] = AstExprCombinator::split(e);
                     auto e1 = AstExprCombinator::cast(e);
-                    ::declare_implicit(mm->get_environment(), nn0, n0,
-                                       e1->to_text());
+                    egel::declare_implicit(mm->get_environment(), nn0, n0,
+                                           e1->to_text());
                 }
             }
         }
-        w = ::identify(mm->get_environment(), w);
-        w = ::desugar(w);
-        w = ::lift(w);
-        ::emit_data(vm, w);
-        ::emit_code(vm, w);
+        w = egel::identify(mm->get_environment(), w);
+        w = egel::desugar(w);
+        w = egel::lift(w);
+        egel::emit_data(vm, w);
+        egel::emit_code(vm, w);
     }
 
     // XXX XXX XXX: get rid of all of this once. See handle_expression.
@@ -382,7 +384,7 @@ public:
         ptr<Ast> aa;
         StringCharReader r = StringCharReader("internal", in);
         TokenReaderPtr tt = tokenize_from_reader(r);
-        aa = ::parse_line(tt);
+        aa = egel::parse_line(tt);
 
         // set up the handlers
         auto sr = vm->enter_symbol("Internal", "result");
@@ -458,3 +460,5 @@ private:
     ModuleManagerPtr _manager;
     ptrs<Ast> _usings;
 };
+
+}  // namespace egel

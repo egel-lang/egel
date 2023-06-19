@@ -1,5 +1,7 @@
 #pragma once
 
+namespace egel {
+
 inline constexpr auto CHAR_BEL = '\a';
 inline constexpr auto CHAR_BS = '\b';
 inline constexpr auto CHAR_HT = '\t';
@@ -186,3 +188,5 @@ inline constexpr auto STRING_HEXINTEGER = "hexadecimal integer";
 inline constexpr auto STRING_LOCAL = "Local";
 inline constexpr auto STRING_MAGIC_START = "[[";
 inline constexpr auto STRING_MAGIC_END = "]]";
+
+}  // namespace egel

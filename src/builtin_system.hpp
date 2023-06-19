@@ -13,6 +13,8 @@
 #include "bytecode.hpp"
 #include "runtime.hpp"
 
+namespace egel {
+
 extern int application_argc;  // XXX: get rid of this
 extern char **application_argv;
 
@@ -1013,3 +1015,5 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
 
     return oo;
 }
+
+}  // namespace egel

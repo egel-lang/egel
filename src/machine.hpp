@@ -17,6 +17,8 @@
 #include "modules.hpp"
 #include "runtime.hpp"
 
+namespace egel {
+
 class SymbolTable {
 public:
     SymbolTable()
@@ -613,7 +615,7 @@ public:
     }
 
     VMObjectPtrs bundle(const VMObjectPtr &o) override {
-        return ::bundle(this, o);
+        return egel::bundle(this, o);
     }
 
     icu::UnicodeString symbol(const VMObjectPtr &o) override {
@@ -946,3 +948,5 @@ private:
     ModuleManagerPtr _manager;
     EvalPtr _eval;
 };
+
+}  // namespace egel

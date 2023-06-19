@@ -9,6 +9,8 @@
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
 
+namespace egel {
+
 enum error_tag_t {
     ERROR_IO,
     ERROR_LEXICAL,
@@ -126,3 +128,5 @@ public:
         : Error(ERROR_INTERNAL, Position(), m) {
     }
 };
+
+}  // namespace egel

@@ -7,6 +7,8 @@
 #include "runtime.hpp"
 #include "transform.hpp"
 
+namespace egel {
+
 // combinator lifting
 class RewriteEta : public Rewrite {
 public:
@@ -337,3 +339,4 @@ inline ptr<Ast> lift(const ptr<Ast> &a) {
     a0 = pass_relambda(a0);
     return a0;
 }
+}  // namespace egel

@@ -1,8 +1,5 @@
 #pragma once
 
-inline void emit_data(VM *vm, const ptr<Ast> &a);
-inline void emit_code(VM *vm, const ptr<Ast> &a);
-
 #include <memory>
 #include <vector>
 
@@ -10,6 +7,11 @@ inline void emit_code(VM *vm, const ptr<Ast> &a);
 #include "bytecode.hpp"
 #include "environment.hpp"
 #include "transform.hpp"
+
+namespace egel {
+
+inline void emit_data(VM *vm, const ptr<Ast> &a);
+inline void emit_code(VM *vm, const ptr<Ast> &a);
 
 using RegisterMap = std::map<icu::UnicodeString, reg_t>;
 using CoderPtr = std::unique_ptr<Coder>;
@@ -749,3 +751,5 @@ void emit_code(VM *m, const ptr<Ast> &a) {
     EmitCode emit;
     emit.emit(m, a);
 }
+
+}  // namespace egel

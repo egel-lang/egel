@@ -11,6 +11,8 @@
 
 // ## namespace String - string support routines
 
+namespace egel {
+
 // ## String::eq s0 s1 - string equality operator
 class StringEq : public Dyadic {
 public:
@@ -601,3 +603,5 @@ std::vector<VMObjectPtr> builtin_string(VM *vm) {
 
     return oo;
 }
+
+};  // namespace egel

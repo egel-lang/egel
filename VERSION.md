@@ -5,10 +5,9 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-+ move utils to machine
 + don't reduce literals or variables
 + lowercase namespace
-+ move to C++20 (modules, egel namespace, modern syntax)
++ move to C++20 (modules, modern syntax)
   when libfmt makes it into llvm and gcc?
 + import works on identifiers
 + integer move instruction in bytecode
@@ -31,6 +30,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ egel namespace
 + utilities to vm
 + more macro removal
 + egel remote procedure calls

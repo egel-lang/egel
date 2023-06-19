@@ -5,6 +5,8 @@
 
 #include "runtime.hpp"
 
+namespace egel {
+
 /**
  * Egel's math built-ins.
  *
@@ -695,3 +697,5 @@ std::vector<VMObjectPtr> builtin_math(VM *vm) {
 
     return oo;
 }
+
+}  // namespace egel

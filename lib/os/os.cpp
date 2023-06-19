@@ -18,6 +18,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+using namespace egel;
 // from utils.... XXX
 char* unicode_to_char(const icu::UnicodeString& str) {
     std::string utf8;
@@ -90,7 +91,7 @@ public:
         throw Unsupported();
     }
 
-    virtual int read_byte() {  
+    virtual int read_byte() {
         throw Unsupported();
     }
 
@@ -155,8 +156,9 @@ public:
         return s;
     }
 
-    virtual int read_byte() override { 
-        // XXX: not always supported to read bytes, stream may be in text mode too
+    virtual int read_byte() override {
+        // XXX: not always supported to read bytes, stream may be in text mode
+        // too
         return std::cin.get();
     }
 
@@ -184,8 +186,8 @@ public:
         std::cout << s;
     }
 
-    virtual void write_byte(const int n) override { 
-        std::cout.put((char) n);
+    virtual void write_byte(const int n) override {
+        std::cout.put((char)n);
     }
 
     virtual void write_line(const UnicodeString& s) override {
@@ -210,8 +212,8 @@ public:
         std::cerr << s;
     }
 
-    virtual void write_byte(const int n) override { 
-        std::cerr.put((char) n);
+    virtual void write_byte(const int n) override {
+        std::cerr.put((char)n);
     }
 
     virtual void write_line(const UnicodeString& s) override {
@@ -258,7 +260,7 @@ public:
     }
 
     virtual void write_byte(const int n) override {
-        _stream.put( (char) n);
+        _stream.put((char)n);
     }
 
     virtual void write_line(const UnicodeString& s) override {
@@ -387,7 +389,7 @@ protected:
  * according to spec.
  **/
 
-//## OS::channel - opaque values which are input/output channels
+// ## OS::channel - opaque values which are input/output channels
 class ChannelValue : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ChannelValue, "OS", "channel");
@@ -431,7 +433,7 @@ protected:
     ((machine()->is_opaque(o)) && (VMObjectOpaque::symbol(o) == sym))
 #define CHANNEL_VALUE(o) ((std::static_pointer_cast<ChannelValue>(o))->value())
 
-//## OS::cin - standard input channel
+// ## OS::cin - standard input channel
 class Stdin : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdin, "OS", "stdin");
@@ -443,7 +445,7 @@ public:
     }
 };
 
-//## OS::stdout - standard output channel
+// ## OS::stdout - standard output channel
 class Stdout : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdout, "OS", "stdout");
@@ -455,7 +457,7 @@ public:
     }
 };
 
-//## OS::stderr - standard error channel
+// ## OS::stderr - standard error channel
 class Stderr : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stderr, "OS", "stderr");
@@ -503,7 +505,7 @@ public:
 
 /* File channel creation and destruction */
 
-//## OS::open_in fn - create a channel from filename
+// ## OS::open_in fn - create a channel from filename
 class OpenIn : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenIn, "OS", "open_in");
@@ -520,7 +522,7 @@ public:
     }
 };
 
-//## OS::open_out fn - create a channel from filename
+// ## OS::open_out fn - create a channel from filename
 class OpenOut : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenOut, "OS", "open_out");
@@ -537,7 +539,7 @@ public:
     }
 };
 
-//## OS::close c - close a channel
+// ## OS::close c - close a channel
 class Close : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Close, "OS", "close");
@@ -556,7 +558,7 @@ public:
     }
 };
 
-//## OS::read c - read a string from a channel
+// ## OS::read c - read a string from a channel
 class Read : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Read, "OS", "read");
@@ -575,7 +577,7 @@ public:
     }
 };
 
-//## OS::read_byte c - read a byte from a channel
+// ## OS::read_byte c - read a byte from a channel
 class ReadByte : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadByte, "OS", "read_byte");
@@ -594,7 +596,7 @@ public:
     }
 };
 
-//## OS::read_line c - read a line from a channel
+// ## OS::read_line c - read a line from a channel
 class ReadLine : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadLine, "OS", "read_line");
@@ -613,7 +615,7 @@ public:
     }
 };
 
-//## OS::read_all c - read entire channel content
+// ## OS::read_all c - read entire channel content
 class ReadAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadAll, "OS", "read_all");
@@ -632,7 +634,7 @@ public:
     }
 };
 
-//## OS::write c s - write a string to a channel
+// ## OS::write c s - write a string to a channel
 class Write : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Write, "OS", "write");
@@ -657,7 +659,7 @@ public:
     }
 };
 
-//## OS::write_byte c b - write a byte to a channel
+// ## OS::write_byte c b - write a byte to a channel
 class WriteByte : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, WriteByte, "OS", "write_byte");
@@ -682,7 +684,7 @@ public:
     }
 };
 
-//## OS::write_line c s - write a string s to a channel
+// ## OS::write_line c s - write a string s to a channel
 class WriteLine : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, WriteLine, "OS", "write_line");
@@ -707,7 +709,7 @@ public:
     }
 };
 
-//## OS::flush c - flush a channel
+// ## OS::flush c - flush a channel
 class Flush : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flush, "OS", "flush");
@@ -726,7 +728,7 @@ public:
     }
 };
 
-//## OS::eof c - tests if there is no more input
+// ## OS::eof c - tests if there is no more input
 class Eof : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Eof, "OS", "eof");
@@ -744,7 +746,7 @@ public:
     }
 };
 
-//## OS::flock f n - create a filesystem lock file (not process safe)
+// ## OS::flock f n - create a filesystem lock file (not process safe)
 class Flock : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flock, "OS", "flock");
@@ -770,8 +772,8 @@ public:
     }
 };
 
-//## OS::exit n - flush all channels and terminate process with exit code n
-// (0 to indicate no errors, a small positive integer for failure.)
+// ## OS::exit n - flush all channels and terminate process with exit code n
+//  (0 to indicate no errors, a small positive integer for failure.)
 class Exit : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exit, "OS", "exit");
@@ -792,7 +794,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 // Highly unstable and experimental client/server code.
 
-//## OS::serverobject - an opaque objects which serves as a server
+// ## OS::serverobject - an opaque objects which serves as a server
 class ServerObject : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ServerObject, "OS", "serverobject");
@@ -868,7 +870,7 @@ protected:
     ((machine()->is_opaque(o)) && (VMObjectOpaque::symbol(o) == sym))
 #define SERVER_OBJECT_CAST(o) (std::static_pointer_cast<ServerObject>(o))
 
-//## OS::accept serverobject - accept connections
+// ## OS::accept serverobject - accept connections
 class Accept : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Accept, "OS", "accept");
@@ -887,7 +889,7 @@ public:
     }
 };
 
-//## OS::server port in - create a serverobject
+// ## OS::server port in - create a serverobject
 class Server : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Server, "OS", "server");
@@ -908,7 +910,7 @@ public:
     }
 };
 
-//## OS::client host port - create a client channel
+// ## OS::client host port - create a client channel
 class Client : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Client, "OS", "client");

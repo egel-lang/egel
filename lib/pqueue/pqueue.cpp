@@ -9,6 +9,8 @@
 
 #include "../../src/runtime.hpp"
 
+using namespace egel;
+
 struct Greater {
     bool operator()(const std::pair<VMObjectPtr, VMObjectPtr>& p0,
                     const std::pair<VMObjectPtr, VMObjectPtr>& p1) const {
@@ -23,7 +25,7 @@ typedef std::priority_queue<std::pair<VMObjectPtr, VMObjectPtr>,
                             Greater>
     pqueue_t;
 
-//## System::pqueue - a pqueue
+// ## System::pqueue - a pqueue
 class PQueue : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, PQueue, "System", "pqueue");
@@ -81,7 +83,7 @@ protected:
     pqueue_t _value;
 };
 
-//## System::pqueue - create a pqueue object
+// ## System::pqueue - create a pqueue object
 class APQueue : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, APQueue, "System", "pqueue");
@@ -91,7 +93,7 @@ public:
     }
 };
 
-//## System::pqueue_has d k - check for key
+// ## System::pqueue_has d k - check for key
 class PQueueEmpty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, PQueueEmpty, "System", "pqueue_empty");
@@ -107,7 +109,7 @@ public:
     }
 };
 
-//## System::pqueue_get d k - get a value by key
+// ## System::pqueue_get d k - get a value by key
 class PQueueTop : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, PQueueTop, "System", "pqueue_top");
@@ -123,7 +125,7 @@ public:
     }
 };
 
-//## System::pqueue_keys d - pqueue keys as list
+// ## System::pqueue_keys d - pqueue keys as list
 class PQueuePop : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, PQueuePop, "System", "pqueue_pop");
@@ -140,7 +142,7 @@ public:
     }
 };
 
-//## System::pqueue_set d k v - set a value by key
+// ## System::pqueue_set d k v - set a value by key
 class PQueuePush : public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_EGO, PQueuePush, "System", "pqueue_push");

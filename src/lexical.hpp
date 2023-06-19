@@ -12,6 +12,8 @@
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
 
+namespace egel {
+
 enum token_t {
     TOKEN_ERROR,
     TOKEN_EOF,
@@ -969,3 +971,4 @@ handle_float_error : {
     throw ErrorLexical(p, "error in float");
 }
 }
+}  // namespace egel

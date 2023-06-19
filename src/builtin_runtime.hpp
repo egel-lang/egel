@@ -10,6 +10,8 @@
  * Egel's runtime querying and modification implementation.
  **/
 
+namespace egel {
+
 // ## System::dis o - disassemble a combinator object
 class Dis : public Monadic {
 public:
@@ -400,3 +402,5 @@ std::vector<VMObjectPtr> builtin_runtime(VM *vm) {
     oo.push_back(Bundle::create(vm));
     return oo;
 }
+
+}  // namespace egel

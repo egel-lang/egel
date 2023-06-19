@@ -7,6 +7,8 @@
 #include "semantical.hpp"
 #include "transform.hpp"
 
+namespace egel {
+
 inline void declare(NamespacePtr env, const ptr<Ast> &a);
 inline ptr<Ast> identify(NamespacePtr env, const ptr<Ast> &a);
 
@@ -78,7 +80,7 @@ public:
                 try {
                     auto nn0 = concat(_qualifications, nn);
                     auto q = qualified(nn0, n);
-                    ::declare(_spaces, nn0, n, q);
+                    egel::declare(_spaces, nn0, n, q);
                 } catch (ErrorSemantical &e) {
                     throw ErrorSemantical(p, "redeclaration of " + n);
                 }
@@ -88,7 +90,7 @@ public:
                     const UnicodeStrings oo = {"OO"};
                     auto nn0 = concat(oo, nn);
                     auto q = qualified(nn0, n);
-                    ::declare_implicit(_spaces, nn0, n, q);
+                    egel::declare_implicit(_spaces, nn0, n, q);
                 } catch (ErrorSemantical &e) {
                     throw ErrorSemantical(p, "redeclaration of " + n);
                 }
@@ -189,19 +191,19 @@ public:
     void declare(const Position &p, const icu::UnicodeString &k,
                  const icu::UnicodeString &v) {
         try {
-            ::declare(_range, k, v);
+            egel::declare(_range, k, v);
         } catch (ErrorSemantical &e) {
             throw ErrorSemantical(p, "redeclaration of " + k);
         }
     }
 
     bool has(const icu::UnicodeString &k) {
-        icu::UnicodeString tmp = ::get(_range, k);
+        icu::UnicodeString tmp = egel::get(_range, k);
         return (tmp != "");
     }
 
     icu::UnicodeString get(const Position &p, const icu::UnicodeString &k) {
-        icu::UnicodeString tmp = ::get(_range, k);
+        icu::UnicodeString tmp = egel::get(_range, k);
         if (tmp == "") {
             throw ErrorSemantical(p, "undeclared " + k);
         } else {
@@ -211,7 +213,7 @@ public:
 
     icu::UnicodeString get(const Position &p, const UnicodeStrings &kk,
                            const icu::UnicodeString &k) {
-        icu::UnicodeString tmp = ::get(_range, kk, k);
+        icu::UnicodeString tmp = egel::get(_range, kk, k);
         if (tmp == "") {
             throw ErrorSemantical(p, "undeclared " + k);
         } else {
@@ -220,15 +222,15 @@ public:
     }
 
     void enter_range() {
-        _range = ::enter_range(_range);
+        _range = egel::enter_range(_range);
     }
 
     void leave_range() {
-        _range = ::leave_range(_range);
+        _range = egel::leave_range(_range);
     }
 
     void add_using(const UnicodeStrings &nn) {
-        ::add_using(_range, nn);
+        egel::add_using(_range, nn);
     }
 
     // namespaces
@@ -455,3 +457,5 @@ ptr<Ast> identify(NamespacePtr env, const ptr<Ast> &a) {
     RewriteIdentify identify;
     return identify.identify(env, a);
 }
+
+};  // namespace egel

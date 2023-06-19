@@ -7,6 +7,8 @@
 #include "syntactical.hpp"
 #include "transform.hpp"
 
+namespace egel {
+
 class Parser {
 public:
     Parser(TokenReaderPtr &r) {
@@ -1063,3 +1065,5 @@ ptr<Ast> parse_line(TokenReaderPtr &r) {
     auto a = p.parse_line();
     return a;
 }
+
+};  // namespace egel

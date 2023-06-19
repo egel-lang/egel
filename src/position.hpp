@@ -6,6 +6,8 @@
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 
+namespace egel {
+
 class Position {
 public:
     Position() {
@@ -52,3 +54,5 @@ private:
     int32_t _row;
     int32_t _column;
 };
+
+};  // namespace egel

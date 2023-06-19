@@ -13,6 +13,8 @@
  * Egel's process implementation.
  **/
 
+namespace egel {
+
 // ## namespace System - process support
 
 // ## System::process - opaque process object
@@ -254,3 +256,5 @@ inline std::vector<VMObjectPtr> builtin_process(VM *vm) {
 
     return oo;
 }
+
+}  // namespace egel

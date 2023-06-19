@@ -9,6 +9,8 @@
 
 #include "runtime.hpp"
 
+namespace egel {
+
 class VMObjectBytecode;
 
 using reg_t = uint16_t;
@@ -880,3 +882,5 @@ private:
     Code _code;
     Data _data;
 };
+
+}  // namespace egel

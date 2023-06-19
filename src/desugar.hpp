@@ -9,6 +9,8 @@
 
 // XXX: merge these small passes when stable.
 
+namespace egel {
+
 class RewriteWildcard : public Rewrite {
 public:
     ptr<Ast> wildcard(const ptr<Ast> &a) {
@@ -480,3 +482,5 @@ ptr<Ast> desugar(const ptr<Ast> &a) {
     a0 = pass_monmin(a0);
     return a0;
 }
+
+}  // namespace egel

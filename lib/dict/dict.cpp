@@ -7,11 +7,13 @@
 
 #include "../../src/runtime.hpp"
 
+using namespace egel;
+
 typedef std::map<VMObjectPtr, VMObjectPtr, LessVMObjectPtr> dict_t;
 
 const icu::UnicodeString STRING_DICT = "Dict";
 
-//## Dict::dictionary - a dictionary
+// ## Dict::dictionary - a dictionary
 class Dictionary : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, Dictionary, STRING_DICT, "dictionary");
@@ -71,7 +73,7 @@ protected:
     dict_t _value;
 };
 
-//## Dict::dict - create a dict object
+// ## Dict::dict - create a dict object
 class Dict : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Dict, STRING_DICT, "dict");
@@ -81,7 +83,7 @@ public:
     }
 };
 
-//## Dict::has d k - check for key
+// ## Dict::has d k - check for key
 class DictHas : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, DictHas, STRING_DICT, "has");
@@ -98,7 +100,7 @@ public:
     }
 };
 
-//## Dict::get d k - get a value by key
+// ## Dict::get d k - get a value by key
 class DictGet : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, DictGet, STRING_DICT, "get");
@@ -115,7 +117,7 @@ public:
     }
 };
 
-//## Dict::set d k v - set a value by key
+// ## Dict::set d k v - set a value by key
 class DictSet : public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_EGO, DictSet, STRING_DICT, "set");
@@ -133,7 +135,7 @@ public:
     }
 };
 
-//## Dict::erase d k - erase a value by key
+// ## Dict::erase d k - erase a value by key
 class DictErase : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, DictErase, STRING_DICT, "erase");
@@ -151,7 +153,7 @@ public:
     }
 };
 
-//## Dict::keys d - dictionary keys as list
+// ## Dict::keys d - dictionary keys as list
 class DictKeys : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, DictKeys, STRING_DICT, "keys");

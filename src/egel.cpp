@@ -1,6 +1,8 @@
 #include "machine.hpp"
 #include "runtime.hpp"
 
+using namespace egel;
+
 #define EXECUTABLE_NAME "egel"
 
 #define EXECUTABLE_VERSION_MAJOR "0"

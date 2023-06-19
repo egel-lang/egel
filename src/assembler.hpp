@@ -6,6 +6,8 @@
 #include "bytecode.hpp"
 #include "runtime.hpp"
 
+namespace egel {
+
 const int BYTECODEVERSION = 0x00;
 const int BYTECODE_TAG = 0x01;
 const int DATA_TAG = 0x02;
@@ -530,3 +532,5 @@ private:
     VM *_machine;
     icu::UnicodeString _source;
 };
+
+}  // namespace egel
