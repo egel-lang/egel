@@ -580,7 +580,6 @@ private:
 class Registers {
 public:
     Registers() {
-        //_fast.reserve(MAX_REGISTERS);
     }
 
     const VMObjectPtr get(const reg_t n) {

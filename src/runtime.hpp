@@ -499,11 +499,6 @@ public:
     virtual bool is_cons(const VMObjectPtr &o) = 0;
     virtual bool is_tuple(const VMObjectPtr &o) = 0;
 
-    // deprecate the following
-    // virtual VMObjectPtr  create_array() = 0;
-    // virtual void         array_append(VMObjectPtr aa, const VMObjectPtr a) =
-    // 0;
-
     virtual VMObjectPtr create_array(const VMObjectPtrs &oo) = 0;
     virtual VMObjectPtr create_array(const unsigned int size) = 0;
     virtual bool is_array(const VMObjectPtr &o) = 0;
@@ -1070,16 +1065,36 @@ private:
 
 class VMObjectArray : public VMObject {
 public:
-    VMObjectArray() : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs()){};
+    VMObjectArray() : VMObject(VM_OBJECT_ARRAY) {
+        _size = 0;
+        _array = new VMObjectPtr[0];
+    };
 
     VMObjectArray(const VMObjectPtrs &v)
-        : VMObject(VM_OBJECT_ARRAY), _value(v){};
+        : VMObject(VM_OBJECT_ARRAY) {
+        _size = v.size();;
+        _array = new VMObjectPtr[_size];
+        for (int i = 0; i < _size; i++) {
+            _array[i] = v[i];
+        }
+    }
 
-    VMObjectArray(const VMObjectArray &l) : VMObjectArray(l.value()) {
+    VMObjectArray(const VMObjectArray &l) : VMObject(VM_OBJECT_ARRAY) {
+        _size = l._size;
+        _array = new VMObjectPtr[_size];
+        for (int i = 0; i < _size; i++) {
+            _array[i] = l._array[i];
+        }
     }
 
     VMObjectArray(const int size)
-        : VMObject(VM_OBJECT_ARRAY), _value(VMObjectPtrs(size)) {
+        : VMObject(VM_OBJECT_ARRAY) {
+        _size  = size;
+        _array = new VMObjectPtr[size];
+    }
+
+    ~VMObjectArray() {
+        delete[] _array;
     }
 
     VMObjectPtr clone() const {
@@ -1128,30 +1143,32 @@ public:
     }
 
     size_t size() const {
-        return _value.size();
+        return _size;
     }
 
     VMObjectPtr &operator[](const size_t i) {
-        return _value[i];
+        return _array[i];
     }
 
     const VMObjectPtr &operator[](const size_t i) const {
-        return _value[i];
+        return _array[i];
     }
 
     // deprecate
     VMObjectPtr get(unsigned int i) const {
-        return _value[i];
+        return _array[i];
     }
 
     // deprecate
     void set(unsigned int i, const VMObjectPtr &o) {
-        _value[i] = o;
+        _array[i] = o;
     }
 
+/*
     void push_back(const VMObjectPtr &o) {
         _value.push_back(o);
     }
+*/
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
 
@@ -1166,7 +1183,7 @@ public:
         }
         auto head = value()[0];
         if ((head != nullptr) && (head->symbol() == SYMBOL_TUPLE)) {
-            render_tuple(this->clone(), os);
+            render_tuple(this->clone(), os); // XXX: still need clone...
         } else if ((head != nullptr) && (head->symbol() == SYMBOL_CONS) &&
                    (value().size() == 3)) {
             render_cons(this->clone(), os);
@@ -1190,11 +1207,16 @@ public:
     }
 
     VMObjectPtrs value() const {
-        return _value;
+        auto oo = VMObjectPtrs(_size);
+        for (int i = 0; i < _size; i++) {
+            oo[i] = _array[i];
+        }
+        return oo;
     }
 
 private:
-    VMObjectPtrs _value;
+    VMObjectPtr* _array;
+    int          _size;
 };
 
 // here we can safely declare reduce
@@ -2081,9 +2103,11 @@ public:
         : DyadicCallback(o.machine(), o.symbol(), o.value()) {
     }
 
+/*
     VMObjectPtr clone() const {
         return VMObjectPtr((VMObject *)new DyadicCallback(*this));
     }
+*/
 
     std::function<VMObjectPtr(const VMObjectPtr &a0, const VMObjectPtr &a2)>
     value() const {
