@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 
+#include <chrono>
 #include <future>
 
 #include "runtime.hpp"
@@ -38,6 +39,13 @@ public:
 
     VMReduceResult await() {
         return _future.get();
+    }
+
+
+    bool wait_for(int n) {
+        std::chrono::milliseconds ms(n);
+        auto status = _future.wait_for(ms);
+        return (status == std::future_status::ready);
     }
 
     bool valid() {
@@ -84,6 +92,25 @@ public:
     }
 };
 
+// ## System::wait_for f n - check whether f reduced in n milliseconds
+class WaitFor : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, WaitFor, "System", "wait_for");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1) const override {
+        symbol_t s = machine()->enter_symbol("System", "future");
+
+        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == s) && (machine()->is_integer(arg1))) {
+            auto f = std::static_pointer_cast<Future>(arg0);
+            auto n = machine()->get_integer(arg1);
+            auto b = f->wait_for(n);
+            return machine()->create_bool(b);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 // ## System::is_valid f - check whether f reduced
 class IsValid : public Monadic {
 public:
@@ -111,6 +138,7 @@ inline std::vector<VMObjectPtr> builtin_async(VM *vm) {
         vm, "System::future"));  // XXX: I always forget whether this is needed
     oo.push_back(Async::create(vm));
     oo.push_back(Await::create(vm));
+    oo.push_back(WaitFor::create(vm));
     oo.push_back(IsValid::create(vm));
 
     return oo;

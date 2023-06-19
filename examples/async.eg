@@ -8,9 +8,9 @@ import "prelude.eg"
 using System
 using List
 
-def wait_for =
-    [ F -> if is_valid F then await F else (print "waiting\n"; wait_for F) ]
+def poll =
+    [ F -> print "waiting\n"; if wait_for F 500 then await F else poll F ]
 
 def main =
     let F = async [_ -> from_to 1 1000000 |> sum ] in
-    wait_for F
+    poll F
