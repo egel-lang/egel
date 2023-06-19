@@ -809,10 +809,6 @@ public:
         _sockfd = so._sockfd;
     }
 
-    static VMObjectPtr create(VM* vm) {
-        return VMObjectPtr(new ServerObject(vm));
-    }
-
     int compare(const VMObjectPtr& o) override {
         // XXX: not the foggiest idea whether this words.
         // I assume file descriptors are unique.

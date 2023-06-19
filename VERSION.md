@@ -30,6 +30,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ async tasks
 + egel namespace
 + utilities to vm
 + more macro removal

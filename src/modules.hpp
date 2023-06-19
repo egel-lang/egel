@@ -8,11 +8,12 @@
 #include "ast.hpp"
 #include "builtin_eval.hpp"
 #include "builtin_math.hpp"
-#include "builtin_process.hpp"
-#include "builtin_runtime.hpp"
 #include "builtin_string.hpp"
-#include "builtin_system.hpp"
+#include "builtin_process.hpp"
 #include "builtin_thread.hpp"
+#include "builtin_async.hpp"
+#include "builtin_runtime.hpp"
+#include "builtin_system.hpp"
 #include "constants.hpp"
 #include "desugar.hpp"
 #include "emit.hpp"
@@ -614,6 +615,7 @@ public:
         auto thd = ModuleInternal::create("internal", vm, &builtin_thread);
         auto prc = ModuleInternal::create("internal", vm, &builtin_process);
         auto evl = ModuleInternal::create("internal", vm, &builtin_eval);
+        auto asy = ModuleInternal::create("internal", vm, &builtin_async);
         sys->load();
         mth->load();
         str->load();
@@ -621,6 +623,7 @@ public:
         thd->load();
         prc->load();
         evl->load();
+        asy->load();
         _loading.push_back(sys);
         _loading.push_back(mth);
         _loading.push_back(str);
@@ -628,6 +631,7 @@ public:
         _loading.push_back(thd);
         _loading.push_back(prc);
         _loading.push_back(evl);
+        _loading.push_back(asy);
         process();
         flush();
     }

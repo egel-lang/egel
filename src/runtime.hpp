@@ -1714,6 +1714,9 @@ public:
     c(VM *m) : Opaque(t, m, n0, n1) {              \
     }                                              \
     c(VM *m, const symbol_t s) : Opaque(t, m, s) { \
+    } \
+    static VMObjectPtr create(VM *m) {              \
+        return std::shared_ptr<c>(new c(m));        \
     }
 
 // convenience classes for combinators which take and return constants
