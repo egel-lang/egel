@@ -9,7 +9,7 @@ using System
 using List
 
 def wait_for =
-    [ F -> if is_valid F then await F else print "o"; wait_for F ]
+    [ F -> if is_valid F then await F else (print "waiting\n"; wait_for F) ]
 
 def main =
     let F = async [_ -> from_to 1 1000000 |> sum ] in
