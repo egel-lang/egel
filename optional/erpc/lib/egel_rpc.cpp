@@ -18,6 +18,8 @@
 
 #include <egel/runtime.hpp> // compile against an installed egel
 
+using namespace egel;
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
