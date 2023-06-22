@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdlib.h>
-
 #include <chrono>
 #include <future>
 

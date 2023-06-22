@@ -145,12 +145,10 @@ Those modules are dynamically loaded.</p>
 <li><p>The do notation composes chains of transformations.</p>
 
 <p><code>(do ((+) 1) |&gt; foldl (*) 1) (from_to 0 4)</code></p></li>
-<li><p>Parallell programming is achieved  through the <code>par</code> and <code>proc</code> combinators.
-A <code>par</code> starts two computations in parallel and returns a tuple of both values after both complete.</p>
+<li><p>Parallell programming is achieved  through the <code>async/await</code> combinators.
+Asynchronous programs start threads that return future objects.</p>
 
-<p><code>par [ _ -&gt; fib 35 ] [ _ -&gt; ack 5 4 ]</code></p>
-
-<p>The process combinator is not discussed here.</p></li>
+<p><code>let F = async [ _ -&gt; fib 35 ] in await F</code></p></li>
 <li><p>Formatting strings is handled with the <code>format</code> combinator, see <a href="https://fmt.dev/" data-bare-link="true">https://fmt.dev/</a>.</p>
 
 <p><code>print (format "Hello {}" "world")</code></p></li>
@@ -243,7 +241,7 @@ Hello world!
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>MIT License (c) 2017 M.C.A. (Marco) Devillers <a href="&#109;&#x61;&#105;&#108;&#x74;&#111;&#x3a;&#x6d;&#x61;&#x72;&#99;&#x6f;&#x2e;&#100;&#101;&#118;&#x69;&#108;&#x6c;&#x65;&#114;&#x73;&#64;&#103;&#109;&#x61;&#105;&#x6c;&#46;&#x63;&#x6f;&#109;" data-bare-link="true">&#109;&#x61;&#114;&#x63;&#111;&#x2e;&#x64;&#x65;&#118;&#x69;&#108;&#x6c;&#x65;&#114;&#115;&#x40;&#x67;&#x6d;&#97;&#x69;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a></p>
+<p>MIT License (c) 2017 M.C.A. (Marco) Devillers <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#109;&#x61;&#114;&#99;&#111;&#x2e;&#100;&#x65;&#x76;&#x69;&#x6c;&#108;&#101;&#x72;&#x73;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#x6d;&#x61;&#114;&#99;&#111;&#46;&#100;&#x65;&#x76;&#105;&#x6c;&#108;&#101;&#114;&#115;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;</a></p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
@@ -252,7 +250,7 @@ Hello world!
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>December 2022</li>
+    <li class='tc'>June 2023</li>
     <li class='tr'>egel(1)</li>
   </ol>
 

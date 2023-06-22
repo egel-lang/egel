@@ -86,12 +86,10 @@ Egel code consist of expression which are evaluated eagerly.
 
    `(do ((+) 1) |> foldl (*) 1) (from_to 0 4)`
 
- * Parallell programming is achieved  through the `par` and `proc` combinators.
-   A `par` starts two computations in parallel and returns a tuple of both values after both complete.
+ * Parallell programming is achieved  through the `async/await` combinators.
+   Asynchronous programs start threads that return future objects.
 
-   `par [ _ -> fib 35 ] [ _ -> ack 5 4 ]` 
-
-   The process combinator is not discussed here.
+   `let F = async [ _ -> fib 35 ] in await F` 
 
  * Formatting strings is handled with the `format` combinator, see <https://fmt.dev/>.
 

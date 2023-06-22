@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "EGEL" "1" "December 2022" "" ""
+.TH "EGEL" "1" "June 2023" "" ""
 .
 .SH "NAME"
 \fBegel\fR \- an untyped functional scripting language
@@ -110,13 +110,10 @@ The do notation composes chains of transformations\.
 \fB(do ((+) 1) |> foldl (*) 1) (from_to 0 4)\fR
 .
 .IP "\(bu" 4
-Parallell programming is achieved through the \fBpar\fR and \fBproc\fR combinators\. A \fBpar\fR starts two computations in parallel and returns a tuple of both values after both complete\.
+Parallell programming is achieved through the \fBasync/await\fR combinators\. Asynchronous programs start threads that return future objects\.
 .
 .IP
-\fBpar [ _ \-> fib 35 ] [ _ \-> ack 5 4 ]\fR
-.
-.IP
-The process combinator is not discussed here\.
+\fBlet F = async [ _ \-> fib 35 ] in await F\fR
 .
 .IP "\(bu" 4
 Formatting strings is handled with the \fBformat\fR combinator, see \fIhttps://fmt\.dev/\fR\.
