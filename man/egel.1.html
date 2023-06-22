@@ -168,7 +168,7 @@ all computation when present.</p>
 
 <p>Tying it all together:</p>
 
-<pre><code># A parallel fibonnaci implementation.
+<pre><code># A fibonnaci implementation.
 
 import "prelude.eg"
 
@@ -180,17 +180,11 @@ namespace Fibonnaci (
     | 1 -&gt; 1
     | N -&gt; fib (N- 2) + fib (N- 1) ]
 
-  def pfib = 
-    [ 0 -&gt; 0 
-    | 1 -&gt; 1 
-    | X -&gt; [ (F0, F1) -&gt; F0 + F1 ]
-           (par [Y -&gt; pfib (X - 1) ] [Z-&gt; pfib (X - 2)]) ]
-
 )
 
 using System
 
-def main = Fibonnaci::pfib (3+2)
+def main = Fibonnaci::fib (3+2)
 </code></pre>
 
 <h2 id="EXAMPLES">EXAMPLES</h2>
@@ -241,7 +235,7 @@ Hello world!
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>MIT License (c) 2017 M.C.A. (Marco) Devillers <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#109;&#x61;&#114;&#99;&#111;&#x2e;&#100;&#x65;&#x76;&#x69;&#x6c;&#108;&#101;&#x72;&#x73;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#x6d;&#x61;&#114;&#99;&#111;&#46;&#100;&#x65;&#x76;&#105;&#x6c;&#108;&#101;&#114;&#115;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;</a></p>
+<p>MIT License (c) 2017 M.C.A. (Marco) Devillers <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#109;&#x61;&#x72;&#99;&#111;&#x2e;&#x64;&#x65;&#x76;&#x69;&#108;&#108;&#101;&#x72;&#x73;&#64;&#103;&#109;&#x61;&#x69;&#108;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#x6d;&#x61;&#114;&#99;&#x6f;&#46;&#100;&#101;&#x76;&#105;&#x6c;&#108;&#x65;&#114;&#x73;&#64;&#103;&#109;&#97;&#x69;&#x6c;&#46;&#99;&#x6f;&#x6d;</a></p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 

@@ -110,7 +110,7 @@ all computation when present.
 Tying it all together:
 
 ```
-# A parallel fibonnaci implementation.
+# A fibonnaci implementation.
 
 import "prelude.eg"
 
@@ -122,17 +122,11 @@ namespace Fibonnaci (
     | 1 -> 1
     | N -> fib (N- 2) + fib (N- 1) ]
 
-  def pfib = 
-    [ 0 -> 0 
-    | 1 -> 1 
-    | X -> [ (F0, F1) -> F0 + F1 ]
-           (par [Y -> pfib (X - 1) ] [Z-> pfib (X - 2)]) ]
-
 )
 
 using System
 
-def main = Fibonnaci::pfib (3+2)
+def main = Fibonnaci::fib (3+2)
 ```
 ## EXAMPLES
 
