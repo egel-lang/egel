@@ -1,12 +1,15 @@
 # Rosetta Code example Concurrent Programming.
 #
 # See: http://rosettacode.org
+#
+
 
 import "prelude.eg"
 
 using System
 
 def main = 
-    let _ = par (par [_ -> print "enjoy\n"] 
-                    [_ -> print "rosetta\n"]) 
-                [_ -> print "code\n"] in none
+    let X = async [_ -> print "enjoy\n"] in
+    let Y = async [_ -> print "rosetta\n"] in
+    let Z = async [_ -> print "code\n"] in 
+        (await X, await Y, await Z); none

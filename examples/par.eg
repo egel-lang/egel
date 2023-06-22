@@ -1,24 +1,14 @@
 # Egel's par construct.
 #
-# 'par f g' evaluates 'f none' and 'g none' concurrently and
-# returns a tuple with the fully reduced terms.
-# 
-# The par construct is implemented simplistically with c++ 
-# native threads and is mostly there to showcase that 
-# parallel rewriting is possible on the acyclic graph
-# representation.
-#
-# 'par' is somewhat convenient for trivial programs but I
-# imagine you would want other stuff for high-performance 
-# code.
-#
-# When an exception is thrown in a thread its result is
-# simply returned.
+# Dropped `par` for `async/await`.
 
 import "prelude.eg"
 
 namespace Fibonnaci (
   using System
+
+  def par =
+    [ F G -> let X = async F in let Y = async G in (await X, await Y) ]
 
   def fib =
     [ 0 -> 0
