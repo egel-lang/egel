@@ -30,8 +30,9 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ drop par for async/await
 + async tasks
-+ egel namespace
++ egel namespace in c++ source
 + utilities to vm
 + more macro removal
 + egel remote procedure calls
