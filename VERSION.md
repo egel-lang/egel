@@ -30,6 +30,8 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+## v0.1.9 - great conversation, chatgpt
+
 + drop par for async/await
 + async tasks
 + egel namespace in c++ source
