@@ -83,14 +83,43 @@ inline void op_split(VM* vm, VMObjectPtr* x, int n, VMObjectPtr* z, bool* flag) 
 };
 
 // OP_CONCATX x y z i16, x := y ++ drop i z
-inline void op_concat_x(VM* vm, VMOjectPtr *x, VMObjectPtr *y, VMObjectPtr *z, int i) {
+inline void op_concat_x(VM* vm, VMOjectPtr *x, VMObjectPtr *y, VMObjectPtr *z, int n) {
+    auto y0 = egel::VMObjectArray::cast(*y);
+    auto z0 = egel::VMObjectArray::cast(*z);
+
+    int n0 = y0->size();
+    int n1 = z0->size();
+
+    if (n1 <= n) {
+        vm_object_ptr_assign(x, y);
+    } else {
+        auto q = egel::VMObjectArray::create(n0+n1-n);
+        for (int i = 0; i < n0; i++) {
+            q->set(i, y0->get(i));
+        }
+        for (int i = n0; i < n0+n1-n; i++) {
+            q->set(i, z0->get(i+n-n0));
+        }
+        *x = q; 
+    }
 };
 
 // OP_TEST x y, flag := (x == y)
 inline void op_test(VM* vm, VMOjectPtr *x, VMObjectPtr *y, bool* flag) {
+    bool b = ( (*x)->compare(*y) == 0 );
+    *flag = b;
 };
 
 // OP_TAG x y, flag := (x->tag() == y)
 inline void op_tag(VM* vm, VMOjectPtr *x, VMObjectPtr *y, bool* flag) {
+    auto s0 = (*x)->symbol(); // XXX, wut?
+    auto s1 = (*y)->symbol();
+    bool b = ( s0 == s1 );
+    *flag = b;
+};
+
+// OP_RETURN x
+inline void op_return(VM*, VMObjectPtr *ret, VMObjectPtr *x) {
+    vm_object_ptr_assign(ret, x);
 };
 
