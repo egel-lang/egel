@@ -2,10 +2,7 @@
 
 #include <egel/runtime>
 
-enum opcode_t {
-    OP_FAIL,     //  l           pc := l, if flag
-    OP_RETURN,   //  x           return x
-};
+extern "C" {
 
 const int VM_OBJECT_PTR_SIZE = sizeof(VMObjectPtr);
 
@@ -123,3 +120,4 @@ inline void op_return(VM*, VMObjectPtr *ret, VMObjectPtr *x) {
     vm_object_ptr_assign(ret, x);
 };
 
+}
