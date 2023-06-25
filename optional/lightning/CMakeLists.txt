@@ -23,6 +23,7 @@ set(SOURCES
 add_library(light SHARED ${SOURCES})
 set_target_properties(light PROPERTIES PREFIX "" SUFFIX ".ego")
 
+target_link_directories(light PRIVATE /usr/local/lib)
 target_link_libraries(light PUBLIC ICU::uc ICU::i18n ICU::io lightning)
 
 #
