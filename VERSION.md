@@ -6,6 +6,7 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + don't reduce literals or variables
++ vararg function definitions
 + lowercase namespace
 + move to C++20 (modules, modern syntax)
   when libfmt makes it into llvm and gcc?

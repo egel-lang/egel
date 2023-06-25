@@ -256,12 +256,21 @@ private:
 // derive number of registers, labels
 class AnalyzeBytecode: public BytecodePass {
 public:
-    AnalyzeBytecode(const VMObjectPtr &o) : BytecodePass(o), _max(0) {
+    AnalyzeBytecode(VM* m, const VMObjectPtr &o) : BytecodePass(m, o), _max(0) {
     }
 
     void max(reg_t x) {
         if (_max < x) _max = x;
     }
+
+    reg_t register_count() {
+        return _max;
+    }
+
+    bool has_label(uint32_t pc) {
+        return _labels.count(pc) > 0;
+    }
+
     virtual void op_nil(uint32_t pc, reg_t x) override {
         max(x);
     }
@@ -316,7 +325,72 @@ private:
 };
 
 // map locals to globals
-class AnalyzeData: public DataPass {
+class PushData: public DataPass {
+    PushData(VM* m, const VMObjectPtr &o) : DataPass(m, o) {
+    }
+
+    data_t get_vm_data(uint32_t entry) {
+        return _map[key];
+    }
+
+    virtual void data_entry(uint32_t key, const VMObjectPtr& value) {
+        auto entry = machine()->get_data(value);
+        _map[key] = entry;
+    }
+private:
+    std::map<int, int>  _map;
 };
 
+class EmitNative: public BytecodePass {
+public:
+    EmitNative(VM* m, const VMObjectPtr &o) : BytecodePass(m, o), _data(PushData(vm, o), _analyzebytecode(m,o), _proc(nullptr) {
+    }
 
+    void* get_procedure() {
+        return _proc;
+    }
+
+    virtual void op_nil(uint32_t pc, reg_t x) override {
+    }
+
+    virtual void op_mov(uint32_t pc, reg_t x, reg_t y) override {
+    }
+
+    virtual void op_data(uint32_t pc, reg_t x, uint32_t d) override {
+    }
+
+    virtual void op_set(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+    }
+
+    virtual void op_split(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+    }
+
+    virtual void op_array(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+    }
+
+    virtual void op_takex(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
+    }
+
+    virtual void op_concatx(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
+    }
+
+    virtual void op_test(uint32_t pc, reg_t x, reg_t y) override {
+    }
+
+    virtual void op_tag(uint32_t pc, reg_t x, reg_t y) override {
+    }
+
+    virtual void op_fail(uint32_t pc, label_t l) override {
+    }
+
+    virtual void op_return(uint32_t pc, reg_t x) override {
+    }
+
+    void emit() {
+    }
+
+private:
+    void* _proc;
+    PushData _pushdata;
+    AnalyzeBytecode _analyzebytecode;
+};
