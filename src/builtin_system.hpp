@@ -937,8 +937,9 @@ public:
 inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
-    // throw combinator
+    // throw and stall combinators
     oo.push_back(VMThrow::create(vm));
+    oo.push_back(VMStall::create(vm));
 
     // K, Id combinators
     oo.push_back(K::create(vm));

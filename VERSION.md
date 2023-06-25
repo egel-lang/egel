@@ -31,6 +31,8 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ added a stall combinator
+
 ## v0.1.9 - great conversation, chatgpt
 
 + drop par for async/await

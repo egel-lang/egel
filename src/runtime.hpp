@@ -1695,6 +1695,43 @@ public:
     }
 };
 
+// the stall combinator, used in the runtime
+class VMStall : public VMObjectCombinator {
+public:
+    VMStall(VM *m) : VMObjectCombinator(VM_SUB_BUILTIN, m, "System", "stall") {
+    }
+
+    VMStall(const VMStall &t) : VMStall(t.machine()) {
+    }
+
+    static VMObjectPtr create(VM *m) {
+        return std::make_shared<VMStall>(m);
+    }
+
+    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+        auto tt = VMObjectArray::value(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+        auto exc = tt[3];
+        VMObjectPtrs rr;
+        if (tt.size() > 5) {
+            for (unsigned int i = 5; i < tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+        } else {
+            rr.push_back(tt[4]); // note: stall returns stall
+        }
+        auto r = VMObjectArray::create(rr);
+
+        auto index = VMObjectInteger::value(rti);
+        auto rta = VMObjectArray::cast(rt);
+        rta->set(index, r);
+
+        return k;
+    }
+};
+
 // convenience classes for defining built-in combinators
 // XXX: deceprate this
 
