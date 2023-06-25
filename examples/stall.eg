@@ -1,0 +1,11 @@
+# The `stall` combinator defers evaluation to later.
+#
+# It has limited use but is needed to implement guards, since that
+# can be translated to a number of checks, which when fail returns
+# the defered term.
+
+import "prelude.eg"
+
+using System
+
+def main = stall id 42 # rewrites to `id 42`
