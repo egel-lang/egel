@@ -21,8 +21,8 @@ inline void vm_object_ptr_destruct(VMObjectPtr* p) {
     p->~VMObjectPtr();
 };
 
-inline void vm_object_ptr_assign(VMObjectPtr* p, const VMObjectPtr &o) {
-    *p = o;
+inline void vm_object_ptr_assign(VMObjectPtr* p0, VMObjectPtr *p1) {
+    *p0 = *p1;
 };
 
 // OP_NIL x,  x := null
@@ -43,9 +43,9 @@ inline void op_data(VM* vm, VMObjectPtr *x, int i) {
 // OP_ARRAY x y z, x := [ y, y+1,.., z ]
 inline void op_array(VM* vm, VMObjectPtr *x, VMObjectPtr* y, int n) {
     auto a0 = VMObjectArray::create(n);
-    auto a1 = VMObjectArray::cast(a1);
+    auto a1 = VMObjectArray::cast(a0);
     for (int i = 0; i < n; i++) {
-        a1->set(i, *(y[n]));
+        a1->set(i, y[i]);
     }
     *x = a1;
 };
@@ -53,7 +53,7 @@ inline void op_array(VM* vm, VMObjectPtr *x, VMObjectPtr* y, int n) {
 // OP_SET x y z, x[val(y)] = z
 inline void op_set(VM* vm, VMObjectPtr* x, VMObjectPtr *y, VMObjectPtr *z) {
     int n = VMObjectInteger::cast(*y)->value();
-    int a = VMObjectArray::cast(*x);
+    auto a = VMObjectArray::cast(*x);
     a->set(n, *z);
 };
 
@@ -64,7 +64,7 @@ inline void op_takex(VM* vm, VMObjectPtr* x, int n0, VMObjectPtr* z, int n1, boo
         *flag = false;
     } else {
         for (int i = 0; i < n0; i++) {
-            *(x[i]) = a->get(n1+i);
+            x[i] = a->get(n1+i);
         }
     }
 };
@@ -76,7 +76,7 @@ inline void op_split(VM* vm, VMObjectPtr* x, int n, VMObjectPtr* z, bool* flag) 
         *flag = false;
     } else {
         for (int i = 0; i < n; i++) {
-            *(x[i]) = a->get(i);
+            x[i] = a->get(i);
         }
     }
 };
@@ -92,20 +92,22 @@ inline void op_concat_x(VM* vm, VMObjectPtr *x, VMObjectPtr *y, VMObjectPtr *z, 
     if (n1 <= n) {
         vm_object_ptr_assign(x, y);
     } else {
-        auto q = VMObjectArray::create(n0+n1-n);
+        auto q0 = VMObjectArray::create(n0+n1-n);
+        auto q1 = VMObjectArray::cast(q0);
         for (int i = 0; i < n0; i++) {
-            q->set(i, y0->get(i));
+            q1->set(i, y0->get(i));
         }
         for (int i = n0; i < n0+n1-n; i++) {
-            q->set(i, z0->get(i+n-n0));
+            q1->set(i, z0->get(i+n-n0));
         }
-        *x = q; 
+        *x = q1; 
     }
 };
 
 // OP_TEST x y, flag := (x == y)
 inline void op_test(VM* vm, VMObjectPtr *x, VMObjectPtr *y, bool* flag) {
-    bool b = ( (*x)->compare(*y) == 0 );
+    EqualVMObjectPtr equals;
+    bool b = equals(*x, *y);
     *flag = b;
 };
 

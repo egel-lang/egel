@@ -1,6 +1,8 @@
 #include "instructions.hpp"
-#include <egel/runtime>
-#include <egel/bytecode>
+#include <egel/runtime.hpp>
+#include <egel/bytecode.hpp>
+
+using namespace egel;
 
 class BytecodePass {
 public:
@@ -113,103 +115,103 @@ public:
         while (!is_end()) {
             switch (look()) {
                 case OP_NIL: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
-                    op_nil(pc, x);
+                    op_nil(p, x);
                     }
                     break;
                 case OP_MOV: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
-                    op_mov(pc,x, y);
+                    op_mov(p,x, y);
                     }
                     break;
                 case OP_DATA: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto i = fetch_i32();
-                    op_data(pc, x, i);
+                    op_data(p, x, i);
                     }
                     break;
                 case OP_SET: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
                     auto z = fetch_register();
-                    op_set(pc, x, y, z);
+                    op_set(p, x, y, z);
                     }
                     break;
                 case OP_SPLIT: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
                     auto z = fetch_register();
-                    op_split(pc, x, y, z);
+                    op_split(p, x, y, z);
                     }
                     break;
                 case OP_ARRAY: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
                     auto z = fetch_register();
-                    op_array(pc, x, y, z);
+                    op_array(p, x, y, z);
                     }
                     break;
                 case OP_TAKEX: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
                     auto z = fetch_register();
                     auto i = fetch_index();
-                    op_takex(pc, x,y,z,i);
+                    op_takex(p, x,y,z,i);
                     }
                     break;
                 case OP_CONCATX: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
                     auto z = fetch_register();
                     auto i = fetch_index();
-                    op_concatx(pc, x,y,z,i);
+                    op_concatx(p, x,y,z,i);
                     }
                     break;
                 case OP_TEST: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
-                    op_test(pc, x,y);
+                    op_test(p, x,y);
                     }
                     break;
                 case OP_TAG: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
                     auto y = fetch_register();
-                    op_tag(pc, x,y);
+                    op_tag(p, x,y);
                     }
                     break;
                 case OP_FAIL: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto l = fetch_label();
-                    op_fail(pc, x,y);
+                    op_fail(p, l);
                     }
                     break;
                 case OP_RETURN: {
-                    auto pc = pc();
+                    auto p = pc();
                     fetch_op();
                     auto x = fetch_register();
-                    op_return(pc, x);
+                    op_return(p, x);
                     }
                     break;
             }
@@ -217,6 +219,8 @@ public:
     }
 private:
     Code _code;
+    uint32_t _pc;
+    VM* _machine;
 };
 
 // for orthogonality reasons
@@ -241,16 +245,17 @@ public:
         return _data.size();
     }
 
-    virtual void data_entry(uint32_t key, const VMObjectPtr& value) {
+    virtual void data_entry(uint32_t key, uint32_t value) {
     }
 
     void pass() {
         for (size_t i = 0; i < _data.size(); i++) {
-            data_entry(i, _data[i];
+            data_entry(i, _data[i]);
         }
     }
 private:
     Data _data;
+    VM*  _machine;
 };
 
 // derive number of registers, labels
@@ -326,11 +331,12 @@ private:
 
 // map locals to globals
 class PushData: public DataPass {
+public:
     PushData(VM* m, const VMObjectPtr &o) : DataPass(m, o) {
     }
 
     data_t get_vm_data(uint32_t entry) {
-        return _map[key];
+        return _map[entry];
     }
 
     virtual void data_entry(uint32_t key, const VMObjectPtr& value) {
@@ -343,7 +349,7 @@ private:
 
 class EmitNative: public BytecodePass {
 public:
-    EmitNative(VM* m, const VMObjectPtr &o) : BytecodePass(m, o), _data(PushData(vm, o), _analyzebytecode(m,o), _proc(nullptr) {
+    EmitNative(VM* m, const VMObjectPtr &o) : BytecodePass(m, o), _data(PushData(m, o)), _analyzebytecode(m,o), _proc(nullptr) {
     }
 
     void* get_procedure() {
@@ -391,6 +397,6 @@ public:
 
 private:
     void* _proc;
-    PushData _pushdata;
+    PushData _data;
     AnalyzeBytecode _analyzebytecode;
 };
