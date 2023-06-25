@@ -48,9 +48,9 @@ static operator_t operators[] = {
     {'%', "ct", RIGHT_ASSOC | INFIX},
     {'~', "tl", NONE_ASSOC | PREFIX | INFIX},
     {'@', "at", LEFT_ASSOC | INFIX},
-    {'&', "am", RIGHT_ASSOC | INFIX},
+    {'&', "am", LEFT_ASSOC | INFIX},
+    {'$', "or", LEFT_ASSOC | INFIX},
     {'|', "br", LEFT_ASSOC | INFIX},
-    {'$', "do", RIGHT_ASSOC | INFIX},
     {'.', "dt", LEFT_ASSOC | INFIX},
 };
 

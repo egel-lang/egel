@@ -8,4 +8,6 @@ import "prelude.eg"
 
 using System
 
+def inf = [X -> print "rewrite"; stall inf X] # do something
+
 def main = stall id 42 # rewrites to `id 42`
