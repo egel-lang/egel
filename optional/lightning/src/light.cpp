@@ -1,6 +1,9 @@
 #include "instructions.hpp"
+
 #include <egel/runtime.hpp>
 #include <egel/bytecode.hpp>
+
+#include <lightning.h>
 
 using namespace egel;
 
@@ -393,6 +396,35 @@ public:
     }
 
     void emit() {
+        _analyzebytecode.pass();
+        _data.pass();
+
+        static bool initialized = false; // XXX: not thread safe
+        if (!initialized) {
+            initialized = true;
+            ::init_jit(nullptr);
+        }
+
+        jit_state* _jit;
+
+        _jit = jit_new_state();
+        jit_prolog();
+
+        auto regs = _analyzebytecode.register_count();
+
+        // reserve space in the stack for registers and flag
+        auto regs_offset = jit_allocai(regs * sizeof(VMObjectPtr));
+        auto flag_offset = jit_allocai(sizeof(bool));
+
+        // R0 = registers address, R1 = flag address, R2 = return ptr
+        jit_addi(JIT_R0, JIT_FP, regs_offset);
+        jit_addi(JIT_R1, JIT_FP, flag_offset);
+        auto a0 = jit_arg();
+        jit_getarg(JIT_R2, a0);
+        auto a1 = jit_arg();
+        jit_getarg(JIT_R3, a0);
+
+
     }
 
 private:
