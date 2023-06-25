@@ -36,6 +36,10 @@ namespace System (
     def |> =
         [ X F -> F X ]
 
+    ## System::@ f x - low binding application
+    def @ =
+        [ X F -> F X ]
+
     ## System::flip f x y - flip two arguments
     def flip = [ F X Y -> F Y X ]
 
