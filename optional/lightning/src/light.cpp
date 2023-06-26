@@ -1,7 +1,9 @@
 #include <egel/runtime.hpp>
 #include <egel/bytecode.hpp>
 
+extern "C" {
 #include <lightning.h>
+}
 
 using namespace egel;
 
@@ -751,6 +753,8 @@ public:
         auto m = machine();
         if (m->is_bytecode(o)) {
             TRACE_JIT(std::cerr << "compiling " << o->to_text() << std::endl);
+            auto e = EmitNative(m, o);
+            auto p = e.emit();
         }
     }
 
