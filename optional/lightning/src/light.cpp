@@ -642,7 +642,7 @@ public:
         emit_label(pc);
     }
 
-    void emit() {
+    void* emit() {
         _analyzebytecode.pass();
         _data.pass();
 
@@ -703,6 +703,8 @@ public:
         jit_clear_state();
         jit_destroy_state();
         // finish_jit(); // we don't call this
+
+        return _proc;
     }
 
 private:
@@ -713,3 +715,30 @@ private:
     PushData _data;
     AnalyzeBytecode _analyzebytecode;
 };
+
+class VMObjectLightning : public VMObjectBytecode {
+public:
+    VMObjectLightning(VM *m, const Code &c, const Data &d, const icu::UnicodeString &n, void* p) :
+    VMObjectBytecode(m, c, d, n), _proc(p) {
+    }
+
+/*
+    void compile() {
+        auto m = machine();
+        auto e = EmitNative(m, this);
+        _proc = e.emit();
+    }
+*/
+
+    VMObjectPtr reduce(const VMObjectPtr &thunk) const override { 
+        VMObjectPtr r;
+        // VM, thunk, result
+        auto f = reinterpret_cast<void(*)(VM*, VMObjectPtr*, VMObjectPtr*)>(_proc);
+        f(machine(), &(const_cast<VMObjectPtr&>(thunk)), &r);
+        return r;
+    };
+
+private:
+    void* _proc;
+};
+
