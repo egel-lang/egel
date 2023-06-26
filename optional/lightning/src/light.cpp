@@ -740,6 +740,7 @@ public:
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override { 
         VMObjectPtr r;
         // VM, thunk, result
+        TRACE_JIT(std::cerr << "native call " << to_text() << std::endl);
         auto f = reinterpret_cast<void(*)(VM*, VMObjectPtr*, VMObjectPtr*)>(_proc);
         f(machine(), &(const_cast<VMObjectPtr&>(thunk)), &r);
         return r;
