@@ -360,33 +360,99 @@ public:
     }
 
     virtual void op_nil(uint32_t pc, reg_t x) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_finishi((void*)::op_nil);
     }
 
     virtual void op_mov(uint32_t pc, reg_t x, reg_t y) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_finishi((void*)::op_mov);
     }
 
     virtual void op_data(uint32_t pc, reg_t x, uint32_t d) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) d); // d
+        jit_finishi((void*)::op_data);
     }
 
     virtual void op_set(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_pushargi((int) z); // z
+        jit_finishi((void*)::op_set);
     }
 
     virtual void op_split(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_pushargi((int) z); // z
+        jit_finishi((void*)::op_split);
     }
 
     virtual void op_array(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_pushargi((int) z); // z
+        jit_finishi((void*)::op_array);
     }
 
     virtual void op_takex(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_pushargi((int) z); // z
+        jit_pushargi((int) i); // z
+        jit_finishi((void*)::op_takex);
     }
 
     virtual void op_concatx(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_pushargi((int) z); // z
+        jit_pushargi((int) i); // i
+        jit_finishi((void*)::op_concatx);
     }
 
     virtual void op_test(uint32_t pc, reg_t x, reg_t y) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_finishi((void*)::op_test);
     }
 
     virtual void op_tag(uint32_t pc, reg_t x, reg_t y) override {
+        jit_prepare();
+        jit_pushargr(JIT_R0);  // VM*
+        jit_pushargr(JIT_R1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargi((int) y); // y
+        jit_finishi((void*)::op_tag);
     }
 
     virtual void op_fail(uint32_t pc, label_t l) override {
@@ -405,8 +471,6 @@ public:
             ::init_jit(nullptr);
         }
 
-        jit_state* _jit;
-
         _jit = jit_new_state();
         jit_prolog();
 
@@ -416,20 +480,24 @@ public:
         auto regs_offset = jit_allocai(regs * sizeof(VMObjectPtr));
         auto flag_offset = jit_allocai(sizeof(bool));
 
-        // R0 = registers address, R1 = flag address,
-        // R2 = VM*, R3 = thunk, R4 = return pointer
-        jit_addi(JIT_R0, JIT_FP, regs_offset);
-        jit_addi(JIT_R1, JIT_FP, flag_offset);
+
+        // R1 = registers
+        jit_addi(JIT_R1, JIT_FP, regs_offset);
+        // R2 = flag
+        jit_addi(JIT_R2, JIT_FP, flag_offset);
+        // R0 = VM*
         auto a0 = jit_arg();
-        jit_getarg(JIT_R2, a0);
+        jit_getarg(JIT_R0, a0);
         auto a1 = jit_arg();
+        // R3 = thunk
         jit_getarg(JIT_R3, a1);
         auto a3 = jit_arg();
+        // R4 = return
         jit_getarg(JIT_R4, a1);
 
         // set up registers
         jit_prepare();
-        jit_pushargr(JIT_R0);
+        jit_pushargr(JIT_R1);
         jit_pushargi(regs);
         jit_finishi((void*)vm_object_ptr_construct_n);
 
@@ -438,6 +506,7 @@ public:
 
 private:
     void* _proc;
+    jit_state* _jit;
     PushData _data;
     AnalyzeBytecode _analyzebytecode;
 };

@@ -53,7 +53,8 @@ inline void op_data(VM* vm, VMObjectPtr *a, int x, int i) {
 };
 
 // OP_ARRAY x y z, x := [ y, y+1,.., z ]
-inline void op_array(VM* vm, VMObjectPtr *a, int x, int y, int n) {
+inline void op_array(VM* vm, VMObjectPtr *a, int x, int y, int z) {
+    auto n = (z - y) + 1;
     auto a0 = VMObjectArray::create(n);
     auto a1 = VMObjectArray::cast(a0);
     for (int i = 0; i < n; i++) {
@@ -70,7 +71,8 @@ inline void op_set(VM* vm, VMObjectPtr* a, int x, int  y, int z) {
 };
 
 // OP_TAKEX x y z i16, x,..,y = z[i],..,z[i+y-x], ~flag if fail
-inline void op_takex(VM* vm, VMObjectPtr* a, int x, int n0, int z, int n1, bool *flag) {
+inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int n1, bool *flag) {
+    int n0 = (y - x) + 1;
     auto a0 = VMObjectArray::cast(a[z]);
     if (a0->size() < n0 + n1) {
         *flag = false;
@@ -82,7 +84,8 @@ inline void op_takex(VM* vm, VMObjectPtr* a, int x, int n0, int z, int n1, bool 
 };
 
 // OP_SPLIT x y z, x,..,y = z[0],..,z[y-x], flag if not exact
-inline void op_split(VM* vm, VMObjectPtr* a, int x, int n, int z, bool* flag) {
+inline void op_split(VM* vm, VMObjectPtr* a, int x, int y, int z, bool* flag) {
+    auto n = (y - x) + 1;
     auto a0 = VMObjectArray::cast(a[z]);
     if (a0->size() != n) {
         *flag = false;
@@ -94,7 +97,7 @@ inline void op_split(VM* vm, VMObjectPtr* a, int x, int n, int z, bool* flag) {
 };
 
 // OP_CONCATX x y z i16, x := y ++ drop i z
-inline void op_concat_x(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
+inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
     auto y0 = VMObjectArray::cast(a[y]);
     auto z0 = VMObjectArray::cast(a[z]);
 
