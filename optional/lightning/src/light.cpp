@@ -359,7 +359,24 @@ public:
         return _proc;
     }
 
+    void emit_label(uint32_t pc) {
+        if (_analyzebytecode.has_label(pc)) {
+            auto l = jit_label();
+            _labels[(int)pc] = l;
+        }
+    }
+
+    void patch_jumps() {
+        for (auto it = _jumps.begin(); it != _jumps.end(); ++it) {
+            auto jump = it->first;
+            auto pc = it->second;
+            auto l = _labels[(int) pc];
+            jit_patch_at(jump, l);
+         }
+    }
+
     virtual void op_nil(uint32_t pc, reg_t x) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -368,6 +385,7 @@ public:
     }
 
     virtual void op_mov(uint32_t pc, reg_t x, reg_t y) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -377,6 +395,7 @@ public:
     }
 
     virtual void op_data(uint32_t pc, reg_t x, uint32_t d) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -386,6 +405,7 @@ public:
     }
 
     virtual void op_set(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -396,6 +416,7 @@ public:
     }
 
     virtual void op_split(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -406,6 +427,7 @@ public:
     }
 
     virtual void op_array(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -416,6 +438,7 @@ public:
     }
 
     virtual void op_takex(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -427,6 +450,7 @@ public:
     }
 
     virtual void op_concatx(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -438,6 +462,7 @@ public:
     }
 
     virtual void op_test(uint32_t pc, reg_t x, reg_t y) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -447,6 +472,7 @@ public:
     }
 
     virtual void op_tag(uint32_t pc, reg_t x, reg_t y) override {
+        emit_label(pc);
         jit_prepare();
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
@@ -456,9 +482,14 @@ public:
     }
 
     virtual void op_fail(uint32_t pc, label_t l) override {
+        emit_label(pc);
+        jit_ldxi(JIT_R5, JIT_R2, 0); // load flag to R5
+        auto j = jit_beqi(JIT_R5, (int) true); // branch on true
+        _jumps[j] = (int) l;
     }
 
     virtual void op_return(uint32_t pc, reg_t x) override {
+        emit_label(pc);
     }
 
     void emit() {
@@ -501,12 +532,34 @@ public:
         jit_pushargi(regs);
         jit_finishi((void*)vm_object_ptr_construct_n);
 
+        pass();
 
+        // patch all jumps
+        patch_jumps();
+
+        // destroy registers
+        jit_prepare();
+        jit_pushargr(JIT_R1);
+        jit_pushargi(regs);
+        jit_finishi((void*)vm_object_ptr_destruct_n);
+
+        jit_ret();
+        jit_epilog();
+
+        // emit the native code
+        _proc = jit_emit();
+
+        // clean up
+        jit_clear_state();
+        jit_destroy_state();
+        // finish_jit(); // we don't call this
     }
 
 private:
     void* _proc;
     jit_state* _jit;
+    std::map<int, jit_node_t*> _labels;
+    std::map<jit_node_t*, int> _jumps;
     PushData _data;
     AnalyzeBytecode _analyzebytecode;
 };
