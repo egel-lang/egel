@@ -490,7 +490,7 @@ public:
     PushData(VM* m, const VMObjectPtr &o) : DataPass(m, o) {
     }
 
-    data_t get_vm_data(uint32_t entry) {
+    data_t get_data(uint32_t entry) {
         return _map[entry];
     }
 
@@ -552,7 +552,8 @@ public:
         jit_pushargr(JIT_R0);  // VM*
         jit_pushargr(JIT_R1);  // registers
         jit_pushargi((int) x); // x
-        jit_pushargi((int) d); // d
+        auto g = _data.get_data(d); // get the global
+        jit_pushargi((int) g); // d
         jit_finishi((void*)::op_data);
     }
 
@@ -724,6 +725,10 @@ public:
     VMObjectBytecode(m, c, d, n), _proc(p) {
     }
 
+    static VMObjectPtr create(VM *m, const Code &c, const Data &d, const icu::UnicodeString &n, void* p) {
+        return std::make_shared<VMObjectLightning>(m, c, d, n, p);
+    }
+
 /* I would prefer on demand compilation
     void compile() {
         auto m = machine();
@@ -753,8 +758,14 @@ public:
         auto m = machine();
         if (m->is_bytecode(o)) {
             TRACE_JIT(std::cerr << "compiling " << o->to_text() << std::endl);
+
             auto e = EmitNative(m, o);
             auto p = e.emit();
+
+            auto b = VMObjectBytecode::cast(o);
+            auto l = VMObjectLightning::create(m, b->code(), b->data(), b->to_text(), p);
+
+            m->overwrite(l);
         }
     }
 
