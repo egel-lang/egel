@@ -13,34 +13,43 @@ extern "C" {
 
 using namespace egel;
 
-const int VM_OBJECT_PTR_SIZE = sizeof(VMObjectPtr);
+// used for debugging jit code
+inline void marker() {
+    TRACE_JIT(std::cerr << "marker" << std::endl);
+};
 
 // create registers
 inline VMObjectPtr* alloc_vm_object_ptr() {
-    return static_cast<VMObjectPtr*>(malloc(VM_OBJECT_PTR_SIZE));
+    TRACE_JIT(std::cerr << "alloc " << std::endl);
+    return static_cast<VMObjectPtr*>(malloc(sizeof(VMObjectPtr)));
 };
 
 inline void vm_object_ptr_construct(VMObjectPtr* p) {
+    TRACE_JIT(std::cerr << "construct " << std::endl);
     new (p) VMObjectPtr();
 };
 
 inline void vm_object_ptr_construct_n(VMObjectPtr* p, int n) {
+    TRACE_JIT(std::cerr << "construct_n " << std::endl);
     for (int i = 0; i < n; i++) {
         new (&(p[i])) VMObjectPtr();
     }
 };
 
 inline void vm_object_ptr_destruct(VMObjectPtr* p) {
+    TRACE_JIT(std::cerr << "destruct " << std::endl);
     p->~VMObjectPtr();
 };
 
 inline void vm_object_ptr_destruct_n(VMObjectPtr* p, int n) {
+    TRACE_JIT(std::cerr << "destruct_n " << std::endl);
     for (int i = 0; i < n; i++) {
         p[i].~VMObjectPtr();
     }
 };
 
 inline void vm_object_ptr_assign(VMObjectPtr* p0, VMObjectPtr *p1) {
+    TRACE_JIT(std::cerr << "assign " << std::endl);
     *p0 = *p1;
 };
 
@@ -645,6 +654,11 @@ public:
         emit_label(pc);
     }
 
+    void emit_marker() {
+        jit_prepare();
+        jit_finishi((void*)marker);
+    }
+
     void* emit() {
         _analyzebytecode.pass();
         _data.pass();
@@ -664,6 +678,7 @@ public:
         auto regs_offset = jit_allocai(regs * sizeof(VMObjectPtr));
         auto flag_offset = jit_allocai(sizeof(int));
 
+        emit_marker(); // TRACING MARKER PLACED
 
         // R1 = registers
         jit_addi(JIT_R1, JIT_FP, regs_offset);
@@ -729,18 +744,10 @@ public:
         return std::make_shared<VMObjectLightning>(m, c, d, n, p);
     }
 
-/* I would prefer on demand compilation
-    void compile() {
-        auto m = machine();
-        auto e = EmitNative(m, this);
-        _proc = e.emit();
-    }
-*/
-
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override { 
         VMObjectPtr r;
         // VM, thunk, result
-        TRACE_JIT(std::cerr << "native call " << to_text() << std::endl);
+        TRACE_JIT(std::cerr << "native call " << to_text() << " on " << _proc << std::endl);
         auto f = reinterpret_cast<void(*)(VM*, VMObjectPtr*, VMObjectPtr*)>(_proc);
         f(machine(), &(const_cast<VMObjectPtr&>(thunk)), &r);
         return r;
