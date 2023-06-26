@@ -913,11 +913,21 @@ public:
     }
 
     VMObjectPtr query_symbols() override {
-        throw create_text("stub");
+        VMObjectPtrs oo;
+        auto sz = _symbols.size();
+        for (int i = 0; i < sz; i++) {
+            oo.push_back(create_text(_symbols.get(i)));
+        }
+        return to_list(oo);
     }
 
     VMObjectPtr query_data() override {
-        throw create_text("stub");
+        VMObjectPtrs oo;
+        auto sz = _data.size();
+        for (unsigned int i = 0; i < sz; i++) {
+            oo.push_back(_data.get(i));
+        }
+        return to_list(oo);
     }
 
     int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) override {
