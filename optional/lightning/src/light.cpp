@@ -272,7 +272,7 @@ public:
     }
 
     reg_t register_count() {
-        return _max;
+        return _max + 1;
     }
 
     bool has_label(uint32_t pc) {
@@ -416,13 +416,22 @@ public:
         auto regs_offset = jit_allocai(regs * sizeof(VMObjectPtr));
         auto flag_offset = jit_allocai(sizeof(bool));
 
-        // R0 = registers address, R1 = flag address, R2 = return ptr
+        // R0 = registers address, R1 = flag address,
+        // R2 = VM*, R3 = thunk, R4 = return pointer
         jit_addi(JIT_R0, JIT_FP, regs_offset);
         jit_addi(JIT_R1, JIT_FP, flag_offset);
         auto a0 = jit_arg();
         jit_getarg(JIT_R2, a0);
         auto a1 = jit_arg();
-        jit_getarg(JIT_R3, a0);
+        jit_getarg(JIT_R3, a1);
+        auto a3 = jit_arg();
+        jit_getarg(JIT_R4, a1);
+
+        // set up registers
+        jit_prepare();
+        jit_pushargr(JIT_R0);
+        jit_pushargi(regs);
+        jit_finishi((void*)vm_object_ptr_construct_n);
 
 
     }
