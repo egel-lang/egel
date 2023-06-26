@@ -747,6 +747,13 @@ class Light : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Light, "System", "light");
 
+    void try_compile(const VMObjectPtr& o) const {
+        auto m = machine();
+        if (m->is_bytecode(o)) {
+            TRACE_JIT(std::cerr << "compiling " << o->to_text() << std::endl);
+        }
+    }
+
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         // ignore the string for now
         auto m = machine();
@@ -754,7 +761,9 @@ public:
             auto oo = m->query_symbols();
             auto ss = m->from_list(oo); // XXX: a bit overkill
             for (auto& s: ss) {
-                TRACE_JIT(std::cerr << "compiling " << s << std::endl);
+                if (m->is_text(s)) {
+                    try_compile(m->get_combinator(m->get_text(s)));
+                }
             }
             return m->create_none();
         } else {
@@ -763,3 +772,14 @@ public:
     }
 };
 
+extern "C" std::vector<icu::UnicodeString> egel_imports() {
+    return std::vector<icu::UnicodeString>();
+};
+
+extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
+    std::vector<VMObjectPtr> oo;
+
+    oo.push_back(Light::create(vm));
+
+    return oo;
+};
