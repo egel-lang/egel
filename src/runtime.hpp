@@ -579,7 +579,7 @@ public:
     virtual VMObjectPtr to_tuple(const VMObjectPtrs &oo) = 0;
     virtual VMObjectPtrs from_tuple(const VMObjectPtr &tt) = 0;
 
-    // convenience (for internal usage)
+    // convenience
     virtual bool is_list(const VMObjectPtr &o) = 0;
     virtual VMObjectPtr to_list(const VMObjectPtrs &oo) = 0;
     virtual VMObjectPtrs from_list(const VMObjectPtr &o) = 0;
@@ -601,6 +601,10 @@ public:
     virtual VMObjectPtr query_module_exports(const VMObjectPtr &m) = 0;
     virtual VMObjectPtr query_module_values(const VMObjectPtr &m) = 0;
 
+    // machine state
+    virtual VMObjectPtr query_symbols() = 0;
+    //virtual VMObjectPtr query_data() = 0;
+
     // serialization etc
     virtual VMObjectPtr assemble(const icu::UnicodeString &s) = 0;
     virtual icu::UnicodeString disassemble(const VMObjectPtr &o) = 0;
@@ -608,10 +612,6 @@ public:
     virtual icu::UnicodeString serialize(const VMObjectPtr &o) = 0;
     virtual VMObjectPtr deserialize(const icu::UnicodeString &s) = 0;
     virtual VMObjectPtrs bundle(const VMObjectPtr &o) = 0;
-
-    // machine state
-    virtual VMObjectPtr query_symbols() = 0;
-    virtual VMObjectPtr query_data() = 0;
 
     virtual int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) = 0;
 

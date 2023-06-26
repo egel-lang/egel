@@ -722,7 +722,7 @@ public:
     VMObjectBytecode(m, c, d, n), _proc(p) {
     }
 
-/*
+/* I would prefer on demand compilation
     void compile() {
         auto m = machine();
         auto e = EmitNative(m, this);
@@ -740,5 +740,26 @@ public:
 
 private:
     void* _proc;
+};
+
+// ## System::light s - compile all bytecode objects in scope ahead-of-time
+class Light : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, Light, "System", "light");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        // ignore the string for now
+        auto m = machine();
+        if (m->is_text(arg0)) {
+            auto oo = m->query_symbols();
+            auto ss = m->from_list(oo); // XXX: a bit overkill
+            for (auto& s: ss) {
+                TRACE_JIT(std::cerr << "compiling " << s << std::endl);
+            }
+            return m->create_none();
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
 };
 

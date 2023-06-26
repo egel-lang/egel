@@ -921,6 +921,7 @@ public:
         return to_list(oo);
     }
 
+/*
     VMObjectPtr query_data() override {
         VMObjectPtrs oo;
         auto sz = _data.size();
@@ -929,6 +930,7 @@ public:
         }
         return to_list(oo);
     }
+*/
 
     int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) override {
         CompareVMObjectPtr compare;
