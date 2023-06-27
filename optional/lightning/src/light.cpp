@@ -54,6 +54,21 @@ inline void load(VM *vm, VMObjectPtr *a, VMObjectPtr *x) {
     a[0] = *x;;
 };
 
+// DEBUG
+inline void debug(VM *vm, VMObjectPtr *a, int n, int* flag) {
+    std::cerr << "############## DEBUG START ######################" << std::endl;
+    for(int i = 0; i < n; i++) {
+        if (a[i] == nullptr) {
+            std::cerr << "r[" << i << "] = . " << std::endl;
+        } else {
+            std::cerr << "r[" << i << "] = " << a[i] << std::endl;
+        }
+    }
+    std::cerr << "flag(" << *flag << ")" << std::endl;
+    std::cerr << "############## DEBUG END ########################" << std::endl;
+};
+
+
 // OP_NIL x,  x := null
 inline void op_nil(VM *vm, VMObjectPtr *a, int x) {
     TRACE_JIT(std::cerr << "OP_NIL r" << x << std::endl);
@@ -166,7 +181,9 @@ inline void op_tag(VM* vm, VMObjectPtr *a, int x, int y, bool* flag) {
 // OP_RETURN x
 inline void op_return(VM*, VMObjectPtr *a, int x, VMObjectPtr *ret) {
     TRACE_JIT(std::cerr << "OP_RETURN r" << x << std::endl);
+    TRACE_JIT(std::cerr << "return " << (void*)ret << std::endl);
     *ret = a[x];
+    TRACE_JIT(std::cerr << "DONE!" << std::endl);
 };
 
 }; // extern "C"
@@ -506,10 +523,10 @@ public:
         return _map[entry];
     }
 
-    virtual void data_entry(uint32_t key, const VMObjectPtr& value) {
-        auto entry = machine()->get_data(value);
-        _map[key] = entry;
+    virtual void data_entry(uint32_t key, uint32_t value) override {
+        _map[key] = value;
     }
+
 private:
     std::map<int, int>  _map;
 };
@@ -657,11 +674,30 @@ public:
 
     virtual void op_return(uint32_t pc, reg_t x) override {
         emit_label(pc);
+        emit_debug();
+        jit_addi(JIT_R0, JIT_FP, _return_offset);
+        jit_ldxi(JIT_R0, JIT_R0, 0);
+        jit_prepare();
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
+        jit_pushargi((int) x); // x
+        jit_pushargr(JIT_R0);  // return
+        jit_finishi((void*)::op_return);
+        jit_ret();
     }
 
     void emit_marker() {
         jit_prepare();
         jit_finishi((void*)marker);
+    }
+
+    void emit_debug() {
+        jit_prepare();
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
+        jit_pushargi(_reg_n);  // reg count
+        jit_pushargr(JIT_V2);  // flag
+        jit_finishi((void*)::debug);
     }
 
     void* emit() {
@@ -687,22 +723,22 @@ public:
         // V2 = return
         auto a2 = jit_arg_l();
         jit_getarg(JIT_V2, a2);
-        auto regs = _analyzebytecode.register_count();
+        _reg_n = _analyzebytecode.register_count();
 
         // reserve space in the stack for registers and flag
-        _regs_offset   = jit_allocai(regs * sizeof(VMObjectPtr));
+        _regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
         _flag_offset   = jit_allocai(sizeof(int));
         _return_offset = jit_allocai(sizeof(VMObjectPtr*));
 
         // store return (V2 is free)
-        jit_addi(JIT_R0, JIT_FP, _regs_offset);
+        jit_addi(JIT_R0, JIT_FP, _return_offset);
         jit_stxi(JIT_R0, JIT_V2, 0);
 
         // set up registers
         jit_addi(JIT_R0, JIT_FP, _regs_offset);
         jit_prepare();
         jit_pushargr(JIT_R0);
-        jit_pushargi(regs);
+        jit_pushargi(_reg_n);
         jit_finishi((void*)vm_object_ptr_construct_n);
 
         // set register 0 to the thunk (V1 is free)
@@ -720,15 +756,17 @@ public:
         // create forward labels
         forward_labels();
 
+        emit_debug();
+
         pass();
 
         // destroy registers
         jit_prepare();
         jit_pushargr(JIT_V1);
-        jit_pushargi(regs);
+        jit_pushargi(_reg_n);
         jit_finishi((void*)vm_object_ptr_destruct_n);
 
-        jit_ret();
+        // jit_ret();
         jit_epilog();
 
         // emit the native code
@@ -749,6 +787,7 @@ private:
     PushData _data;
     AnalyzeBytecode _analyzebytecode;
 
+    int _reg_n = 0;
     int _regs_offset   = 0;
     int _flag_offset   = 0;
     int _return_offset = 0;
@@ -774,6 +813,7 @@ public:
 
         auto tt = const_cast<VMObjectPtr&>(thunk); // lose the const specifier
 
+        TRACE_JIT(std::cerr << "arguments: vm(" << (void*)machine() << ") thunk(" << (void*)&tt << ") return(" << (void*)&r << ")" << std::endl);
         f(machine(), &tt, &r);
 
         return r;
