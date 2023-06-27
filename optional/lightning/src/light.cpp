@@ -68,11 +68,18 @@ inline void debug(VM *vm, VMObjectPtr *a, int n, int* flag) {
     std::cerr << "############## DEBUG END ########################" << std::endl;
 };
 
-// DEBUG tag n
-inline void debug_ptr(int tag, void* n) {
-    std::cerr << "debug " << tag << ": " << n << std::endl;
+// DEBUG 
+inline void debug_registers(void* v0, void* v1, void* v2, void* r0, void* r1, void* r2, void* fp) {
+    std::cerr << "############## REGISTERS ########################" << std::endl;
+    std::cerr << "V0 " << v0 << std::endl;
+    std::cerr << "V1 " << v1 << std::endl;
+    std::cerr << "V2 " << v2 << std::endl;
+    std::cerr << "R0 " << r0 << std::endl;
+    std::cerr << "R1 " << r1 << std::endl;
+    std::cerr << "R2 " << r2 << std::endl;
+    std::cerr << "FP " << fp << std::endl;
+    std::cerr << "############## REGISTERS ########################" << std::endl;
 };
-
 
 // OP_NIL x,  x := null
 inline void op_nil(VM *vm, VMObjectPtr *a, int x) {
@@ -681,13 +688,13 @@ public:
     virtual void op_return(uint32_t pc, reg_t x) override {
         emit_label(pc);
         emit_debug();
-        emit_fp();
-        jit_ldxr(JIT_R0, JIT_FP, _return_offset);
+        jit_addi(JIT_R0, JIT_FP, _return_offset);
+        jit_ldr(JIT_R1, JIT_R0);
         jit_prepare();
         jit_pushargr(JIT_V0);  // VM*
         jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
-        jit_pushargr(JIT_R0);  // return
+        jit_pushargr(JIT_R1);  // return
         jit_finishi((void*)::op_return);
         jit_ret(); // XXX: for now
     }
@@ -706,11 +713,16 @@ public:
         jit_finishi((void*)::debug);
     }
 
-    void emit_fp() {
+    void emit_debug_registers() {
         jit_prepare();
-        jit_pushargi(0);       // tag
-        jit_pushargr(JIT_FP);  // ptr
-        jit_finishi((void*)::debug_ptr);
+        jit_pushargr(JIT_V0);  // V0
+        jit_pushargr(JIT_V1);  // V1
+        jit_pushargr(JIT_V2);  // V2
+        jit_pushargr(JIT_R0);  // R0
+        jit_pushargr(JIT_R1);  // R1
+        jit_pushargr(JIT_R2);  // R2
+        jit_pushargr(JIT_FP);  // FP
+        jit_finishi((void*)::debug_registers);
     }
 
     void* emit() {
@@ -743,8 +755,9 @@ public:
         _flag_offset   = jit_allocai(sizeof(int));
         _return_offset = jit_allocai(sizeof(VMObjectPtr*));
 
-        // store return (V2 is free)
-        //jit_stxr(JIT_FP, _return_offset, JIT_V2);
+        // store return (free V2)
+        jit_addi(JIT_R0, JIT_FP, _return_offset);
+        jit_str(JIT_R0, JIT_V2);
 
         // set up registers
         jit_addi(JIT_R0, JIT_FP, _regs_offset);
@@ -753,7 +766,7 @@ public:
         jit_pushargi(_reg_n);
         jit_finishi((void*)vm_object_ptr_construct_n);
 
-        // set register 0 to the thunk (V1 is free)
+        // set register 0 to the thunk (free V1)
         jit_addi(JIT_R0, JIT_FP, _regs_offset);
         jit_prepare();
         jit_pushargr(JIT_V0); // VM
@@ -761,10 +774,10 @@ public:
         jit_pushargr(JIT_V1); // thunk
         jit_finishi((void*)load);
 
+
         // V0 = VM*, V1 = registers, V2 = flag
         jit_addi(JIT_V1, JIT_FP, _regs_offset);
         jit_addi(JIT_V2, JIT_FP, _flag_offset);
-        //§emit_fp();
 
         // create forward labels
         forward_labels();
