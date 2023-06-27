@@ -56,24 +56,25 @@ inline void load(VM *vm, VMObjectPtr *a, VMObjectPtr *x) {
 
 // OP_NIL x,  x := null
 inline void op_nil(VM *vm, VMObjectPtr *a, int x) {
-    TRACE_JIT(std::cerr << "OP_NIL " << x << std::endl);
+    TRACE_JIT(std::cerr << "OP_NIL r" << x << std::endl);
     a[x] = nullptr;
 };
 
 // OP_MOV x y, x := y
 inline void op_mov(VM *vm, VMObjectPtr *a, int x, int y) {
-    TRACE_JIT(std::cerr << "OP_MOV " << x << ", " << y << std::endl);
+    TRACE_JIT(std::cerr << "OP_MOV r" << x << ", r" << y << std::endl);
     a[x] = a[y];
 };
 
 // OP_DATA x i32, x := data(i32)
 inline void op_data(VM* vm, VMObjectPtr *a, int x, int i) {
+    TRACE_JIT(std::cerr << "OP_DATA r" << x << ", i" << i << std::endl);
     a[x] = vm->get_data(i);
 };
 
 // OP_ARRAY x y z, x := [ y, y+1,.., z ]
 inline void op_array(VM* vm, VMObjectPtr *a, int x, int y, int z) {
-    TRACE_JIT(std::cerr << "OP_ARRAY " << x << ", " << y << ", " << z << std::endl);
+    TRACE_JIT(std::cerr << "OP_ARRAY r" << x << ", r" << y << ", r" << z << std::endl);
     auto n = (z - y) + 1;
     auto a0 = VMObjectArray::create(n);
     auto a1 = VMObjectArray::cast(a0);
@@ -85,7 +86,7 @@ inline void op_array(VM* vm, VMObjectPtr *a, int x, int y, int z) {
 
 // OP_SET x y z, x[val(y)] = z
 inline void op_set(VM* vm, VMObjectPtr* a, int x, int  y, int z) {
-    TRACE_JIT(std::cerr << "OP_MOV " << x << ", " << y << ", " << z << std::endl);
+    TRACE_JIT(std::cerr << "OP_MOV r" << x << ", r" << y << ", r" << z << std::endl);
     int n = VMObjectInteger::cast(a[y])->value();
     auto a0 = VMObjectArray::cast(a[x]);
     a0->set(n, a[z]);
@@ -93,7 +94,7 @@ inline void op_set(VM* vm, VMObjectPtr* a, int x, int  y, int z) {
 
 // OP_TAKEX x y z i16, x,..,y = z[i],..,z[i+y-x], ~flag if fail
 inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int i, int *flag) {
-    TRACE_JIT(std::cerr << "OP_TAKEX " << x << ", " << y << ", " << z << ", " << i << std::endl);
+    TRACE_JIT(std::cerr << "OP_TAKEX r" << x << ", r" << y << ", r" << z << ", i" << i << std::endl);
     int n = (y - x) + 1;
     auto a0 = VMObjectArray::cast(a[z]);
     if (a0->size() < i + n) {
@@ -108,7 +109,7 @@ inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int i, int *fl
 
 // OP_SPLIT x y z, x,..,y = z[0],..,z[y-x], flag if not exact
 inline void op_split(VM* vm, VMObjectPtr* a, int x, int y, int z, int* flag) {
-    TRACE_JIT(std::cerr << "OP_SPLIT " << x << ", " << y << ", " << z << std::endl);
+    TRACE_JIT(std::cerr << "OP_SPLIT r" << x << ", r" << y << ", r" << z << std::endl);
     auto n = (y - x) + 1;
     auto a0 = VMObjectArray::cast(a[z]);
     if (a0->size() != n) {
@@ -123,7 +124,7 @@ inline void op_split(VM* vm, VMObjectPtr* a, int x, int y, int z, int* flag) {
 
 // OP_CONCATX x y z i16, x := y ++ drop i z
 inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
-    TRACE_JIT(std::cerr << "OP_CONCATX " << x << ", " << y << ", " << z << ", " << n << std::endl);
+    TRACE_JIT(std::cerr << "OP_CONCATX r" << x << ", r" << y << ", r" << z << ", i" << n << std::endl);
     auto y0 = VMObjectArray::cast(a[y]);
     auto z0 = VMObjectArray::cast(a[z]);
 
@@ -147,7 +148,7 @@ inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
 
 // OP_TEST x y, flag := (x == y)
 inline void op_test(VM* vm, VMObjectPtr *a, int x, int y, int* flag) {
-    TRACE_JIT(std::cerr << "OP_CONCATX " << x << ", " << y << std::endl);
+    TRACE_JIT(std::cerr << "OP_CONCATX r" << x << ", r" << y << std::endl);
     EqualVMObjectPtr equals;
     bool b = equals(a[x], a[y]);
     *flag = (int) b;
@@ -155,7 +156,7 @@ inline void op_test(VM* vm, VMObjectPtr *a, int x, int y, int* flag) {
 
 // OP_TAG x y, flag := (x->tag() == y)
 inline void op_tag(VM* vm, VMObjectPtr *a, int x, int y, bool* flag) {
-    TRACE_JIT(std::cerr << "OP_TAG " << x << ", " << y << std::endl);
+    TRACE_JIT(std::cerr << "OP_TAG r" << x << ", r" << y << std::endl);
     auto s0 = (a[x])->symbol(); // XXX, wut?
     auto s1 = (a[y])->symbol();
     bool b = ( s0 == s1 );
@@ -164,7 +165,7 @@ inline void op_tag(VM* vm, VMObjectPtr *a, int x, int y, bool* flag) {
 
 // OP_RETURN x
 inline void op_return(VM*, VMObjectPtr *a, int x, VMObjectPtr *ret) {
-    TRACE_JIT(std::cerr << "OP_RETURN " << x << std::endl);
+    TRACE_JIT(std::cerr << "OP_RETURN r" << x << std::endl);
     *ret = a[x];
 };
 
