@@ -42,7 +42,7 @@ inline void vm_object_ptr_destruct(VMObjectPtr* p) {
 };
 
 inline void vm_object_ptr_destruct_n(VMObjectPtr* p, int n) {
-    TRACE_JIT(std::cerr << "destruct_n " << std::endl);
+    TRACE_JIT(std::cerr << "destruct_n " << p << ", " << n << std::endl);
     for (int i = 0; i < n; i++) {
         p[i].~VMObjectPtr();
     }
@@ -92,15 +92,16 @@ inline void op_set(VM* vm, VMObjectPtr* a, int x, int  y, int z) {
 };
 
 // OP_TAKEX x y z i16, x,..,y = z[i],..,z[i+y-x], ~flag if fail
-inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int n1, bool *flag) {
-    TRACE_JIT(std::cerr << "OP_TAKEX " << x << ", " << y << ", " << z << ", " << n1 << std::endl);
-    int n0 = (y - x) + 1;
+inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int i, int *flag) {
+    TRACE_JIT(std::cerr << "OP_TAKEX " << x << ", " << y << ", " << z << ", " << i << std::endl);
+    int n = (y - x) + 1;
     auto a0 = VMObjectArray::cast(a[z]);
-    if (a0->size() < n0 + n1) {
-        *flag = false;
+    if (a0->size() < i + n) {
+        *flag = (int) false;
     } else {
-        for (int i = 0; i < n0; i++) {
-            a[x+i] = a0->get(n1+i);
+        *flag = (int) true;
+        for (int j = 0; j < n; j++) {
+            a[x+i] = a0->get(i+j);
         }
     }
 };
@@ -437,8 +438,8 @@ public:
         return _max + 1;
     }
 
-    bool has_label(uint32_t pc) {
-        return _labels.count(pc) > 0;
+    std::set<label_t> labels() {
+        return _labels;
     }
 
     virtual void op_nil(uint32_t pc, reg_t x) override {
@@ -521,27 +522,27 @@ public:
         return _proc;
     }
 
-    void emit_label(uint32_t pc) {
-        if (_analyzebytecode.has_label(pc)) {
-            auto l = jit_label();
-            _labels[(int)pc] = l;
+    void forward_labels() {
+        // for every bytecode label declare and store a forward label
+        auto ll = _analyzebytecode.labels();
+        for (auto &l : ll) {
+            auto l0 = jit_forward();
+            _labels[(int)l] = l0;
         }
     }
 
-    void patch_jumps() {
-        for (auto it = _jumps.begin(); it != _jumps.end(); ++it) {
-            auto jump = it->first;
-            auto pc = it->second;
-            auto l = _labels[(int) pc];
-            jit_patch_at(jump, l);
-         }
+    void emit_label(uint32_t pc) {
+        auto ll = _analyzebytecode.labels();
+        if (ll.count(pc) > 0) {
+            jit_link(_labels[(int)pc]);
+        }
     }
 
     virtual void op_nil(uint32_t pc, reg_t x) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_finishi((void*)::op_nil);
     }
@@ -549,8 +550,8 @@ public:
     virtual void op_mov(uint32_t pc, reg_t x, reg_t y) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_finishi((void*)::op_mov);
@@ -559,8 +560,8 @@ public:
     virtual void op_data(uint32_t pc, reg_t x, uint32_t d) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         auto g = _data.get_data(d); // get the global
         jit_pushargi((int) g); // d
@@ -570,8 +571,8 @@ public:
     virtual void op_set(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_pushargi((int) z); // z
@@ -581,19 +582,20 @@ public:
     virtual void op_split(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_pushargi((int) z); // z
+        jit_pushargr(JIT_V2);  // flag
         jit_finishi((void*)::op_split);
     }
 
     virtual void op_array(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_pushargi((int) z); // z
@@ -603,20 +605,21 @@ public:
     virtual void op_takex(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_pushargi((int) z); // z
-        jit_pushargi((int) i); // z
+        jit_pushargi((int) i); // i
+        jit_pushargr(JIT_V2);  // flag
         jit_finishi((void*)::op_takex);
     }
 
     virtual void op_concatx(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_pushargi((int) z); // z
@@ -627,8 +630,8 @@ public:
     virtual void op_test(uint32_t pc, reg_t x, reg_t y) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_finishi((void*)::op_test);
@@ -637,8 +640,8 @@ public:
     virtual void op_tag(uint32_t pc, reg_t x, reg_t y) override {
         emit_label(pc);
         jit_prepare();
-        jit_pushargr(JIT_R0);  // VM*
-        jit_pushargr(JIT_R1);  // registers
+        jit_pushargr(JIT_V0);  // VM*
+        jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
         jit_finishi((void*)::op_tag);
@@ -646,9 +649,9 @@ public:
 
     virtual void op_fail(uint32_t pc, label_t l) override {
         emit_label(pc);
-        jit_ldxi(JIT_R5, JIT_R2, 0); // load flag to R5
+        jit_ldxi(JIT_R0, JIT_V2, 0); // load flag to R5
         auto j = jit_beqi(JIT_R5, (int) true); // branch on true
-        _jumps[j] = (int) l;
+        jit_patch_at(j, _labels[(int)l]);
     }
 
     virtual void op_return(uint32_t pc, reg_t x) override {
@@ -686,27 +689,23 @@ public:
         auto regs = _analyzebytecode.register_count();
 
         // reserve space in the stack for registers and flag
-        auto regs_offset   = jit_allocai(regs * sizeof(VMObjectPtr));
-        auto flag_offset   = jit_allocai(sizeof(int));
-        auto return_offset = jit_allocai(sizeof(VMObjectPtr*));
+        _regs_offset   = jit_allocai(regs * sizeof(VMObjectPtr));
+        _flag_offset   = jit_allocai(sizeof(int));
+        _return_offset = jit_allocai(sizeof(VMObjectPtr*));
 
         // store return (V2 is free)
-        jit_addi(JIT_R0, JIT_FP, regs_offset);
+        jit_addi(JIT_R0, JIT_FP, _regs_offset);
         jit_stxi(JIT_R0, JIT_V2, 0);
 
-        // R2 = flag
-        jit_addi(JIT_R2, JIT_FP, flag_offset);
-
-
         // set up registers
-        jit_addi(JIT_R0, JIT_FP, regs_offset);
+        jit_addi(JIT_R0, JIT_FP, _regs_offset);
         jit_prepare();
         jit_pushargr(JIT_R0);
         jit_pushargi(regs);
         jit_finishi((void*)vm_object_ptr_construct_n);
 
         // set register 0 to the thunk (V1 is free)
-        jit_addi(JIT_R0, JIT_FP, regs_offset);
+        jit_addi(JIT_R0, JIT_FP, _regs_offset);
         jit_prepare();
         jit_pushargr(JIT_V0); // VM
         jit_pushargr(JIT_R0); // registers
@@ -714,15 +713,17 @@ public:
         jit_finishi((void*)load);
 
         // V0 = VM*, V1 = registers, V2 = flag
+        jit_addi(JIT_V1, JIT_FP, _regs_offset);
+        jit_addi(JIT_V2, JIT_FP, _flag_offset);
 
-        //pass();
+        // create forward labels
+        forward_labels();
 
-        // patch all jumps
-        //patch_jumps();
+        pass();
 
         // destroy registers
         jit_prepare();
-        jit_pushargr(JIT_R1);
+        jit_pushargr(JIT_V1);
         jit_pushargi(regs);
         jit_finishi((void*)vm_object_ptr_destruct_n);
 
@@ -744,9 +745,12 @@ private:
     void* _proc;
     jit_state* _jit;
     std::map<int, jit_node_t*> _labels;
-    std::map<jit_node_t*, int> _jumps;
     PushData _data;
     AnalyzeBytecode _analyzebytecode;
+
+    int _regs_offset   = 0;
+    int _flag_offset   = 0;
+    int _return_offset = 0;
 };
 
 class VMObjectLightning : public VMObjectBytecode {
