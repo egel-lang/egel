@@ -690,9 +690,9 @@ public:
         auto a1 = jit_arg();
         // R3 = thunk
         jit_getarg(JIT_R3, a1);
-        auto a3 = jit_arg();
+        auto a2 = jit_arg();
         // R4 = return
-        jit_getarg(JIT_R4, a1);
+        jit_getarg(JIT_R4, a2);
 
         // set up registers
         jit_prepare();
@@ -748,8 +748,15 @@ public:
         VMObjectPtr r;
         // VM, thunk, result
         TRACE_JIT(std::cerr << "native call " << to_text() << " on " << _proc << std::endl);
-        auto f = reinterpret_cast<void(*)(VM*, VMObjectPtr*, VMObjectPtr*)>(_proc);
-        f(machine(), &(const_cast<VMObjectPtr&>(thunk)), &r);
+
+        void(*f)(VM*, VMObjectPtr*, VMObjectPtr*) = nullptr;;
+        reinterpret_cast<void*&>(f) = _proc; // undefined behavior
+        TRACE_JIT(std::cerr << "cast " << (void*) f << std::endl);
+
+        auto tt = const_cast<VMObjectPtr&>(thunk); // lose the const specifier
+
+        f(machine(), &tt, &r);
+
         return r;
     };
 
