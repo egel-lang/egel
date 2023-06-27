@@ -666,7 +666,7 @@ public:
         static bool initialized = false; // XXX: not thread safe
         if (!initialized) {
             initialized = true;
-            ::init_jit(nullptr);
+            init_jit(nullptr);
         }
 
         _jit = jit_new_state();
@@ -677,8 +677,6 @@ public:
         // reserve space in the stack for registers and flag
         auto regs_offset = jit_allocai(regs * sizeof(VMObjectPtr));
         auto flag_offset = jit_allocai(sizeof(int));
-
-        emit_marker(); // TRACING MARKER PLACED
 
         // R1 = registers
         jit_addi(JIT_R1, JIT_FP, regs_offset);
@@ -719,7 +717,7 @@ public:
 
         // clean up
         jit_clear_state();
-        jit_destroy_state();
+        // jit_destroy_state(); // this destroys the jit and all emitted code
         // finish_jit(); // we don't call this
 
         return _proc;
@@ -751,7 +749,6 @@ public:
 
         void(*f)(VM*, VMObjectPtr*, VMObjectPtr*) = nullptr;;
         reinterpret_cast<void*&>(f) = _proc; // undefined behavior
-        TRACE_JIT(std::cerr << "cast " << (void*) f << std::endl);
 
         auto tt = const_cast<VMObjectPtr&>(thunk); // lose the const specifier
 
