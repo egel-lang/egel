@@ -696,7 +696,9 @@ public:
         jit_pushargi((int) x); // x
         jit_pushargr(JIT_R1);  // return
         jit_finishi((void*)::op_return);
-        jit_ret(); // XXX: for now
+
+        auto j = jit_jmpi(); // branch on true
+        jit_patch_at(j, _cleanup);
     }
 
     void emit_marker() {
@@ -779,14 +781,16 @@ public:
         jit_addi(JIT_V1, JIT_FP, _regs_offset);
         jit_addi(JIT_V2, JIT_FP, _flag_offset);
 
-        // create forward labels
+        // create forward labels for jump
         forward_labels();
 
+        _cleanup = jit_forward();
         emit_debug();
 
         pass();
 
         // destroy registers
+        jit_link(_cleanup);
         jit_prepare();
         jit_pushargr(JIT_V1);
         jit_pushargi(_reg_n);
@@ -817,6 +821,8 @@ private:
     int _regs_offset   = 0;
     int _flag_offset   = 0;
     int _return_offset = 0;
+
+    jit_node_t* _cleanup;
 };
 
 class VMObjectLightning : public VMObjectBytecode {
