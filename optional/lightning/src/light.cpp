@@ -25,12 +25,12 @@ inline VMObjectPtr* alloc_vm_object_ptr() {
 };
 
 inline void vm_object_ptr_construct(VMObjectPtr* p) {
-    TRACE_JIT(std::cerr << "construct " << std::endl);
+    TRACE_JIT(std::cerr << "construct " << p << std::endl);
     new (p) VMObjectPtr();
 };
 
 inline void vm_object_ptr_construct_n(VMObjectPtr* p, int n) {
-    TRACE_JIT(std::cerr << "construct_n " << std::endl);
+    TRACE_JIT(std::cerr << "construct_n " << p << " " << n << std::endl);
     for (int i = 0; i < n; i++) {
         new (&(p[i])) VMObjectPtr();
     }
@@ -48,9 +48,10 @@ inline void vm_object_ptr_destruct_n(VMObjectPtr* p, int n) {
     }
 };
 
-inline void vm_object_ptr_assign(VMObjectPtr* p0, VMObjectPtr *p1) {
-    TRACE_JIT(std::cerr << "assign " << std::endl);
-    *p0 = *p1;
+// LOAD 
+inline void load(VM *vm, VMObjectPtr *a, VMObjectPtr *x) {
+    TRACE_JIT(std::cerr << "LOAD " << vm << ", " << a << ", " << x << std::endl);
+    a[0] = *x;;
 };
 
 // OP_NIL x,  x := null
@@ -672,36 +673,52 @@ public:
         _jit = jit_new_state();
         jit_prolog();
 
+        // get the arguments
+        // V0 = VM*
+        auto a0 = jit_arg_l();
+        jit_getarg(JIT_V0, a0);
+        // V1 = thunk
+        auto a1 = jit_arg_l();
+        jit_getarg(JIT_V1, a1);
+        // V2 = return
+        auto a2 = jit_arg_l();
+        jit_getarg(JIT_V2, a2);
         auto regs = _analyzebytecode.register_count();
 
         // reserve space in the stack for registers and flag
-        auto regs_offset = jit_allocai(regs * sizeof(VMObjectPtr));
-        auto flag_offset = jit_allocai(sizeof(int));
+        auto regs_offset   = jit_allocai(regs * sizeof(VMObjectPtr));
+        auto flag_offset   = jit_allocai(sizeof(int));
+        auto return_offset = jit_allocai(sizeof(VMObjectPtr*));
 
-        // R1 = registers
-        jit_addi(JIT_R1, JIT_FP, regs_offset);
+        // store return (V2 is free)
+        jit_addi(JIT_R0, JIT_FP, regs_offset);
+        jit_stxi(JIT_R0, JIT_V2, 0);
+
         // R2 = flag
         jit_addi(JIT_R2, JIT_FP, flag_offset);
-        // R0 = VM*
-        auto a0 = jit_arg();
-        jit_getarg(JIT_R0, a0);
-        auto a1 = jit_arg();
-        // R3 = thunk
-        jit_getarg(JIT_R3, a1);
-        auto a2 = jit_arg();
-        // R4 = return
-        jit_getarg(JIT_R4, a2);
+
 
         // set up registers
+        jit_addi(JIT_R0, JIT_FP, regs_offset);
         jit_prepare();
-        jit_pushargr(JIT_R1);
+        jit_pushargr(JIT_R0);
         jit_pushargi(regs);
         jit_finishi((void*)vm_object_ptr_construct_n);
 
-        pass();
+        // set register 0 to the thunk (V1 is free)
+        jit_addi(JIT_R0, JIT_FP, regs_offset);
+        jit_prepare();
+        jit_pushargr(JIT_V0); // VM
+        jit_pushargr(JIT_R0); // registers
+        jit_pushargr(JIT_V1); // thunk
+        jit_finishi((void*)load);
+
+        // V0 = VM*, V1 = registers, V2 = flag
+
+        //pass();
 
         // patch all jumps
-        patch_jumps();
+        //patch_jumps();
 
         // destroy registers
         jit_prepare();
