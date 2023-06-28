@@ -7,7 +7,8 @@ extern "C" {
 
 using namespace egel;
 
-#define TRACE_JIT(x)    x;
+//#define TRACE_JIT(x)    x;
+#define TRACE_JIT(x)    ;
 
 extern "C" {
 
@@ -120,14 +121,14 @@ inline void op_set(VM* vm, VMObjectPtr* a, int x, int  y, int z) {
 };
 
 // OP_TAKEX x y z i16, x,..,y = z[i],..,z[i+y-x], ~flag if fail
-inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int i, int *flag) {
+inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int i, void**flag) {
     TRACE_JIT(std::cerr << "OP_TAKEX r" << x << ", r" << y << ", r" << z << ", i" << i << std::endl);
     int n = (y - x) + 1;
     auto a0 = VMObjectArray::cast(a[z]);
     if (a0->size() < i + n) {
-        *flag = (int) false;
+        *flag = (void*) false;
     } else {
-        *flag = (int) true;
+        *flag = (void*) true;
         for (int j = 0; j < n; j++) {
             a[x+j] = a0->get(i+j);
         }
@@ -135,14 +136,14 @@ inline void op_takex(VM* vm, VMObjectPtr* a, int x, int y, int z, int i, int *fl
 };
 
 // OP_SPLIT x y z, x,..,y = z[0],..,z[y-x], flag if not exact
-inline void op_split(VM* vm, VMObjectPtr* a, int x, int y, int z, int* flag) {
+inline void op_split(VM* vm, VMObjectPtr* a, int x, int y, int z, void** flag) {
     TRACE_JIT(std::cerr << "OP_SPLIT r" << x << ", r" << y << ", r" << z << std::endl);
     auto n = (y - x) + 1;
     auto a0 = VMObjectArray::cast(a[z]);
     if (a0->size() != n) {
-        *flag = (int) false;
+        *flag = (void*) false;
     } else {
-        *flag = (int) true;
+        *flag = (void*) true;
         for (int i = 0; i < n; i++) {
             a[x+i] = a0->get(i);
         }
@@ -564,7 +565,7 @@ public:
     void emit_label(uint32_t pc) {
         auto ll = _analyzebytecode.labels();
         if (ll.count(pc) > 0) {
-        TRACE_JIT(std::cerr << "emitted label for " << (void*)pc << std::endl);
+        //TRACE_JIT(std::cerr << "emitted label for " << (void*)pc << std::endl);
             jit_link(_labels[(int)pc]);
         }
     }
@@ -685,7 +686,6 @@ public:
         jit_ldr(JIT_R0, JIT_V2); // load flag to R0
         auto j = jit_beqi(JIT_R0, (int) false); // branch on false
         jit_patch_at(j, _labels[(int)l]);
-        emit_debug_registers();
     }
 
     virtual void op_return(uint32_t pc, reg_t x) override {
