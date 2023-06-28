@@ -1,0 +1,9 @@
+import "light.ego"
+import "prelude.eg"
+
+using System
+using List
+
+def main =
+    # light ""; 
+    (from_to 0 1000000) |> foldr (+) 0
