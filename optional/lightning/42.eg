@@ -1,7 +1,0 @@
-import "light.ego"
-
-using System
-
-def f = 42
-
-def main = light ""; f
