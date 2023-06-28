@@ -352,7 +352,7 @@ public:
         dlerror();
 
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
-        _handle = dlopen(pth, RTLD_NOW | RTLD_GLOBAL);
+        _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();

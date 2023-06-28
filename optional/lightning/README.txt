@@ -6,18 +6,15 @@ to replace all bytecode combinators with equivalent native code
 combinators.
 
 Running on a microbenchmark of summing a list of a million
-numbers, performance decreased by a factor 2. This turned
-out to be due to lazily loading the dynamic library that
-causes an extra indirection.
+numbers, performance decreased by a factor 2.
 
-Including the jit in the interpreter gave a 2% boost. Not
-lazily loading the dynamic library a 1% boost.
+Including the jit in the interpreter gave a 2% boost. 
 
 The numbers:
 - baseline, no jit: 3.75s
-- eagerly loading the library: 3.70s
 - including in the runtime: 3.68s
 - lazily loading the dynamic library: 8.7s
+- eagerly loading the library: 13.6s
 
 That's unfortunately not enough of a performance increase for
 me to keep maintaining this library.
