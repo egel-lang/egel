@@ -8,4 +8,5 @@ At the moment, there are two packages:
 
 - erpc, remote procedure calls
 - python (defunct), python bindings
+- lightning (not maintained), a failed experiment with a JIT
 
