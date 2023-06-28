@@ -313,7 +313,7 @@ public:
     void write(std::ostream &os, VM *vm) {
         for (unsigned int n = 0; n < _data.size(); n++) {
             os << std::hex << std::setw(6) << n << std::dec << " ";
-            os << _data[n] << " " << vm->get_combinator_string(_data[n])
+            os << _data[n] << " " << vm->get_data(_data[n])
                << std::endl;
         }
     }

@@ -64,7 +64,7 @@ inline void debug(VM *vm, VMObjectPtr *a, int n, int* flag) {
             std::cerr << "r[" << i << "] = " << a[i] << std::endl;
         }
     }
-    std::cerr << "flag(" << *flag << ")" << std::endl;
+    std::cerr << "flag(" << *flag << ", " << (((bool)*flag)?"true":"false") << ")" << std::endl;
     std::cerr << "############## DEBUG END ########################" << std::endl;
 };
 
@@ -174,29 +174,28 @@ inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
 };
 
 // OP_TEST x y, flag := (x == y)
-inline void op_test(VM* vm, VMObjectPtr *a, int x, int y, int* flag) {
-    TRACE_JIT(std::cerr << "OP_CONCATX r" << x << ", r" << y << std::endl);
+inline void op_test(VM* vm, VMObjectPtr *a, int x, int y, void** flag) {
+    TRACE_JIT(std::cerr << "OP_TEST r" << x << ", r" << y << std::endl);
     EqualVMObjectPtr equals;
     bool b = equals(a[x], a[y]);
-    *flag = (int) b;
+    TRACE_JIT(std::cerr << ((b)?"true":"false") << std::endl);
+    *flag = (void*) b; // cast to word size
 };
 
 // OP_TAG x y, flag := (x->tag() == y)
-inline void op_tag(VM* vm, VMObjectPtr *a, int x, int y, bool* flag) {
+inline void op_tag(VM* vm, VMObjectPtr *a, int x, int y, void** flag) {
     TRACE_JIT(std::cerr << "OP_TAG r" << x << ", r" << y << std::endl);
     auto s0 = (a[x])->symbol(); // XXX, wut?
     auto s1 = (a[y])->symbol();
     bool b = ( s0 == s1 );
-    *flag = b;
+    *flag = (void*) b; // cast to word size
 };
 
 // OP_RETURN x
 inline void op_return(VM*, VMObjectPtr *a, int x, VMObjectPtr *ret) {
     TRACE_JIT(std::cerr << "OP_RETURN r" << x << std::endl);
-    TRACE_JIT(std::cerr << "return " << (void*)ret << std::endl);
     //*ret = a[x];
     ret[0] = a[x];
-    TRACE_JIT(std::cerr << "DONE!" << std::endl);
 };
 
 }; // extern "C"
@@ -565,6 +564,7 @@ public:
     void emit_label(uint32_t pc) {
         auto ll = _analyzebytecode.labels();
         if (ll.count(pc) > 0) {
+        TRACE_JIT(std::cerr << "emitted label for " << (void*)pc << std::endl);
             jit_link(_labels[(int)pc]);
         }
     }
@@ -665,6 +665,7 @@ public:
         jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
+        jit_pushargr(JIT_V2);  // flag
         jit_finishi((void*)::op_test);
     }
 
@@ -675,19 +676,20 @@ public:
         jit_pushargr(JIT_V1);  // registers
         jit_pushargi((int) x); // x
         jit_pushargi((int) y); // y
+        jit_pushargr(JIT_V2);  // flag
         jit_finishi((void*)::op_tag);
     }
 
     virtual void op_fail(uint32_t pc, label_t l) override {
         emit_label(pc);
-        jit_ldxi(JIT_R0, JIT_V2, 0); // load flag to R5
-        auto j = jit_beqi(JIT_R5, (int) true); // branch on true
+        jit_ldr(JIT_R0, JIT_V2); // load flag to R0
+        auto j = jit_beqi(JIT_R0, (int) false); // branch on false
         jit_patch_at(j, _labels[(int)l]);
+        emit_debug_registers();
     }
 
     virtual void op_return(uint32_t pc, reg_t x) override {
         emit_label(pc);
-        emit_debug();
         jit_addi(JIT_R0, JIT_FP, _return_offset);
         jit_ldr(JIT_R1, JIT_R0);
         jit_prepare();
@@ -754,7 +756,7 @@ public:
 
         // reserve space in the stack for registers and flag
         _regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
-        _flag_offset   = jit_allocai(sizeof(int));
+        _flag_offset   = jit_allocai(sizeof(void*)); // stores a bool but use word size
         _return_offset = jit_allocai(sizeof(VMObjectPtr*));
 
         // store return (free V2)
@@ -785,12 +787,13 @@ public:
         forward_labels();
 
         _cleanup = jit_forward();
-        emit_debug();
+        TRACE_JIT(emit_debug());
 
         pass();
 
         // destroy registers
         jit_link(_cleanup);
+        TRACE_JIT(emit_debug());
         jit_prepare();
         jit_pushargr(JIT_V1);
         jit_pushargi(_reg_n);
