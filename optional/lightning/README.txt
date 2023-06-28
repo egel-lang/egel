@@ -13,5 +13,11 @@ causes an extra indirection.
 Including the jit in the interpreter gave a 2% boost. Not
 lazily loading the dynamic library a 1% boost.
 
+The numbers:
+- baseline, no jit: 3.75s
+- eagerly loading the library: 3.70s
+- including in the runtime: 3.68s
+- lazily loading the dynamic library: 8.7s
+
 That's unfortunately not enough of a performance increase for
 me to keep maintaining this library.
