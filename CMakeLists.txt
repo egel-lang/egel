@@ -120,26 +120,31 @@ find_package(fmt 7.1 REQUIRED)
 
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories("${ICU_INCLUDE_DIRS}")
+include_directories(/usr/local/include) ## this is just for testing
 
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
+target_link_directories(objlib PRIVATE /usr/local/lib) # for GNU lightning
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
-target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
+target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_directories(egel PRIVATE /usr/local/lib) # for GNU lightning
 # target_link_libraries(egel stdc++fs) # for old gcc
 
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
+target_link_libraries(egellib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_directories(egellib PRIVATE /usr/local/lib) # for GNU lightning
 
 # static Egel library
 add_library(egellib_static STATIC $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib_static PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib_static fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
+target_link_libraries(egellib_static fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_directories(egellib_static PRIVATE /usr/local/lib) # for GNU lightning
 
 #
 # the dynamic .ego Egel libraries

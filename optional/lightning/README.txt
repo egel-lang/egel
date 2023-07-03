@@ -12,7 +12,7 @@ Including the jit in the interpreter gave a 2% boost.
 
 The numbers:
 - baseline, no jit: 3.75s
-- including in the runtime: 3.68s
+- including in the runtime: 3.52s
 - lazily loading the dynamic library: 8.7s
 - eagerly loading the library: 13.6s
 

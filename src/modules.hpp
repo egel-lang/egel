@@ -24,6 +24,7 @@
 #include "runtime.hpp"
 #include "semantical.hpp"
 #include "syntactical.hpp"
+#include "lightning.hpp"
 
 namespace egel {
 // convenience
@@ -149,6 +150,8 @@ public:
     virtual void datagen(VM *m){};
 
     virtual void codegen(VM *m){};
+
+    virtual void jit(VM *m){};
 
 private:
     module_tag_t _tag;
@@ -498,7 +501,7 @@ public:
     }
 
     VMObjectPtrs exports() override {
-        return VMObjectPtrs();  // XXX XXX XXX: implement this
+        return _combinators;
     }
 
     void syntactical() override {
@@ -559,15 +562,25 @@ public:
     }
 
     void datagen(VM *vm) override {
-        egel::emit_data(vm, _ast);
+        auto oo = egel::emit_data(vm, _ast);
+        for (auto &o:oo) {
+            _combinators.push_back(o);
+        }
     }
 
     void codegen(VM *vm) override {
-        egel::emit_code(vm, _ast);
+        auto oo = egel::emit_code(vm, _ast);
         if (get_options()->only_bytecode()) {
             vm->render(std::cout);
             exit(EXIT_SUCCESS);
         };
+        for (auto &o:oo) {
+            _combinators.push_back(o);
+        }
+    }
+
+    void jit(VM *vm) override {
+        emit_jit(vm, _combinators);
     }
 
     void render(std::ostream &os) const override {
@@ -581,6 +594,7 @@ public:
 private:
     icu::UnicodeString _source;
     ptr<Ast> _ast;
+    std::vector<VMObjectPtr> _combinators;
 };
 
 using ModulePtrs = std::vector<ModulePtr>;

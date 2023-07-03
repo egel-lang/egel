@@ -10,17 +10,18 @@
 
 namespace egel {
 
-inline void emit_data(VM *vm, const ptr<Ast> &a);
-inline void emit_code(VM *vm, const ptr<Ast> &a);
+inline std::vector<VMObjectPtr> emit_data(VM *vm, const ptr<Ast> &a);
+inline std::vector<VMObjectPtr> emit_code(VM *vm, const ptr<Ast> &a);
 
 using RegisterMap = std::map<icu::UnicodeString, reg_t>;
 using CoderPtr = std::unique_ptr<Coder>;
 
 class EmitData : public Visit {
 public:
-    void emit(VM *m, const ptr<Ast> &a) {
+    std::vector<VMObjectPtr> emit(VM *m, const ptr<Ast> &a) {
         _machine = m;
         visit(a);
+        return _out;
     }
 
     void visit_directive_import(const Position &p,
@@ -31,6 +32,7 @@ public:
                                const icu::UnicodeString &n) override {
         auto c = VMObjectData::create(_machine, nn, n);
         _machine->define_data(c);
+        _out.push_back(c);
     }
 
     void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
@@ -54,11 +56,12 @@ public:
 
 private:
     VM *_machine;
+    std::vector<VMObjectPtr>    _out;
 };
 
-void emit_data(VM *m, const ptr<Ast> &a) {
+std::vector<VMObjectPtr> emit_data(VM *m, const ptr<Ast> &a) {
     EmitData emit;
-    emit.emit(m, a);
+    return emit.emit(m, a);
 }
 
 enum emit_state_t {
@@ -70,10 +73,11 @@ enum emit_state_t {
 
 class EmitCode : public Visit {
 public:
-    void emit(VM *vm, const ptr<Ast> &a) {
+    std::vector<VMObjectPtr> emit(VM *vm, const ptr<Ast> &a) {
         _machine = vm;
         _coder = std::unique_ptr<Coder>(new Coder(vm));
         visit(a);
+        return _out;
     }
 
     void set_state(const emit_state_t s) {
@@ -619,6 +623,7 @@ public:
                                 const icu::UnicodeString &i) override {
     }
 
+    // XXX: another means to translate data combinators (see emit_data)
     void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
         for (auto n : nn) {
             switch (n->tag()) {
@@ -626,6 +631,7 @@ public:
                     auto [p, ss, s] = AstExprCombinator::split(n);
                     auto d = VMObjectData::create(machine(), ss, s);
                     machine()->define_data(d);
+                    _out.push_back(d);
                 } break;
                 default:
                     PANIC("combinator expected");
@@ -674,6 +680,7 @@ public:
         auto [p0, ss, s] = AstExprCombinator::split(n);
         auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
         machine()->define_data(b);
+        _out.push_back(b);
 
         get_coder()->reset();
     }
@@ -725,6 +732,7 @@ public:
         auto [p0, ss, s] = AstExprOperator::split(o);
         auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
         machine()->define_data(b);
+        _out.push_back(b);
 
         get_coder()->reset();
     }
@@ -745,11 +753,13 @@ private:
     label_t _fail;
     CoderPtr _coder;
     RegisterMap _variables;
+
+    std::vector<VMObjectPtr> _out;
 };
 
-void emit_code(VM *m, const ptr<Ast> &a) {
+std::vector<VMObjectPtr> emit_code(VM *m, const ptr<Ast> &a) {
     EmitCode emit;
-    emit.emit(m, a);
+    return emit.emit(m, a);
 }
 
 }  // namespace egel
