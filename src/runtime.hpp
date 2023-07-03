@@ -1,5 +1,8 @@
 #pragma once
 
+// #include <mimalloc.h>
+// #include <mimalloc-new-delete.h>
+
 #include <atomic>
 #include <filesystem>
 #include <functional>
@@ -9,9 +12,7 @@
 #include <set>
 #include <sstream>
 #include <vector>
-
-#include <mimalloc.h>
-// #include <mimalloc-new-delete.h>
+#include <cstring>
 
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
@@ -642,7 +643,7 @@ public:
         std::string utf8;
         s.toUTF8String(utf8);
         char *cstr = new char[utf8.length() + 1];
-        std::strcpy(cstr, utf8.c_str());
+        strcpy(cstr, utf8.c_str());
         return cstr;
     }
 

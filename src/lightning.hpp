@@ -4,7 +4,7 @@
 #include "bytecode.hpp"
 
 extern "C" {
-#include <lightning.h>
+#include <lightning/lightning.h>
 }
 
 using namespace egel;
@@ -105,13 +105,15 @@ inline void op_data(VM* vm, VMObjectPtr *a, int x, int i) {
 // OP_ARRAY x y z, x := [ y, y+1,.., z ]
 inline void op_array(VM* vm, VMObjectPtr *a, int x, int y, int z) {
     TRACE_JIT(std::cerr << "OP_ARRAY r" << x << ", r" << y << ", r" << z << std::endl);
-    auto n = (z - y) + 1;
-    auto a0 = VMObjectArray::create(n);
-    auto a1 = VMObjectArray::cast(a0);
-    for (int i = 0; i < n; i++) {
-        a1->set(i, a[y+i]);
-    }
-    a[x] = a1;
+  //  if (y <= z) {
+        auto n = (z - y) + 1;
+        auto a0 = VMObjectArray::create(n);
+        auto a1 = VMObjectArray::cast(a0);
+        for (int i = 0; i < n; i++) {
+            a1->set(i, a[y+i]);
+        }
+        a[x] = a1;
+  // }
 };
 
 // OP_SET x y z, x[val(y)] = z
@@ -155,6 +157,13 @@ inline void op_split(VM* vm, VMObjectPtr* a, int x, int y, int z, void** flag) {
 // OP_CONCATX x y z i16, x := y ++ drop i z
 inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
     TRACE_JIT(std::cerr << "OP_CONCATX r" << x << ", r" << y << ", r" << z << ", i" << n << std::endl);
+
+/*
+    if (a[z] == nullptr) {
+        a[x] = a[y];
+        return;
+    }
+*/
     auto y0 = VMObjectArray::cast(a[y]);
     auto z0 = VMObjectArray::cast(a[z]);
 
@@ -750,13 +759,13 @@ public:
 
         // get the arguments
         // V0 = VM*
-        auto a0 = jit_arg_l();
+        auto a0 = jit_arg();
         jit_getarg(JIT_V0, a0);
         // V1 = thunk
-        auto a1 = jit_arg_l();
+        auto a1 = jit_arg();
         jit_getarg(JIT_V1, a1);
         // V2 = return
-        auto a2 = jit_arg_l();
+        auto a2 = jit_arg();
         jit_getarg(JIT_V2, a2);
         _reg_n = _analyzebytecode.register_count();
 
