@@ -128,11 +128,13 @@ add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io mimalloc-static)
 target_link_directories(objlib PRIVATE /usr/local/lib) # for GNU lightning
+target_link_options(objlib PRIVATE "-Wl,--allow-multiple-definition")
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
 target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io mimalloc-static lightning)
 target_link_directories(egel PRIVATE /usr/local/lib) # for GNU lightning
+target_link_options(egel PRIVATE "-Wl,--allow-multiple-definition")
 # target_link_libraries(egel stdc++fs) # for old gcc
 
 # shared Egel library
