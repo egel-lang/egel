@@ -799,6 +799,9 @@ protected:
         for (auto &m : _loading) {
             m->codegen(_machine);
         }
+        for (auto &m : _loading) {
+            m->jit(_machine);
+        }
     }
 
     void flush() {
