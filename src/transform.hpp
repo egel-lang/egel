@@ -1,9 +1,12 @@
 #pragma once
 
-#include <vector>
+#include "runtime.hpp"
 
 #include "ast.hpp"
 #include "error.hpp"
+
+
+#include <vector>
 
 namespace egel {
 

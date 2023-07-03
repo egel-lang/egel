@@ -1,5 +1,8 @@
 #pragma once
 
+#include "runtime.hpp"
+#include "bytecode.hpp"
+
 #include <fmt/core.h>
 #include <math.h>
 #include <stdlib.h>
@@ -10,8 +13,6 @@
 #include <fmt/args.h>
 #endif
 
-#include "bytecode.hpp"
-#include "runtime.hpp"
 
 namespace egel {
 

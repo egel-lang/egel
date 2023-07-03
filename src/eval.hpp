@@ -1,10 +1,10 @@
 #pragma once
 
-#include <functional>
-
+#include "runtime.hpp"
 #include "machine.hpp"
 #include "modules.hpp"
-#include "runtime.hpp"
+
+#include <functional>
 
 namespace egel {
 

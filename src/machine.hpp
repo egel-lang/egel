@@ -1,5 +1,11 @@
 #pragma once
 
+#include "runtime.hpp"
+#include "assembler.hpp"
+#include "environment.hpp"
+#include "eval.hpp"
+#include "modules.hpp"
+
 #include <chrono>
 #include <iomanip>
 #include <map>
@@ -10,12 +16,6 @@
 #include <thread>
 #include <tuple>
 #include <vector>
-
-#include "assembler.hpp"
-#include "environment.hpp"
-#include "eval.hpp"
-#include "modules.hpp"
-#include "runtime.hpp"
 
 namespace egel {
 

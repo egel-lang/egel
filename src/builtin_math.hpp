@@ -1,9 +1,9 @@
 #pragma once
 
+#include "runtime.hpp"
+
 #include <math.h>
 #include <stdlib.h>
-
-#include "runtime.hpp"
 
 namespace egel {
 

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "runtime.hpp"
+
 #include <stdlib.h>
 #include <chrono>
 #include <future>
-
-#include "runtime.hpp"
 
 /**
  * Egel's async tasks implementation.

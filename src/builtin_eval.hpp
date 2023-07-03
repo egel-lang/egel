@@ -1,8 +1,8 @@
 #pragma once
 
-#include <functional>
 
 #include "runtime.hpp"
+#include <functional>
 
 namespace egel {
 

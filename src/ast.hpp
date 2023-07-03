@@ -1,14 +1,15 @@
 #pragma once
 
+#include "runtime.hpp"
+#include "constants.hpp"
+#include "error.hpp"
+#include "position.hpp"
+
 #include <memory>
 #include <set>
 #include <sstream>
 #include <vector>
 
-#include "constants.hpp"
-#include "error.hpp"
-#include "position.hpp"
-#include "runtime.hpp"
 
 namespace egel {
 

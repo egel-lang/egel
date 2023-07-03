@@ -31,6 +31,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ added a GNU lightning back-end
 + revert $ precedence since $ is bitwise or
 + added a stall combinator
 

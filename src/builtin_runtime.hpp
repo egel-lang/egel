@@ -1,10 +1,11 @@
 #pragma once
 
+#include "runtime.hpp"
+#include "bytecode.hpp"
+#include "serialize.hpp"
+
 #include <stdlib.h>
 
-#include "bytecode.hpp"
-#include "runtime.hpp"
-#include "serialize.hpp"
 
 /**
  * Egel's runtime querying and modification implementation.

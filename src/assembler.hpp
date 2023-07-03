@@ -1,10 +1,10 @@
 #pragma once
 
+#include "runtime.hpp"
+#include "bytecode.hpp"
+
 #include <memory>
 #include <vector>
-
-#include "bytecode.hpp"
-#include "runtime.hpp"
 
 namespace egel {
 

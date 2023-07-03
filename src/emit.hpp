@@ -1,12 +1,14 @@
 #pragma once
 
-#include <memory>
-#include <vector>
+#include "runtime.hpp"
 
 #include "ast.hpp"
 #include "bytecode.hpp"
 #include "environment.hpp"
 #include "transform.hpp"
+
+#include <memory>
+#include <vector>
 
 namespace egel {
 

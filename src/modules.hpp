@@ -1,10 +1,6 @@
 #pragma once
 
-#include <dlfcn.h>  // XXX: I wish I could get rid of this
-
-#include <memory>
-#include <vector>
-
+#include "runtime.hpp"
 #include "ast.hpp"
 #include "builtin_eval.hpp"
 #include "builtin_math.hpp"
@@ -21,10 +17,14 @@
 #include "error.hpp"
 #include "lexical.hpp"
 #include "lift.hpp"
-#include "runtime.hpp"
 #include "semantical.hpp"
 #include "syntactical.hpp"
 #include "lightning.hpp"
+
+#include <dlfcn.h>  // XXX: I wish I could get rid of this
+
+#include <memory>
+#include <vector>
 
 namespace egel {
 // convenience

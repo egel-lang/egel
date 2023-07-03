@@ -1,5 +1,7 @@
 #pragma once
 
+#include "runtime.hpp"
+
 #include "ast.hpp"
 #include "error.hpp"
 #include "lexical.hpp"

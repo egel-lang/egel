@@ -1,5 +1,7 @@
 #pragma once
 
+#include "runtime.hpp"
+
 #include "ast.hpp"
 #include "desugar.hpp"
 #include "environment.hpp"

@@ -10,6 +10,9 @@
 #include <sstream>
 #include <vector>
 
+#include <mimalloc.h>
+// #include <mimalloc-new-delete.h>
+
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"

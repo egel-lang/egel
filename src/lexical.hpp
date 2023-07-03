@@ -1,13 +1,15 @@
 #pragma once
 
-#include <iostream>
-#include <memory>
-#include <vector>
-
+#include "runtime.hpp"
 #include "constants.hpp"
 #include "error.hpp"
 #include "position.hpp"
 #include "reader.hpp"
+
+#include <iostream>
+#include <memory>
+#include <vector>
+
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"

@@ -1,13 +1,13 @@
 #pragma once
 
+#include "runtime.hpp"
+
 #include <stdlib.h>
 
 #include <chrono>
 #include <mutex>
 #include <queue>
 #include <thread>
-
-#include "runtime.hpp"
 
 /**
  * Egel's process implementation.
