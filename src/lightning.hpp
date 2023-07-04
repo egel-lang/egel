@@ -4,7 +4,11 @@
 #include "bytecode.hpp"
 
 extern "C" {
-#include <lightning/lightning.h>
+#if __has_include(<lightning/lightning.h>)
+    #include <lightning/lightning.h>
+#else
+    #include <lightning.h>
+#endif
 }
 
 using namespace egel;

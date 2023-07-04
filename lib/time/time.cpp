@@ -11,30 +11,6 @@ namespace fs = std::chrono;
 
 #define TIME_STRING "TIME"
 
-typedef std::vector<icu::UnicodeString> UnicodeStrings;
-
-// XXX: move this to the VM once
-VMObjectPtr bool_to_object(VM* vm, const bool& b) {
-    if (b) {
-        return vm->get_data_string("System", "true");
-    } else {
-        return vm->get_data_string("System", "false");
-    }
-}
-
-VMObjectPtr int_to_object(const vm_int_t& n) {
-    return VMObjectInteger::create(n);
-}
-
-VMObjectPtr none(VM* vm) {
-    return vm->get_data_string("System", "none");
-}
-
-// for some reason C++ doesn't derive clocks from a base class
-// because of that, clocks are flattened into one value where
-// we (again) follow the pattern of throwing exceptions for
-// unsupported functionality
-
 enum class clock_type {
     SYSTEM_CLOCK,
     STEADY_CLOCK,
@@ -43,15 +19,6 @@ enum class clock_type {
     TAI_CLOCK,
     GPS_CLOCK
 };
-
-/* unnecessary. all methods are static on a clock
-typedef std::shared_ptr<system_clock>          system_clock_ptr;
-typedef std::shared_ptr<utc_clock>             utc_clock_ptr;
-typedef std::shared_ptr<tai_clock>             tai_clock_ptr;
-typedef std::shared_ptr<gps_clock>             gps_clock_ptr;
-typedef std::shared_ptr<steady_clock>          steady_clock_ptr;
-typedef std::shared_ptr<high_resolution_clock> high_resolution_clock_ptr;
-*/
 
 /*
  Date/time classes revolve about four abstractions: clocks, time points,
