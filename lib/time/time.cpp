@@ -26,14 +26,110 @@ enum class clock_type {
 
  A clock is primarily used to derive a _time point_
 */
-class FlatClock {
+class TimePoint: public Opaque {
 public:
-    FlatClock(clock_type tp) {
-        _clock_type = tp;
+    OPAQUE_PREAMBLE(TimePoint, TIME_STRING, "time_point");
+
+    TimePoint(const TimePoint& tp)
+        : Opaque(tp.machine(), tp.symbol()) {
+        _time_point = tp.time_point();
+    }
+
+    static VMObjectPtr create(VM* m, const std::chrono::time_point& tp) {
+        auto o = TimePoint(m);
+        o.set_time_point(tp);
+        return o;
+    }
+
+    static bool is_time_point(const VMObjectPtr& o) {
+    }
+
+    static std::shared_ptr<TimePoint> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<TimePoint>(o);
+    }
+
+    void set_time_point() {
+        return _time_point;
+    }
+
+    std::chrono::time_point time_point() {
+        return _time_point;
+    }
+
+    std::chrono::time_point time_point() {
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        auto tp = (std::static_pointer_cast<TimePoint>(o))->time_point();
+        if (_time_point < tp)
+            return -1;
+        else if (tp < _time_point)
+            return 1;
+        else
+            return 0;
+    }
+
+private:
+    std::chrono::time_point _time_point;
+};
+
+class Duration: public Opaque {
+public:
+    OPAQUE_PREAMBLE(Duration, TIME_STRING, "duration");
+
+    Duration(const Duration& d)
+        : Opaque(d.machine(), d.symbol()) {
+        _duration = d.duration();
+    }
+
+    std::chrono::duration duration() {
+        return _duration;
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        auto d = (std::static_pointer_cast<Duration>(o))->duration();
+        if (_duration < d)
+            return -1;
+        else if (d < _duration)
+            return 1;
+        else
+            return 0;
+    }
+
+private:
+    std::chrono::duration _duration;
+};
+
+// ## Time::clock - opaque values that represent clocks
+class Clock: public Opaque {
+public:
+    OPAQUE_PREAMBLE(Clock, TIME_STRING, "clock");
+
+    ClockValue(const Clock& clock)
+        : Opaque(clock.machine(), clock.symbol()) {
+        _clock_type = clock.clock_type();
+    }
+
+    void set_clock_type(const clock_type& ct) {
+        _clock_type = ct;
     }
 
     clock_type clock_type() {
         return _clock_type;
+    }
+
+    static VMObjectPtr create(const clock_type& tp) const {
+        return std::make_shared<ClockValue>(*this);
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        auto v = (std::static_pointer_cast<FlatClock>(o))->value();
+        if (_value < v)
+            return -1;
+        else if (v < _value)
+            return 1;
+        else
+            return 0;
     }
 
     bool is_steady() {
@@ -164,56 +260,24 @@ protected:
     clock_type _clock_type;
 };
 
-// ## Time::clock - opaque values which represent clocks
-class ClockValue : public Opaque {
-public:
-    OPAQUE_PREAMBLE(ClockValue, TIME_STRING, "clock");
-
-    ClockValue(const ChannelValue& chan)
-        : Opaque(chan.machine(), chan.symbol()) {
-        _value = chan.value();
-    }
-
-    VMObjectPtr create() const override {
-        return VMObjectPtr(new ClockValue(*this));
-    }
-
-    int compare(const VMObjectPtr& o) override {
-        auto v = (std::static_pointer_cast<FlatClock>(o))->value();
-        if (_value < v)
-            return -1;
-        else if (v < _value)
-            return 1;
-        else
-            return 0;
-    }
-
-    FlatClock value() const {
-        return _value;
-    }
-
-protected:
-    FlatClock _value;
-};
-
 // ## Time::duration - opaque values which represent time durations
 // ## Time::time_points - opaque values which represent time points
 // ## Time::tm - opaque values which represent calendar times
 
 // ## OS:empty p - checks whether the path is empty
-class Empty : public Monadic {
+class NewClock : public Monadic {
 public:
-    MONADIC_PREAMBLE(Empty, OS_STRING, "empty");
+    MONADIC_PREAMBLE(NewClock, OS_STRING, "new_clock");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
-            try {
-                auto p0 = object_to_path(arg0);
-                auto b = p0.empty();
-
-                return bool_to_object(machine(), b);
-            } catch (const fs::filesystem_error& e) {
-                throw error_to_object(e);
+            auto s = machine()->get_text(arg0);
+            if (s == "utc") {
+                Clock c();
+            
+            } else if (s == "system") {
+            } else {
+                THROW_BADARGS;
             }
         } else {
             THROW_BADARGS;

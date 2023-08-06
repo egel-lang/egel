@@ -522,7 +522,10 @@ public:
             case TOKEN_IF:
             case TOKEN_TRY:
             case TOKEN_THROW:
+            case TOKEN_LET:
+            case TOKEN_DO:
             case TOKEN_LSQUARE:
+            case TOKEN_LAMBDA:
             case TOKEN_LCURLY:
                 return true;
                 break;
