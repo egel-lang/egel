@@ -154,7 +154,7 @@ namespace List (
 
     ## List::concat_map f l - map a function producing lists over a list
     def concat_map =
-        [F XX -> map F XX |> flatten]
+        [ F -> foldr ((++) . F) nil ]
 
     ## List::reverse l - reverse a list
     def reverse = 
@@ -303,10 +303,6 @@ namespace List (
         [ X nil -> {{X}}
         | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insert_everywhere X YY)) ]
 
-    ## List::concat_map f l - concat map
-    def concat_map =
-        [ F -> foldr ((++) . F) nil ]
-
     ## List::permutations l - all permutations of a list
     def permutations =
         foldr (concat_map . insert_everywhere) {{}}
@@ -349,7 +345,7 @@ namespace List (
             fix
             [ F nil -> nil | F (cons XX nil) -> (cons XX nil)
             | F (cons XX (cons YY ZZ)) -> 
-                if head XX = head YY then F (cons (XX ++ YY) ZZ)
+                if head XX == head YY then F (cons (XX ++ YY) ZZ)
                 else cons XX (F (cons YY ZZ)) ] ]
 
     ## List::unique l - make all members unique
