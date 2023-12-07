@@ -343,6 +343,15 @@ namespace List (
         | (cons X (cons Y YY)) -> if X == Y then nub (cons Y YY)
                                   else (cons X (nub (cons Y YY))) ]
 
+    ## List::group - group duplicates
+    def group =
+        [ XX -> map [X -> cons X nil] XX |>
+            fix
+            [ F nil -> nil | F (cons XX nil) -> (cons XX nil)
+            | F (cons XX (cons YY ZZ)) -> 
+                if head XX = head YY then F (cons (XX ++ YY) ZZ)
+                else cons XX (F (cons YY ZZ)) ] ]
+
     ## List::unique l - make all members unique
     def unique = nub . sort
 
