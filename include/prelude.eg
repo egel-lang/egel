@@ -152,6 +152,10 @@ namespace List (
         [ F nil -> nil
         | F (cons X XX) -> let Y = F X in cons Y (map F XX) ]
 
+    ## List::concat_map f l - map a function producing lists over a list
+    def concat_map =
+        [F XX -> map F XX |> flatten]
+
     ## List::reverse l - reverse a list
     def reverse = 
        foldl (flip cons) nil
@@ -165,6 +169,12 @@ namespace List (
     def repeat =
         [ 0 X -> nil
         | N X -> cons X (repeat (N - 1) X) ]
+
+    ## List::combine ll - all lists that are the product of the members of a list of lists
+    def combine =
+        [ {} -> {{}}
+        | {XX|XXX} -> let YY = combine XXX in concat_map [X -> map [XX -> {X|XX}] YY] XX ]
+
 
     ## List::nth n l - nth element of a list
     def nth =
