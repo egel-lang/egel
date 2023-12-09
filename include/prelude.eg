@@ -58,6 +58,9 @@ namespace System (
     ## System::trace_until f g x - trace until a guard holds
     def trace_until = [F G X -> if G X then {X} else {X|trace_until F G (F X)}]
 
+    ## System::trace_while f g x - trace while a guard holds
+    def trace_while = [F G X -> if G X then {X|trace_while F G (F X)} else {}]
+
     ## System::while f x - apply f as long as it reduces
     def while = [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
