@@ -55,6 +55,9 @@ namespace System (
     ## System::trace n f x - trace iteration of a function
     def trace = [ 0 F X -> {X} | N F X -> {X|trace (N - 1) F (F X)} ]
 
+    ## System::trace_until f g x - trace until a guard holds
+    def trace_until = [F G X -> if G X then {X} else {X|trace_until F G (F X)}]
+
     ## System::while f x - apply f as long as it reduces
     def while = [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
