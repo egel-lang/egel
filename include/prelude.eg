@@ -143,6 +143,16 @@ namespace List (
         [ (cons X nil) -> nil
         | (cons X XX)  -> cons X (init XX) ]
 
+    ## List::inits l - inits of a list
+    def inits = 
+        [ nil -> cons nil nil 
+        | (cons X XX) -> cons nil (map (cons X) (inits XX)) ]
+
+    ## List::tails l - tails of a list
+    def tails = 
+        [ nil -> cons nil nil
+        | (cons X XX) -> let YY = tails XX in cons (cons X (head YY)) YY ]
+
     ## List::++ l0 l1 - concatenation of two lists
     def ++ =
         [ nil YY -> YY
