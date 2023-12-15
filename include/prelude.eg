@@ -64,7 +64,10 @@ namespace System (
     ## System::while f x - apply f as long as it reduces
     def while = [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
-    ## System::fst (x, y) - proj0 on pair
+    ## System::swap (x,y) - swap a tuple
+    def swap = [ (X,Y) -> (Y,X) ]
+
+    ## System::proj n (x, .., y) - projection on tuple
     def proj =
         [ N (A B)       -> List::nth N {A,B}
         | N (A B C)     -> List::nth N {A,B,C}

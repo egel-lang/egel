@@ -6,8 +6,8 @@ import "generator.eg"
 
 namespace Dict ( 
 
-    using List
     using System
+    using List
  
     def from_list =
         foldl [D (K,V) -> Dict::set D K V] dict
@@ -35,4 +35,12 @@ namespace Dict (
 
     def union =
         [ D0 D1 -> Dict::from_list ((Dict::to_list D0) ++ (Dict::to_list D1)) ]
+
+    def inverse0 =
+        [ {} -> {} | {(K0,V)|XX} -> 
+            [ {}           -> {(K0,{V})} 
+            | {(K1,VV)|XX} -> if K0 == K1 then {(K0,{V|VV})|XX} else {(K0,{V}),(K1,VV)|XX} ]
+                (inverse0 XX) ]
+
+    def inverse = Dict::from_list . inverse0 . sort . List::map swap . Dict::to_list
 )
