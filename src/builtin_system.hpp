@@ -935,6 +935,42 @@ public:
     }
 };
 
+// ## System::fast_foldl f z xx - fast_foldl
+class Foldl : public Triadic {
+public:
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Foldl, "System", "fast_foldl");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
+        auto vm = machine();
+        
+        auto f = arg0;
+        auto acc = arg1;
+        auto xx = arg2;
+        while(!vm->is_nil(xx)) { 
+            if (vm->is_array(xx) && (vm->array_size(xx) == 3) && (vm->is_cons(vm->array_get(xx,0)))) {
+                auto x = vm->array_get(xx,1);
+                xx = vm->array_get(xx,2);
+                
+                auto thunk = vm->create_array(3);
+                vm->array_set(thunk, 0, f);
+                vm->array_set(thunk, 1, acc);
+                vm->array_set(thunk, 2, x);
+
+                auto r = vm->reduce(thunk);
+                if (r.exception) {
+                    throw r.result;
+                } else {
+                    acc = r.result;
+                }
+            } else {
+                throw machine()->bad_args(this, arg0, arg1, arg2);
+            }      
+        }
+
+        return acc;
+    }              
+};
+
 inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -1014,6 +1050,9 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(GetField::create(vm));
     oo.push_back(SetField::create(vm));
     oo.push_back(ExtendField::create(vm));
+
+    // fast builtins
+    oo.push_back(Foldl::create(vm));
 
     return oo;
 }

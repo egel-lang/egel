@@ -25,6 +25,8 @@
 #define LIBRARY_VERSION_MINOR "0"
 #define LIBRARY_VERSION_PATCH "1"
 
+using namespace egel;
+
 class CPythonMachine {
 public:
     CPythonMachine() {
@@ -197,10 +199,6 @@ static VMObjectPtr python_to_egel(VM* machine, const CPythonObject& object) {
 class PythonMachine : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonMachine, "Python", "machine");
-
-    static VMObjectPtr create(VM* m) {
-        return std::make_shared<PythonMachine>(m);  // XXX: closes and creates?
-    }
 
     ~PythonMachine() {
         if (_value) delete _value;
