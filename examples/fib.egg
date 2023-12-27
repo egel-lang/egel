@@ -1,0 +1,30 @@
+# The standard Fibonacci function defined in an Egel egg.
+
+You can read about this function here https://en.wikipedia.org/wiki/Fibonacci_number
+
+Start of with defining the Fibonacci function as `fib` in its own namespace.
+
+```
+namespace Fibonnaci (
+  using System
+
+  def fib =
+    [ 0 -> 1
+    | 1 -> 1
+    | N -> fib (N- 2) + fib (N- 1) ]
+)
+```
+
+Pull all combinators defined in the Fibonacci namespace into the global scope.
+
+```
+using Fibonnaci
+```
+
+And now run it.
+
+```
+def main = fib 20
+```
+
+That's all!
