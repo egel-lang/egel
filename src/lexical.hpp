@@ -973,4 +973,304 @@ handle_float_error : {
     throw ErrorLexical(p, "error in float");
 }
 }
+
+TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
+    TokenVector token_writer = TokenVector();
+
+    bool text = true;
+    while (!reader.end()) {
+        if (text) {
+            if (reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) =='`') {
+                while (!reader.end() && !is_eol(reader.look())) reader.skip();
+                text = !text;
+            } else {
+                while (!reader.end() && !reader.eol()) reader.skip();
+            }
+        } else {
+            while (!reader.end() && is_whitespace(reader.look())) reader.skip();
+
+            while (!reader.end() && !(reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) == '`')) {
+                Position p = reader.position();
+                UChar32 c = reader.look();
+
+                if (is_hash(c)) {
+                    while (!reader.end() && !is_eol(reader.look())) reader.skip();
+                } else if (is_comma(c)) {
+                    token_writer.push(Token(TOKEN_COMMA, p, c));
+                    reader.skip();
+                } else if (is_lparen(c)) {
+                    token_writer.push(Token(TOKEN_LPAREN, p, c));
+                    reader.skip();
+                } else if (is_rparen(c)) {
+                    token_writer.push(Token(TOKEN_RPAREN, p, c));
+                    reader.skip();
+                } else if (is_lsquare(c)) {
+                    token_writer.push(Token(TOKEN_LSQUARE, p, c));
+                    reader.skip();
+                } else if (is_rsquare(c)) {
+                    token_writer.push(Token(TOKEN_RSQUARE, p, c));
+                    reader.skip();
+                } else if (is_lcurly(c)) {
+                    token_writer.push(Token(TOKEN_LCURLY, p, c));
+                    reader.skip();
+                } else if (is_rcurly(c)) {
+                    token_writer.push(Token(TOKEN_RCURLY, p, c));
+                    reader.skip();
+                } else if (is_colon(c)) {
+                    reader.skip();
+                    c = reader.look();
+                    if (is_colon(c)) {
+                        reader.skip();
+                        token_writer.push(Token(TOKEN_DCOLON, p, STRING_DCOLON));
+                    } else {
+                        token_writer.push(Token(TOKEN_COLON, p, c));
+                    }
+                } else if (is_semicolon(c)) {
+                    reader.skip();
+                    c = reader.look();
+                    if (is_semicolon(c)) {
+                        reader.skip();
+                        token_writer.push(
+                            Token(TOKEN_DSEMICOLON, p, STRING_DSEMICOLON));
+                    } else {
+                        token_writer.push(Token(TOKEN_SEMICOLON, p, c));
+                    }
+                } else if (is_math(c)) {
+                    token_writer.push(Token(TOKEN_LOWERCASE, p, c));
+                    reader.skip();
+                    // compound tokens
+                } else if (is_quote(c)) {
+                    // FIXME: doesn't handle backslashes correct
+                    icu::UnicodeString str = icu::UnicodeString("");
+                    str += c;
+                    reader.skip();
+                    if (reader.end() || is_eol(reader.look())) goto handle_char_error;
+                    c = reader.look();
+                    str += c;
+                    if (is_backslash(c)) {
+                        reader.skip();
+                        if (reader.end() || is_eol(reader.look()))
+                            goto handle_char_error;
+                        c = reader.look();
+                        if (!is_escaped(c)) goto handle_char_error;
+                        str += c;
+                    };
+                    reader.skip();
+                    if (reader.end() || is_eol(reader.look())) goto handle_char_error;
+                    c = reader.look();
+                    if (!is_quote(c)) goto handle_char_error;
+                    str += c;
+                    reader.skip();
+                    token_writer.push(Token(TOKEN_CHAR, p, str));
+                } else if (is_dquote(c)) {
+                    if (is_dquote(reader.look(1)) && is_dquote(reader.look(2)) &&
+                        is_eol(reader.look(3))) {
+                        icu::UnicodeString str = icu::UnicodeString("");
+                        str += c;
+                        reader.skip();
+                        reader.skip();
+                        reader.skip();
+                        reader.skip();
+                        while (!(is_dquote(reader.look(0)) &&
+                                 is_dquote(reader.look(1)) &&
+                                 is_dquote(reader.look(2)))) {
+                            if (reader.end()) goto handle_string_error;
+                            c = reader.look();
+                            str += c;
+                            reader.skip();
+                        }
+                        c = reader.look();
+                        str += c;
+                        reader.skip();
+                        reader.skip();
+                        reader.skip();
+                        reader.skip();
+                        token_writer.push(Token(TOKEN_TEXT, p, str));
+                    } else {
+                        icu::UnicodeString str = icu::UnicodeString("");
+                        str += c;
+                        reader.skip();
+                        if (reader.end() || is_eol(reader.look()))
+                            goto handle_string_error;
+                        c = reader.look();
+                        while (!is_dquote(c)) {
+                            if (is_backslash(c)) {
+                                str += c;
+                                reader.skip();
+                                if (reader.end() || is_eol(reader.look()))
+                                    goto handle_string_error;
+                                c = reader.look();
+                                if (!is_escaped(c)) goto handle_string_error;
+                            };
+                            str += c;
+                            reader.skip();
+                            if (reader.end() || is_eol(reader.look()))
+                                goto handle_string_error;
+                            c = reader.look();
+                        };
+                        str += c;
+                        reader.skip();
+                        token_writer.push(Token(TOKEN_TEXT, p, str));
+                    }
+                    //        } else if (is_digit(c) || (is_minus(c) &&
+                    //        is_digit(reader.look(1)))) { // no longer lex a leading
+                    //        minus
+                } else if (is_digit(c) || (is_minus(c) && is_digit(reader.look(1)))) {
+                    // XXX: LL(2), to be solved by swapping skip/look
+                    /* This code handles numbers which are integers and floats. Integer
+                     * and float regular expressions are simplistic and overlap on their
+                     * prefixes.
+                     *
+                     * An integer is in the regexp "[-]?[0-9]+". A float is either
+                     * "[-]?[0-9]+[.][0-9]+" or expanded with an exponent
+                     * "[-]?[0-9]+[.][0-9]+[e][-]?[0-9]+". A hexint is "0x[0-9a-f]+".
+                     */
+                    icu::UnicodeString str = icu::UnicodeString("");
+                    // handle leading '-'
+                    if (is_minus(c)) {
+                        str += c;
+                        reader.skip();
+                        c = reader.look();
+                    }
+                    // handle digits
+                    while (is_digit(c)) {
+                        str += c;
+                        reader.skip();
+                        c = reader.look();
+                    };
+                    // '0x' starts hexint
+                    if ((str == "0") && (c == 'x')) {
+                        str += c;
+                        reader.skip();
+                        if (reader.end()) goto handle_hexint_error;
+                        c = reader.look();
+                        if (!is_hexdigit(c)) goto handle_hexint_error;
+                        while (is_hexdigit(c)) {
+                            str += c;
+                            reader.skip();
+                            c = reader.look();
+                        };
+                        token_writer.push(Token(TOKEN_INTEGER, p, str));
+                        // any '.' occurence signals the start of a forced floating
+                        // point
+                    } else if (!is_dot(c)) {
+                        token_writer.push(Token(TOKEN_INTEGER, p, str));
+                    } else {
+                        // handle '.'
+                        str += c;
+                        reader.skip();
+                        if (reader.end()) goto handle_float_error;
+                        c = reader.look();
+                        // handle digits
+                        if (!is_digit(c)) goto handle_float_error;
+                        while (is_digit(c)) {
+                            str += c;
+                            reader.skip();
+                            c = reader.look();
+                        };
+                        // any 'e' occurence signals a forced floating point with an
+                        // exponent
+                        if (!is_exponent(c)) {
+                            token_writer.push(Token(TOKEN_FLOAT, p, str));
+                        } else {
+                            // handle 'e'
+                            str += c;
+                            reader.skip();
+                            if (reader.end()) goto handle_float_error;
+                            c = reader.look();
+                            // handle leading '-'
+                            if (is_minus(c)) {
+                                str += c;
+                                reader.skip();
+                                if (reader.end()) goto handle_float_error;
+                                c = reader.look();
+                            }
+                            // handle digits
+                            if (!is_digit(c)) goto handle_float_error;
+                            while (is_digit(c)) {
+                                str += c;
+                                reader.skip();
+                                c = reader.look();
+                            };
+                            token_writer.push(Token(TOKEN_FLOAT, p, str));
+                        }
+                    }
+                } else if (is_operator(c)) {
+                    icu::UnicodeString str = icu::UnicodeString("");
+                    while (is_operator(c)) {
+                        str += c;
+                        reader.skip();
+                        c = reader.look();
+                    };
+                    token_writer.push(adjust_reserved(Token(TOKEN_OPERATOR, p, str)));
+                } else if (is_uppercase(c)) {
+                    icu::UnicodeString str = icu::UnicodeString("");
+                    while (is_letter(c)) {
+                        str += c;
+                        reader.skip();
+                        c = reader.look();
+                    };
+                    token_writer.push(adjust_reserved(Token(TOKEN_UPPERCASE, p, str)));
+                } else if (is_lowercase(c)) {
+                    icu::UnicodeString str = icu::UnicodeString("");
+                    while (is_letter(c)) {
+                        str += c;
+                        reader.skip();
+                        c = reader.look();
+                    };
+                    token_writer.push(adjust_reserved(Token(TOKEN_LOWERCASE, p, str)));
+                } else if (is_underscore(
+                               c)) {  // XXX: push a lowercase for an underscore?
+                    icu::UnicodeString str = icu::UnicodeString("");
+                    str += c;
+                    reader.skip();
+                    token_writer.push(Token(TOKEN_LOWERCASE, p, str));
+                } else {
+                    goto handle_error;
+                }
+
+                while (!reader.end() && is_whitespace(reader.look())) reader.skip();
+
+            }
+
+            if (reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) =='`') {
+                while (!reader.end() && !is_eol(reader.look())) reader.skip();
+                text = !text;
+            }
+        }
+    }
+
+    {
+        Position p = reader.position();
+        token_writer.push(Token(TOKEN_EOF, p, icu::UnicodeString("EOF")));
+    }
+
+    return token_writer.clone_reader();
+
+handle_error : {
+    Position p = reader.position();
+    throw ErrorLexical(
+        p, icu::UnicodeString("unrecognized lexeme ") + reader.look());
+}
+
+handle_char_error : {
+    Position p = reader.position();
+    throw ErrorLexical(p, "error in char");
+}
+
+handle_string_error : {
+    Position p = reader.position();
+    throw ErrorLexical(p, "error in string");
+}
+
+handle_hexint_error : {
+    Position p = reader.position();
+    throw ErrorLexical(p, "error in hexadecimal int");
+}
+
+handle_float_error : {
+    Position p = reader.position();
+    throw ErrorLexical(p, "error in float");
+}
+}
 }  // namespace egel

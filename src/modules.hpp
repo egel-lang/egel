@@ -597,6 +597,157 @@ private:
     std::vector<VMObjectPtr> _combinators;
 };
 
+class ModuleEgg : public Module {
+public:
+    ModuleEgg(const icu::UnicodeString &path, const icu::UnicodeString &fn,
+                 VM *m)
+        : Module(MODULE_SOURCE, path, fn, m), _source(""), _ast(0) {
+    }
+
+    ModuleSource(const ModuleSource &m)
+        : Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
+          _source(m._source),
+          _ast(m._ast) {
+        set_options(m.get_options());
+    }
+
+    static ModulePtr create(const icu::UnicodeString &path,
+                            const icu::UnicodeString &fn, VM *m) {
+        return std::make_shared<ModuleSource>(path, fn, m);
+    }
+
+    void load() override {
+        if (VM::file_exists(get_path())) {
+            _source = VM::read_utf8_file(get_path());
+        } else {
+            throw ErrorIO("module " + get_path() + " not found");
+        };
+    }
+
+    void unload() override {
+    }
+
+    QualifiedStrings imports() override {
+        auto aa = egel::imports(_ast);
+        auto ii = QualifiedStrings();
+        for (auto a : aa) {
+            if (a->tag() == AST_DIRECT_IMPORT) {
+                auto [p, s] = AstDirectImport::split(a);
+                ii.push_back(QualifiedString(p, VM::unicode_to_text(s)));
+            }
+        }
+        return ii;
+    }
+
+    QualifiedStrings values() override {
+        auto aa = egel::values(_ast);
+        auto ii = QualifiedStrings();
+        for (auto a : aa) {
+            if (a->tag() == AST_DECL_VALUE) {
+                auto [p, n, f] = AstDeclValue::split(a);
+                ii.push_back(QualifiedString(p, n->to_text()));
+            }
+        }
+        return ii;
+    }
+
+    VMObjectPtrs exports() override {
+        return _combinators;
+    }
+
+    void syntactical() override {
+        StringCharReader r = StringCharReader(get_filename(), _source);
+        TokenReaderPtr tt = tokenize_from_egg_reader(r);
+
+        if (get_options()->only_tokenize()) {
+            while (tt->look().tag() != TOKEN_EOF) {
+                std::cout << tt->look() << " ";
+                tt->skip();
+            };
+            std::cout << std::endl;
+            exit(EXIT_SUCCESS);
+        };
+
+        auto a = parse(tt);
+
+        if (get_options()->only_unparse()) {
+            std::cout << a << std::endl;
+            exit(EXIT_SUCCESS);
+        };
+
+        _source = "";
+        _ast = a;
+    }
+
+    void declarations(NamespacePtr &env) override {
+        declare(env, _ast);
+    }
+
+    void semantical(NamespacePtr &env) override {
+        _ast = egel::identify(env, _ast);
+
+        if (get_options()->only_semantical()) {
+#ifdef DEBUG
+            std::cout << env << std::endl;
+#endif
+            std::cout << _ast << std::endl;
+            exit(EXIT_SUCCESS);
+        };
+    }
+
+    void desugar() override {
+        _ast = egel::desugar(_ast);
+        if (get_options()->only_desugar()) {
+            std::cout << _ast << std::endl;
+            exit(EXIT_SUCCESS);
+        };
+    }
+
+    void lift() override {
+        _ast = egel::lift(_ast);
+
+        if (get_options()->only_lift()) {
+            std::cout << _ast << std::endl;
+            exit(EXIT_SUCCESS);
+        };
+    }
+
+    void datagen(VM *vm) override {
+        auto oo = egel::emit_data(vm, _ast);
+        for (auto &o:oo) {
+            _combinators.push_back(o);
+        }
+    }
+
+    void codegen(VM *vm) override {
+        auto oo = egel::emit_code(vm, _ast);
+        if (get_options()->only_bytecode()) {
+            vm->render(std::cout);
+            exit(EXIT_SUCCESS);
+        };
+        for (auto &o:oo) {
+            _combinators.push_back(o);
+        }
+    }
+
+    void jit(VM *vm) override {
+        emit_jit(vm, _combinators);
+    }
+
+    void render(std::ostream &os) const override {
+        os << "source module " << get_filename();
+    }
+
+    static bool filetype(const icu::UnicodeString &fn) {
+        return fn.endsWith(".egg");
+    }
+
+private:
+    icu::UnicodeString _source;
+    ptr<Ast> _ast;
+    std::vector<VMObjectPtr> _combinators;
+};
+
 using ModulePtrs = std::vector<ModulePtr>;
 
 class ModuleManager {
@@ -743,6 +894,8 @@ protected:
                 ModulePtr m = nullptr;
                 if (ModuleSource::filetype(fn)) {
                     m = ModuleSource::create(find, fn, _machine);
+                } else if (ModuleEgg::filetype(fn)) {
+                    m = ModuleEgg::create(find, fn, _machine);
                 } else if (ModuleDynamic::filetype(fn)) {
                     m = ModuleDynamic::create(find, fn, _machine);
                 } else {
