@@ -1,6 +1,6 @@
 # The standard Fibonacci function defined in an Egel egg.
 
-You can read about this function here https://en.wikipedia.org/wiki/Fibonacci_number
+You can read about this function [here](https://en.wikipedia.org/wiki/Fibonacci_number).
 
 Start of with defining the Fibonacci function as `fib` in its own namespace.
 
