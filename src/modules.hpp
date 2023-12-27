@@ -604,7 +604,7 @@ public:
         : Module(MODULE_SOURCE, path, fn, m), _source(""), _ast(0) {
     }
 
-    ModuleSource(const ModuleSource &m)
+    ModuleEgg(const ModuleEgg &m)
         : Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
           _source(m._source),
           _ast(m._ast) {
