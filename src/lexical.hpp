@@ -976,10 +976,12 @@ handle_float_error : {
 
 TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
     TokenVector token_writer = TokenVector();
+    std::cout << "XXX!" << reader.look(0) << "\n";
 
     bool text = true;
     while (!reader.end()) {
         if (text) {
+            std::cout << "text" << reader.look(0) << "\n";
             if (reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) =='`') {
                 while (!reader.end() && !is_eol(reader.look())) reader.skip();
                 text = !text;
@@ -987,6 +989,7 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                 while (!reader.end() && !reader.eol()) reader.skip();
             }
         } else {
+            std::cout << "!text" << reader.look(0) << "\n";
             while (!reader.end() && is_whitespace(reader.look())) reader.skip();
 
             while (!reader.end() && !(reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) == '`')) {

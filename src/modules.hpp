@@ -81,6 +81,7 @@ enum module_tag_t {
     MODULE_SOURCE,
     MODULE_INTERNAL,
     MODULE_DYNAMIC,
+    MODULE_EGG,
 };
 
 class Module {
@@ -601,11 +602,11 @@ class ModuleEgg : public Module {
 public:
     ModuleEgg(const icu::UnicodeString &path, const icu::UnicodeString &fn,
                  VM *m)
-        : Module(MODULE_SOURCE, path, fn, m), _source(""), _ast(0) {
+        : Module(MODULE_EGG, path, fn, m), _source(""), _ast(0) {
     }
 
     ModuleEgg(const ModuleEgg &m)
-        : Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
+        : Module(MODULE_EGG, m.get_path(), m.get_filename(), m.machine()),
           _source(m._source),
           _ast(m._ast) {
         set_options(m.get_options());
@@ -613,14 +614,14 @@ public:
 
     static ModulePtr create(const icu::UnicodeString &path,
                             const icu::UnicodeString &fn, VM *m) {
-        return std::make_shared<ModuleSource>(path, fn, m);
+        return std::make_shared<ModuleEgg>(path, fn, m);
     }
 
     void load() override {
         if (VM::file_exists(get_path())) {
             _source = VM::read_utf8_file(get_path());
         } else {
-            throw ErrorIO("module " + get_path() + " not found");
+            throw ErrorIO("egg " + get_path() + " not found");
         };
     }
 
