@@ -5,7 +5,7 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-+ don't reduce literals or variables
++ don't reduce redexes that start with a const
 + vararg function definitions
 + lowercase namespace
 + move to C++20 (modules, modern syntax)
@@ -21,7 +21,6 @@ A list of all major changes between versions of the interpreter.
 + cleanup internals regarding combinator declarations
 + rewrite the runtime to make the interpreter performant
 + module rework and compile into local module
-+ add a literate scripting mode
 + time and date
 + complex numbers
 * clean up ref (make it serializable)
