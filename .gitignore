@@ -27,6 +27,7 @@
 
 # Logs 
 *.log
+*.trs
 
 # Executables
 *.exe
@@ -36,12 +37,11 @@
 # VI swap files
 *.swp
 
-# Don't follow the main executable
+# Don't follow the main executable, archives, and dynlibs
 src/egel
-# Or a possible generated archive
 src/libegel.a
-# Don't follow dynamic libraries
 *.ego
+
 # Don't follow generated test cases
 tests/large.eg
 
@@ -67,3 +67,53 @@ python/examples/__pycache__/*
 
 # c++20 provisional stuff
 src/gcm.cache/*
+
+vendor/lightning-2.2.2/build-aux
++*
+
+*.o
+*.lo
+*.la
+
+.libs/
+.deps/
+*/.libs/
+*/.deps/
+
+vendor/lightning-2.2.2/*/Makefile
+vendor/lightning-2.2.2/*/*/Makefile
+vendor/lightning-2.2.2/doc
+vendor/lightning-2.2.2/autom4te.cache
+vendor/lightning-2.2.2/aclocal.m4
+vendor/lightning-2.2.2/depcomp
+vendor/lightning-2.2.2/INSTALL
+vendor/lightning-2.2.2/Makefile
+vendor/lightning-2.2.2/Makefile.in
+vendor/lightning-2.2.2/config.guess
+vendor/lightning-2.2.2/config.h
+vendor/lightning-2.2.2/config.h.in
+vendor/lightning-2.2.2/config.log
+vendor/lightning-2.2.2/config.status
+vendor/lightning-2.2.2/config.sub
+vendor/lightning-2.2.2/configure
+vendor/lightning-2.2.2/install-sh
+vendor/lightning-2.2.2/libtool
+vendor/lightning-2.2.2/lightning-*.tar.*
+vendor/lightning-2.2.2/ltmain.sh
+vendor/lightning-2.2.2/missing
+vendor/lightning-2.2.2/size
+vendor/lightning-2.2.2/stamp-h1
+vendor/lightning-2.2.2/test-driver
+
+vendor/lightning-2.2.2/m4/libtool.m4
+vendor/lightning-2.2.2/m4/lt~obsolete.m4
+vendor/lightning-2.2.2/m4/ltoptions.m4
+vendor/lightning-2.2.2/m4/ltsugar.m4
+vendor/lightning-2.2.2/m4/ltversion.m4
+
+vendor/lightning-2.2.2/lightning.pc
+vendor/lightning-2.2.2/include/lightning.h
+
+vendor/lightning-2.2.2/build-aux/
+
+vendor/lightning-2.2.2/check

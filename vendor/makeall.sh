@@ -17,8 +17,7 @@ cmake ..
 popd
 
 # make lightning
-pushd lightning
-./bootstrap
+pushd lightning-2.2.2
 ./configure
 make
 make check
