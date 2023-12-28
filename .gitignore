@@ -25,6 +25,9 @@
 *.a
 *.lib
 
+# Logs 
+*.log
+
 # Executables
 *.exe
 *.out
@@ -51,9 +54,6 @@ optional/*/build/*
 optional/*/_build/*
 optional/*/debug/*
 optional/*/_debug/*
-
-# Don't follow vendor libraries
-vendor/*
 
 # ignore macos fs
 .DS_Store

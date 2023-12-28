@@ -1,0 +1,10 @@
+[submodule "vendor/icu"]
+	path = vendor/icu
+	url = https://github.com/unicode-org/icu.git
+[submodule "vendor/lightning"]
+	path = vendor/lightning
+	url = https://git.savannah.gnu.org/git/lightning.git
+    branch = lightning-2.2.2
+[submodule "vendor/fmt"]
+	path = vendor/fmt
+	url = https://github.com/fmtlib/fmt.git
