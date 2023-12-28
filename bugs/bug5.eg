@@ -1,0 +1,9 @@
+# printing large terms makes egel run out of the c stack
+
+# this is fixable, it's probably right to move printing to egel code
+
+import "prelude.eg"
+
+using List
+
+def main = from_to 0 1000000

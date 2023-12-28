@@ -16,7 +16,7 @@ cd build
 cmake ..
 popd
 
-# make lightning
+# make lightning (from a tarball since the other with a bootstrap fails)
 pushd lightning-2.2.2
 ./configure
 make
