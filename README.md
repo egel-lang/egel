@@ -7,14 +7,32 @@ combinator rewriting with a concise but remarkably powerful syntax.
 Installation
 ------------
 
-This interpreter is being developed on Linux/MacOS/BSD and uses libicu for 
-Unicode support and fmt for formatting. 
+This interpreter is being developed on Linux/MacOS/BSD and uses icu4c for 
+Unicode support, fmt for formatting, and GNU lightning as a ahead-of-time
+backend. 
 
-You need to have the GNU or LLVM compiler chain for C++17, the development 
-files for libicu (65.0) and fmt (8.0), and cmake (3.13) installed. 
-Most package managers will provide that for you.
+The interpreter can be compiled with a current C++ compiler and employs
+cmake to build.
 
-This interpreter is made with `cmake` in the standard manner. Run
+There are roughly two manners in which operating systems and package
+managers provide C++ libraries.
+
+1. The open source model (various Unixes and BSDs) where C++ libraries are
+   compiled and dissimated by the operating system distributor. Use your
+   package manager to install libicu, fmt, and GNU lightning.
+
+2. The vendor based model (MacOS and Windows) where C++ libraries are 
+   usually not provided since they are brittle to link against, and where
+   one usually compiles these libraries from scratch and statically links
+   them in. Links to the vendors are provided as git submodules in the
+   vendor directory and, you're on your own here, you'll need to download
+   and compile those libraries. There's a separate README.md in the vendor
+   directory that should help somewhat.
+
+CMake files are provided for both models, select the one you want to use
+and rename either to `CMakeLists.txt`.
+
+After that the interpreter is made with `cmake` in the standard manner. Run
 the following commands on a Linux system.
 
 ```
@@ -22,13 +40,6 @@ the following commands on a Linux system.
     cd build
     cmake ..
     make
-```
-
-note: on MacOS you need to provide the location of what you want
-to link against. Since most people will be using brew, use this
-
-```
-    cmake .. -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/icu4c
 ```
 
 note: for older GCC you sometimes need to uncomment the
