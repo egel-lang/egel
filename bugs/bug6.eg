@@ -1,0 +1,14 @@
+# printing large terms makes egel run out of the c stack
+
+# when large objects go out of scope they might trigger a c stack overflow
+# there isn't much there can be done about this since this is due to 
+# native c++ RAII behavior on shared pointers
+# a stopgap solution is to break these large structure down gracefully
+
+
+import "prelude.eg"
+
+using List
+using System
+
+def main = from_to 0 1000000 |> [_ -> none]
