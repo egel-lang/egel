@@ -44,9 +44,6 @@ string(REGEX REPLACE ${EGEL_PATH_REGEX} "\\1" EGEL_PATH "${EGEL_PATH}")
 message("egel version: ${PVERSION}")
 message("egel path: ${EGEL_PATH}")
 
-# add 'fallback' modules
-# set(CMAKE_MODULE_PATH "contrib/cmake/modules;${CMAKE_MODULE_PATH}")
-
 # the Egel project
 project(Egel DESCRIPTION "The Egel interpreter"
         VERSION ${PVERSION} LANGUAGES CXX)
@@ -112,8 +109,7 @@ endif()
 file(GLOB EGEL_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file(GLOB EGEL_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.hpp")
 
-# check for ICU, Threads, fmt
-# ICU components: data, i18n, io, le, lx, test, tu and uc.
+# check for Threads, fmt, icu4c, and GNU lightning
 find_package(Threads REQUIRED)
 
 include_directories("${CMAKE_SOURCE_DIR}/src") # egel
@@ -125,33 +121,34 @@ find_library(ICUIO   libicuio   vendor/local/lib)
 find_library(ICUTU   libicutu   vendor/local/lib)
 find_library(ICUUC   libicuuc   vendor/local/lib)
 
+set(ICU4C "${ICUDATA} ${ICUI18N} ${ICUIO} ${ICUTU} ${ICUUC}")
+
 find_library(LIGHTNING liblightning vendor/local/lib)
 
 find_library(FMT libfmt vendor/local/lib)
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_link_libraries(objlib Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
-target_link_directories(objlib PRIVATE vendor/icu/icu4c/source/lib)
-target_link_directories(objlib PRIVATE /usr/local/lib) # for GNU lightning
+target_link_libraries(objlib Threads::Threads ICU4C FMT LIGHTNING)
+target_link_directories(objlib PRIVATE vendor/local/lib)
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
 target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
-target_link_directories(egel PRIVATE /usr/local/lib) # for GNU lightning
-# target_link_libraries(egel stdc++fs) # for old gcc
+target_link_libraries(egel Threads::Threads ICU4C FMT LIGHTNING)
+target_link_directories(egel PRIVATE vendor/local/lib)
 
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning )
-target_link_directories(egellib PRIVATE /usr/local/lib) # for GNU lightning
+target_link_libraries(egellib Threads::Threads ICU4C FMT LIGHTNING)
+target_link_directories(egellib PRIVATE vendor/local/lib)
 
 # static Egel library
 add_library(egellib_static STATIC $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib_static PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib_static fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
-target_link_directories(egellib_static PRIVATE /usr/local/lib) # for GNU lightning
+target_link_libraries(egellib_static Threads::Threads ICU4C FMT LIGHTNING)
+target_link_directories(egellib_static PRIVATE vendor/local/lib)
 
 #
 # the dynamic .ego Egel libraries
@@ -159,37 +156,43 @@ target_link_directories(egellib_static PRIVATE /usr/local/lib) # for GNU lightni
 # os.ego
 file(GLOB OS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/os/*.cpp")
 add_library(os MODULE ${OS_LIST})
-target_link_libraries(os ICU::uc ICU::i18n ICU::io )
+target_link_directories(os PRIVATE vendor/local/lib)
+target_link_libraries(os Threads::Threads ICU4C FMT LIGHTNING)
 set_target_properties(os PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # fs.ego
 file(GLOB FS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/fs/*.cpp")
 add_library(fs MODULE ${FS_LIST})
-target_link_libraries(fs ICU::uc ICU::i18n ICU::io )
+target_link_directories(fs PRIVATE vendor/local/lib)
+target_link_libraries(fs Threads::Threads ICU4C FMT LIGHTNING)
 set_target_properties(fs PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # regex.ego
 file(GLOB REGEX_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/regex/*.cpp")
 add_library(regex MODULE ${REGEX_LIST})
-target_link_libraries(regex ICU::uc ICU::i18n ICU::io )
+target_link_directories(regex PRIVATE vendor/local/lib)
+target_link_libraries(regex Threads::Threads ICU4C FMT LIGHTNING)
 set_target_properties(regex PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # random.ego
 file(GLOB RANDOM_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/random/*.cpp")
 add_library(random MODULE ${RANDOM_LIST})
-target_link_libraries(random ICU::uc ICU::i18n ICU::io )
+target_link_directories(random PRIVATE vendor/local/lib)
+target_link_libraries(random Threads::Threads ICU4C FMT LIGHTNING)
 set_target_properties(random PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # dict.ego
 file(GLOB DICT_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/dict/*.cpp")
 add_library(dict MODULE ${DICT_LIST})
-target_link_libraries(dict ICU::uc ICU::i18n ICU::io )
+target_link_directories(dict PRIVATE vendor/local/lib)
+target_link_libraries(dict Threads::Threads ICU4C FMT LIGHTNING)
 set_target_properties(dict PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # pqueue.ego
 file(GLOB DICT_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/pqueue/*.cpp")
 add_library(pqueue MODULE ${DICT_LIST})
-target_link_libraries(pqueue ICU::uc ICU::i18n ICU::io )
+target_link_directories(pqueue PRIVATE vendor/local/lib)
+target_link_libraries(pqueue Threads::Threads ICU4C FMT LIGHTNING)
 set_target_properties(pqueue PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # installation
