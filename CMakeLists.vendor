@@ -116,24 +116,22 @@ file(GLOB EGEL_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.hpp")
 # ICU components: data, i18n, io, le, lx, test, tu and uc.
 find_package(Threads REQUIRED)
 
-include_directories(vendor/icu/icu4c/source/common/unicode) # icu4c
-include_directories(vendor/lightning-2.2.2/include) # GNU lightning
-include_directories(vendor/fmt/include) # fmt
+include_directories("${CMAKE_SOURCE_DIR}/src") # egel
+include_directories(vendor/local/include) # vendor
 
-find_library(ICUDATA libicudata vendor/icu/source/lib)
-find_library(ICUI18N libicui18n vendor/icu/source/lib)
-find_library(ICUIO   libicuio   vendor/icu/source/lib)
-find_library(ICUTU   libicutu   vendor/icu/source/lib)
-find_library(ICUUC   libicuuc   vendor/icu/source/lib)
+find_library(ICUDATA libicudata vendor/local/lib)
+find_library(ICUI18N libicui18n vendor/local/lib)
+find_library(ICUIO   libicuio   vendor/local/lib)
+find_library(ICUTU   libicutu   vendor/local/lib)
+find_library(ICUUC   libicuuc   vendor/local/lib)
 
-find_library(
+find_library(LIGHTNING liblightning vendor/local/lib)
 
-include_directories("${CMAKE_SOURCE_DIR}/src")
-
+find_library(FMT libfmt vendor/local/lib)
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_libraries(objlib Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
 target_link_directories(objlib PRIVATE vendor/icu/icu4c/source/lib)
 target_link_directories(objlib PRIVATE /usr/local/lib) # for GNU lightning
 
