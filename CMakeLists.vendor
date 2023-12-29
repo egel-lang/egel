@@ -115,27 +115,37 @@ find_package(Threads REQUIRED)
 include_directories("${CMAKE_SOURCE_DIR}/src") # egel
 include_directories(vendor/local/include) # vendor
 
-find_library(ICUDATA libicudata vendor/local/lib)
-find_library(ICUI18N libicui18n vendor/local/lib)
-find_library(ICUIO   libicuio   vendor/local/lib)
-find_library(ICUTU   libicutu   vendor/local/lib)
-find_library(ICUUC   libicuuc   vendor/local/lib)
+find_library(ICUDATA NAMES icudata PATHS vendor/local/lib NO_DEFAULT_PATH)
+find_library(ICUI18N NAMES icui18n PATHS vendor/local/lib NO_DEFAULT_PATH)
+find_library(ICUIO   NAMES icuio   PATHS vendor/local/lib NO_DEFAULT_PATH)
+find_library(ICUTU   NAMES icutu   PATHS vendor/local/lib NO_DEFAULT_PATH)
+find_library(ICUUC   NAMES icuuc   PATHS vendor/local/lib NO_DEFAULT_PATH)
+
+message("icudata: ${ICUDATA}")
+message("icui18n: ${ICUI18N}")
+message("icuio:   ${ICUIO}")
+message("icutu:   ${ICUTU}")
+message("icuuc:   ${ICUUC}")
 
 set(ICU4C "${ICUDATA} ${ICUI18N} ${ICUIO} ${ICUTU} ${ICUUC}")
 
-find_library(LIGHTNING liblightning vendor/local/lib)
+find_library(LIGHTNING NAMES lightning PATHS vendor/local/lib NO_DEFAULT_PATH)
 
-find_library(FMT libfmt vendor/local/lib)
+message("lightning: ${LIGHTNING}")
+
+find_library(FMT NAMES fmt PATHS vendor/local/lib NO_DEFAULT_PATH)
+
+message("fmt: ${FMT}")
+
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_link_libraries(objlib Threads::Threads ICU4C FMT LIGHTNING)
-target_link_directories(objlib PRIVATE vendor/local/lib)
+target_link_libraries(objlib Threads::Threads ${ICUDATA} ${ICUI18N} ${ICUTU} ${ICUUC} ${FMT} ${LIGHTNING})
+target_link_directories(objlib PRIVATE "${CMAKE_SOURCE_DIR}/vendor/local/lib")
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
-target_link_libraries(egel ${CMAKE_DL_LIBS} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
-target_link_libraries(egel Threads::Threads ICU4C FMT LIGHTNING)
+target_link_libraries(egel ${CMAKE_DL_LIBS} Threads::Threads ${ICUDATA} ${ICUI18N} ${ICUTU} ${ICUUC} ${FMT} ${LIGHTNING})
 target_link_directories(egel PRIVATE vendor/local/lib)
 
 # shared Egel library
