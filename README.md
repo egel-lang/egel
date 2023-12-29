@@ -24,7 +24,8 @@ managers provide C++ libraries.
 2. The vendor based model (MacOS and Windows) where C++ libraries are 
    usually not provided since they are brittle to link against, and where
    one usually compiles these libraries from scratch and statically links
-   them in. Links to the vendors are provided as git submodules in the
+   them in or distributes them with the application. 
+   Links to the vendors are provided as git submodules in the
    vendor directory and, you're on your own here, you'll need to download
    and compile those libraries. There's a separate README.md in the vendor
    directory that should help somewhat.

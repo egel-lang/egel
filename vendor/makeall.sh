@@ -13,18 +13,20 @@ make
 make install
 popd
 
-# make fmt
-#pushd fmt
-#mkdir build
-#cd build
-#cmake ..
-#popd
-
 # make lightning (from a tarball since the other with a bootstrap fails)
 pushd lightning-2.2.2
 ./configure --prefix=$(realpath "../local")
 make
 make check
+make install
+popd
+
+# make fmt
+pushd fmt
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX="../local" ..
+make
 make install
 popd
 
