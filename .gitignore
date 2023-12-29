@@ -68,7 +68,6 @@ python/examples/__pycache__/*
 # c++20 provisional stuff
 src/gcm.cache/*
 
-vendor/lightning-2.2.2/build-aux
 +*
 
 *.o
@@ -80,6 +79,10 @@ vendor/lightning-2.2.2/build-aux
 */.libs/
 */.deps/
 
+vendor/local/*
+
+# GNU lightning stuff
+vendor/lightning-2.2.2/build-aux
 vendor/lightning-2.2.2/*/Makefile
 vendor/lightning-2.2.2/*/*/Makefile
 vendor/lightning-2.2.2/doc

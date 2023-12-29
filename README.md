@@ -30,6 +30,7 @@ managers provide C++ libraries.
    directory that should help somewhat.
 
 CMake files are provided for both models, select the one you want to use
+in cmake with 
 and rename either to `CMakeLists.txt`.
 
 After that the interpreter is made with `cmake` in the standard manner. Run
