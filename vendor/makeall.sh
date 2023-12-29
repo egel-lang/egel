@@ -22,7 +22,7 @@ popd
 
 # make lightning (from a tarball since the other with a bootstrap fails)
 pushd lightning-2.2.2
-./configure --prefix=$(realpath "../../../local")
+./configure --prefix=$(realpath "../local")
 make
 make check
 make install
