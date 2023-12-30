@@ -205,6 +205,31 @@ install(TARGETS egellib egellib_static
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
+# a bit unfortunate but you need to include the ICU version major number
+file(GLOB ICULIBS CONFIGURE_DEPENDS 
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*icu*.so"
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*icu*.dylib"
+)
+install(FILES ${ICULIBS}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+file(GLOB FMTLIB CONFIGURE_DEPENDS 
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*fmt*.so"
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*fmt*.dylib"
+)
+install(FILES ${FMTLIB}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+file(GLOB LIGHTNINGLIB CONFIGURE_DEPENDS 
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*lightning.so"
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*lightning.dylib"
+)
+install(FILES ${LIGHTNINGLIB}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
 install(FILES ${EGEL_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/egel
 )
