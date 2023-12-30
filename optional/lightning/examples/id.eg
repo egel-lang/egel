@@ -1,7 +1,0 @@
-import "light.ego"
-
-using System
-
-def id = [X -> X]
-
-def main = light ""; id 42

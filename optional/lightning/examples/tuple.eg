@@ -1,7 +1,0 @@
-import "light.ego"
-import "prelude.eg"
-
-using System
-using List
-
-def main = light ""; fst (42, 0)
