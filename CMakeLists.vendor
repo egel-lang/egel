@@ -138,25 +138,21 @@ message("fmt: ${FMT}")
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_link_libraries(objlib Threads::Threads ${ICUUC} ${ICUI18N} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
-target_link_directories(objlib PRIVATE "${CMAKE_SOURCE_DIR}/vendor/local/lib")
+target_link_libraries(objlib PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
-target_link_libraries(egel ${CMAKE_DL_LIBS} Threads::Threads ${ICUUC} ${ICUI18N} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
-target_link_directories(egel PRIVATE "${CMAKE_SOURCE_DIR}/vendor/local/lib")
+target_link_libraries(egel PRIVATE ${CMAKE_DL_LIBS} Threads::Threads ${ICUTU} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUUC} ${FMT} ${LIGHTNING})
 
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib Threads::Threads ICU4C FMT LIGHTNING)
-target_link_directories(egellib PRIVATE vendor/local/lib)
+target_link_libraries(egellib PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 
 # static Egel library
 add_library(egellib_static STATIC $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib_static PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib_static Threads::Threads ICU4C FMT LIGHTNING)
-target_link_directories(egellib_static PRIVATE vendor/local/lib)
+target_link_libraries(egellib_static PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 
 #
 # the dynamic .ego Egel libraries
@@ -164,43 +160,37 @@ target_link_directories(egellib_static PRIVATE vendor/local/lib)
 # os.ego
 file(GLOB OS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/os/*.cpp")
 add_library(os MODULE ${OS_LIST})
-target_link_directories(os PRIVATE vendor/local/lib)
-target_link_libraries(os Threads::Threads ICU4C FMT LIGHTNING)
+target_link_libraries(os PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 set_target_properties(os PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # fs.ego
 file(GLOB FS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/fs/*.cpp")
 add_library(fs MODULE ${FS_LIST})
-target_link_directories(fs PRIVATE vendor/local/lib)
-target_link_libraries(fs Threads::Threads ICU4C FMT LIGHTNING)
+target_link_libraries(fs PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 set_target_properties(fs PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # regex.ego
 file(GLOB REGEX_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/regex/*.cpp")
 add_library(regex MODULE ${REGEX_LIST})
-target_link_directories(regex PRIVATE vendor/local/lib)
-target_link_libraries(regex Threads::Threads ICU4C FMT LIGHTNING)
+target_link_libraries(regex PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 set_target_properties(regex PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # random.ego
 file(GLOB RANDOM_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/random/*.cpp")
 add_library(random MODULE ${RANDOM_LIST})
-target_link_directories(random PRIVATE vendor/local/lib)
-target_link_libraries(random Threads::Threads ICU4C FMT LIGHTNING)
+target_link_libraries(random PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 set_target_properties(random PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # dict.ego
 file(GLOB DICT_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/dict/*.cpp")
 add_library(dict MODULE ${DICT_LIST})
-target_link_directories(dict PRIVATE vendor/local/lib)
-target_link_libraries(dict Threads::Threads ICU4C FMT LIGHTNING)
+target_link_libraries(dict PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 set_target_properties(dict PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # pqueue.ego
 file(GLOB DICT_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/pqueue/*.cpp")
 add_library(pqueue MODULE ${DICT_LIST})
-target_link_directories(pqueue PRIVATE vendor/local/lib)
-target_link_libraries(pqueue Threads::Threads ICU4C FMT LIGHTNING)
+target_link_libraries(pqueue PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 set_target_properties(pqueue PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # installation
