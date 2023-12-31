@@ -693,50 +693,12 @@ public:
         visit_decl_definition(p, o, e);
     }
 
+    // treat as a definition
     void visit_decl_operator(const Position &p, const ptr<Ast> &o,
                              const ptr<Ast> &e) override {
-        auto frame = get_coder()->generate_register();
-
-        auto l = get_coder()->generate_label();
-        set_fail_label(l);
-
-        auto rt = get_coder()->generate_register();
-        auto rti = get_coder()->generate_register();
-        auto k = get_coder()->generate_register();
-        auto exc = get_coder()->generate_register();
-        auto c = get_coder()->generate_register();
-
-        set_register_frame(frame);
-        set_register_rt(rt);
-        set_register_rti(rti);
-        set_register_k(k);
-        set_register_exc(exc);
-        set_arity(0);
-
-        get_coder()->emit_op_takex(rt, c, frame, 0);
-        get_coder()->emit_op_fail(l);
-        set_state(EMIT_EXPR_ROOT);
-        visit(e);
-        get_coder()->emit_label(l);
-
-        auto em = get_coder()->generate_register();
-        auto r = get_coder()->generate_register();
-
-        get_coder()->emit_op_array(em, rti, rt);  // gen an empty array
-        get_coder()->emit_op_concatx(r, em, frame, 4);
-        get_coder()->emit_op_set(rt, rti, r);
-        get_coder()->emit_op_return(k);
-
-        get_coder()->relabel();
-        auto code = get_coder()->code();
-        auto data = get_coder()->data();
-
         auto [p0, ss, s] = AstExprOperator::split(o);
-        auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
-        machine()->define_data(b);
-        _out.push_back(b);
-
-        get_coder()->reset();
+        auto c = AstExprCombinator::create(p0, ss, s);
+        visit_decl_definition(p, c, e);
     }
 
 private:
