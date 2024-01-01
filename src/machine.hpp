@@ -114,6 +114,10 @@ public:
         }
     }
 
+    bool has(const VMObjectPtr &s) {
+        return (_from.count(s) > 0);
+    }
+
     VMObjectPtr get(const data_t &s) {
         return _to[s];
     }
@@ -289,6 +293,28 @@ public:
     }
 
     // convenience
+    bool has_combinator(const symbol_t s) override {
+        auto o = VMObjectStub::create(this, s);
+        return _data.has(o);
+    }
+
+    bool has_combinator(const icu::UnicodeString &n) override {
+        auto i = enter_symbol(n);
+        return has_combinator(i);
+    }
+
+    bool has_combinator(const icu::UnicodeString &n0,
+                               const icu::UnicodeString &n1) override {
+        auto i = enter_symbol(n0, n1);
+        return has_combinator(i);
+    }
+
+    bool has_combinator(const std::vector<icu::UnicodeString> &nn,
+                               const icu::UnicodeString &n) override {
+        auto i = enter_symbol(nn, n);
+        return has_combinator(i);
+    }
+
     VMObjectPtr get_combinator(const symbol_t s) override {
         auto o = VMObjectStub::create(this, s);
         auto d = enter_data(o);

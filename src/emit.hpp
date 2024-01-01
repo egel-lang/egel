@@ -70,7 +70,6 @@ enum emit_state_t {
     EMIT_PATTERN,
     EMIT_EXPR,
     EMIT_EXPR_ROOT,
-    //    EMIT_EXPR_CONSTANT, // XXX constant optimization not implemented yet
 };
 
 class EmitCode : public Visit {
@@ -355,6 +354,40 @@ public:
                 get_coder()->emit_op_set(rt, rti, r);
             } break;
         }
+    }
+
+    /*
+    */
+    bool is_variable(const ptr<Ast> o) {
+        auto t = o->tag();
+        return t == AST_EXPR_VARIABLE;
+    }
+
+    bool is_const(const ptr<Ast> o) {
+        auto t = o->tag();
+        if ( (t == AST_EXPR_INTEGER) 
+            || (t == AST_EXPR_HEXINTEGER) 
+            || (t == AST_EXPR_FLOAT)
+            || (t == AST_EXPR_CHARACTER)
+            || (t == AST_EXPR_TEXT)) {
+            return true;
+        } else {
+            if (t == AST_EXPR_COMBINATOR) {
+                auto [p, nn, n] = AstExprCombinator::split(o);
+                if (machine()->has_combinator(nn, n)) {
+                    auto c = machine()->get_combinator(nn, n);
+                    return machine()->is_data(c) || machine()->is_opaque(c);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
+    bool is_combinator(const ptr<Ast> o) {
+        return ((o->tag() == AST_EXPR_COMBINATOR) && !(is_const(o)));
     }
 
     void visit_expr_application(const Position &p,

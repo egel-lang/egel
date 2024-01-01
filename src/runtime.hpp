@@ -454,6 +454,14 @@ public:
     virtual void *get_context() const = 0;
 
     // convenience routines
+    virtual bool has_combinator(const symbol_t t) = 0;
+    virtual bool has_combinator(const icu::UnicodeString &n) = 0;
+    virtual bool has_combinator(const icu::UnicodeString &n0,
+                                       const icu::UnicodeString &n1) = 0;
+    virtual bool has_combinator(
+        const std::vector<icu::UnicodeString> &nn,
+        const icu::UnicodeString &n) = 0;
+
     virtual VMObjectPtr get_combinator(const symbol_t t) = 0;
     virtual VMObjectPtr get_combinator(const icu::UnicodeString &n) = 0;
     virtual VMObjectPtr get_combinator(const icu::UnicodeString &n0,
