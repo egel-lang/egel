@@ -834,6 +834,30 @@ public:
                                 reg.set(x, y0);
                             }
                         }
+                    } else if (machine()->is_array(z0)) {
+                        auto zc = VMObjectArray::cast(z0);
+                        size_t sz = 1 + zc->size() - i;
+
+                        if (i < zc->size()) {  // there are members in z to be
+                                               // copied
+                            if (sz > 1) {
+                                auto oo = VMObjectArray::cast(
+                                    VMObjectArray::create(sz));
+                                size_t l = 0;
+                                oo->set(l, y0);
+                                l++;
+                                for (size_t n = i; n < zc->size(); n++) {
+                                    oo->set(l, zc->get(n));
+                                    l++;
+                                }
+                                reg.set(x, oo);
+                            } else {
+                                auto o = zc->get(i);
+                                reg.set(x, o);
+                            }
+                        } else {  // optimize for `drop i z = {}` case
+                            reg.set(x, y0);
+                        }
                     } else {
                         PANIC("two arrays expected");
                         return nullptr;

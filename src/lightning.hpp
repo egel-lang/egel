@@ -162,30 +162,41 @@ inline void op_split(VM* vm, VMObjectPtr* a, int x, int y, int z, void** flag) {
 inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
     TRACE_JIT(std::cerr << "OP_CONCATX r" << x << ", r" << y << ", r" << z << ", i" << n << std::endl);
 
-/*
-    if (a[z] == nullptr) {
-        a[x] = a[y];
-        return;
-    }
-*/
-    auto y0 = VMObjectArray::cast(a[y]);
-    auto z0 = VMObjectArray::cast(a[z]);
+    if (vm->is_array(a[y])) {
+        auto y0 = VMObjectArray::cast(a[y]);
+        auto z0 = VMObjectArray::cast(a[z]);
 
-    int n0 = y0->size();
-    int n1 = z0->size();
+        int n0 = y0->size();
+        int n1 = z0->size();
 
-    if (n1 <= n) {
-        a[x] = a[y];
+        if (n1 <= n) {
+            a[x] = a[y];
+        } else {
+            auto q0 = VMObjectArray::create(n0+n1-n);
+            auto q1 = VMObjectArray::cast(q0);
+            for (int i = 0; i < n0; i++) {
+                q1->set(i, y0->get(i));
+            }
+            for (int i = n0; i < n0+n1-n; i++) {
+                q1->set(i, z0->get(i+n-n0));
+            }
+            a[x] = q1; 
+        }
     } else {
-        auto q0 = VMObjectArray::create(n0+n1-n);
-        auto q1 = VMObjectArray::cast(q0);
-        for (int i = 0; i < n0; i++) {
-            q1->set(i, y0->get(i));
+        auto z0 = VMObjectArray::cast(a[z]);
+        int n0 = z0->size();
+
+        if (n0 <= n) {
+            a[x] = a[y];
+        } else {
+            auto q0 = VMObjectArray::create(1+n0-n);
+            auto q1 = VMObjectArray::cast(q0);
+            q1->set(0, a[y]);
+            for (int i = 1; i < 1+n0-n; i++) {
+                q1->set(i, z0->get(i+n-n0));
+            }
+            a[x] = q1; 
         }
-        for (int i = n0; i < n0+n1-n; i++) {
-            q1->set(i, z0->get(i+n-n0));
-        }
-        a[x] = q1; 
     }
 };
 
