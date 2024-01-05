@@ -279,7 +279,7 @@ public:
         auto w = AstWrapper::create(p, dd);
 
         // bypass standard semantical analysis and declare the data in the
-        // context. that manner, data may be overridded in interactive mode.
+        // context. that manner, data may be overridden in interactive mode.
         if (d->tag() == AST_DECL_DATA) {  // start off by (re-)declaring the def
             auto [p0, nn] = AstDeclData::split(d);
             for (auto &e : nn) {

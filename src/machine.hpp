@@ -379,7 +379,7 @@ public:
         ee.push_back(nullptr);  // k
         ee.push_back(nullptr);  // exc
         ee.push_back(exc);      // c
-        ee.push_back(nullptr);  // arg0
+        //ee.push_back(nullptr);  // arg0
         auto e = create_array(ee);
 
         auto i = VMObjectInteger::create(5);
