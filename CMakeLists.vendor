@@ -135,6 +135,10 @@ find_library(FMT NAMES fmt PATHS vendor/local/lib NO_DEFAULT_PATH)
 
 message("fmt: ${FMT}")
 
+# setup rpath
+include(GNUInstallDirs)
+list( APPEND CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_LIBDIR} )
+
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
@@ -194,7 +198,6 @@ target_link_libraries(pqueue PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUI
 set_target_properties(pqueue PROPERTIES PREFIX "" SUFFIX ".ego")
 
 # installation
-include(GNUInstallDirs)
 
 install(TARGETS egel
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
