@@ -331,7 +331,106 @@ inline ptr<Ast> pass_relambda(const ptr<Ast> &a) {
     return relambda.relambda(a);
 }
 
-inline ptr<Ast> lift(const ptr<Ast> &a, const NamespacePtr &env) {
+class RewriteRedex : public Rewrite {
+public:
+    ptr<Ast> reredex(const ptr<Ast> &a, VM *m) {
+        _machine = m;
+        return rewrite(a);
+    }
+
+    VM* machine() {
+        return _machine;
+    }
+
+    int tick() {
+        return _tick++;
+    }
+
+    void reset() {
+        _tick = 0;
+        _redexes = ptrs<Ast>();
+    }
+        
+    ptr<Ast> fresh_variable(const Position &p) {
+        auto v = icu::UnicodeString("_REDEX") + VM::unicode_from_int(tick());
+        return AstExprVariable::create(p, v);
+    }
+
+    bool is_combinator_redex(const ptr<Ast> &e) {
+        if (e->tag() == AST_EXPR_COMBINATOR) {
+           auto [p, nn, n] = AstExprCombinator::split(e);
+           if (machine()->has_combinator(nn, n)) {
+                auto c = machine()->get_combinator(nn, n);
+                return !(machine()->is_data(c) || machine()->is_opaque(c));
+           } else {
+                return true; // XXX: undeclared combinators are redexes, not always true
+           }
+        } else {
+            return false;
+        }
+    }
+
+    bool is_head_redex(const ptr<Ast> &e) {
+        if (e->tag() == AST_EXPR_VARIABLE) {
+            return true;
+        } else if (e->tag() == AST_EXPR_COMBINATOR) {
+            return is_combinator_redex(e);
+        } else {
+            return false;
+        }
+    }
+
+    ptr<Ast> rewrite_expr_application(const Position &p,
+                                      const ptrs<Ast> &aa) override {
+        // var or combinator
+        return AstExprApplication::create(p, aa); // stub
+    }
+
+    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
+                                     const ptr<Ast> &e) override {
+        reset();
+        auto e0 = rewrite(e);
+        // stub do something here
+        return AstDeclDefinition::create(p, c, e0);
+    }
+
+    // treat as a definition
+    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+                                   const ptr<Ast> &e) override {
+        auto e0 = rewrite_decl_definition(p, c, e);
+        if (e0->tag() == AST_DECL_DEFINITION) {
+            auto [p1, c1, e1] = AstDeclDefinition::split(e0);
+            return AstDeclOperator::create(p1, c1, e1);
+        } else {
+            PANIC("didn't find a definition");
+            return nullptr;
+        }
+    }
+
+    // treat as a definition
+    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &c,
+                                const ptr<Ast> &e) override {
+        auto e0 = rewrite_decl_definition(p, c, e);
+        if (e0->tag() == AST_DECL_DEFINITION) {
+            auto [p1, c1, e1] = AstDeclDefinition::split(e0);
+            return AstDeclValue::create(p1, c1, e1);
+        } else {
+            PANIC("didn't find a definition");
+            return nullptr;
+        }
+    }
+private:
+    VM*         _machine;
+    ptrs<Ast>   _redexes;
+    int         _tick;
+};
+
+inline ptr<Ast> pass_reredex(const ptr<Ast> &a, VM *m) {
+    RewriteRedex reredex;
+    return reredex.reredex(a, m);
+}
+
+inline ptr<Ast> lift(const ptr<Ast> &a, VM *m) {
     ptr<Ast> a0;
     a0 = pass_eta(a);
     a0 = pass_deapply(a0);

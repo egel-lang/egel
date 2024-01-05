@@ -26,6 +26,8 @@ A list of all major changes between versions of the interpreter.
 * clean up ref (make it serializable)
 + generate C++ from .eg file (module compilation)
 + add import/export lists to using/namespace
++ move dict to internal
++ dict objects
 + target MSVC
 
 ## The bleeding, cutting edge
