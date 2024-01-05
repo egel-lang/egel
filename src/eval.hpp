@@ -261,7 +261,7 @@ public:
         }
         w = egel::identify(mm->get_environment(), w);
         w = egel::desugar(w);
-        w = egel::lift(w);
+        w = egel::lift(w, mm->get_environment());
         egel::emit_data(vm, w);
         egel::emit_code(vm, w);
     }
@@ -293,7 +293,7 @@ public:
         }
         w = egel::identify(mm->get_environment(), w);
         w = egel::desugar(w);
-        w = egel::lift(w);
+        w = egel::lift(w, mm->get_environment());
         egel::emit_data(vm, w);
         egel::emit_code(vm, w);
     }

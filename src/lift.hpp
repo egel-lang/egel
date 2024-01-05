@@ -331,7 +331,7 @@ inline ptr<Ast> pass_relambda(const ptr<Ast> &a) {
     return relambda.relambda(a);
 }
 
-inline ptr<Ast> lift(const ptr<Ast> &a) {
+inline ptr<Ast> lift(const ptr<Ast> &a, const NamespacePtr &env) {
     ptr<Ast> a0;
     a0 = pass_eta(a);
     a0 = pass_deapply(a0);

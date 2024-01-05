@@ -146,7 +146,7 @@ public:
 
     virtual void desugar(){};
 
-    virtual void lift(){};
+    virtual void lift(NamespacePtr &env){};
 
     virtual void datagen(VM *m){};
 
@@ -553,8 +553,8 @@ public:
         };
     }
 
-    void lift() override {
-        _ast = egel::lift(_ast);
+    void lift(NamespacePtr &env) override {
+        _ast = egel::lift(_ast, env);
 
         if (get_options()->only_lift()) {
             std::cout << _ast << std::endl;
@@ -704,8 +704,8 @@ public:
         };
     }
 
-    void lift() override {
-        _ast = egel::lift(_ast);
+    void lift(NamespacePtr &env) override {
+        _ast = egel::lift(_ast, env);
 
         if (get_options()->only_lift()) {
             std::cout << _ast << std::endl;
@@ -945,7 +945,7 @@ protected:
             m->desugar();
         }
         for (auto &m : _loading) {
-            m->lift();
+            m->lift(_environment);
         }
         for (auto &m : _loading) {
             m->datagen(_machine);
