@@ -1698,12 +1698,76 @@ public:
         // auto k   = tt[2];
         auto exc = tt[3];
         // auto c   = tt[4];
-        auto r = tt[5];
+        
+        auto r = tt[5]; // XXX: check this argument exists
 
         auto ee = VMObjectArray::cast(exc);
         ee->set(5, r);
 
         return exc;
+    }
+};
+
+class VMHandle : public VMObjectCombinator {
+public:
+    VMHandle(VM *m) : VMObjectCombinator(VM_SUB_BUILTIN, m, "System", "handle") {
+    }
+
+    VMHandle(const VMHandle &t) : VMHandle(t.machine()) {
+    }
+
+    static VMObjectPtr create(VM *m) {
+        return std::make_shared<VMHandle>(m);
+    }
+
+    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+        auto tt = VMObjectArray::value(thunk);
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
+        auto exc = tt[3];
+        //auto c   = tt[4];
+
+        if (tt.size() > 6) {
+            auto h   = tt[5];
+            auto f   = tt[6];
+            auto none = machine()->create_none();
+
+            VMObjectPtrs hh;
+            hh.push_back(rt);
+            hh.push_back(rti);
+            hh.push_back(k);
+            hh.push_back(exc);
+            hh.push_back(h);
+            hh.push_back(none);
+            auto exc0 = VMObjectArray::create(hh);
+
+            VMObjectPtrs ff;
+            ff.push_back(rt);
+            ff.push_back(rti);
+            ff.push_back(k);
+            ff.push_back(exc0);
+            ff.push_back(f);
+            ff.push_back(none);
+        
+            for (unsigned int i = 7; i < tt.size(); i++) {
+                ff.push_back(tt[i]);
+            }
+
+            auto r = VMObjectArray::create(ff);
+
+            return r;
+        } else {
+            VMObjectPtrs rr;
+            for (unsigned int i = 4; i < tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            auto r = VMObjectArray::create(rr);
+            auto index = VMObjectInteger::value(rti);
+            auto rta = VMObjectArray::cast(rt);
+            rta->set(index, r);
+            return k;
+        }
     }
 };
 
