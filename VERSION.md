@@ -30,6 +30,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ simplified try/catch handling with combinators
 + added egg files, support for literate programming 
 + added a GNU lightning back-end
 + revert $ precedence since $ is bitwise or
