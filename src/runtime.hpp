@@ -1693,18 +1693,40 @@ public:
         // and reduces that
 
         auto tt = VMObjectArray::value(thunk);
-        // auto rt  = tt[0];
-        // auto rti = tt[1];
-        // auto k   = tt[2];
+        auto rt  = tt[0];
+        auto rti = tt[1];
+        auto k   = tt[2];
         auto exc = tt[3];
         // auto c   = tt[4];
         
-        auto r = tt[5]; // XXX: check this argument exists
+        if (tt.size() > 5) {
+            auto ee = VMObjectArray::value(exc);
 
-        auto ee = VMObjectArray::cast(exc);
-        ee->set(5, r);
+            VMObjectPtrs rr; 
+            // copy the exception handler
+            for (unsigned int i = 0; i < ee.size(); i++) {
+                rr.push_back(ee[i]);
+            }
 
-        return exc;
+            // append the arguments
+            for (unsigned int i = 5; i < tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+
+            auto r = VMObjectArray::create(rr);
+
+            return r;
+        } else {
+            VMObjectPtrs rr;
+            for (unsigned int i = 4; i < tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            auto r = VMObjectArray::create(rr);
+            auto index = VMObjectInteger::value(rti);
+            auto rta = VMObjectArray::cast(rt);
+            rta->set(index, r);
+            return k;
+        }
     }
 };
 

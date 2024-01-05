@@ -276,7 +276,7 @@ public:
         return rewrite(a);
     }
 
-    //  F( throw e ) -> ( (System.throw e) )
+    //  F( throw e ) -> ( (System.throw (F e)) )
     ptr<Ast> rewrite_expr_throw(const Position &p, const ptr<Ast> &e) override {
         auto t0 = AstExprCombinator::create(p, STRING_SYSTEM, STRING_THROW);
         auto e0 = rewrite(e);
@@ -292,26 +292,37 @@ ptr<Ast> pass_throw(const ptr<Ast> &a) {
 
 class RewriteTry : public Rewrite {
 public:
-    ptr<Ast> idtry(const ptr<Ast> &a) {
+    ptr<Ast> try_to_handle(const ptr<Ast> &a) {
         return rewrite(a);
     }
 
-    //  F( throw e ) -> ( (System.throw e) )
+    //  F( try f catch g ) -> ( (System.handle [_ -> F g] [_ -> F f]) )
     ptr<Ast> rewrite_expr_try(const Position &p, const ptr<Ast> &t,
                               const ptr<Ast> &c) override {
-        auto id = AstExprCombinator::create(p, STRING_SYSTEM, STRING_ID);
         auto t0 = rewrite(t);
         auto c0 = rewrite(c);
+        auto handle = AstExprCombinator::create(p, STRING_SYSTEM, STRING_HANDLE);
 
-        auto e0 = AstExprTry::create(p, t0, c0);
+        auto b0 = AstExprWildcard::create(p, "_");
+        ptrs<Ast> bb0;
+        bb0.push_back(b0);
+        auto t1 = AstExprMatch::create(p, bb0, AstEmpty::create(), t0);
+        ptrs<Ast> tt0;
+        tt0.push_back(t1);
+        auto t2 = AstExprBlock::create(p, tt0);
+        auto c1 = AstExprMatch::create(p, bb0, AstEmpty::create(), c0);
+        ptrs<Ast> cc0;
+        cc0.push_back(c1);
+        auto c2 = AstExprBlock::create(p, cc0);
 
-        return AstExprApplication::create(p, id, e0);
+
+        return AstExprApplication::create(p, handle, c2, t2);
     }
 };
 
 ptr<Ast> pass_try(const ptr<Ast> &a) {
     RewriteTry t;
-    return t.idtry(a);
+    return t.try_to_handle(a);
 }
 
 class RewriteDo : public Rewrite {

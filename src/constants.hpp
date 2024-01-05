@@ -88,6 +88,7 @@ inline constexpr auto STRING_CATCH = "catch";
 inline constexpr auto STRING_LET = "let";
 inline constexpr auto STRING_IN = "in";
 
+inline constexpr auto STRING_HANDLE = "handle";
 // do sugar
 
 inline constexpr auto STRING_DO = "do";
