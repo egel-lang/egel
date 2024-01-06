@@ -412,6 +412,7 @@ public:
     ptr<Ast> rewrite_expr_operator(const Position &p,
                                            const UnicodeStrings &nn,
                                            const icu::UnicodeString &n) override {
+        // NOTE: a single operators is unlikely to be a redex
         auto c = AstExprOperator::create(p, nn, n);
         auto v = fresh_variable(p);
         redexes_push(v, c);
@@ -422,21 +423,39 @@ public:
                                       const ptrs<Ast> &aa) override {
         // var or combinator
         return AstExprApplication::create(p, aa); // stub
+        if (is_head_redex(aa[0])) {
+            ptrs<Ast> aa0;
+            aa0.push_back(aa[0]);
+            for (int i = 1; i < aa.size(); i++) {
+                auto a = rewrite(aa[i]);
+                aa0.push_back(a);
+            }
+            auto r = AstExprApplication::create(p, aa0);
+            auto v = fresh_variable(p);
+            redexes_push(v, r);
+            return v;
+        } else {
+            auto aa0 = rewrites(aa);
+            return AstExprApplication::create(p, aa0);
+        }
     }
 
     ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
                                         const ptr<Ast> &g, const ptr<Ast> &e) override {
         reset();
-        auto mm0 = rewrites(mm);
-        auto g0 = rewrite(g);
         auto e0 = rewrite(e);
-        return AstExprMatch::create(p, mm0, g0, e0);
+        while (redexes_has()) {
+            auto t = redexes_pop();
+            ptrs<Ast> gg;
+            gg.push_back(std::get<0>(t));
+            e0 = AstExprLet::create(p, gg, std::get<1>(t), e0);
+        }
+        return AstExprMatch::create(p, mm, g, e0);
     }
 
     ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
                                      const ptr<Ast> &e) override {
         auto e0 = rewrite(e);
-        // stub do something here
         return AstDeclDefinition::create(p, c, e0);
     }
 
