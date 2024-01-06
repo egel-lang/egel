@@ -422,11 +422,10 @@ public:
     ptr<Ast> rewrite_expr_application(const Position &p,
                                       const ptrs<Ast> &aa) override {
         // var or combinator
-        return AstExprApplication::create(p, aa); // stub
         if (is_head_redex(aa[0])) {
             ptrs<Ast> aa0;
             aa0.push_back(aa[0]);
-            for (int i = 1; i < aa.size(); i++) {
+            for (unsigned int i = 1; i < aa.size(); i++) {
                 auto a = rewrite(aa[i]);
                 aa0.push_back(a);
             }
@@ -501,6 +500,7 @@ inline ptr<Ast> lift(const ptr<Ast> &a, VM *m) {
     a0 = pass_deapply(a0);
     a0 = pass_lift(a0);
     a0 = pass_relambda(a0);
+    //a0 = pass_reredex(a0, m);
     return a0;
 }
 }  // namespace egel
