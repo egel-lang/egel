@@ -331,6 +331,7 @@ inline ptr<Ast> pass_relambda(const ptr<Ast> &a) {
     return relambda.relambda(a);
 }
 
+// NOTE: this pass is run after data combinators are added to the machine
 class RewriteRedex : public Rewrite {
 public:
     ptr<Ast> reredex(const ptr<Ast> &a, VM *m) {
@@ -348,12 +349,27 @@ public:
 
     void reset() {
         _tick = 0;
-        _redexes = ptrs<Ast>();
+        _redexes = std::vector<std::tuple<ptr<Ast>,ptr<Ast>>>();
     }
         
     ptr<Ast> fresh_variable(const Position &p) {
         auto v = icu::UnicodeString("_REDEX") + VM::unicode_from_int(tick());
         return AstExprVariable::create(p, v);
+    }
+
+    void redexes_push(const ptr<Ast> &r, const ptr<Ast> e) {
+        _redexes.push_back(std::make_tuple(r, e));
+    }
+
+    bool redexes_has() {
+        return _redexes.size() > 0;
+    }
+
+    std::tuple<ptr<Ast>,ptr<Ast>> redexes_pop() {
+        auto n = _redexes.size() - 1;
+        auto t = _redexes[n];
+        _redexes.erase(_redexes.begin()+n);
+        return t;
     }
 
     bool is_combinator_redex(const ptr<Ast> &e) {
@@ -379,6 +395,28 @@ public:
             return false;
         }
     }
+    
+    ptr<Ast> rewrite_expr_combinator(const Position &p,
+                                             const UnicodeStrings &nn,
+                                             const icu::UnicodeString &n) override {
+        auto c = AstExprCombinator::create(p, nn, n);
+        if (is_combinator_redex(c)) {
+            auto v = fresh_variable(p);
+            redexes_push(v, c);
+            return v;
+        } else {
+            return c;
+        }
+    }
+
+    ptr<Ast> rewrite_expr_operator(const Position &p,
+                                           const UnicodeStrings &nn,
+                                           const icu::UnicodeString &n) override {
+        auto c = AstExprOperator::create(p, nn, n);
+        auto v = fresh_variable(p);
+        redexes_push(v, c);
+        return v;
+    }
 
     ptr<Ast> rewrite_expr_application(const Position &p,
                                       const ptrs<Ast> &aa) override {
@@ -386,9 +424,17 @@ public:
         return AstExprApplication::create(p, aa); // stub
     }
 
+    ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
+                                        const ptr<Ast> &g, const ptr<Ast> &e) override {
+        reset();
+        auto mm0 = rewrites(mm);
+        auto g0 = rewrite(g);
+        auto e0 = rewrite(e);
+        return AstExprMatch::create(p, mm0, g0, e0);
+    }
+
     ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
                                      const ptr<Ast> &e) override {
-        reset();
         auto e0 = rewrite(e);
         // stub do something here
         return AstDeclDefinition::create(p, c, e0);
@@ -421,7 +467,7 @@ public:
     }
 private:
     VM*         _machine;
-    ptrs<Ast>   _redexes;
+    std::vector<std::tuple<ptr<Ast>,ptr<Ast>>>   _redexes;
     int         _tick;
 };
 
