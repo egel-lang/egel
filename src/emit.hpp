@@ -620,75 +620,14 @@ public:
         }
     }
 
-    void visit_expr_try(const Position &p, const ptr<Ast> &t,
-                        const ptr<Ast> &c) override {
-        auto rt = get_register_rt();
-        auto rti = get_register_rti();
-        auto k = get_register_k();
-        auto exc = get_register_exc();
-
-        // set up the exception thunk
-        auto e_rt = get_coder()->generate_register();
-        auto e_rti = get_coder()->generate_register();
-        auto e_k = get_coder()->generate_register();
-        auto e_exc = get_coder()->generate_register();
-        auto e_arg0 = get_coder()->generate_register();
-        auto e_arg1 = get_coder()->generate_register();
-
-        get_coder()->emit_op_mov(e_rt, rt);
-        get_coder()->emit_op_mov(e_rti, rti);
-        get_coder()->emit_op_mov(e_k, k);
-        get_coder()->emit_op_mov(e_exc, exc);
-        get_coder()->emit_op_nil(e_arg0);
-        get_coder()->emit_op_nil(e_arg1);
-
-        auto new_exc = get_coder()->generate_register();
-        get_coder()->emit_op_array(new_exc, e_rt, e_arg1);
-
-        // the try thunk evaluates with this exception thunk as its handler
-        set_register_exc(new_exc);
-        visit(t);
-
-        // the catch thunk evaluates with the old exception and places its
-        // result in the handler thunk as the combinator
-        auto new_exci = get_coder()->generate_register();
-        auto i = machine()->create_integer(4);
-        auto d = get_coder()->emit_data(i);
-        get_coder()->emit_op_data(new_exci, d);
-
-        set_register_exc(exc);
-        set_register_rt(new_exc);
-        set_register_rti(new_exci);
-        visit(c);
-
-        // XXX: I am unsure after half a year whether to maintain an invariant
-        // here
-        set_register_rt(rt);
-        set_register_rti(rti);
-    }
-
-    void visit_expr_throw(const Position &p, const ptr<Ast> &e) override {
-        PANIC("throw is combinator");
-    }
-
     void visit_directive_import(const Position &p,
                                 const icu::UnicodeString &i) override {
     }
 
+
     // XXX: another means to translate data combinators (see emit_data)
     void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
-        for (auto n : nn) {
-            switch (n->tag()) {
-                case AST_EXPR_COMBINATOR: {
-                    auto [p, ss, s] = AstExprCombinator::split(n);
-                    auto d = VMObjectData::create(machine(), ss, s);
-                    machine()->define_data(d);
-                    _out.push_back(d);
-                } break;
-                default:
-                    PANIC("combinator expected");
-            }
-        }
+        // cut
     }
 
     void visit_decl_definition(const Position &p, const ptr<Ast> &n,
