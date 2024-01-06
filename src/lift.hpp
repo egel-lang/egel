@@ -348,12 +348,21 @@ public:
     }
 
     void reset() {
+        _root = true;
         _tick = 0;
         _redexes = std::vector<std::tuple<ptr<Ast>,ptr<Ast>>>();
     }
+
+    void root_set(bool b) {
+        _root = b;
+    }
+
+    bool is_root() {
+        return _root;
+    }
         
     ptr<Ast> fresh_variable(const Position &p) {
-        auto v = icu::UnicodeString("_REDEX") + VM::unicode_from_int(tick());
+        auto v = icu::UnicodeString("R_") + VM::unicode_from_int(tick());
         return AstExprVariable::create(p, v);
     }
 
@@ -400,7 +409,7 @@ public:
                                              const UnicodeStrings &nn,
                                              const icu::UnicodeString &n) override {
         auto c = AstExprCombinator::create(p, nn, n);
-        if (is_combinator_redex(c)) {
+        if (!is_root() && is_combinator_redex(c)) {
             auto v = fresh_variable(p);
             redexes_push(v, c);
             return v;
@@ -414,26 +423,45 @@ public:
                                            const icu::UnicodeString &n) override {
         // NOTE: a single operators is unlikely to be a redex
         auto c = AstExprOperator::create(p, nn, n);
-        auto v = fresh_variable(p);
-        redexes_push(v, c);
-        return v;
+        if (!is_root()) {
+            auto v = fresh_variable(p);
+            redexes_push(v, c);
+            return v;
+        } else {
+            return c;
+        }
     }
 
     ptr<Ast> rewrite_expr_application(const Position &p,
                                       const ptrs<Ast> &aa) override {
         // var or combinator
         if (is_head_redex(aa[0])) {
-            ptrs<Ast> aa0;
-            aa0.push_back(aa[0]);
-            for (unsigned int i = 1; i < aa.size(); i++) {
-                auto a = rewrite(aa[i]);
-                aa0.push_back(a);
+            if (is_root()) {
+                root_set(false);
+                ptrs<Ast> aa0;
+                aa0.push_back(aa[0]);
+                for (unsigned int i = 1; i < aa.size(); i++) {
+                    auto a = rewrite(aa[i]);
+                    aa0.push_back(a);
+                }
+                auto r = AstExprApplication::create(p, aa0);
+                return r;
+            } else {
+                root_set(false);
+                ptrs<Ast> aa0;
+                aa0.push_back(aa[0]);
+                for (unsigned int i = 1; i < aa.size(); i++) {
+                    auto a = rewrite(aa[i]);
+                    aa0.push_back(a);
+                }
+                auto r = AstExprApplication::create(p, aa0);
+                auto v = fresh_variable(p);
+                redexes_push(v, r);
+                return v;
+
             }
-            auto r = AstExprApplication::create(p, aa0);
-            auto v = fresh_variable(p);
-            redexes_push(v, r);
-            return v;
         } else {
+            root_set(false);
             auto aa0 = rewrites(aa);
             return AstExprApplication::create(p, aa0);
         }
@@ -487,6 +515,7 @@ private:
     VM*         _machine;
     std::vector<std::tuple<ptr<Ast>,ptr<Ast>>>   _redexes;
     int         _tick;
+    bool        _root;
 };
 
 inline ptr<Ast> pass_reredex(const ptr<Ast> &a, VM *m) {
