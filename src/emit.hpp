@@ -220,6 +220,107 @@ public:
         return ((o->tag() == AST_EXPR_COMBINATOR) && !(is_const(o)));
     }
 
+    void visit_pattern_constant(const VMObjectPtr &o) {
+        auto r = get_current_register();
+        auto l = get_fail_label();
+        auto ri = get_coder()->generate_register();
+
+        auto d = get_coder()->emit_data(o);
+        get_coder()->emit_op_data(ri, d);
+        get_coder()->emit_op_test(r, ri);
+        get_coder()->emit_op_fail(l);
+    }
+
+    void visit_pattern(const ptr<Ast> &e) {
+        switch (e->tag()) {
+            case AST_EXPR_INTEGER: {
+                auto [p,v] = AstExprInteger::split(e);
+                if (v.startsWith("0x")) {
+                    auto i = VM::unicode_to_hexint(v);
+                    auto o = machine()->create_integer(i);
+                    visit_pattern_constant(o);
+                } else {
+                    auto i = VM::unicode_to_int(v);
+                    auto o = machine()->create_integer(i);
+                    visit_pattern_constant(o);
+                }
+            } break;
+            case AST_EXPR_FLOAT: {
+                auto [p,v] = AstExprFloat::split(e);
+                auto f = VM::unicode_to_float(v);
+                auto o = machine()->create_float(f);
+                visit_pattern_constant(o);
+            } break;
+            case AST_EXPR_CHARACTER: {
+                auto [p,v] = AstExprCharacter::split(e);
+                auto c = VM::unicode_to_char(v);
+                auto o = machine()->create_char(c);
+                visit_pattern_constant(o);
+            } break;
+            case AST_EXPR_TEXT: {
+                auto [p,v] = AstExprText::split(e);
+                auto c = VM::unicode_to_text(v);
+                auto o = machine()->create_text(c);
+                visit_pattern_constant(o);
+            } break;
+            case AST_EXPR_COMBINATOR: {
+                auto [p,nn,n] = AstExprCombinator::split(e);
+                auto o = machine()->get_combinator(nn, n);
+                visit_pattern_constant(o);
+            } break;
+            case AST_EXPR_TAG: {
+                auto [p,v,t] = AstExprTag::split(e);
+                auto r = get_current_register();
+                auto l = get_fail_label();
+
+                visit_pattern(v);
+
+                if (t->tag() == AST_EXPR_COMBINATOR) {
+                    auto [p, nn, n] = AstExprCombinator::split(t);
+                    auto o = machine()->get_combinator(nn, n);
+                    auto d = get_coder()->emit_data(o);
+
+                    auto rt = get_coder()->generate_register();
+
+                    get_coder()->emit_op_data(rt, d);
+                    get_coder()->emit_op_tag(r, rt);
+                    get_coder()->emit_op_fail(l);
+                } else {
+                    PANIC("combinator in tag expected");
+                }
+            } break;
+            case AST_EXPR_VARIABLE: {
+                auto [p,v] = AstExprVariable::split(e);
+                auto r = get_current_register();
+                add_variable_binding(v, r);
+            } break;
+            case AST_EXPR_APPLICATION: {
+                auto [p,ee] = AstExprApplication::split(e);
+                auto r = get_current_register();
+                auto l = get_fail_label();
+
+                reg_t x = 0, y = 0;
+                for (size_t n = 0; n < ee.size(); n++) {
+                    y = get_coder()->generate_register();
+                    if (n == 0) x = y;
+                }
+
+                get_coder()->emit_op_split(x, y, r);
+                get_coder()->emit_op_fail(l);
+
+                reg_t n = x;
+                for (auto &e : ee) {
+                    set_current_register(n);
+                    visit_pattern(e);
+                    n++;
+                }
+            } break;
+            default: {
+                PANIC("pattern expected");
+            };
+        }
+    }
+
     void visit_constant(const VMObjectPtr &o) {
         switch (get_state()) {
             case EMIT_PATTERN: {
@@ -562,6 +663,7 @@ public:
         }
     }
 
+    // this is where the visitor is discarded for recursive descent
     void visit_expr_match(const Position &p, const ptrs<Ast> &mm,
                           const ptr<Ast> &g, const ptr<Ast> &e) override {
         // we have memberberries
@@ -589,7 +691,7 @@ public:
         for (auto &m : mm) {
             set_current_register(n);
             n++;
-            visit(m);
+            visit_pattern(m);
         }
 
         set_state(EMIT_EXPR_ROOT);
@@ -622,10 +724,10 @@ public:
 
     void visit_directive_import(const Position &p,
                                 const icu::UnicodeString &i) override {
+        // cut
     }
 
 
-    // XXX: another means to translate data combinators (see emit_data)
     void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
         // cut
     }
