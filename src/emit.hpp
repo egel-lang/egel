@@ -410,11 +410,9 @@ public:
                         last = r;
                         get_coder()->emit_op_mov(r, c);
                     } else {
-                        auto c = visit_tree(e);
-                        auto r = get_coder()->generate_register();
+                        auto r = visit_tree(e);
                         if (f) { f = false; first = r; }
                         last = r;
-                        get_coder()->emit_op_mov(r, c);
                     }
                 }
                 get_coder()->emit_op_array(t, first, last);
@@ -507,9 +505,7 @@ public:
                         last = r;
                         get_coder()->emit_op_mov(r, c);
                     } else {
-                        auto c = visit_tree(e);
-                        auto r = get_coder()->generate_register();
-                        get_coder()->emit_op_mov(r, c);
+                        auto r = visit_tree(e);
                         last = r;
                     }
                 }
