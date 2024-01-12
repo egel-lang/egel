@@ -13,8 +13,8 @@ extern "C" {
 
 using namespace egel;
 
-//#define TRACE_JIT(x)    x;
-#define TRACE_JIT(x)    ;
+#define TRACE_JIT(x)    x;
+//#define TRACE_JIT(x)    ;
 
 extern "C" {
 

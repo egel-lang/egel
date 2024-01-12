@@ -529,7 +529,7 @@ inline ptr<Ast> lift(const ptr<Ast> &a, VM *m) {
     a0 = pass_deapply(a0);
     a0 = pass_lift(a0);
     a0 = pass_relambda(a0);
-    //a0 = pass_reredex(a0, m);
+    a0 = pass_reredex(a0, m);
     return a0;
 }
 }  // namespace egel
