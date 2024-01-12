@@ -193,7 +193,7 @@ inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
             auto q1 = VMObjectArray::cast(q0);
             q1->set(0, a[y]);
             for (int i = 1; i < 1+n0-n; i++) {
-                q1->set(i, z0->get(i+n-n0));
+                q1->set(i, z0->get(i+n-1));
             }
             a[x] = q1; 
         }
