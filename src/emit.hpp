@@ -78,14 +78,6 @@ public:
         return _out;
     }
 
-    void set_state(const emit_state_t s) {
-        _state = s;
-    }
-
-    emit_state_t get_state() const {
-        return _state;
-    }
-
     VM *machine() const {
         return _machine;
     }
@@ -529,25 +521,21 @@ public:
             || (t == AST_EXPR_CHARACTER)
             || (t == AST_EXPR_TEXT)) {
             return false;
-        } else {
-            if (t == AST_EXPR_COMBINATOR) {
-                auto [p, nn, n] = AstExprCombinator::split(o);
-                if (machine()->has_combinator(nn, n)) {
-                    auto c = machine()->get_combinator(nn, n);
-                    return !(machine()->is_data(c) || machine()->is_opaque(c));
-                } else {
-                    return true;
-                }
-            } else if (t == AST_EXPR_APPLICATION) {
-                auto [p, ee] = AstExprApplication::split(o);
-                if (ee[0]->tag() == AST_EXPR_VARIABLE) {
-                    return true;
-                } else {
-                    return is_redex(ee[0]);
-                }
+        } else if (t == AST_EXPR_VARIABLE) {
+            return true;
+        } else if (t == AST_EXPR_COMBINATOR) {
+            auto [p, nn, n] = AstExprCombinator::split(o);
+            if (machine()->has_combinator(nn, n)) {
+                auto c = machine()->get_combinator(nn, n);
+                return !(machine()->is_data(c) || machine()->is_opaque(c));
             } else {
-                return false;
+                return true;
             }
+        } else if (t == AST_EXPR_APPLICATION) {
+            auto [p, ee] = AstExprApplication::split(o);
+            return is_redex(ee[0]);
+        } else {
+            return false;
         }
     }
 
@@ -580,9 +568,12 @@ public:
             } break;
             case AST_EXPR_APPLICATION:
             case AST_EXPR_COMBINATOR: {
+                std::cerr << "redex? ";
                 if (is_redex(e)) {
+                    std::cerr << "yes " << std::endl;
                     visit_root_redex(e);
                 } else {
+                    std::cerr << "no " << std::endl;
                     visit_root_tree(e);
                 }
             } break;
@@ -633,7 +624,6 @@ public:
             get_coder()->emit_op_fail(l);
         }
 
-        set_state(EMIT_PATTERN);
         reg_t n = x;
         for (auto &m : mm) {
             set_pattern_register(n);
@@ -641,7 +631,6 @@ public:
             visit_pattern(m);
         }
 
-        set_state(EMIT_EXPR_ROOT);
         visit_root(e);
 
         // all matches end with a return
@@ -701,7 +690,6 @@ public:
 
         get_coder()->emit_op_takex(rt, c, frame, 0);
         get_coder()->emit_op_fail(l);
-        set_state(EMIT_EXPR_ROOT);
         visit(e);
         get_coder()->emit_label(l);
 
@@ -740,7 +728,6 @@ public:
     }
 
 private:
-    emit_state_t _state;
     VM *_machine;
 
     reg_t _register_frame;
