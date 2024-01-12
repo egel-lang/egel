@@ -396,9 +396,9 @@ public:
             if (*run == RUNNING) {
                 ASSERT(VMObjectArray::test(trampoline));
                 auto f = VMObjectArray::cast(trampoline)->get(4);
+#ifdef DEBUG
                 std::cout << "trace: " << f << std::endl;
                 std::cout << "on : " << trampoline << std::endl;
-#ifdef DEBUG
 #endif
                 trampoline = f->reduce(trampoline);
             } else if (*run == SLEEPING) {

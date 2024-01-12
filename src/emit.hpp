@@ -307,7 +307,6 @@ public:
                 }
             } break;
             default: {
-                std::cerr << e << std::endl;
                 PANIC("pattern expected");
             };
         }
@@ -571,12 +570,9 @@ public:
             } break;
             case AST_EXPR_APPLICATION:
             case AST_EXPR_COMBINATOR: {
-                std::cerr << "redex? ";
                 if (is_redex(e)) {
-                    std::cerr << "yes " << std::endl;
                     visit_root_redex(e);
                 } else {
-                    std::cerr << "no " << std::endl;
                     visit_root_tree(e);
                 }
             } break;
