@@ -263,7 +263,8 @@ public:
         w = egel::desugar(w);
         egel::emit_data(vm, w);
         w = egel::lift(w, vm);
-        egel::emit_code(vm, w);
+        auto oo = egel::emit_code(vm, w);
+        egel::emit_jit(vm, oo);
     }
 
     void handle_data(const ptr<Ast> &d) {
@@ -295,7 +296,8 @@ public:
         w = egel::desugar(w);
         egel::emit_data(vm, w);
         w = egel::lift(w, vm);
-        egel::emit_code(vm, w);
+        auto oo = egel::emit_code(vm, w);
+        egel::emit_jit(vm, oo);
     }
 
     // XXX XXX XXX: get rid of all of this once. See handle_expression.

@@ -443,6 +443,7 @@ public:
 
         auto t = get_coder()->generate_register();
         get_coder()->emit_op_array(t, rt, c);
+        set_register_k(t);
         return t;
     }
 
