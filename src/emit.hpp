@@ -307,6 +307,7 @@ public:
                 }
             } break;
             default: {
+                std::cerr << e << std::endl;
                 PANIC("pattern expected");
             };
         }

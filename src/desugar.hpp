@@ -493,6 +493,7 @@ ptr<Ast> desugar(const ptr<Ast> &a) {
     a0 = pass_try(a0);
     a0 = pass_lazyop(a0);
     a0 = pass_monmin(a0);
+    a0 = pass_wildcard(a0);
     return a0;
 }
 
