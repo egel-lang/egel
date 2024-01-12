@@ -362,7 +362,9 @@ public:
                 auto [p,v] = AstExprVariable::split(e);
                 if (has_variable_binding(v)) {
                     auto r = get_variable_binding(v);
-                    return r;
+                    auto r0 = get_coder()->generate_register();
+                    get_coder()->emit_op_mov(r0, r);
+                    return r0;
                 } else {
                     auto [t, i] = get_cursor();
                     add_redex_binding(v, t, i);
