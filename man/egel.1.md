@@ -110,11 +110,11 @@ all computation when present.
 Tying it all together:
 
 ```
-# A fibonnaci implementation.
+# A Fibonacci implementation.
 
 import "prelude.eg"
 
-namespace Fibonnaci (
+namespace Fibonacci (
   using System
 
   def fib =
@@ -126,7 +126,7 @@ namespace Fibonnaci (
 
 using System
 
-def main = Fibonnaci::fib (3+2)
+def main = Fibonacci::fib (3+2)
 ```
 ## EXAMPLES
 
@@ -146,7 +146,7 @@ The interpreter will start in interactive mode when invoked without a module arg
 
 Supply a command to use `egel -e` as a simple calculator. Double semicolons are separators.
 
-    $ egel fib.eg -e "using Fibonnaci;; fib 3"
+    $ egel fib.eg -e "using Fibonacci;; fib 3"
     5
 
 ## FILES

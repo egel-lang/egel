@@ -5,9 +5,9 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-+ don't reduce redexes that start with a const
++ add import/export lists to using/namespace
++ move dict to internal
 + vararg function definitions
-+ lowercase namespace
 + move to C++20 (modules, modern syntax)
   when libfmt makes it into llvm and gcc?
 + import works on identifiers
@@ -25,13 +25,12 @@ A list of all major changes between versions of the interpreter.
 + complex numbers
 * clean up ref (make it serializable)
 + generate C++ from .eg file (module compilation)
-+ add import/export lists to using/namespace
-+ move dict to internal
 + dict objects
 + target MSVC
 
 ## The bleeding, cutting edge
 
++ only reduce redexes
 + simplified try/catch handling with combinators
 + added egg files, support for literate programming 
 + added a GNU lightning back-end

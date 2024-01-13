@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "EGEL" "1" "June 2023" "" ""
+.TH "EGEL" "1" "January 2024" "" ""
 .
 .SH "NAME"
 \fBegel\fR \- an untyped functional scripting language
@@ -139,11 +139,11 @@ Tying it all together:
 .
 .nf
 
-# A fibonnaci implementation\.
+# A Fibonacci implementation\.
 
 import "prelude\.eg"
 
-namespace Fibonnaci (
+namespace Fibonacci (
   using System
 
   def fib =
@@ -155,7 +155,7 @@ namespace Fibonnaci (
 
 using System
 
-def main = Fibonnaci::fib (3+2)
+def main = Fibonacci::fib (3+2)
 .
 .fi
 .
@@ -201,7 +201,7 @@ Supply a command to use \fBegel \-e\fR as a simple calculator\. Double semicolon
 .
 .nf
 
-$ egel fib\.eg \-e "using Fibonnaci;; fib 3"
+$ egel fib\.eg \-e "using Fibonacci;; fib 3"
 5
 .
 .fi
