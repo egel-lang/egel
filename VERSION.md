@@ -6,7 +6,6 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + add import/export lists to using/namespace
-+ move dict to internal
 + vararg function definitions
 + move to C++20 (modules, modern syntax)
   when libfmt makes it into llvm and gcc?
@@ -30,10 +29,13 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+## v0.1.10 - egel, let's go!
+
 + only reduce redexes
 + simplified try/catch handling with combinators
 + added egg files, support for literate programming 
 + added a GNU lightning back-end
++ dict is now a builtin
 + revert $ precedence since $ is bitwise or
 + added a stall combinator
 

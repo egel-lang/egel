@@ -1,6 +1,5 @@
 # combinators to make dict more useful
 
-import "dict.ego"
 import "prelude.eg"
 import "generator.eg"
 

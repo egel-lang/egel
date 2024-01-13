@@ -10,6 +10,7 @@
 #include "builtin_async.hpp"
 #include "builtin_runtime.hpp"
 #include "builtin_system.hpp"
+#include "builtin_dict.hpp"
 #include "constants.hpp"
 #include "desugar.hpp"
 #include "emit.hpp"
@@ -782,6 +783,7 @@ public:
         auto prc = ModuleInternal::create("internal", vm, &builtin_process);
         auto evl = ModuleInternal::create("internal", vm, &builtin_eval);
         auto asy = ModuleInternal::create("internal", vm, &builtin_async);
+        auto dct = ModuleInternal::create("internal", vm, &builtin_dict);
         sys->load();
         mth->load();
         str->load();
@@ -790,6 +792,7 @@ public:
         prc->load();
         evl->load();
         asy->load();
+        dct->load();
         _loading.push_back(sys);
         _loading.push_back(mth);
         _loading.push_back(str);
@@ -798,6 +801,7 @@ public:
         _loading.push_back(prc);
         _loading.push_back(evl);
         _loading.push_back(asy);
+        _loading.push_back(dct);
         process();
         flush();
     }
