@@ -2,7 +2,7 @@
 #
 # see: https://en.wikipedia.org/wiki/Fibonacci_number
 
-namespace Fibonnaci (
+namespace Fibonacci (
   using System
 
   def fib =
@@ -11,6 +11,6 @@ namespace Fibonnaci (
     | N -> fib (N- 2) + fib (N- 1) ]
 )
 
-using Fibonnaci
+using Fibonacci
 
 def main = fib 20

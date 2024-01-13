@@ -5,7 +5,7 @@ You can read about this function [here](https://en.wikipedia.org/wiki/Fibonacci_
 Start of with defining the Fibonacci function as `fib` in its own namespace.
 
 ```
-namespace Fibonnaci (
+namespace Fibonacci (
   using System
 
   def fib =
@@ -18,7 +18,7 @@ namespace Fibonnaci (
 Pull all combinators defined in the Fibonnaci namespace into the global scope.
 
 ```
-using Fibonnaci
+using Fibonacci
 ```
 
 And now run it.
