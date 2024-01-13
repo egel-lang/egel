@@ -391,8 +391,8 @@ public:
 
                 // then set up the array
                 bool f = true;
-                reg_t first;
-                reg_t last;
+                reg_t first = 0;
+                reg_t last = 0;
                 i = 0;
                 for (auto &e:ee) {
                     set_cursor(t,i); i++;
@@ -489,7 +489,7 @@ public:
                 get_coder()->emit_op_mov(exc, get_register_exc());
 
                 i = 4;
-                reg_t last;
+                reg_t last = 0;
                 for (auto &e:ee) {
                     set_cursor(t,i); i++;
                     if (e->tag() == AST_EXPR_APPLICATION) {
