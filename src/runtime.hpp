@@ -1383,6 +1383,22 @@ public:
     // compare should implement a total order, even if the state changes..
     virtual int compare(const VMObjectPtr &o) = 0;
 
+    virtual VMObjectPtr op_add(const VMObjectPtr& o) {
+        return nullptr;
+    }
+
+    virtual VMObjectPtr op_minus(const VMObjectPtr& o) {
+        return nullptr;
+    }
+
+    virtual VMObjectPtr op_multiply(const VMObjectPtr& o) {
+        return nullptr;
+    }
+
+    virtual VMObjectPtr op_divide(const VMObjectPtr& o) {
+        return nullptr;
+    }
+
 private:
     VM *_machine;
     symbol_t _symbol;
