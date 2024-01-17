@@ -23,8 +23,6 @@ enum class clock_type {
 /*
  Date/time classes revolve about four abstractions: clocks, time points,
  durations, and calendar times.
-
- A clock is primarily used to derive a _time point_
 */
 class TimePoint: public Opaque {
 public:
@@ -48,15 +46,12 @@ public:
         return std::static_pointer_cast<TimePoint>(o);
     }
 
-    void set_time_point() {
-        return _time_point;
+    void set_time_point(std::chrono::time_point tp) {
+        _time_point = tp;
     }
 
     std::chrono::time_point time_point() {
         return _time_point;
-    }
-
-    std::chrono::time_point time_point() {
     }
 
     int compare(const VMObjectPtr& o) override {
@@ -68,7 +63,6 @@ public:
         else
             return 0;
     }
-
 private:
     std::chrono::time_point _time_point;
 };
@@ -80,6 +74,16 @@ public:
     Duration(const Duration& d)
         : Opaque(d.machine(), d.symbol()) {
         _duration = d.duration();
+    }
+
+    static VMObjectPtr create(VM* m, const std::chrono::duration& d) {
+        auto o = TimePoint(m);
+        o.set_time_point(tp);
+        return o;
+    }
+
+    void set_duration(const std::chrono::duration& d) {
+        _duration = d;
     }
 
     std::chrono::duration duration() {
@@ -278,27 +282,6 @@ public:
             } else if (s == "system") {
             } else {
                 THROW_BADARGS;
-            }
-        } else {
-            THROW_BADARGS;
-        }
-    }
-};
-
-// ## OS:absolute p - composes an absolute path
-class Absolute : public Monadic {
-public:
-    MONADIC_PREAMBLE(Absolute, OS_STRING, "absolute");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (machine()->is_text(arg0)) {
-            try {
-                auto p0 = object_to_path(arg0);
-                auto p1 = fs::absolute(p0);
-
-                return path_to_object(p1);
-            } catch (const fs::filesystem_error& e) {
-                throw error_to_object(e);
             }
         } else {
             THROW_BADARGS;

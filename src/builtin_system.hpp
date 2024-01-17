@@ -141,6 +141,14 @@ public:
             auto f0 = machine()->get_text(arg0);
             auto f1 = machine()->get_text(arg1);
             return VMObjectText::create(f0 + f1);
+        } else if (machine()->is_opaque(arg0)) {
+            auto o = VMObjectOpaque::cast(arg0);
+            auto r = o->op_add(arg1);
+            if (r != nullptr) {
+                return r;
+            } else {
+                throw machine()->bad_args(this, arg0, arg1);
+            }
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -167,6 +175,14 @@ public:
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 - f1);
+        } else if (machine()->is_opaque(arg0)) {
+            auto o = VMObjectOpaque::cast(arg0);
+            auto r = o->op_minus(arg1);
+            if (r != nullptr) {
+                return r;
+            } else {
+                throw machine()->bad_args(this, arg0, arg1);
+            }
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -193,6 +209,14 @@ public:
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 * f1);
+        } else if (machine()->is_opaque(arg0)) {
+            auto o = VMObjectOpaque::cast(arg0);
+            auto r = o->op_multiply(arg1);
+            if (r != nullptr) {
+                return r;
+            } else {
+                throw machine()->bad_args(this, arg0, arg1);
+            }
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
@@ -220,6 +244,14 @@ public:
                 throw machine()->bad(this, "divide by zero");
             }
             return machine()->create_float(f0 / f1);
+        } else if (machine()->is_opaque(arg0)) {
+            auto o = VMObjectOpaque::cast(arg0);
+            auto r = o->op_divide(arg1);
+            if (r != nullptr) {
+                return r;
+            } else {
+                throw machine()->bad_args(this, arg0, arg1);
+            }
         } else {
             throw machine()->bad_args(this, arg0, arg1);
         }
