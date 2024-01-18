@@ -180,7 +180,12 @@ inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
             for (int i = n0; i < n0+n1-n; i++) {
                 q1->set(i, z0->get(i+n-n0));
             }
-            a[x] = q1; 
+            // XXX: array of size 1 are not returned
+            if (q1->size() == 1) {
+                a[x] = q1->get(0);
+            } else {
+                a[x] = q1; 
+            }
         }
     } else {
         auto z0 = VMObjectArray::cast(a[z]);
@@ -195,7 +200,12 @@ inline void op_concatx(VM* vm, VMObjectPtr *a, int x, int y, int z, int n) {
             for (int i = 1; i < 1+n0-n; i++) {
                 q1->set(i, z0->get(i+n-1));
             }
-            a[x] = q1; 
+            // XXX: array of size 1 are not returned
+            if (q1->size() == 1) {
+                a[x] = q1->get(0);
+            } else {
+                a[x] = q1; 
+            }
         }
     }
 };
@@ -860,12 +870,19 @@ private:
 
 class VMObjectLightning : public VMObjectBytecode {
 public:
-    VMObjectLightning(VM *m, const Code &c, const Data &d, const icu::UnicodeString &n, void* p) :
-    VMObjectBytecode(m, c, d, n), _proc(p) {
+    VMObjectLightning(VM *m, const Code &c, const Data &d, const symbol_t s, void* p) :
+    VMObjectBytecode(m, c, d, s), _proc(p) {
     }
 
-    static VMObjectPtr create(VM *m, const Code &c, const Data &d, const icu::UnicodeString &n, void* p) {
-        return std::make_shared<VMObjectLightning>(m, c, d, n, p);
+    VMObjectLightning(const VMObjectLightning &l) : VMObjectLightning(l.machine(), l.code(), l.data(), l.symbol(), l.proc()) {
+    }
+
+    void* proc() const {
+        return _proc;
+    }
+
+    static VMObjectPtr create(VM *m, const Code &c, const Data &d, const symbol_t s, void* p) {
+        return std::make_shared<VMObjectLightning>(m, c, d, s, p);
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override { 
@@ -898,8 +915,9 @@ inline void try_compile(VM* m,const VMObjectPtr& o) {
         auto p = e.emit();
 
         auto b = VMObjectBytecode::cast(o);
-        auto l = VMObjectLightning::create(m, b->code(), b->data(), b->to_text(), p);
+        auto l = VMObjectLightning::create(m, b->code(), b->data(), b->symbol(), p);
 
+        TRACE_JIT(std::cerr << "l->sub(" << l->subtag() << ")" << std::endl);
         m->overwrite(l);
     }
 };

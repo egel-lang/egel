@@ -147,11 +147,13 @@ inline void render_cons(const VMObjectPtr &cc, std::ostream &os);
 
 class VMObject {
 public:
-    VMObject(const vm_tag_t t) : _tag(t), _subtag(0) {
+    VMObject(const vm_tag_t t) : _tag(t), _subtag(-1) {
     }
 
     VMObject(const vm_tag_t t, const vm_subtag_t st) : _tag(t), _subtag(st) {
     }
+
+    VMObject(const VMObject& o): VMObject(o.tag(), o.subtag()) {}
 
     virtual ~VMObject() {  // FIX: give a virtual destructor to keep the
                            // compiler(-s) happy
@@ -1426,6 +1428,8 @@ public:
         : VMObject(VM_OBJECT_COMBINATOR, t),
           _machine(m),
           _symbol(m->enter_symbol(nn, n)){};
+
+    VMObjectCombinator(const VMObjectCombinator& o): VMObjectCombinator(o.subtag(), o.machine(), o.symbol()) {}
 
     static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_COMBINATOR;
