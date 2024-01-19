@@ -1,7 +1,7 @@
 # A small experiment with 'effects'. Below is the translation of a
 # program `tick + tick` where `tick` would be an effect.
 #
-# The trick is to factor out the effects with a contination that is
+# The trick is to factor out the effects with a continuation that is
 # called with the handler state, and use try/catch as a handler or
 # control flow mechanism.
 #
