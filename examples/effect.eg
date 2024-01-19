@@ -1,9 +1,8 @@
 # A small experiment with 'effects'. Below is the translation of a
 # program `tick + tick` where `tick` would be an effect.
 #
-# The trick is to factor out the effects with a continuation that is
-# called with the handler state, and use try/catch as a handler or
-# control flow mechanism.
+# The trick is to factor out the effects with a continuation, and 
+# use try/catch as a handler or control flow mechanism.
 #
 # I admit the end result looks gross, this is just to show that the
 # semantic model supports this.
@@ -12,6 +11,8 @@ using System
 
 data tick
 
+def do_tick = [K -> throw (tick K)]
+
 def handle_tick = [N (tick K) -> try K N catch handle_tick (N+1)]
 
-def main = try throw (tick [N -> throw tick ((+) N)]) catch handle_tick 1
+def main = try do_tick [N -> do_tick ((+) N)] catch handle_tick 1
