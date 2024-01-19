@@ -2045,6 +2045,7 @@ public:
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
                 auto ee = VMObjectArray::value(exc);
+                auto none = machine()->create_none();
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2052,6 +2053,7 @@ public:
                 rr.push_back(ee[2]);
                 rr.push_back(ee[3]);
                 rr.push_back(ee[4]);
+                rr.push_back(none);
                 rr.push_back(e);
 
                 return VMObjectArray::create(rr);
@@ -2192,6 +2194,7 @@ public:
             } catch (VMObjectPtr e) {
                 auto exc = m->array_get(thunk, 3);
                 auto ee = VMObjectArray::value(exc);
+                auto none = m->create_none();
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2199,6 +2202,7 @@ public:
                 rr.push_back(ee[2]);
                 rr.push_back(ee[3]);
                 rr.push_back(ee[4]);
+                rr.push_back(none);
                 rr.push_back(e);
 
                 return VMObjectArray::create(rr);
@@ -2351,6 +2355,7 @@ public:
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
                 auto ee = VMObjectArray::value(exc);
+                auto none = machine()->create_none();
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2358,6 +2363,7 @@ public:
                 rr.push_back(ee[2]);
                 rr.push_back(ee[3]);
                 rr.push_back(ee[4]);
+                rr.push_back(none);
                 rr.push_back(e);
 
                 return VMObjectArray::create(rr);
@@ -2511,6 +2517,7 @@ public:
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
                 auto ee = VMObjectArray::value(exc);
+                auto none = machine()->create_none();
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2518,6 +2525,7 @@ public:
                 rr.push_back(ee[2]);
                 rr.push_back(ee[3]);
                 rr.push_back(ee[4]);
+                rr.push_back(none);
                 rr.push_back(e);
 
                 return VMObjectArray::create(rr);
@@ -2646,6 +2654,7 @@ public:
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
                 auto ee = VMObjectArray::value(exc);
+                auto none = machine()->create_none();
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2653,6 +2662,7 @@ public:
                 rr.push_back(ee[2]);
                 rr.push_back(ee[3]);
                 rr.push_back(ee[4]);
+                rr.push_back(none);
                 rr.push_back(e);
 
                 return VMObjectArray::create(rr);
@@ -2740,6 +2750,7 @@ public:
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
                 auto ee = VMObjectArray::value(exc);
+                auto none = machine()->create_none();
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2747,6 +2758,7 @@ public:
                 rr.push_back(ee[2]);
                 rr.push_back(ee[3]);
                 rr.push_back(ee[4]);
+                rr.push_back(none);
                 rr.push_back(e);
 
                 return VMObjectArray::create(rr);
@@ -2829,6 +2841,7 @@ public:
             } catch (VMObjectPtr e) {
                 auto exc = tt[3];
                 auto ee = VMObjectArray::value(exc);
+                auto none = machine()->create_none();
 
                 VMObjectPtrs rr;
                 rr.push_back(ee[0]);
@@ -2836,6 +2849,7 @@ public:
                 rr.push_back(ee[2]);
                 rr.push_back(ee[3]);
                 rr.push_back(ee[4]);
+                rr.push_back(none);
                 rr.push_back(e);
 
                 return VMObjectArray::create(rr);
