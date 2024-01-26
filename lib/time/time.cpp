@@ -180,6 +180,52 @@ private:
     > _time_point;
 };
 
+class Duration: public Opaque {
+public:
+    OPAQUE_PREAMBLE(Duration, TIME_STRING, "duration");
+
+    Duration(const Duration& d)
+        : Opaque(d.machine(), d.symbol()) {
+        _duration = d.duration();
+    }
+
+    static VMObjectPtr create(VM* m, const std::chrono::duration& d) {
+        auto o = Duration(m);
+        o.set_duration(d);
+        return o;
+    }
+
+    static bool is_duration(const VMObjectPtr& o) {
+        return typeid(*o) == typeid(Duration);
+    }
+
+    static std::shared_ptr<Duration> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<Duration>(o);
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        auto d = (std::static_pointer_cast<Duration>(o))->duration();
+        if (duration() < d) {
+            return -1;
+        } else if (d < duration()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    void set_duration(const std::chrono::duration d) {
+        _duration = d;
+    }
+
+    std::chrono::duration duration() const {
+        return _duration;
+    }
+
+private:
+    std::chrono::duration _duration;
+};
+
 // ## Time::clock - opaque values that represent clocks
 class Clock: public Opaque {
 public:
