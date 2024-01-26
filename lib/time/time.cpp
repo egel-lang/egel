@@ -17,7 +17,8 @@ enum class clock_type {
     HIGH_RESOLUTION_CLOCK,
     UTC_CLOCK,
     TAI_CLOCK,
-    GPS_CLOCK
+    GPS_CLOCK,
+    FILE_CLOCK
 };
 
 /*
@@ -33,75 +34,150 @@ public:
         _time_point = tp.time_point();
     }
 
-    static VMObjectPtr create(VM* m, const std::chrono::time_point& tp) {
+    static VMObjectPtr create(VM* m, const std::chrono::time_point<std::chrono::system_clock>& tp) {
         auto o = TimePoint(m);
         o.set_time_point(tp);
         return o;
     }
 
     static bool is_time_point(const VMObjectPtr& o) {
+        return typeid(*o) == typeid(TimePoint);
     }
 
     static std::shared_ptr<TimePoint> cast(const VMObjectPtr& o) {
         return std::static_pointer_cast<TimePoint>(o);
     }
 
-    void set_time_point(std::chrono::time_point tp) {
+    clock_type clock_type() const {
+        return tp.index();
+    }
+
+    int less_than(const VMObjectPtr& o) const {
+        auto tp = (std::static_pointer_cast<TimePoint>(o))->time_point();
+        if (clock_type() < tp->clock_type()) {
+            return true;
+        } else if (clock_type() > tp->clock_type()) {
+            return false;
+        } else {
+            auto tt = clock_type();
+            switch (tt) {
+            case SYSTEM_CLOCK:
+                return time_point_system_clock() < tp->time_point_system_clock();
+            break;
+            case STEADY_CLOCK:
+                return time_point_steady_clock() < tp->time_point_steady_clock();
+            break;
+            case HIGH_RESOLUTION_CLOCK:
+                return time_point_high_resolution_clock() < tp->time_point_high_resolution_clock();
+            break;
+            case UTC_CLOCK:
+                return time_point_utc_clock() < tp->time_point_utc_clock();
+            break;
+            case TAI_CLOCK:
+                return time_point_tai_clock() < tp->time_point_tai_clock();
+            break;
+            case GPS_CLOCK:
+                return time_point_gps_clock() < tp->time_point_gps_clock();
+            break;
+            case FILE_CLOCK:
+                return time_point_file_clock() < tp->time_point_file_clock();
+            break;
+            }
+        }
+    
+    }
+    int compare(const VMObjectPtr& o) override {
+        auto tp = (std::static_pointer_cast<TimePoint>(o))->time_point();
+        if (less_than(o)) {
+            return -1;
+        } else if (tp->less_than(this)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    void set_time_point(const std::chrono::time_point<std::chrono::system_clock> tp)
+    {
         _time_point = tp;
     }
 
-    std::chrono::time_point time_point() {
-        return _time_point;
+    std::chrono::time_point<std::chrono::system_clock>
+    time_point_system_clock() const {
+        return std::get<SYSTEM_CLOCK>(_time_point);
     }
 
-    int compare(const VMObjectPtr& o) override {
-        auto tp = (std::static_pointer_cast<TimePoint>(o))->time_point();
-        if (_time_point < tp)
-            return -1;
-        else if (tp < _time_point)
-            return 1;
-        else
-            return 0;
+    void set_time_point(const std::chrono::time_point<std::chrono::steady_clock> tp)
+    {
+        _time_point = tp;
     }
+
+    std::chrono::time_point<std::chrono::steady_clock>
+    time_point_steady_clock() const {
+        return std::get<STEADY_CLOCK>(_time_point);
+    }
+
+
+    void set_time_point(const std::chrono::time_point<std::chrono::high_resolution_clock> tp)
+    {
+        _time_point = tp;
+    }
+
+    std::chrono::time_point<std::chrono::high_resolution_clock>
+    time_point_high_resolution_clock() const {
+        return std::get<HIGH_RESOLUTION_CLOCK>(_time_point);
+    }
+
+    void set_time_point(const std::chrono::time_point<std::chrono::utc_clock> tp)
+    {
+        _time_point = tp;
+    }
+
+    std::chrono::time_point<std::chrono::utc_clock>
+    time_point_utc_clock() const {
+        return std::get<UTC_CLOCK>(_time_point);
+    }
+
+    void set_time_point(const std::chrono::time_point<std::chrono::tai_clock> tp)
+    {
+        _time_point = tp;
+    }
+
+    std::chrono::time_point<std::chrono::tai_clock>
+    time_point_tai_clock() const {
+        return std::get<TAI_CLOCK>(_time_point);
+    }
+
+    void set_time_point(const std::chrono::time_point<std::chrono::gps_clock> tp)
+    {
+        _time_point = tp;
+    }
+
+    std::chrono::time_point<std::chrono::gps_clock>
+    time_point_gps_clock() const {
+        return std::get<GPS_CLOCK>(_time_point);
+    }
+
+    void set_time_point(const std::chrono::time_point<std::chrono::file_clock> tp)
+    {
+        _time_point = tp;
+    }
+
+    std::chrono::time_point<std::chrono::file_clock>
+    time_point_file_clock() const {
+        return std::get<FILE_CLOCK>(_time_point);
+    }
+
 private:
-    std::chrono::time_point _time_point;
-};
-
-class Duration: public Opaque {
-public:
-    OPAQUE_PREAMBLE(Duration, TIME_STRING, "duration");
-
-    Duration(const Duration& d)
-        : Opaque(d.machine(), d.symbol()) {
-        _duration = d.duration();
-    }
-
-    static VMObjectPtr create(VM* m, const std::chrono::duration& d) {
-        auto o = TimePoint(m);
-        o.set_time_point(tp);
-        return o;
-    }
-
-    void set_duration(const std::chrono::duration& d) {
-        _duration = d;
-    }
-
-    std::chrono::duration duration() {
-        return _duration;
-    }
-
-    int compare(const VMObjectPtr& o) override {
-        auto d = (std::static_pointer_cast<Duration>(o))->duration();
-        if (_duration < d)
-            return -1;
-        else if (d < _duration)
-            return 1;
-        else
-            return 0;
-    }
-
-private:
-    std::chrono::duration _duration;
+    std::variant <
+    std::chrono::time_point<std::chrono::system_clock>, 
+    std::chrono::time_point<std::chrono::steady_clock>, 
+    std::chrono::time_point<std::chrono::high_resolution_clock>,
+    std::chrono::time_point<std::chrono::utc_clock>,
+    std::chrono::time_point<std::chrono::tai_clock>,
+    std::chrono::time_point<std::chrono::gps_clock>, 
+    std::chrono::time_point<std::chrono::file_clock> 
+    > _time_point;
 };
 
 // ## Time::clock - opaque values that represent clocks
