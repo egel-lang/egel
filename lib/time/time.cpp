@@ -25,6 +25,61 @@ enum class clock_type {
  Date/time classes revolve about four abstractions: clocks, time points,
  durations, and calendar times.
 */
+class Duration: public Opaque {
+public:
+    OPAQUE_PREAMBLE(Duration, TIME_STRING, "duration");
+
+    Duration(const Duration& d)
+        : Opaque(d.machine(), d.symbol()) {
+        _duration = d.duration();
+    }
+
+    static VMObjectPtr create(VM* m, const std::chrono::duration& d) {
+        auto o = Duration(m);
+        o.set_duration(d);
+        return o;
+    }
+
+    static bool is_duration(const VMObjectPtr& o) {
+        return typeid(*o) == typeid(Duration);
+    }
+
+    static std::shared_ptr<Duration> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<Duration>(o);
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        auto d = cast(o)->duration();
+        if (duration() < d) {
+            return -1;
+        } else if (d < duration()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    void set_duration(const std::chrono::duration d) {
+        _duration = d;
+    }
+
+    std::chrono::duration duration() const {
+        return _duration;
+    }
+
+    virtual VMObjectPtr op_add(const VMObjectPtr& o) override {
+        if (Duration::is_duration(o)) {
+            auto d = Duration::cast(o);
+            return Duration::create(machine(), duration() + d->duration())
+        } else {
+            return nullptr;
+        }
+    }
+
+private:
+    std::chrono::duration _duration;
+};
+
 class TimePoint: public Opaque {
 public:
     OPAQUE_PREAMBLE(TimePoint, TIME_STRING, "time_point");
@@ -88,13 +143,104 @@ public:
     }
 
     int compare(const VMObjectPtr& o) override {
-        auto tp = (std::static_pointer_cast<TimePoint>(o))->time_point();
+        auto tp = cast(o)->time_point();
         if (less_than(o)) {
             return -1;
         } else if (tp->less_than(this)) {
             return 1;
         } else {
             return 0;
+        }
+    }
+
+    virtual VMObjectPtr op_add(const VMObjectPtr& o) override {
+        if (Duration::is_duration(o)) {
+            auto d = Duration::cast(o);
+            switch (clock_type()) {
+            case SYSTEM_CLOCK:
+                return TimePoint::create(machine(), time_point_system_clock() + d->duration())
+            break;
+            case STEADY_CLOCK:
+                return TimePoint::create(machine(), time_point_steady_clock() + d->duration())
+            break;
+            case HIGH_RESOLUTION_CLOCK:
+                return TimePoint::create(machine(), time_point_high_resolution_clock() + d->duration())
+            break;
+            case UTC_CLOCK:
+                return TimePoint::create(machine(), time_point_utc_clock() + d->duration())
+            break;
+            case TAI_CLOCK:
+                return TimePoint::create(machine(), time_point_tai_clock() + d->duration())
+            break;
+            case GPS_CLOCK:
+                return TimePoint::create(machine(), time_point_gps_clock() + d->duration())
+            break;
+            case FILE_CLOCK:
+                return TimePoint::create(machine(), time_point_file_clock() + d->duration())
+            break;
+            }
+        } else {
+            return nullptr;
+        }
+    }
+
+    virtual VMObjectPtr op_minus(const VMObjectPtr& o) override {
+        if (Duration::is_duration(o)) {
+            auto d = Duration::cast(o);
+            switch (clock_type()) {
+            case SYSTEM_CLOCK:
+                return TimePoint::create(machine(), time_point_system_clock() - d->duration())
+            break;
+            case STEADY_CLOCK:
+                return TimePoint::create(machine(), time_point_steady_clock() - d->duration())
+            break;
+            case HIGH_RESOLUTION_CLOCK:
+                return TimePoint::create(machine(), time_point_high_resolution_clock() - d->duration())
+            break;
+            case UTC_CLOCK:
+                return TimePoint::create(machine(), time_point_utc_clock() - d->duration())
+            break;
+            case TAI_CLOCK:
+                return TimePoint::create(machine(), time_point_tai_clock() - d->duration())
+            break;
+            case GPS_CLOCK:
+                return TimePoint::create(machine(), time_point_gps_clock() - d->duration())
+            break;
+            case FILE_CLOCK:
+                return TimePoint::create(machine(), time_point_file_clock() - d->duration())
+            break;
+            }
+        } else if (is_time_point(o) {
+            auto tp = cast(o);
+            if (clock_type() == tp->clock_type()) {
+                switch (clock_type()) {
+                case SYSTEM_CLOCK:
+                    return Duration::create(machine(), time_point_system_clock() - tp->time_point_system_clock());
+                break;
+                case STEADY_CLOCK:
+                    return Duration::create(machine(), time_point_steady_clock() - tp->time_point_steady_clock());
+                break;
+                case HIGH_RESOLUTION_CLOCK:
+                    return Duration::create(machine(), time_point_high_resolution_clock() - tp->time_point_high_resolution_clock());
+                break;
+                case UTC_CLOCK:
+                    return Duration::create(machine(), time_point_utc_clock() - tp->time_point_utc_clock());
+                break;
+                case TAI_CLOCK:
+                    return Duration::create(machine(), time_point_tai_clock() - tp->time_point_tai_clock());
+                break;
+                case GPS_CLOCK:
+                    return Duration::create(machine(), time_point_gps_clock() - tp->time_point_gps_clock());
+                break;
+                case FILE_CLOCK:
+                    return Duration::create(machine(), time_point_file_clock() - tp->time_point_file_clock());
+                break;
+                }
+            } else {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
         }
     }
 
@@ -179,51 +325,6 @@ private:
     std::chrono::time_point<std::chrono::gps_clock>, 
     std::chrono::time_point<std::chrono::file_clock> 
     > _time_point;
-};
-
-class Duration: public Opaque {
-public:
-    OPAQUE_PREAMBLE(Duration, TIME_STRING, "duration");
-
-    Duration(const Duration& d)
-        : Opaque(d.machine(), d.symbol()) {
-        _duration = d.duration();
-    }
-
-    static VMObjectPtr create(VM* m, const std::chrono::duration& d) {
-        auto o = Duration(m);
-        o.set_duration(d);
-        return o;
-    }
-
-    static bool is_duration(const VMObjectPtr& o) {
-        return typeid(*o) == typeid(Duration);
-    }
-
-    static std::shared_ptr<Duration> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<Duration>(o);
-    }
-
-    int compare(const VMObjectPtr& o) override {
-        auto d = cast(o)->duration();
-        if (duration() < d) {
-            return -1;
-        } else if (d < duration()) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    void set_duration(const std::chrono::duration d) {
-        _duration = d;
-    }
-
-    std::chrono::duration duration() const {
-        return _duration;
-    }
-private:
-    std::chrono::duration _duration;
 };
 
 // ## Time::time_clock - opaque values that represent clocks
