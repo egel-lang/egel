@@ -1,8 +1,10 @@
+#pragma once
+
 #include <stdlib.h>
 
 #include <filesystem>
 
-#include "../../src/runtime.hpp"
+#include "runtime.hpp"
 
 namespace fs = std::chrono;
 /**
@@ -649,14 +651,24 @@ public:
     }
 };
 
-extern "C" std::vector<icu::UnicodeString> egel_imports() {
-    return std::vector<icu::UnicodeString>();
-}
-
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
+inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
-    // oo.push_back(Empty::create(vm));
+    oo.push_back(Duration::create(vm));
+    oo.push_back(TimePoint::create(vm));
+    oo.push_back(TimeClock::create(vm));
+    oo.push_back(Clock::create(vm));
+    oo.push_back(Now::create(vm));
+    oo.push_back(IsSteady::create(vm));
+    oo.push_back(Nanoseconds::create(vm));
+    oo.push_back(Milliseconds::create(vm));
+    oo.push_back(Seconds::create(vm));
+    oo.push_back(Minutes::create(vm));
+    oo.push_back(Hours::create(vm));
+    oo.push_back(Days::create(vm));
+    oo.push_back(Weeks::create(vm));
+    oo.push_back(Months::create(vm));
+    oo.push_back(Years::create(vm));
 
     return oo;
 }
