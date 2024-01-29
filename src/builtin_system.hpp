@@ -13,6 +13,7 @@
 #include <fmt/args.h>
 #endif
 
+#include "builtin_time.hpp" // 'unavoidable' abstraction breach due to format
 
 namespace egel {
 
@@ -942,6 +943,42 @@ public:
                         auto s0 = VM::unicode_to_utf8_chars(t);
                         store.push_back(s0);
                         delete s0;
+                    } else if (TimePoint::is_time_point(arg)) {
+                        auto tp = TimePoint::cast(arg);
+                        switch (tp->clock_type()) {
+                        case SYSTEM_CLOCK:
+                            auto t0 = tp->time_point_system_clock();
+                            store.push_back(t0);
+                        break;
+                        case STEADY_CLOCK:
+                            auto t0 = tp->time_point_steady_clock();
+                            store.push_back(t0);
+                        break;
+                        case HIGH_RESOLUTION_CLOCK:
+                            auto t0 = tp->time_point_high_resolution_clock();
+                            store.push_back(t0);
+                        break;
+                        case UTC_CLOCK:
+                            auto t0 = tp->time_point_utc_clock();
+                            store.push_back(t0);
+                        break;
+                        case TAI_CLOCK:
+                            auto t0 = tp->time_point_tai_clock();
+                            store.push_back(t0);
+                        break;
+                        case GPS_CLOCK:
+                            auto t0 = tp->time_point_gps_clock();
+                            store.push_back(t0);
+                        break;
+                        case FILE_CLOCK:
+                            auto t0 = tp->time_point_file_clock();
+                            store.push_back(t0);
+                        break;
+                        }
+                    } else if (Duration::is_duration(arg)) {
+                        auto d = Duration::cast(arg);
+                        auto d0 = d->get_duration();
+                        store.push_back(d0);
                     } else {
                         auto a = arg->to_text();
                         auto s0 = VM::unicode_to_utf8_chars(a);

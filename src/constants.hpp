@@ -141,6 +141,7 @@ inline constexpr auto STRING_FAIL = "fail";
 // System
 
 inline constexpr auto STRING_SYSTEM = "System";
+inline constexpr auto STRING_TIME = "Time";
 inline constexpr auto STRING_K = "k";
 inline constexpr auto STRING_ID = "id";
 

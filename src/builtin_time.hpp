@@ -1,17 +1,18 @@
 #pragma once
 
 #include <stdlib.h>
-
 #include <filesystem>
+#include <chrono>
 
 #include "runtime.hpp"
 
-namespace fs = std::chrono;
 /**
  * Lift of C++ time chrono library
  */
 
-#define TIME_STRING "TIME"
+#define STRING_TIME "TIME"
+
+namespace egel {
 
 enum class clock_type {
     SYSTEM_CLOCK,
@@ -29,21 +30,22 @@ enum class clock_type {
 */
 class Duration: public Opaque {
 public:
-    OPAQUE_PREAMBLE(Duration, TIME_STRING, "duration");
+    OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Duration, STRING_TIME, "duration");
 
     Duration(const Duration& d)
-        : Opaque(d.machine(), d.symbol()) {
+        : Opaque(VM_SUB_BUILTIN, d.machine(), d.symbol()) {
         _duration = d.duration();
     }
 
-    static VMObjectPtr create(VM* m, const std::chrono::duration& d) {
-        auto o = Duration(m);
-        o.set_duration(d);
+    static VMObjectPtr create(VM* m, const std::chrono::duration<std::milli>& d) {
+        auto o = std::make_shared<Duration>(m);
+        o->set_duration(d);
         return o;
     }
 
     static bool is_duration(const VMObjectPtr& o) {
-        return typeid(*o) == typeid(Duration);
+        auto& r = *o.get();
+        return typeid(r) == typeid(Duration);
     }
 
     static std::shared_ptr<Duration> cast(const VMObjectPtr& o) {
@@ -61,11 +63,11 @@ public:
         }
     }
 
-    void set_duration(const std::chrono::duration d) {
+    void set_duration(const std::chrono::duration<std::milli> &d) {
         _duration = d;
     }
 
-    std::chrono::duration duration() const {
+    std::chrono::duration<std::milli> duration() const {
         return _duration;
     }
 
@@ -79,12 +81,12 @@ public:
     }
 
 private:
-    std::chrono::duration _duration;
+    std::chrono::duration<std::milli> _duration;
 };
 
 class TimePoint: public Opaque {
 public:
-    OPAQUE_PREAMBLE(TimePoint, TIME_STRING, "time_point");
+    OPAQUE_PREAMBLE(VM_SUB_BUILTIN, TimePoint, STRING_TIME, "time_point");
 
     TimePoint(const TimePoint& tp)
         : Opaque(tp.machine(), tp.symbol()) {
@@ -332,7 +334,7 @@ private:
 // ## Time::time_clock - opaque values that represent clocks
 class TimeClock: public Opaque {
 public:
-    OPAQUE_PREAMBLE(TimeClock, TIME_STRING, "time_clock");
+    OPAQUE_PREAMBLE(VM_SUB_BUILTIN, TimeClock, STRING_TIME, "time_clock");
 
     TimeClock(const TimeClock& clock)
         : Opaque(clock.machine(), clock.symbol()) {
@@ -499,7 +501,7 @@ public:
 
 class Now : public Monadic {
 public:
-    MONADIC_PREAMBLE(Now, TIME_STRING, "now");
+    MONADIC_PREAMBLE(Now, STRING_TIME, "now");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimeClock::is_time_clock(arg0)) {
@@ -513,7 +515,7 @@ public:
 
 class IsSteady : public Monadic {
 public:
-    MONADIC_PREAMBLE(IsSteady, TIME_STRING, "is_steady");
+    MONADIC_PREAMBLE(IsSteady, STRING_TIME, "is_steady");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimeClock::is_time_clock(arg0)) {
@@ -527,7 +529,7 @@ public:
 
 class Nanoseconds : public Monadic {
 public:
-    MONADIC_PREAMBLE(Nanoseconds, TIME_STRING, "nanoseconds");
+    MONADIC_PREAMBLE(Nanoseconds, STRING_TIME, "nanoseconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -541,7 +543,7 @@ public:
 
 class Milliseconds : public Monadic {
 public:
-    MONADIC_PREAMBLE(Milliseconds, TIME_STRING, "milliseconds");
+    MONADIC_PREAMBLE(Milliseconds, STRING_TIME, "milliseconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -555,7 +557,7 @@ public:
 
 class Seconds : public Monadic {
 public:
-    MONADIC_PREAMBLE(Nanoseconds, TIME_STRING, "seconds");
+    MONADIC_PREAMBLE(Nanoseconds, STRING_TIME, "seconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -569,7 +571,7 @@ public:
 
 class Minutes : public Monadic {
 public:
-    MONADIC_PREAMBLE(Minutes, TIME_STRING, "minutes");
+    MONADIC_PREAMBLE(Minutes, STRING_TIME, "minutes");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -583,7 +585,7 @@ public:
 
 class Hours : public Monadic {
 public:
-    MONADIC_PREAMBLE(Hours, TIME_STRING, "hours");
+    MONADIC_PREAMBLE(Hours, STRING_TIME, "hours");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -597,7 +599,7 @@ public:
 
 class Days : public Monadic {
 public:
-    MONADIC_PREAMBLE(Days, TIME_STRING, "days");
+    MONADIC_PREAMBLE(Days, STRING_TIME, "days");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -611,7 +613,7 @@ public:
 
 class Weeks : public Monadic {
 public:
-    MONADIC_PREAMBLE(Weeks, TIME_STRING, "weeks");
+    MONADIC_PREAMBLE(Weeks, STRING_TIME, "weeks");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -625,7 +627,7 @@ public:
 
 class Months : public Monadic {
 public:
-    MONADIC_PREAMBLE(Months, TIME_STRING, "months");
+    MONADIC_PREAMBLE(Months, STRING_TIME, "months");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -639,7 +641,7 @@ public:
 
 class Years : public Monadic {
 public:
-    MONADIC_PREAMBLE(Years, TIME_STRING, "years");
+    MONADIC_PREAMBLE(Years, STRING_TIME, "years");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -671,4 +673,6 @@ inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     oo.push_back(Years::create(vm));
 
     return oo;
+}
+
 }
