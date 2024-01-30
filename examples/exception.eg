@@ -1,0 +1,7 @@
+# Exceptions follow dynamic scope.
+
+def main = 
+    try let F = [Y -> throw "woot"] in 
+        let G = [H -> try H 1 catch [E -> 3]] in 
+        try G F catch [E -> 1] 
+    catch [E -> 2]
