@@ -100,7 +100,8 @@ public:
     }
 
     static bool is_time_point(const VMObjectPtr& o) {
-        return typeid(*o) == typeid(TimePoint);
+        auto& r = *o.get();
+        return typeid(r) == typeid(TimePoint);
     }
 
     static std::shared_ptr<TimePoint> cast(const VMObjectPtr& o) {
