@@ -18,9 +18,11 @@ enum class clock_type {
     SYSTEM_CLOCK,
     STEADY_CLOCK,
     HIGH_RESOLUTION_CLOCK,
+/* not supported in clang yet
     UTC_CLOCK,
     TAI_CLOCK,
     GPS_CLOCK,
+*/
     FILE_CLOCK
 };
 
@@ -89,7 +91,7 @@ public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, TimePoint, STRING_TIME, "time_point");
 
     TimePoint(const TimePoint& tp)
-        : Opaque(tp.machine(), tp.symbol()) {
+        : Opaque(VM_SUB_BUILTIN, tp.machine(), tp.symbol()) {
         _time_point = tp.time_point();
     }
 
@@ -130,6 +132,7 @@ public:
             case HIGH_RESOLUTION_CLOCK:
                 return time_point_high_resolution_clock() < tp->time_point_high_resolution_clock();
             break;
+/*
             case UTC_CLOCK:
                 return time_point_utc_clock() < tp->time_point_utc_clock();
             break;
@@ -139,6 +142,7 @@ public:
             case GPS_CLOCK:
                 return time_point_gps_clock() < tp->time_point_gps_clock();
             break;
+*/
             case FILE_CLOCK:
                 return time_point_file_clock() < tp->time_point_file_clock();
             break;
@@ -171,6 +175,7 @@ public:
             case HIGH_RESOLUTION_CLOCK:
                 return TimePoint::create(machine(), time_point_high_resolution_clock() + d->duration())
             break;
+/*
             case UTC_CLOCK:
                 return TimePoint::create(machine(), time_point_utc_clock() + d->duration())
             break;
@@ -180,6 +185,7 @@ public:
             case GPS_CLOCK:
                 return TimePoint::create(machine(), time_point_gps_clock() + d->duration())
             break;
+*/
             case FILE_CLOCK:
                 return TimePoint::create(machine(), time_point_file_clock() + d->duration())
             break;
@@ -202,6 +208,7 @@ public:
             case HIGH_RESOLUTION_CLOCK:
                 return TimePoint::create(machine(), time_point_high_resolution_clock() - d->duration())
             break;
+/*
             case UTC_CLOCK:
                 return TimePoint::create(machine(), time_point_utc_clock() - d->duration())
             break;
@@ -211,6 +218,7 @@ public:
             case GPS_CLOCK:
                 return TimePoint::create(machine(), time_point_gps_clock() - d->duration())
             break;
+*/
             case FILE_CLOCK:
                 return TimePoint::create(machine(), time_point_file_clock() - d->duration())
             break;
@@ -228,6 +236,7 @@ public:
                 case HIGH_RESOLUTION_CLOCK:
                     return Duration::create(machine(), time_point_high_resolution_clock() - tp->time_point_high_resolution_clock());
                 break;
+/*
                 case UTC_CLOCK:
                     return Duration::create(machine(), time_point_utc_clock() - tp->time_point_utc_clock());
                 break;
@@ -237,6 +246,7 @@ public:
                 case GPS_CLOCK:
                     return Duration::create(machine(), time_point_gps_clock() - tp->time_point_gps_clock());
                 break;
+*/
                 case FILE_CLOCK:
                     return Duration::create(machine(), time_point_file_clock() - tp->time_point_file_clock());
                 break;
@@ -280,6 +290,7 @@ public:
         return std::get<HIGH_RESOLUTION_CLOCK>(_time_point);
     }
 
+/*
     void set_time_point(const std::chrono::time_point<std::chrono::utc_clock> tp)
     {
         _time_point = tp;
@@ -309,6 +320,7 @@ public:
     time_point_gps_clock() const {
         return std::get<GPS_CLOCK>(_time_point);
     }
+*/
 
     void set_time_point(const std::chrono::time_point<std::chrono::file_clock> tp)
     {
@@ -325,9 +337,11 @@ private:
     std::chrono::time_point<std::chrono::system_clock>, 
     std::chrono::time_point<std::chrono::steady_clock>, 
     std::chrono::time_point<std::chrono::high_resolution_clock>,
+/*
     std::chrono::time_point<std::chrono::utc_clock>,
     std::chrono::time_point<std::chrono::tai_clock>,
     std::chrono::time_point<std::chrono::gps_clock>, 
+*/
     std::chrono::time_point<std::chrono::file_clock> 
     > _time_point;
 };
