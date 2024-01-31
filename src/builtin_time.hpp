@@ -22,8 +22,8 @@ enum class clock_type {
     UTC_CLOCK,
     TAI_CLOCK,
     GPS_CLOCK,
-*/
     FILE_CLOCK
+*/
 };
 
 /*
@@ -76,7 +76,7 @@ public:
     virtual VMObjectPtr op_add(const VMObjectPtr& o) override {
         if (Duration::is_duration(o)) {
             auto d = Duration::cast(o);
-            return Duration::create(machine(), duration() + d->duration())
+            return Duration::create(machine(), duration() + d->duration());
         } else {
             return nullptr;
         }
@@ -142,11 +142,11 @@ public:
             case GPS_CLOCK:
                 return time_point_gps_clock() < tp->time_point_gps_clock();
             break;
-*/
             case FILE_CLOCK:
                 return time_point_file_clock() < tp->time_point_file_clock();
             break;
             }
+*/
         }
     
     }
@@ -185,10 +185,10 @@ public:
             case GPS_CLOCK:
                 return TimePoint::create(machine(), time_point_gps_clock() + d->duration())
             break;
-*/
             case FILE_CLOCK:
                 return TimePoint::create(machine(), time_point_file_clock() + d->duration())
             break;
+*/
             }
         } else {
             return nullptr;
@@ -218,10 +218,10 @@ public:
             case GPS_CLOCK:
                 return TimePoint::create(machine(), time_point_gps_clock() - d->duration())
             break;
-*/
             case FILE_CLOCK:
                 return TimePoint::create(machine(), time_point_file_clock() - d->duration())
             break;
+*/
             }
         } else if (is_time_point(o) {
             auto tp = cast(o);
@@ -246,10 +246,10 @@ public:
                 case GPS_CLOCK:
                     return Duration::create(machine(), time_point_gps_clock() - tp->time_point_gps_clock());
                 break;
-*/
                 case FILE_CLOCK:
                     return Duration::create(machine(), time_point_file_clock() - tp->time_point_file_clock());
                 break;
+*/
                 }
             } else {
                 return nullptr;
@@ -320,7 +320,6 @@ public:
     time_point_gps_clock() const {
         return std::get<GPS_CLOCK>(_time_point);
     }
-*/
 
     void set_time_point(const std::chrono::time_point<std::chrono::file_clock> tp)
     {
@@ -331,6 +330,7 @@ public:
     time_point_file_clock() const {
         return std::get<FILE_CLOCK>(_time_point);
     }
+*/
 
 private:
     std::variant <
@@ -341,8 +341,8 @@ private:
     std::chrono::time_point<std::chrono::utc_clock>,
     std::chrono::time_point<std::chrono::tai_clock>,
     std::chrono::time_point<std::chrono::gps_clock>, 
-*/
     std::chrono::time_point<std::chrono::file_clock> 
+*/
     > _time_point;
 };
 
@@ -352,7 +352,7 @@ public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, TimeClock, STRING_TIME, "time_clock");
 
     TimeClock(const TimeClock& clock)
-        : Opaque(clock.machine(), clock.symbol()) {
+        : Opaque(VM_SUB_BUILTIN, clock.machine(), clock.symbol()) {
         _clock_type = clock.clock_type();
     }
 
@@ -397,6 +397,7 @@ public:
             case HIGH_RESOLUTION_CLOCK:
                 return high_resolution_clock::is_steady();
                 break;
+/*
             case UTC_CLOCK:
                 return utc_clock::is_steady();
                 break;
@@ -408,6 +409,7 @@ public:
                 break;
             default:
                 break;
+*/
         }
     }
 
@@ -422,6 +424,7 @@ public:
             case HIGH_RESOLUTION_CLOCK:
                 return TimePoint::create(machine(), high_resolution_clock::now());
                 break;
+/*
             case UTC_CLOCK:
                 return TimePoint::create(machine(), utc_clock::now());
                 break;
@@ -434,32 +437,35 @@ public:
             case FILE_CLOCK:
                 return TimePoint::create(machine(), file_clock::now());
                 break;
+*/
         }
     }
 
-    sys_time<common_type_t<Duration, seconds>> to_sys(
+/*
+    std::chrono::sys_time<common_type_t<Duration, seconds>> to_sys(
         const gps_time<Duration>& t) {
     }
 
-    sys_time<common_type_t<Duration, seconds>> to_sys(
+    std::chrono::sys_time<common_type_t<Duration, seconds>> to_sys(
         const utc_time<Duration>& t) {
     }
 
-    sys_time<common_type_t<Duration, seconds>> to_sys(
+    std::chrono::sys_time<common_type_t<Duration, seconds>> to_sys(
         const tai_time<Duration>& t) {
     }
 
-    gps_time<common_type_t<Duration, seconds>> gps_from_sys(
+    std::chrono::gps_time<common_type_t<Duration, seconds>> gps_from_sys(
         const sys_time<Duration>& t) {
     }
 
-    utc_time<common_type_t<Duration, seconds>> utc_from_sys(
+    std::chrono::utc_time<common_type_t<Duration, seconds>> utc_from_sys(
         const sys_time<Duration>& t) {
     }
 
-    tai_time<common_type_t<Duration, seconds>> tai_from_sys(
+    std::chrono::tai_time<common_type_t<Duration, seconds>> tai_from_sys(
         const sys_time<Duration>& t) {
     }
+*/
 
 protected:
     clock_type _clock_type;
@@ -472,198 +478,200 @@ protected:
 // ## OS:empty p - checks whether the path is empty
 class Clock : public Monadic {
 public:
-    MONADIC_PREAMBLE(Clock, OS_STRING, "clock");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Clock, OS_STRING, "clock");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
             if (s == "system") {
                 auto c = TimeClock::create(machine());
-                c->set_clock_type(SYSTEM_CLOCK);
+                c->set_clock_type(clock_type::SYSTEM_CLOCK);
                 return c;
             } else if (s == "steady") {
                 auto c = TimeClock::create(machine());
-                c->set_clock_type(STEADY_CLOCK);
+                c->set_clock_type(clock_type::STEADY_CLOCK);
                 return c;
             } else if (s == "high_resolution") {
                 auto c = TimeClock::create(machine());
-                c->set_clock_type(HIGH_RESOLUTION_CLOCK);
+                c->set_clock_type(clock_type::HIGH_RESOLUTION_CLOCK);
                 return c;
+/*
             } else if (s == "utc") {
                 auto c = TimeClock::create(machine());
-                c->set_clock_type(UTC_CLOCK);
+                c->set_clock_type(clock_type::UTC_CLOCK);
                 return c;
             } else if (s == "tai") {
                 auto c = TimeClock::create(machine());
-                c->set_clock_type(TAI_CLOCK);
+                c->set_clock_type(clock_type::TAI_CLOCK);
                 return c;
             } else if (s == "gps") {
                 auto c = TimeClock::create(machine());
-                c->set_clock_type(GPS_CLOCK);
+                c->set_clock_type(clock_type::GPS_CLOCK);
                 return c;
             } else if (s == "file") {
                 auto c = TimeClock::create(machine());
-                c->set_clock_type(FILE_CLOCK);
+                c->set_clock_type(clock_type::FILE_CLOCK);
                 return c;
+*/
             } else {
-                THROW_BADARGS;
+                throw machine()->bad_args(this, arg0);
             }
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Now : public Monadic {
 public:
-    MONADIC_PREAMBLE(Now, STRING_TIME, "now");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Now, STRING_TIME, "now");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimeClock::is_time_clock(arg0)) {
             auto c = TimeClock::cast(arg0);
             return c->now();
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class IsSteady : public Monadic {
 public:
-    MONADIC_PREAMBLE(IsSteady, STRING_TIME, "is_steady");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsSteady, STRING_TIME, "is_steady");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimeClock::is_time_clock(arg0)) {
             auto c = TimeClock::cast(arg0);
             return machine()->create_bool(c-is_steady());
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Nanoseconds : public Monadic {
 public:
-    MONADIC_PREAMBLE(Nanoseconds, STRING_TIME, "nanoseconds");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Nanoseconds, STRING_TIME, "nanoseconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::nanoseconds(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Milliseconds : public Monadic {
 public:
-    MONADIC_PREAMBLE(Milliseconds, STRING_TIME, "milliseconds");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Milliseconds, STRING_TIME, "milliseconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::milliseconds(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Seconds : public Monadic {
 public:
-    MONADIC_PREAMBLE(Nanoseconds, STRING_TIME, "seconds");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Nanoseconds, STRING_TIME, "seconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::seconds(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Minutes : public Monadic {
 public:
-    MONADIC_PREAMBLE(Minutes, STRING_TIME, "minutes");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Minutes, STRING_TIME, "minutes");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::minutes(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Hours : public Monadic {
 public:
-    MONADIC_PREAMBLE(Hours, STRING_TIME, "hours");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Hours, STRING_TIME, "hours");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::hours(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Days : public Monadic {
 public:
-    MONADIC_PREAMBLE(Days, STRING_TIME, "days");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Days, STRING_TIME, "days");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::days(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Weeks : public Monadic {
 public:
-    MONADIC_PREAMBLE(Weeks, STRING_TIME, "weeks");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Weeks, STRING_TIME, "weeks");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::weeks(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Months : public Monadic {
 public:
-    MONADIC_PREAMBLE(Months, STRING_TIME, "months");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Months, STRING_TIME, "months");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::months(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
 
 class Years : public Monadic {
 public:
-    MONADIC_PREAMBLE(Years, STRING_TIME, "years");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Years, STRING_TIME, "years");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             return Duration::create(machine(), std::chrono::years(i));
         } else {
-            THROW_BADARGS;
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
