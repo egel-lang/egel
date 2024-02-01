@@ -14,7 +14,7 @@
 
 namespace egel {
 
-enum class clock_type {
+enum class clock_type : int {
     SYSTEM_CLOCK,
     STEADY_CLOCK,
     HIGH_RESOLUTION_CLOCK,
@@ -39,7 +39,7 @@ public:
         _duration = d.duration();
     }
 
-    static VMObjectPtr create(VM* m, const std::chrono::duration<std::milli>& d) {
+    static VMObjectPtr create(VM* m, const std::chrono::duration<int, std::milli>& d) {
         auto o = std::make_shared<Duration>(m);
         o->set_duration(d);
         return o;
@@ -65,11 +65,11 @@ public:
         }
     }
 
-    void set_duration(const std::chrono::duration<std::milli> &d) {
+    void set_duration(const std::chrono::duration<int, std::milli> &d) {
         _duration = d;
     }
 
-    std::chrono::duration<std::milli> duration() const {
+    std::chrono::duration<int, std::milli> duration() const {
         return _duration;
     }
 
@@ -83,7 +83,7 @@ public:
     }
 
 private:
-    std::chrono::duration<std::milli> _duration;
+    std::chrono::duration<int, std::milli> _duration;
 };
 
 class TimePoint: public Opaque {
@@ -92,12 +92,49 @@ public:
 
     TimePoint(const TimePoint& tp)
         : Opaque(VM_SUB_BUILTIN, tp.machine(), tp.symbol()) {
-        _time_point = tp.time_point();
+        auto tt = tp.get_clock_type();
+        switch (tt) {
+        case clock_type::SYSTEM_CLOCK:
+            set_time_point_system_clock(tp.time_point_system_clock());
+        break;
+        case clock_type::STEADY_CLOCK:
+            set_time_point_steady_clock(tp.time_point_steady_clock());
+        break;
+        case clock_type::HIGH_RESOLUTION_CLOCK:
+            set_time_point_high_resolution_clock(tp.time_point_high_resolution_clock());
+        break;
+/*
+        case UTC_CLOCK:
+            set_time_point_utc_clock(tp.time_point_utc_clock());
+        break;
+        case TAI_CLOCK:
+            set_time_point_tai_clock(tp.time_point_tai_clock());
+        break;
+        case GPS_CLOCK:
+            set_time_point_gps_clock(tp.time_point_gps_clock());
+        break;
+        case FILE_CLOCK:
+            set_time_point_file_clock(tp.time_point_file_clock());
+        break;
+*/
+        }
     }
 
     static VMObjectPtr create(VM* m, const std::chrono::time_point<std::chrono::system_clock>& tp) {
-        auto o = TimePoint(m);
-        o.set_time_point(tp);
+        auto o = std::make_shared<TimePoint>(m);
+        o->set_time_point_system_clock(tp);
+        return o;
+    }
+
+    static VMObjectPtr create(VM* m, const std::chrono::time_point<std::chrono::steady_clock>& tp) {
+        auto o = std::make_shared<TimePoint>(m);
+        o->set_time_point_steady_clock(tp);
+        return o;
+    }
+
+    static VMObjectPtr create(VM* m, const std::chrono::time_point<std::chrono::high_resolution_clock>& tp) {
+        auto o = std::make_shared<TimePoint>(m);
+        o->set_time_point_high_resolution_clock(tp);
         return o;
     }
 
@@ -110,26 +147,26 @@ public:
         return std::static_pointer_cast<TimePoint>(o);
     }
 
-    clock_type clock_type() const {
-        return tp.index();
+    clock_type get_clock_type() const {
+        return _time_point.index();
     }
 
     int less_than(const VMObjectPtr& o) const {
         auto tp = (std::static_pointer_cast<TimePoint>(o))->time_point();
-        if (clock_type() < tp->clock_type()) {
+        if (get_clock_type() < tp->get_clock_type()) {
             return true;
-        } else if (clock_type() > tp->clock_type()) {
+        } else if (get_clock_type() > tp->get_clock_type()) {
             return false;
         } else {
-            auto tt = clock_type();
+            auto tt = get_clock_type();
             switch (tt) {
-            case SYSTEM_CLOCK:
+            case clock_type::SYSTEM_CLOCK:
                 return time_point_system_clock() < tp->time_point_system_clock();
             break;
-            case STEADY_CLOCK:
+            case clock_type::STEADY_CLOCK:
                 return time_point_steady_clock() < tp->time_point_steady_clock();
             break;
-            case HIGH_RESOLUTION_CLOCK:
+            case clock_type::HIGH_RESOLUTION_CLOCK:
                 return time_point_high_resolution_clock() < tp->time_point_high_resolution_clock();
             break;
 /*
@@ -145,13 +182,13 @@ public:
             case FILE_CLOCK:
                 return time_point_file_clock() < tp->time_point_file_clock();
             break;
-            }
 */
+            }
         }
-    
     }
 
     int compare(const VMObjectPtr& o) override {
+        return -1;
         auto tp = cast(o)->time_point();
         if (less_than(o)) {
             return -1;
@@ -165,14 +202,14 @@ public:
     virtual VMObjectPtr op_add(const VMObjectPtr& o) override {
         if (Duration::is_duration(o)) {
             auto d = Duration::cast(o);
-            switch (clock_type()) {
-            case SYSTEM_CLOCK:
+            switch (get_clock_type()) {
+            case clock_type::SYSTEM_CLOCK:
                 return TimePoint::create(machine(), time_point_system_clock() + d->duration())
             break;
-            case STEADY_CLOCK:
+            case clock_type::STEADY_CLOCK:
                 return TimePoint::create(machine(), time_point_steady_clock() + d->duration())
             break;
-            case HIGH_RESOLUTION_CLOCK:
+            case clock_type::HIGH_RESOLUTION_CLOCK:
                 return TimePoint::create(machine(), time_point_high_resolution_clock() + d->duration())
             break;
 /*
@@ -198,14 +235,14 @@ public:
     virtual VMObjectPtr op_minus(const VMObjectPtr& o) override {
         if (Duration::is_duration(o)) {
             auto d = Duration::cast(o);
-            switch (clock_type()) {
-            case SYSTEM_CLOCK:
+            switch (get_clock_type()) {
+            case clock_type::SYSTEM_CLOCK:
                 return TimePoint::create(machine(), time_point_system_clock() - d->duration())
             break;
-            case STEADY_CLOCK:
+            case clock_type::STEADY_CLOCK:
                 return TimePoint::create(machine(), time_point_steady_clock() - d->duration())
             break;
-            case HIGH_RESOLUTION_CLOCK:
+            case clock_type::HIGH_RESOLUTION_CLOCK:
                 return TimePoint::create(machine(), time_point_high_resolution_clock() - d->duration())
             break;
 /*
@@ -223,17 +260,17 @@ public:
             break;
 */
             }
-        } else if (is_time_point(o) {
+        } else if (is_time_point(o)) {
             auto tp = cast(o);
-            if (clock_type() == tp->clock_type()) {
-                switch (clock_type()) {
-                case SYSTEM_CLOCK:
+            if (get_clock_type() == tp->get_clock_type()) {
+                switch (get_clock_type()) {
+                case clock_type::SYSTEM_CLOCK:
                     return Duration::create(machine(), time_point_system_clock() - tp->time_point_system_clock());
                 break;
-                case STEADY_CLOCK:
+                case clock_type::STEADY_CLOCK:
                     return Duration::create(machine(), time_point_steady_clock() - tp->time_point_steady_clock());
                 break;
-                case HIGH_RESOLUTION_CLOCK:
+                case clock_type::HIGH_RESOLUTION_CLOCK:
                     return Duration::create(machine(), time_point_high_resolution_clock() - tp->time_point_high_resolution_clock());
                 break;
 /*
@@ -259,7 +296,7 @@ public:
         }
     }
 
-    void set_time_point(const std::chrono::time_point<std::chrono::system_clock> tp)
+    void set_time_point_system_clock(const std::chrono::time_point<std::chrono::system_clock> tp)
     {
         _time_point = tp;
     }
@@ -269,7 +306,7 @@ public:
         return std::get<SYSTEM_CLOCK>(_time_point);
     }
 
-    void set_time_point(const std::chrono::time_point<std::chrono::steady_clock> tp)
+    void set_time_point_steady_clock(const std::chrono::time_point<std::chrono::steady_clock> tp)
     {
         _time_point = tp;
     }
@@ -280,7 +317,7 @@ public:
     }
 
 
-    void set_time_point(const std::chrono::time_point<std::chrono::high_resolution_clock> tp)
+    void set_time_point_high_resolution_clock(const std::chrono::time_point<std::chrono::high_resolution_clock> tp)
     {
         _time_point = tp;
     }
@@ -336,7 +373,7 @@ private:
     std::variant <
     std::chrono::time_point<std::chrono::system_clock>, 
     std::chrono::time_point<std::chrono::steady_clock>, 
-    std::chrono::time_point<std::chrono::high_resolution_clock>,
+    std::chrono::time_point<std::chrono::high_resolution_clock>
 /*
     std::chrono::time_point<std::chrono::utc_clock>,
     std::chrono::time_point<std::chrono::tai_clock>,
@@ -353,23 +390,24 @@ public:
 
     TimeClock(const TimeClock& clock)
         : Opaque(VM_SUB_BUILTIN, clock.machine(), clock.symbol()) {
-        _clock_type = clock.clock_type();
+        _clock_type = clock.get_clock_type();
     }
 
     void set_clock_type(const clock_type& ct) {
         _clock_type = ct;
     }
 
-    clock_type clock_type() const {
+    clock_type get_clock_type() const {
         return _clock_type;
     }
 
-    static VMObjectPtr create(const clock_type& tp) const {
-        return std::make_shared<ClockValue>(*this);
+    static VMObjectPtr create(const clock_type& tp) {
+        return std::make_shared<ClockValue>(tp);
     }
 
     static bool is_time_clock(const VMObjectPtr& o) {
-        return typeid(*o) == typeid(TimeClock);
+        auto& r = *o.get();
+        return typeid(*r) == typeid(TimeClock);
     }
 
     static std::shared_ptr<TimeClock> cast(const VMObjectPtr& o) {
@@ -388,13 +426,13 @@ public:
 
     bool is_steady() {
         switch (_clock_type) {
-            case SYSTEM_CLOCK:
+            case clock_type::SYSTEM_CLOCK:
                 return system_clock::is_steady();
                 break;
-            case STEADY_CLOCK:
+            case clock_type::STEADY_CLOCK:
                 return steady_clock::is_steady();
                 break;
-            case HIGH_RESOLUTION_CLOCK:
+            case clock_type::HIGH_RESOLUTION_CLOCK:
                 return high_resolution_clock::is_steady();
                 break;
 /*
@@ -468,7 +506,7 @@ public:
 */
 
 protected:
-    clock_type _clock_type;
+    enum clock_type _clock_type;
 };
 
 // ## Time::duration - opaque values which represent time durations
@@ -571,7 +609,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
-            return Duration::create(machine(), std::chrono::milliseconds(i));
+            return Duration::create(machine(), std::chrono::duration<int, std::milli>(i));
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -580,7 +618,7 @@ public:
 
 class Seconds : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Nanoseconds, STRING_TIME, "seconds");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Seconds, STRING_TIME, "seconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {

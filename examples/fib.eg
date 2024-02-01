@@ -13,4 +13,4 @@ namespace Fibonacci (
 
 using Fibonacci
 
-def main = fib 20
+def main = fib 40
