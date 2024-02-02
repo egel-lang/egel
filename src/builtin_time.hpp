@@ -120,19 +120,19 @@ public:
         }
     }
 
-    static VMObjectPtr create(VM* m, const std::chrono::time_point<std::chrono::system_clock>& tp) {
+    static VMObjectPtr create_system(VM* m, const std::chrono::time_point<std::chrono::system_clock>& tp) {
         auto o = std::make_shared<TimePoint>(m);
         o->set_time_point_system_clock(tp);
         return o;
     }
 
-    static VMObjectPtr create(VM* m, const std::chrono::time_point<std::chrono::steady_clock>& tp) {
+    static VMObjectPtr create_steady(VM* m, const std::chrono::time_point<std::chrono::steady_clock>& tp) {
         auto o = std::make_shared<TimePoint>(m);
         o->set_time_point_steady_clock(tp);
         return o;
     }
 
-    static VMObjectPtr create(VM* m, const std::chrono::time_point<std::chrono::high_resolution_clock>& tp) {
+    static VMObjectPtr create_high_resolution(VM* m, const std::chrono::time_point<std::chrono::high_resolution_clock>& tp) {
         auto o = std::make_shared<TimePoint>(m);
         o->set_time_point_high_resolution_clock(tp);
         return o;
@@ -148,11 +148,11 @@ public:
     }
 
     clock_type get_clock_type() const {
-        return _time_point.index();
+        return (clock_type)_time_point.index();
     }
 
     int less_than(const VMObjectPtr& o) const {
-        auto tp = (std::static_pointer_cast<TimePoint>(o))->time_point();
+        auto tp = TimePoint::cast(o);
         if (get_clock_type() < tp->get_clock_type()) {
             return true;
         } else if (get_clock_type() > tp->get_clock_type()) {
@@ -188,14 +188,65 @@ public:
     }
 
     int compare(const VMObjectPtr& o) override {
-        return -1;
-        auto tp = cast(o)->time_point();
-        if (less_than(o)) {
-            return -1;
-        } else if (tp->less_than(this)) {
-            return 1;
+        auto tp = TimePoint::cast(o);
+        if (get_clock_type() < tp->get_clock_type()) {
+            return true;
+        } else if (get_clock_type() > tp->get_clock_type()) {
+            return false;
         } else {
-            return 0;
+            auto tt = get_clock_type();
+            switch (tt) {
+            case clock_type::SYSTEM_CLOCK: {
+                auto t0 = time_point_system_clock();
+                auto t1 = tp->time_point_system_clock();
+                if (t0 < t1) {
+                    return -1;
+                } else if (t1 < t0) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            break;
+            case clock_type::STEADY_CLOCK: {
+                auto t0 = time_point_steady_clock();
+                auto t1 = tp->time_point_steady_clock();
+                if (t0 < t1) {
+                    return -1;
+                } else if (t1 < t0) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            break;
+            case clock_type::HIGH_RESOLUTION_CLOCK: {
+                auto t0 = time_point_high_resolution_clock();
+                auto t1 = tp->time_point_high_resolution_clock();
+                if (t0 < t1) {
+                    return -1;
+                } else if (t1 < t0) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            break;
+/*
+            case UTC_CLOCK:
+                return time_point_utc_clock() < tp->time_point_utc_clock();
+            break;
+            case TAI_CLOCK:
+                return time_point_tai_clock() < tp->time_point_tai_clock();
+            break;
+            case GPS_CLOCK:
+                return time_point_gps_clock() < tp->time_point_gps_clock();
+            break;
+            case FILE_CLOCK:
+                return time_point_file_clock() < tp->time_point_file_clock();
+            break;
+*/
+            }
         }
     }
 
@@ -204,13 +255,13 @@ public:
             auto d = Duration::cast(o);
             switch (get_clock_type()) {
             case clock_type::SYSTEM_CLOCK:
-                return TimePoint::create(machine(), time_point_system_clock() + d->duration())
+                return TimePoint::create_system(machine(), time_point_system_clock() + d->duration());
             break;
             case clock_type::STEADY_CLOCK:
-                return TimePoint::create(machine(), time_point_steady_clock() + d->duration())
+                return TimePoint::create_steady(machine(), time_point_steady_clock() + d->duration());
             break;
             case clock_type::HIGH_RESOLUTION_CLOCK:
-                return TimePoint::create(machine(), time_point_high_resolution_clock() + d->duration())
+                return TimePoint::create_high_resolution(machine(), time_point_high_resolution_clock() + d->duration());
             break;
 /*
             case UTC_CLOCK:
@@ -237,13 +288,13 @@ public:
             auto d = Duration::cast(o);
             switch (get_clock_type()) {
             case clock_type::SYSTEM_CLOCK:
-                return TimePoint::create(machine(), time_point_system_clock() - d->duration())
+                return TimePoint::create_system(machine(), time_point_system_clock() - d->duration());
             break;
             case clock_type::STEADY_CLOCK:
-                return TimePoint::create(machine(), time_point_steady_clock() - d->duration())
+                return TimePoint::create_steady(machine(), time_point_steady_clock() - d->duration());
             break;
             case clock_type::HIGH_RESOLUTION_CLOCK:
-                return TimePoint::create(machine(), time_point_high_resolution_clock() - d->duration())
+                return TimePoint::create_high_resolution(machine(), time_point_high_resolution_clock() - d->duration());
             break;
 /*
             case UTC_CLOCK:
