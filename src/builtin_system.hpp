@@ -945,19 +945,23 @@ public:
                         delete s0;
                     } else if (TimePoint::is_time_point(arg)) {
                         auto tp = TimePoint::cast(arg);
-                        switch (tp->clock_type()) {
-                        case SYSTEM_CLOCK:
+                        switch (tp->get_clock_type()) {
+                        case clock_type::SYSTEM_CLOCK: {
                             auto t0 = tp->time_point_system_clock();
                             store.push_back(t0);
+                        }
                         break;
-                        case STEADY_CLOCK:
+                        case clock_type::STEADY_CLOCK: {
                             auto t0 = tp->time_point_steady_clock();
                             store.push_back(t0);
+                        }
                         break;
-                        case HIGH_RESOLUTION_CLOCK:
+                        case clock_type::HIGH_RESOLUTION_CLOCK: {
                             auto t0 = tp->time_point_high_resolution_clock();
                             store.push_back(t0);
+                        }
                         break;
+/*
                         case UTC_CLOCK:
                             auto t0 = tp->time_point_utc_clock();
                             store.push_back(t0);
@@ -974,10 +978,11 @@ public:
                             auto t0 = tp->time_point_file_clock();
                             store.push_back(t0);
                         break;
+*/
                         }
                     } else if (Duration::is_duration(arg)) {
                         auto d = Duration::cast(arg);
-                        auto d0 = d->get_duration();
+                        auto d0 = d->duration();
                         store.push_back(d0);
                     } else {
                         auto a = arg->to_text();

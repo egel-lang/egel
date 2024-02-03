@@ -354,7 +354,7 @@ public:
 
     std::chrono::time_point<std::chrono::system_clock>
     time_point_system_clock() const {
-        return std::get<SYSTEM_CLOCK>(_time_point);
+        return std::get<clock_type::SYSTEM_CLOCK>(_time_point);
     }
 
     void set_time_point_steady_clock(const std::chrono::time_point<std::chrono::steady_clock> tp)
@@ -364,7 +364,7 @@ public:
 
     std::chrono::time_point<std::chrono::steady_clock>
     time_point_steady_clock() const {
-        return std::get<STEADY_CLOCK>(_time_point);
+        return std::get<clock_type::STEADY_CLOCK>(_time_point);
     }
 
 
@@ -375,7 +375,7 @@ public:
 
     std::chrono::time_point<std::chrono::high_resolution_clock>
     time_point_high_resolution_clock() const {
-        return std::get<HIGH_RESOLUTION_CLOCK>(_time_point);
+        return std::get<clock_type::HIGH_RESOLUTION_CLOCK>(_time_point);
     }
 
 /*
@@ -453,12 +453,12 @@ public:
     }
 
     static VMObjectPtr create(const clock_type& tp) {
-        return std::make_shared<ClockValue>(tp);
+        return std::make_shared<TimeClock>(tp);
     }
 
     static bool is_time_clock(const VMObjectPtr& o) {
         auto& r = *o.get();
-        return typeid(*r) == typeid(TimeClock);
+        return typeid(r) == typeid(TimeClock);
     }
 
     static std::shared_ptr<TimeClock> cast(const VMObjectPtr& o) {
@@ -478,13 +478,13 @@ public:
     bool is_steady() {
         switch (_clock_type) {
             case clock_type::SYSTEM_CLOCK:
-                return system_clock::is_steady();
+                return std::chrono::system_clock::is_steady();
                 break;
             case clock_type::STEADY_CLOCK:
-                return steady_clock::is_steady();
+                return std::chrono::steady_clock::is_steady();
                 break;
             case clock_type::HIGH_RESOLUTION_CLOCK:
-                return high_resolution_clock::is_steady();
+                return std::chrono::high_resolution_clock::is_steady();
                 break;
 /*
             case UTC_CLOCK:
@@ -504,14 +504,14 @@ public:
 
     VMObjectPtr now() {
         switch (_clock_type) {
-            case SYSTEM_CLOCK:
-                return TimePoint::create(machine(), system_clock::now());
+            case clock_type::SYSTEM_CLOCK:
+                return TimePoint::create_system(machine(), std::chrono::system_clock::now());
                 break;
-            case STEADY_CLOCK:
-                return TimePoint::create(machine(), steady_clock::now());
+            case clock_type::STEADY_CLOCK:
+                return TimePoint::create_steady(machine(), std::chrono::steady_clock::now());
                 break;
-            case HIGH_RESOLUTION_CLOCK:
-                return TimePoint::create(machine(), high_resolution_clock::now());
+            case clock_type::HIGH_RESOLUTION_CLOCK:
+                return TimePoint::create_high_resolution(machine(), std::chrono::high_resolution_clock::now());
                 break;
 /*
             case UTC_CLOCK:
