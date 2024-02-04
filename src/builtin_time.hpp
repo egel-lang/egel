@@ -11,8 +11,6 @@
  * Lift of C++ time chrono library
  */
 
-#define STRING_TIME "TIME"
-
 namespace egel {
 
 enum class clock_type : int {
