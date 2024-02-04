@@ -72,14 +72,7 @@ public:
         return _duration;
     }
 
-    virtual VMObjectPtr op_add(const VMObjectPtr& o) override {
-        if (Duration::is_duration(o)) {
-            auto d = Duration::cast(o);
-            return Duration::create(machine(), duration() + d->duration());
-        } else {
-            return nullptr;
-        }
-    }
+    virtual VMObjectPtr op_add(const VMObjectPtr& o) override;
 
 private:
     std::chrono::duration<int, std::milli> _duration;
@@ -467,6 +460,36 @@ private:
 */
     > _time_point;
 };
+
+VMObjectPtr Duration::op_add(const VMObjectPtr& o) {
+    if (Duration::is_duration(o)) {
+        auto d = Duration::cast(o);
+        return Duration::create(machine(), duration() + d->duration());
+    } else if (TimePoint::is_time_point(o)) {
+        auto tp = TimePoint::cast(o);
+        switch (tp->get_clock_type()) {
+        case clock_type::SYSTEM_CLOCK: {
+            return TimePoint::create_system(machine(), tp->time_point_system_clock() + duration());
+        }
+        break;
+        case clock_type::STEADY_CLOCK: {
+            return TimePoint::create_steady(machine(), tp->time_point_steady_clock() + duration());
+        }
+        break;
+        case clock_type::HIGH_RESOLUTION_CLOCK: {
+            return TimePoint::create_high_resolution(machine(), tp->time_point_high_resolution_clock() + duration());
+        }
+        break;
+        default: {
+            PANIC("end of case");
+            return nullptr;
+        }
+        break;
+        }
+    } else {
+        return nullptr;
+    }
+}
 
 // ## Time::time_clock - opaque values that represent clocks
 class TimeClock: public Opaque {
