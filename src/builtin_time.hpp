@@ -1,5 +1,6 @@
 #pragma once
 
+#include <variant>
 #include <stdlib.h>
 #include <filesystem>
 #include <chrono>
@@ -117,6 +118,10 @@ public:
             set_time_point_file_clock(tp.time_point_file_clock());
         break;
 */
+        default: {
+            PANIC("End of case");
+        }
+        break;
         }
     }
 
@@ -183,6 +188,11 @@ public:
                 return time_point_file_clock() < tp->time_point_file_clock();
             break;
 */
+        default: {
+            PANIC("End of case");
+            return 0;
+        }
+        break;
             }
         }
     }
@@ -246,6 +256,11 @@ public:
                 return time_point_file_clock() < tp->time_point_file_clock();
             break;
 */
+            default: {
+                PANIC("End of case");
+                return 0;
+            }
+            break;
             }
         }
     }
@@ -277,6 +292,11 @@ public:
                 return TimePoint::create(machine(), time_point_file_clock() + d->duration())
             break;
 */
+            default: {
+                PANIC("End of case");
+                return nullptr;
+            }
+            break;
             }
         } else {
             return nullptr;
@@ -310,6 +330,11 @@ public:
                 return TimePoint::create(machine(), time_point_file_clock() - d->duration())
             break;
 */
+            default: {
+                PANIC("End of case");
+                return nullptr;
+            }
+            break;
             }
         } else if (is_time_point(o)) {
             auto tp = cast(o);
@@ -344,6 +369,11 @@ public:
                     return Duration::create(machine(), time_point_file_clock() - tp->time_point_file_clock());
                 break;
 */
+                default: {
+                    PANIC("End of case");
+                    return nullptr;
+                }
+            break;
                 }
             } else {
                 return nullptr;
@@ -507,6 +537,11 @@ public:
             default:
                 break;
 */
+            default: {
+                PANIC("End of case");
+                return false;
+            }
+            break;
         }
     }
 
@@ -535,6 +570,11 @@ public:
                 return TimePoint::create(machine(), file_clock::now());
                 break;
 */
+            default: {
+                PANIC("End of case");
+                return nullptr;
+            }
+            break;
         }
     }
 

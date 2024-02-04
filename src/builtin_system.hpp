@@ -4,6 +4,7 @@
 #include "bytecode.hpp"
 
 #include <fmt/core.h>
+#include <fmt/chrono.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -951,6 +952,7 @@ public:
                             store.push_back(t0);
                         }
                         break;
+/*
                         case clock_type::STEADY_CLOCK: {
                             auto t0 = tp->time_point_steady_clock();
                             store.push_back(t0);
@@ -961,6 +963,7 @@ public:
                             store.push_back(t0);
                         }
                         break;
+*/
 /*
                         case UTC_CLOCK:
                             auto t0 = tp->time_point_utc_clock();
@@ -979,6 +982,10 @@ public:
                             store.push_back(t0);
                         break;
 */
+                        default: {
+                            PANIC("end of case");
+                            return nullptr;
+                        }
                         }
                     } else if (Duration::is_duration(arg)) {
                         auto d = Duration::cast(arg);
