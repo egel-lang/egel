@@ -885,55 +885,6 @@ public:
                 s += machine()->get_char(arg);
             } else if (machine()->is_text(arg)) {
                 s += machine()->get_text(arg);
-            } else if (TimePoint::is_time_point(arg)) {
-                auto tp = TimePoint::cast(arg);
-                switch (tp->get_clock_type()) {
-                case clock_type::SYSTEM_CLOCK: {
-                    auto t0 = tp->time_point_system_clock();
-                    auto s0 = fmt::format("\"{}\"", t0);
-                    s += VM::unicode_from_string(s0);
-                }
-                break;
-/*
-                case clock_type::STEADY_CLOCK: {
-                    auto t0 = tp->time_point_steady_clock();
-                    store.push_back(t0);
-                }
-                break;
-                case clock_type::HIGH_RESOLUTION_CLOCK: {
-                    auto t0 = tp->time_point_high_resolution_clock();
-                    store.push_back(t0);
-                }
-                break;
-*/
-/*
-                case UTC_CLOCK:
-                    auto t0 = tp->time_point_utc_clock();
-                    store.push_back(t0);
-                break;
-                case TAI_CLOCK:
-                    auto t0 = tp->time_point_tai_clock();
-                    store.push_back(t0);
-                break;
-                case GPS_CLOCK:
-                    auto t0 = tp->time_point_gps_clock();
-                    store.push_back(t0);
-                break;
-                case FILE_CLOCK:
-                    auto t0 = tp->time_point_file_clock();
-                    store.push_back(t0);
-                break;
-*/
-                default: {
-                    PANIC("end of case");
-                    return nullptr;
-                }
-                }
-            } else if (Duration::is_duration(arg)) {
-                auto d = Duration::cast(arg);
-                auto d0 = d->duration();
-                auto s0 = fmt::format("{}", d0);
-                s += VM::unicode_from_string(s0);
             } else {
                 s += arg->to_text();
             }
