@@ -1,10 +1,13 @@
 #pragma once
 
 #include <utility>
-#include <map>
 #include <vector>
+#include <map>
+#include <stack>
 
-#include "../../src/runtime.hpp"
+#include "runtime.hpp"
+
+namespace egel {
 
 class NandStore {
 public:
@@ -25,9 +28,9 @@ public:
     }
 
     int find(int n0, int n1) const {
-        std::map<tuple<int,int>, int>::iterator it;
-        it = _store_inv.find(std::tuple<int,int>(n0,n1)); 
-        if (it == _store.end()) {
+        //std::map<std::pair<int,int>, int>::iterator it;
+        auto it = _store_inv.find(std::pair<int,int>(n0,n1)); 
+        if (it == _store_inv.end()) {
             return -1;
         } else {
             return it->second;
@@ -36,8 +39,8 @@ public:
 
     int insert(int n0, int n1) {
         auto n = _store.size();
-        _store.push_back(NandElem(n0,n1,1));
-        _store_inv[std::tuple<int,int>(n0,n1)] = n;
+        _store.push_back(std::pair<int,int>(n0,n1));
+        _store_inv[std::pair<int,int>(n0,n1)] = n;
         return n;
     }
 
@@ -59,7 +62,7 @@ public:
         } else {
             if (is_zero(n0) || is_zero(n1)) {
                 return create_one();
-            } else if (is_one(n0) && is one(n1)) {
+            } else if (is_one(n0) && is_one(n1)) {
                 return create_zero();
             } else if (is_one(n0)) {
                 return insert(n1,n1);
@@ -82,7 +85,7 @@ public:
     }
 
     bool is_var(int n) const {
-        return _store[n].left < 0;
+        return _store[n].first < 0;
     }
 
     bool is_nand(int n) const {
@@ -115,7 +118,7 @@ public:
             auto n = work.top();
             work.pop();
             if (visited.count(n) == 0) {
-                visited.push(n);
+                visited.insert(n);
                 sz++;
                 if (is_nand(n)) {
                     auto p = get_nand(n);
@@ -139,9 +142,9 @@ public:
             if (subs.count(n) == 0) {
                 if (is_zero(n)) {
                     subs[n] = n;
-                } else (is_one(n)) {
+                } else if (is_one(n)) {
                     subs[n] = n;
-                } else (is_var(n)) {
+                } else if (is_var(n)) {
                     subs[n] = n;
                 } else { // is_nand
                     auto p = get_nand(n);
@@ -183,36 +186,37 @@ public:
         while (_roots.count(r) > 0) r++; // linear search : XXX
         _roots[r] = n;
         incref(n);
+        return r;
     }
 
     void remove_root(int r) {
-        int n = _roots[r];
+        auto n = _roots[r];
         decref(n);
         _roots.erase(r);
     }
 
-    bool root_is_zero(int r) const {
-        int n = _roots[r];
+    bool root_is_zero(int r) {
+        auto n = _roots[r];
         return is_zero(n);
     }
 
-    bool root_is_one(int r) const {
-        int n = _roots[r];
+    bool root_is_one(int r) {
+        auto n = _roots[r];
         return is_one(n);
     }
 
-    bool root_is_var(int r) const {
-        int n = _roots[r];
+    bool root_is_var(int r) {
+        auto n = _roots[r];
         return is_var(n);
     }
 
-    bool root_is_nand(int r) const {
-        int n = _roots[r];
+    bool root_is_nand(int r) {
+        auto n = _roots[r];
         return is_nand(n);
     }
 
-    bool root_is_not(int r) const {
-        int n = _roots[r];
+    bool root_is_not(int r) {
+        auto n = _roots[r];
         return is_not(n);
     }
 
@@ -247,7 +251,7 @@ public:
         return get_var(n);
     }
 
-    int root_get_nand(int r) {
+    std::pair<int,int> root_get_nand(int r) {
         auto n = _roots[r];
         auto p = get_nand(n);
         return std::pair<int,int>(make_root(p.first), make_root(p.second));
@@ -279,7 +283,7 @@ public:
         std::map<int, int> to_new;
 
         for (const auto& pair : _roots) {
-            auto r = pair.first;
+            //auto r = pair.first;
             auto n = pair.second;;
 
             std::stack<int> work;
@@ -290,10 +294,10 @@ public:
                     if (is_zero(n)) {
                         auto n0 = new_store.create_zero();
                         to_new[n] = n0;
-                    } else (is_one(n)) {
+                    } else if (is_one(n)) {
                         auto n0 = new_store.create_one();
                         to_new[n] = n0;
-                    } else (is_var(n)) {
+                    } else if (is_var(n)) {
                         auto v = get_var(n);
                         auto n0 = new_store.create_var(v);
                         to_new[n] = n0;
@@ -336,7 +340,7 @@ public:
     }
 
 private:
-    std::vector<std::pair<int,int>>> _store;
+    std::vector<std::pair<int,int>> _store;
     std::map<std::pair<int,int>, int> _store_inv;
     std::map<int,int>   _roots;
     std::map<int,int>   _count;
@@ -348,18 +352,18 @@ class NandTerm: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, NandTerm, STRING_NAND, "nand");
 
-    NandTerm(const NandTerm& d)
-        : Opaque(VM_SUB_BUILTIN, d.machine(), d.symbol()) {
-        _nand = d.nand();
+    NandTerm(const NandTerm& t)
+        : Opaque(VM_SUB_BUILTIN, t.machine(), t.symbol()) {
+        _root = t.root();
     }
 
     ~NandTerm() {
         global_store.remove_root(root());
     }
 
-    static VMObjectPtr create(VM* m, int n) {
+    static VMObjectPtr create(VM* m, int r) {
         auto o = std::make_shared<NandTerm>(m);
-        o->set_nand(d);
+        o->set_root(r);
         return o;
     }
 
@@ -370,6 +374,10 @@ public:
 
     static std::shared_ptr<NandTerm> cast(const VMObjectPtr& o) {
         return std::static_pointer_cast<NandTerm>(o);
+    }
+
+    void set_root(const int r) {
+        _root = r;
     }
 
     int root() const {
@@ -418,7 +426,7 @@ public:
             auto v = machine()->get_integer(arg0);
             return NandTerm::create(machine(), global_store.root_create_var(v));
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -433,7 +441,7 @@ public:
             auto t1 = NandTerm::cast(arg1);
             return NandTerm::create(machine(), global_store.root_create_nand(t0->root(), t1->root()));
         } else {
-            throw machine->bad_args(this, arg0, arg1);
+            throw machine()->bad_args(this, arg0, arg1);
         }
     }
 };
@@ -549,7 +557,7 @@ public:
             auto r = global_store.root_get_not(t0->root());
             return NandTerm::create(machine(), r);
         } else {
-            throw machine->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -590,8 +598,33 @@ class NandGC : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, NandGC, STRING_NAND, "gc");
 
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+    VMObjectPtr apply() const override {
         global_store.gc();
+        return machine()->create_none();
     }
 };
 
+inline std::vector<VMObjectPtr> builtin_nand(VM *vm) {
+    std::vector<VMObjectPtr> oo;
+    
+    oo.push_back(NandTerm::create(vm));
+    oo.push_back(NandZero::create(vm));
+    oo.push_back(NandOne::create(vm));
+    oo.push_back(NandVar::create(vm));
+    oo.push_back(NandNand::create(vm));
+    oo.push_back(NandIsZero::create(vm));
+    oo.push_back(NandIsOne::create(vm));
+    oo.push_back(NandIsVar::create(vm));
+    oo.push_back(NandIsNand::create(vm));
+    oo.push_back(NandIsNot::create(vm));
+    oo.push_back(NandGetVar::create(vm));
+    oo.push_back(NandGetNand::create(vm));
+    oo.push_back(NandGetNot::create(vm));
+    oo.push_back(NandSize::create(vm));
+    oo.push_back(NandSub::create(vm));
+    oo.push_back(NandGC::create(vm));
+
+    return oo;
+};   
+
+}  // namespace egel

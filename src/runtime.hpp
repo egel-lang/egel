@@ -506,6 +506,8 @@ public:
     virtual VMObjectPtr create_nil() = 0;
     virtual VMObjectPtr create_cons() = 0;
     virtual VMObjectPtr create_tuple() = 0;
+    virtual VMObjectPtr create_tuple(const VMObjectPtr &o0, const VMObjectPtr &o1) = 0;
+    virtual VMObjectPtr create_tuple(const VMObjectPtr &o0, const VMObjectPtr &o1, const VMObjectPtr &o2) = 0;
 
     virtual bool is_none(const VMObjectPtr &o) = 0;
     virtual bool is_true(const VMObjectPtr &o) = 0;
