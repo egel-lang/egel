@@ -65,9 +65,9 @@ public:
             } else if (is_one(n0) && is_one(n1)) {
                 return create_zero();
             } else if (is_one(n0)) {
-                return insert(n1,n1);
+                return create_nand(n1,n1); // could be a not not
             } else if (is_one(n1)) {
-                return insert(n0,n0);
+                return create_nand(n0,n0); // could be a not not
             } else if ((n0 == n1) && is_not(n0)) {
                 return get_not(n0);
             } else {
