@@ -1,0 +1,56 @@
+
+import "prelude.eg"
+using System
+using List
+
+namespace Nand (
+    def pp = [ N -> 
+        if is_zero N then "0"
+        else if is_one N then "1"
+        else if is_var N then "v" + to_text (get_var N)
+        else let (N0,N1) = get_nand N in
+            "(" + pp N0 + " " + pp N1 + ")" ]
+
+    def not = [A -> nand A A]
+    
+    def and = [A B -> Nand::not (nand A B)]
+
+    def or = [A B -> nand (Nand::not A) (Nand::not B)]
+
+    def xor = [A B -> let C = nand A B in nand (nand A C) (nand B C) ]
+)
+
+namespace Nand (
+
+    def half_adder = [A B -> (Nand::and A B, Nand::xor A B)]
+
+    def full_adder = [A B CIN ->
+        let (COUT0, S0) = half_adder A B in
+        let (COUT1, S1) = half_adder S0 CIN in
+            (Nand::or COUT0 COUT1, S1)]
+
+    def addition0 =
+        [ {} {} CIN -> {CIN}
+        | {} BB CIN -> addition0 {Nand::zero} BB CIN
+        | AA {} CIN -> addition0 AA {Nand::zero} CIN
+        | {A|AA} {B|BB} CIN ->
+            let (COUT, S) = full_adder A B CIN in {S|addition0 A B COUT} ]
+
+    def addition = [AA BB -> addition0 AA BB Nand::zero]
+)
+
+namespace Nand (
+
+)
+
+namespace Nand (
+    def bits_to_nands = do unpack |> map ['0' -> Nand::zero | '1' -> Nand::one]
+
+    def nands_to_bits = do map [N -> if Nand::is_zero N then '0' else if Nand::is_one N then '1' else 'x'] |> pack
+)
+
+using Nand
+
+#def main = Nand::pp (Nand::nand (Nand::var 32) Nand::one)
+def main = 
+    bits_to_nands "0110" |> nands_to_bits
