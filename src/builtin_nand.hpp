@@ -330,11 +330,20 @@ public:
     void debug() const {
         std::cout << "nand terms" << std::endl;
         std::cout << "store" << std::endl;
-        for (auto &p : _store) {
-            std::cout << "[" << p.first << "] = " << p.second << std::endl;
+        for (size_t n = 0; n < _store.size(); n++) {
+            auto p = _store[n];
+            std::cout << "[" << n << "] = (" << p.first << ", " << p.second << ")" << std::endl;
+        }
+        std::cout << "store_inv" << std::endl;
+        for (auto &p : _store_inv) {
+            std::cout << "[" << p.first.first << "] = " << p.second << std::endl;
         }
         std::cout << "roots" << std::endl;
         for (auto &p : _roots) {
+            std::cout << "[" << p.first << "] = " << p.second << std::endl;
+        }
+        std::cout << "count" << std::endl;
+        for (auto &p : _count) {
             std::cout << "[" << p.first << "] = " << p.second << std::endl;
         }
     }
@@ -600,6 +609,7 @@ public:
 
     VMObjectPtr apply() const override {
         global_store.gc();
+        global_store.debug();
         return machine()->create_none();
     }
 };
