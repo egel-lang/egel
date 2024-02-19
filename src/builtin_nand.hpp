@@ -336,7 +336,7 @@ public:
         }
         std::cout << "store_inv" << std::endl;
         for (auto &p : _store_inv) {
-            std::cout << "[" << p.first.first << "] = " << p.second << std::endl;
+            std::cout << "[(" << p.first.first << ", " << p.first.second << ")] = " << p.second << std::endl;
         }
         std::cout << "roots" << std::endl;
         for (auto &p : _roots) {
@@ -609,6 +609,15 @@ public:
 
     VMObjectPtr apply() const override {
         global_store.gc();
+        return machine()->create_none();
+    }
+};
+
+class NandDebug : public Medadic {
+public:
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, NandDebug, STRING_NAND, "debug");
+
+    VMObjectPtr apply() const override {
         global_store.debug();
         return machine()->create_none();
     }
@@ -633,6 +642,7 @@ inline std::vector<VMObjectPtr> builtin_nand(VM *vm) {
     oo.push_back(NandSize::create(vm));
     oo.push_back(NandSub::create(vm));
     oo.push_back(NandGC::create(vm));
+    oo.push_back(NandDebug::create(vm));
 
     return oo;
 };   
