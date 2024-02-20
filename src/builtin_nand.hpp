@@ -165,6 +165,7 @@ public:
         return subs[n0];
     }
 
+/*
     void incref(int n) {
         if (_count.count(n) == 0) {
             _count[n] = 1;
@@ -180,18 +181,19 @@ public:
             _count[n] = _count[n] - 1;
         }
     }
+*/
 
     int make_root(int n) {
         int r = 0;
         while (_roots.count(r) > 0) r++; // linear search : XXX
         _roots[r] = n;
-        incref(n);
+        //incref(n);
         return r;
     }
 
     void remove_root(int r) {
-        auto n = _roots[r];
-        decref(n);
+        //auto n = _roots[r];
+        //decref(n);
         _roots.erase(r);
     }
 
@@ -320,7 +322,7 @@ public:
 
         _store = new_store._store;
         _store_inv = new_store._store_inv;
-        _count = new_store._count;
+        //_count = new_store._count;
 
         for (const auto& pair : _roots) {
             _roots[pair.first] = to_new[pair.second];
@@ -342,10 +344,12 @@ public:
         for (auto &p : _roots) {
             std::cout << "[" << p.first << "] = " << p.second << std::endl;
         }
+/*
         std::cout << "count" << std::endl;
         for (auto &p : _count) {
             std::cout << "[" << p.first << "] = " << p.second << std::endl;
         }
+*/
     }
 
 private:

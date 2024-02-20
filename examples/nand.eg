@@ -37,7 +37,7 @@ namespace Nand (
         | {} BB CIN -> addition0 {Nand::zero} BB CIN
         | AA {} CIN -> addition0 AA {Nand::zero} CIN
         | {A|AA} {B|BB} CIN ->
-            let (COUT, S) = full_adder A B CIN in {S|addition0 A B COUT} ]
+            let (COUT, S) = full_adder A B CIN in {S|addition0 AA BB COUT} ]
 
     def addition = [AA BB -> addition0 AA BB Nand::zero]
 
@@ -54,16 +54,21 @@ namespace Nand (
         | {} BB -> equality {Nand::zero} BB
         | AA {} -> equality AA {Nand::zero}
         | {A|AA} {B|BB} -> Nand::and (Nand::xnor A B) (equality AA BB) ]
+
+    def nequality = [AA BB -> let A = equality AA BB in Nand::not A]
+
 )
 
 namespace Nand (
-    def bits_to_nands = do unpack |> map ['0' -> Nand::zero | '1' -> Nand::one]
+    def bits_to_nands = do unpack |> reverse |> map ['0' -> Nand::zero | '1' -> Nand::one] 
 
-    def nands_to_bits = do map [N -> if Nand::is_zero N then '0' else if Nand::is_one N then '1' else 'x'] |> pack
+    def nands_to_bits = do map [N -> if Nand::is_zero N then '0' else if Nand::is_one N then '1' else 'x'] |> reverse |> pack
+
+    def test = [F X Y -> let XX = bits_to_nands X in let YY = bits_to_nands Y in F XX YY |> nands_to_bits]
 )
 
 using Nand
 
 #def main = Nand::pp (Nand::nand (Nand::var 32) Nand::one)
 def main = 
-    bits_to_nands "0110" |> nands_to_bits
+    test multiplication "10" "11"
