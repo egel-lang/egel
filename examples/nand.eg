@@ -21,10 +21,10 @@ namespace Nand (
 
     def xnor = [A B -> let C = Nand::xor A B in Nand::not C]
 
+    def mux = [S A B -> nand (nand S A) (nand (Nand::not S) B)]
 )
 
 namespace Nand (
-
     def half_adder = [A B -> (Nand::and A B, Nand::xor A B)]
 
     def full_adder = [A B CIN ->
@@ -56,7 +56,6 @@ namespace Nand (
         | {A|AA} {B|BB} -> Nand::and (Nand::xnor A B) (equality AA BB) ]
 
     def nequality = [AA BB -> let A = equality AA BB in Nand::not A]
-
 )
 
 namespace Nand (
@@ -67,8 +66,25 @@ namespace Nand (
     def test = [F X Y -> let XX = bits_to_nands X in let YY = bits_to_nands Y in F XX YY |> nands_to_bits]
 )
 
+namespace Nand (
+    def sat_dfs = 
+        [{} T -> if Nand::is_one T then {} else none
+        |{V|VV} T -> 
+            print (pp V) "\n";
+            [none -> [none -> none |VV -> {Nand::one|VV} ] (sat_dfs VV (Nand::sub T V Nand::one))
+            |VV -> {Nand::zero|VV}] (sat_dfs VV (Nand::sub T V Nand::zero)) ]
+)
+
+namespace Nand (
+    def factor_term = [ BB ->
+        let N = ((length BB) * 3) / 4 in
+        let (VV0, VV1) = split_at N (map Nand::var (from_to 0 ((N * 2) - 1))) in
+        let T = Nand::and (equality (multiplication VV0 VV1) BB) (Nand::and (nequality VV0 {Nand::one}) (nequality VV1 {Nand::one})) in
+            (VV0, VV1, T) ]
+)
+
 using Nand
 
 #def main = Nand::pp (Nand::nand (Nand::var 32) Nand::one)
-def main = 
-    test multiplication "10" "11"
+def main = "110" |> bits_to_nands |> factor_term |> [(VV0, VV1, T) -> sat_dfs (VV0 ++ VV1) T]
+    
