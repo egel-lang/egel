@@ -18,6 +18,9 @@ namespace Nand (
     def or = [A B -> nand (Nand::not A) (Nand::not B)]
 
     def xor = [A B -> let C = nand A B in nand (nand A C) (nand B C) ]
+
+    def xnor = [A B -> let C = Nand::xor A B in Nand::not C]
+
 )
 
 namespace Nand (
@@ -37,10 +40,20 @@ namespace Nand (
             let (COUT, S) = full_adder A B CIN in {S|addition0 A B COUT} ]
 
     def addition = [AA BB -> addition0 AA BB Nand::zero]
-)
 
-namespace Nand (
+    def summation = foldl addition {}
 
+    def multiplication0 = 
+        [ N {} BB -> {}
+        | N {A|AA} BB -> {repeat N Nand::zero ++ map (Nand::and A) BB|multiplication0 (N+1) AA BB} ]
+
+    def multiplication = [AA BB -> multiplication0 0 AA BB |> summation]
+
+    def equality =
+        [ {} {} -> Nand::one
+        | {} BB -> equality {Nand::zero} BB
+        | AA {} -> equality AA {Nand::zero}
+        | {A|AA} {B|BB} -> Nand::and (Nand::xnor A B) (equality AA BB) ]
 )
 
 namespace Nand (
