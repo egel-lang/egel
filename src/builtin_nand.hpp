@@ -599,7 +599,7 @@ public:
             auto t0 = NandTerm::cast(arg0);
             auto t1 = NandTerm::cast(arg1);
             auto t2 = NandTerm::cast(arg2);
-            auto r = global_store.sub(t0->root(), t1->root(), t2->root());
+            auto r = global_store.root_sub(t0->root(), t1->root(), t2->root());
             return NandTerm::create(machine(), r);
         } else {
             throw machine()->bad_args(this, arg0, arg1, arg2);

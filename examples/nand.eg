@@ -70,7 +70,6 @@ namespace Nand (
     def sat_dfs = 
         [{} T -> if Nand::is_one T then {} else none
         |{V|VV} T -> 
-            print (pp V) "\n";
             [none -> [none -> none |VV -> {Nand::one|VV} ] (sat_dfs VV (Nand::sub T V Nand::one))
             |VV -> {Nand::zero|VV}] (sat_dfs VV (Nand::sub T V Nand::zero)) ]
 )
@@ -85,6 +84,6 @@ namespace Nand (
 
 using Nand
 
-#def main = Nand::pp (Nand::nand (Nand::var 32) Nand::one)
-def main = "110" |> bits_to_nands |> factor_term |> [(VV0, VV1, T) -> sat_dfs (VV0 ++ VV1) T]
+def main = 
+   "110" |> bits_to_nands |> factor_term |> [(VV0, VV1, T) -> sat_dfs (VV0 ++ VV1) T] |> nands_to_bits
     
