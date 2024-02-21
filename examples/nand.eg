@@ -70,20 +70,21 @@ namespace Nand (
     def sat_dfs = 
         [{} T -> if Nand::is_one T then {} else none
         |{V|VV} T -> 
+            if Nand::is_zero T then none else
             [none -> [none -> none |VV -> {Nand::one|VV} ] (sat_dfs VV (Nand::sub T V Nand::one))
-            |VV -> {Nand::zero|VV}] (sat_dfs VV (Nand::sub T V Nand::zero)) ]
+            |VV -> {Nand::zero|VV}] (sat_dfs VV (Nand::sub T V Nand::zero))]
 )
 
 namespace Nand (
-    def factor_term = [ BB ->
+    def factor_term = [BB ->
         let N = ((length BB) * 3) / 4 in
         let (VV0, VV1) = split_at N (map Nand::var (from_to 0 ((N * 2) - 1))) in
         let T = Nand::and (equality (multiplication VV0 VV1) BB) (Nand::and (nequality VV0 {Nand::one}) (nequality VV1 {Nand::one})) in
-            (VV0, VV1, T) ]
+            (VV0, VV1, T)]
 )
 
 using Nand
 
 def main = 
-   "110" |> bits_to_nands |> factor_term |> [(VV0, VV1, T) -> sat_dfs (VV0 ++ VV1) T] |> nands_to_bits
+   "1001" |> bits_to_nands |> factor_term |> [(VV0, VV1, T) -> sat_dfs (VV0 ++ VV1) T] |> nands_to_bits
     
