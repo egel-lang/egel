@@ -280,6 +280,18 @@ public:
         return make_root(n);
     }
 
+    int root_compare(int r0, int r1) {
+        auto n0 = _roots[r0];
+        auto n1 = _roots[r1];
+        if (n0 < n1) {
+            return -1;
+        } else if (n1 < n0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     void gc() {
         NandStore new_store;
         std::map<int, int> to_new;
@@ -399,13 +411,7 @@ public:
 
     int compare(const VMObjectPtr& o) override {
         auto r = cast(o)->root();
-        if (root() < r) {
-            return -1;
-        } else if (r < root()) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return global_store.root_compare(root(),r);
     }
 
 private:
