@@ -236,66 +236,6 @@ public:
             return n0;
         }
     }
-/* // XXX: logical error, distributes over 'and'.
-    int intro(int n0, int n2) {
-        if (is_nand(n0) && !is_not(n0)) {
-            std::map<std::pair<int,int>,int> subs;
-            std::stack<std::pair<int,int>>   work;
-            auto p = get_nand(n0);
-            work.push(p);
-
-            while(!work.empty()) {
-                auto p = work.top();
-                if (subs.count(p) == 0) { // don't have a substitution
-                    auto n0 = p.first;
-                    auto n1 = p.second;
-                    if (n0 == n1) {
-                        subs[p] = n0;
-                        work.pop();
-                    } else if (is_not(n0) && is_not(n1)) {
-                        auto n3 = get_not(n0);
-                        auto n4 = get_not(n1);
-                        auto p0 = std::pair<int,int>(n3,n4);
-                        if (subs.count(p0) > 0) {
-                            auto n0 = subs[p0];
-                            auto n1 = create_nand(n0, n0);
-                            subs[p] = n1;
-                            work.pop();
-                        } else {
-                            work.push(p0);
-                        }
-                    } else if (is_nand(n0) && !is_not(n0) && is_nand(n1) && !is_not(n1)) {
-                        auto p0 = get_nand(n0);
-                        auto p1 = get_nand(n1);
-                        auto p2 = std::pair<int,int>(p0.first,p1.first);
-                        auto p3 = std::pair<int,int>(p0.second,p1.second);
-                        if ((subs.count(p2) > 0) && (subs.count(p3) > 0)) {
-                            auto n0 = subs[p2];
-                            auto n1 = subs[p3];
-                            auto n2 = create_nand(n0, n1);
-                            subs[p] = n2;
-                            work.pop();
-                        } else {
-                            work.push(p2);
-                            work.push(p3);
-                        }
-                    } else {
-                        auto n = create_mux(n2, n0, n1);
-                        subs[p] = n;
-                        work.pop();
-                    }
-                } else {
-                    work.pop();
-                    return subs[p];
-                }
-            }
-
-            return subs[p];
-        } else {
-            return n0;
-        }
-    }
-*/
 
     int make_root(int n) {
         int r = 0;
