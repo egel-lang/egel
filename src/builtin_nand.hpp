@@ -70,6 +70,8 @@ public:
                 return create_nand(n0,n0); // could be a not not
             } else if ((n0 == n1) && is_not(n0)) {
                 return get_not(n0);
+            } else if (is_not(n1) && (get_not(n1) == n0)) {
+                return create_one();
             } else {
                 return insert(n0,n1);
             }
@@ -98,6 +100,13 @@ public:
 
     int get_var(int n) const {
         return _store[n].second;
+    }
+
+    int create_mux(int s, int a, int b) {
+        auto ns = create_nand(s, s);
+        auto na = create_nand(s, a);
+        auto nb = create_nand(ns, b);
+        return create_nand(na, nb);
     }
 
     std::pair<int,int> get_nand(int n) const {
@@ -165,20 +174,125 @@ public:
         return subs[n0];
     }
 
-/*
-    void incref(int n) {
-        if (_count.count(n) == 0) {
-            _count[n] = 1;
+    // needed by intro
+    bool is_or(int n) const {
+        if (is_nand(n) && !is_not(n)) {
+            auto p = get_nand(n);
+            return (is_not(p.first) && is_not(p.second));
         } else {
-            _count[n] = _count[n] + 1;
+            return false;
         }
     }
 
-    void decref(int n) {
-        if (_count[n] == 1) {
-            _count.erase(n);
+    int intro(int n0, int s) {
+        if (is_or(n0)) {
+            std::map<std::pair<int,int>,int> subs;
+            std::stack<std::pair<int,int>>   work;
+            auto p = get_nand(n0);
+            work.push(p);
+
+            while(!work.empty()) {
+                auto p = work.top();
+                if (subs.count(p) == 0) { // don't have a substitution
+                    auto n0 = p.first;
+                    auto n1 = p.second;
+                    if (n0 == n1) {
+                        subs[p] = n0;
+                        work.pop();
+                    } else if (is_or(n0) && is_or(n1)) {
+                        auto p0 = get_nand(n0);
+                        auto p1 = get_nand(n1);
+                        auto a = get_not(p0.first);
+                        auto b = get_not(p0.second);
+                        auto c = get_not(p1.first);
+                        auto d = get_not(p1.second);
+                        auto ac = std::pair<int,int>(a,c);
+                        auto bd = std::pair<int,int>(b,d);
+                        if ((subs.count(ac) > 0) && (subs.count(bd) > 0)) {
+                            auto n0 = subs[ac];
+                            auto n1 = subs[bd];
+                            auto n2 = create_nand(n0, n0);
+                            auto n3 = create_nand(n1, n1);
+                            auto n4 = create_nand(n2, n3);
+                            subs[p] = n4;
+                            work.pop();
+                        } else {
+                            work.push(ac);
+                            work.push(bd);
+                        }
+                    } else {
+                        auto n = create_mux(s, n0, n1);
+                        subs[p] = n;
+                        work.pop();
+                    }
+                } else {
+                    work.pop();
+                    return subs[p];
+                }
+            }
+
+            return subs[p];
         } else {
-            _count[n] = _count[n] - 1;
+            return n0;
+        }
+    }
+/* // XXX: logical error, distributes over 'and'.
+    int intro(int n0, int n2) {
+        if (is_nand(n0) && !is_not(n0)) {
+            std::map<std::pair<int,int>,int> subs;
+            std::stack<std::pair<int,int>>   work;
+            auto p = get_nand(n0);
+            work.push(p);
+
+            while(!work.empty()) {
+                auto p = work.top();
+                if (subs.count(p) == 0) { // don't have a substitution
+                    auto n0 = p.first;
+                    auto n1 = p.second;
+                    if (n0 == n1) {
+                        subs[p] = n0;
+                        work.pop();
+                    } else if (is_not(n0) && is_not(n1)) {
+                        auto n3 = get_not(n0);
+                        auto n4 = get_not(n1);
+                        auto p0 = std::pair<int,int>(n3,n4);
+                        if (subs.count(p0) > 0) {
+                            auto n0 = subs[p0];
+                            auto n1 = create_nand(n0, n0);
+                            subs[p] = n1;
+                            work.pop();
+                        } else {
+                            work.push(p0);
+                        }
+                    } else if (is_nand(n0) && !is_not(n0) && is_nand(n1) && !is_not(n1)) {
+                        auto p0 = get_nand(n0);
+                        auto p1 = get_nand(n1);
+                        auto p2 = std::pair<int,int>(p0.first,p1.first);
+                        auto p3 = std::pair<int,int>(p0.second,p1.second);
+                        if ((subs.count(p2) > 0) && (subs.count(p3) > 0)) {
+                            auto n0 = subs[p2];
+                            auto n1 = subs[p3];
+                            auto n2 = create_nand(n0, n1);
+                            subs[p] = n2;
+                            work.pop();
+                        } else {
+                            work.push(p2);
+                            work.push(p3);
+                        }
+                    } else {
+                        auto n = create_mux(n2, n0, n1);
+                        subs[p] = n;
+                        work.pop();
+                    }
+                } else {
+                    work.pop();
+                    return subs[p];
+                }
+            }
+
+            return subs[p];
+        } else {
+            return n0;
         }
     }
 */
@@ -187,13 +301,10 @@ public:
         int r = 0;
         while (_roots.count(r) > 0) r++; // linear search : XXX
         _roots[r] = n;
-        //incref(n);
         return r;
     }
 
     void remove_root(int r) {
-        //auto n = _roots[r];
-        //decref(n);
         _roots.erase(r);
     }
 
@@ -280,6 +391,13 @@ public:
         return make_root(n);
     }
 
+    int root_intro(int r0, int r1) {
+        auto n0 = _roots[r0];
+        auto n1 = _roots[r1];
+        auto n = intro(n0, n1);
+        return make_root(n);
+    }
+
     int root_compare(int r0, int r1) {
         auto n0 = _roots[r0];
         auto n1 = _roots[r1];
@@ -293,6 +411,9 @@ public:
     }
 
     void gc() {
+
+        if (_store.size() < 9000000) return;
+
         NandStore new_store;
         std::map<int, int> to_new;
 
@@ -613,6 +734,22 @@ public:
     }
 };
 
+class NandIntro : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, NandIntro, STRING_NAND, "intro");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if (NandTerm::is_nand(arg0) && NandTerm::is_nand(arg1)) {
+            auto t0 = NandTerm::cast(arg0);
+            auto t1 = NandTerm::cast(arg1);
+            auto r = global_store.root_intro(t0->root(), t1->root());
+            return NandTerm::create(machine(), r);
+        } else {
+            throw machine()->bad_args(this, arg0, arg1);
+        }
+    }
+};
+
 class NandGC : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, NandGC, STRING_NAND, "gc");
@@ -651,6 +788,7 @@ inline std::vector<VMObjectPtr> builtin_nand(VM *vm) {
     oo.push_back(NandGetNot::create(vm));
     oo.push_back(NandSize::create(vm));
     oo.push_back(NandSub::create(vm));
+    oo.push_back(NandIntro::create(vm));
     oo.push_back(NandGC::create(vm));
     oo.push_back(NandDebug::create(vm));
 

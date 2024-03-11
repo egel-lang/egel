@@ -75,8 +75,8 @@ namespace Nand (
 )
 
 namespace Nand (
-    def factor_term = [BB ->
-        let N = ((length BB) * 55) / 100 in
+    def factor_term = [BB N ->
+        let N = ((length BB) * N) / 100 in
         let (VV0, VV1) = split_at N (map Nand::var (from_to 0 ((N * 2) - 1))) in
         let T = Nand::and (equality (multiplication VV0 VV1) BB) (Nand::and (nequality VV0 {Nand::one}) (nequality VV1 {Nand::one})) in
             (VV0, VV1, T)]
