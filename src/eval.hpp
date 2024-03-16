@@ -27,7 +27,7 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         auto tt = machine()->get_array(thunk);
-        auto arg0 = tt[5];
+        auto arg0 = tt[tt.size()-1]; // XXX: poor man's fix for a regression bug
 
         (_callback)(machine(), arg0);
         return nullptr;
