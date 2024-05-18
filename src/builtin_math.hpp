@@ -2,8 +2,8 @@
 
 #include "runtime.hpp"
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <iostream>
 
 namespace egel {
 
