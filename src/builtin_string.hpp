@@ -171,8 +171,30 @@ public:
     }
 };
 
-// ## String::starts_with s0 s1 - determine if this starts with the characters
-//  in text
+// ## String::extract n0 n1 s - extract [n0, n0+n1) chars from s
+class Extract : public Triadic {
+public:
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Extract, "String", "extract");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0,
+                      const VMObjectPtr &arg1,
+                      const VMObjectPtr &arg2) const override {
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1)) && (machine()->is_text(arg2))) {
+            auto n0 = machine()->get_integer(arg0);
+            auto n1 = machine()->get_integer(arg1);
+            auto s = machine()->get_text(arg2);
+            UnicodeString r;
+
+            s.extract(n0, n1, r);
+
+            return machine()->create_text(r);
+        } else {
+            throw machine()->bad_args(this, arg0, arg1, arg2);
+        }
+    }
+};
+
+// ## String::starts_with s0 s1 - determine if this starts with the characters in text
 class StartsWith : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, StartsWith, "String", "starts_with");
@@ -577,6 +599,7 @@ std::vector<VMObjectPtr> builtin_string(VM *vm) {
     oo.push_back(Compare::create(vm));
     oo.push_back(CompareCodePointOrder::create(vm));
     oo.push_back(CaseCompare::create(vm));
+    oo.push_back(Extract::create(vm));
     oo.push_back(StartsWith::create(vm));
     oo.push_back(EndsWith::create(vm));
     oo.push_back(IndexOf::create(vm));
