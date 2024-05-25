@@ -395,3 +395,12 @@ namespace List (
         [ XG YG ZG F -> flatten (range XG [X -> range2 YG ZG [Y Z  -> F X Y Z]]) ]
 
 )
+
+namespace String (
+    using System
+
+    def split = 
+        [ N S -> (String::extract 0 N S, String::extract N (String::count_char S - N) S) ]
+
+)
+
