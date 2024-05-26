@@ -107,8 +107,10 @@ public:
 
     virtual UnicodeString read_all() {
         UnicodeString s;  // replace with a buffer once
-        while (!eof()) {
-            s += read_line() + "\n";
+        s = read_line();
+        while (!eof()) { // XXX: wtf is this code?
+            auto s0 = read_line();
+            if (!eof()) s += "\n" + s0;
         }
         return s;
     }
