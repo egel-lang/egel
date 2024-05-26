@@ -403,8 +403,10 @@ namespace List (
 namespace String (
     using System
 
+    def length = String::count_char # this is just more user friendly
+
     def split = 
-        [ N S -> (String::extract 0 N S, String::extract N (String::count_char S - N) S) ]
+        [ N S -> (String::extract 0 N S, String::extract N (String::length S - N) S) ]
 
 )
 
