@@ -36,6 +36,10 @@ namespace System (
     def |> =
         [ X F -> F X ]
 
+    ## System::||> x f - reverse application ignoring none
+    def ||> =
+        [ none F -> none | X F -> F X ]
+
     ## System::@ f x - low binding application
     def @ =
         [ X F -> F X ]
