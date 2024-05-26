@@ -7,6 +7,8 @@
 #include <string>
 #include <thread>
 
+#include <filesystem>
+
 #include "../../src/runtime.hpp"
 
 // lets hope all this C stuff can once be gone
@@ -469,40 +471,6 @@ public:
     }
 };
 
-/* Input functions on standard input */
-
-/*
-//## OS::getint
-// Read one line from standard input and convert it to an integer.
-
-class Getint: public Medadic {
-public:
-    MEDADIC_PREAMBLE(VM_SUB_EGO, Getint, "OS", "getint");
-
-    VMObjectPtr apply() const override {
-        vm_int_t n;
-        std::cin >> n;
-        return VMObjectInteger::create(n);
-    }
-};
-
-//## OS::getfloat
-// Read one line from standard input and convert it to a
-// floating-point number. The result is unspecified if the line read
-// is not a valid representation of a floating-point number.
-
-class Getfloat: public Medadic {
-public:
-    MEDADIC_PREAMBLE(VM_SUB_EGO, Getfloat, "OS", "getfloat");
-
-    VMObjectPtr apply() const override {
-        vm_float_t f;
-        std::cin >> f;
-        return VMObjectFloat::create(f);
-    }
-};
-*/
-
 /* File channel creation and destruction */
 
 // ## OS::open_in fn - create a channel from filename
@@ -513,6 +481,18 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto fn = machine()->get_text(arg0);
+
+            // throw an error when the file doesn't exist
+            auto len = fn.extract(0, 2048, nullptr, (uint32_t)0);  // XXX: I hate constants
+            auto buffer = new char[len + 1];
+            fn.extract(0, 2048, buffer, len + 1);
+            auto p = fs::path(buffer);
+            delete[] buffer;
+            auto b = fs::exists(p); 
+
+            if (!b) throw machine()->create_text("file not found: " + fn);
+
+
             auto stream = ChannelFile::create(fn, std::fstream::in);
             auto channel = ChannelValue::create(machine(), stream);
             return channel;
