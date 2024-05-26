@@ -108,7 +108,7 @@ public:
     virtual UnicodeString read_all() {
         UnicodeString s;  // replace with a buffer once
         while (!eof()) {
-            s += read_line();
+            s += read_line() + "\n";
         }
         return s;
     }
