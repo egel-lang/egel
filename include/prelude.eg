@@ -400,6 +400,14 @@ namespace List (
 
 )
 
+namespace System (
+    using System
+    using List
+
+    def args = trace_while ((+) 1) [N -> ((/=) none) (System::arg N)] 0 |> map System::arg
+
+)
+
 namespace String (
     using System
 
