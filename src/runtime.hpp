@@ -2771,6 +2771,11 @@ public:
                 rr.push_back(tt[i]);
             }
             r = VMObjectArray::create(rr);
+            auto index = VMObjectInteger::value(rti);
+            auto rta = VMObjectArray::cast(rt);
+            rta->set(index, r);
+
+            return k;
         }
 
         VMObjectPtrs kk;
