@@ -310,7 +310,7 @@ public:
 
     void codegen(VM *vm) override {
         for (auto &o : _exports) {
-            vm->enter_data(o);
+            vm->define_data(o);
         }
     }
 
@@ -356,6 +356,8 @@ public:
         char *error;
 
         dlerror();
+
+        //std::cout << "loading: " << get_path() << std::endl; // DEBUG
 
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
         _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
@@ -430,7 +432,7 @@ public:
 
     void codegen(VM *vm) override {
         for (auto &o : _exports) {
-            vm->enter_data(o);
+            vm->define_data(o);
         }
     }
 
@@ -946,6 +948,12 @@ protected:
     }
 
     void process() {
+        // DEBUG
+/*
+        for (auto &m : _loading) {
+            std::cout << "loading loop: " << m->get_path() << std::endl;
+        }
+*/
         for (auto &m : _loading) {
             m->declarations(_environment);
         }
