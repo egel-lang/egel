@@ -123,15 +123,13 @@ namespace Search (
     def star_sep = 
         [ P Q -> plus_sep P Q <+> success nil ]
 
-    ## Search::search p s - search with p on state s 
+    ## Search::search p f t e s - search with p on state s 
     def search = 
-        [ P S ->
-            [ F T E ->
-                let (A,B) = P S in
-                [ (top X)  -> F X B
-                | (bot M)  -> T M B
-                | (cut M)  -> E M B ] A
-            ]
+        [ P F T E S ->
+            let (A,B) = P S in
+            [ (top X)  -> F X B
+            | (bot M)  -> T M B
+            | (cut M)  -> E M B ] A
         ]
 
 )

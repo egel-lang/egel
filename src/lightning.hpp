@@ -520,6 +520,7 @@ public:
 
     virtual void op_mov(uint32_t pc, reg_t x, reg_t y) override {
         max(x);
+        max(y);
     }
 
     virtual void op_data(uint32_t pc, reg_t x, uint32_t d) override {
@@ -528,30 +529,42 @@ public:
 
     virtual void op_set(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
         max(x);
+        max(y);
+        max(z);
     }
 
     virtual void op_split(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
         max(x);
         max(y);
+        max(z);
     }
 
     virtual void op_array(uint32_t pc, reg_t x, reg_t y, reg_t z) override {
         max(x);
+        max(y);
+        max(z);
     }
 
     virtual void op_takex(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
         max(x);
         max(y);
+        max(z);
     }
 
     virtual void op_concatx(uint32_t pc, reg_t x, reg_t y, reg_t z, uint16_t i) override {
         max(x);
+        max(y);
+        max(z);
     }
 
     virtual void op_test(uint32_t pc, reg_t x, reg_t y) override {
+        max(x);
+        max(y);
     }
 
     virtual void op_tag(uint32_t pc, reg_t x, reg_t y) override {
+        max(x);
+        max(y);
     }
 
     virtual void op_fail(uint32_t pc, label_t l) override {
@@ -797,7 +810,7 @@ public:
 
         // reserve space in the stack for registers and flag
 //        _regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
-        _regs_offset   = jit_allocai((_reg_n+256) * sizeof(VMObjectPtr)); // XXX MAJOR WARNING BELLS! THIS FIXES A BUG WITH LARGE FUNCTIONS AND I DON"T KNOW WHY
+        _regs_offset   = jit_allocai((_reg_n+128) * sizeof(VMObjectPtr)); // XXX MAJOR WARNING BELLS! THIS FIXES A BUG WITH LARGE FUNCTIONS AND I DON"T KNOW WHY
         _flag_offset   = jit_allocai(sizeof(void*)); // stores a bool but use word size
         _return_offset = jit_allocai(sizeof(VMObjectPtr*));
 
