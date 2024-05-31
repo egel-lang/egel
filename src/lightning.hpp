@@ -39,6 +39,7 @@ inline void vm_object_ptr_construct(VMObjectPtr* p) {
 inline void vm_object_ptr_construct_n(VMObjectPtr* p, int n) {
     TRACE_JIT(std::cerr << "construct_n " << p << " " << n << std::endl);
     for (int i = 0; i < n; i++) {
+//    TRACE_JIT(std::cerr << "construct_n " << p << " " << i << std::endl);
         new (&(p[i])) VMObjectPtr();
     }
 };
@@ -51,14 +52,14 @@ inline void vm_object_ptr_destruct(VMObjectPtr* p) {
 inline void vm_object_ptr_destruct_n(VMObjectPtr* p, int n) {
     TRACE_JIT(std::cerr << "destruct_n " << p << ", " << n << std::endl);
     for (int i = 0; i < n; i++) {
-        p[i].~VMObjectPtr();
+        if (p[i] != nullptr) p[i].~VMObjectPtr();
     }
 };
 
 // LOAD 
-inline void load(VM *vm, VMObjectPtr *a, VMObjectPtr *x) {
-    TRACE_JIT(std::cerr << "LOAD " << vm << ", " << a << ", " << x << std::endl);
-    a[0] = *x;;
+inline void load(VM *vm, VMObjectPtr *p, VMObjectPtr *x) {
+    TRACE_JIT(std::cerr << "LOAD " << vm << ", " << p << ", " << x << std::endl);
+    p[0] = *x;;
 };
 
 // DEBUG
@@ -795,7 +796,8 @@ public:
         _reg_n = _analyzebytecode.register_count();
 
         // reserve space in the stack for registers and flag
-        _regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
+//        _regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
+        _regs_offset   = jit_allocai((_reg_n+256) * sizeof(VMObjectPtr)); // XXX MAJOR WARNING BELLS! THIS FIXES A BUG WITH LARGE FUNCTIONS AND I DON"T KNOW WHY
         _flag_offset   = jit_allocai(sizeof(void*)); // stores a bool but use word size
         _return_offset = jit_allocai(sizeof(VMObjectPtr*));
 

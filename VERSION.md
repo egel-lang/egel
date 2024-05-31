@@ -5,6 +5,7 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
++ fix deep-recursion term printing bugs
 + replace all class preamlble macros with templates
 + add import/export lists to using/namespace
 + vararg function definitions
