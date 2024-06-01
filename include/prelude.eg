@@ -132,6 +132,10 @@ namespace List (
         [ F Z nil -> cons Z nil
         | F Z (cons X XX) -> cons Z (scanl F (F Z X) XX) ]
 
+    ## List::reduce f l - reduce on non-empty list
+    def reduce =
+        [ F {X|XX} -> foldl F X XX ]
+
     ## List::head l - head of a list
     def head =
         [ (cons X XX) -> X ]

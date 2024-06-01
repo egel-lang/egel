@@ -21,7 +21,7 @@ namespace Search (
 
     ## Search::raise - fail all alternatives
     def raise =
-        return (bot cut)
+        return (cut none)
 
     ## Search::message m - fail or raise with message m
     def message =
