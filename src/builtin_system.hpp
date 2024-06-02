@@ -626,7 +626,8 @@ public:
         } else if (machine()->is_text(arg0)) {
             return arg0;
         } else {
-            throw machine()->bad_args(this, arg0);
+            return machine()->create_text(arg0->to_text());
+            //throw machine()->bad_args(this, arg0);
         }
     }
 };
