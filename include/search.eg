@@ -30,8 +30,8 @@ namespace Search (
             | (cut _) -> return (cut M)
             | X       -> return X ] ]
 
-    ## Search::no_fail p - this search may not fail
-    def no_fail = 
+    ## Search::force p - this search may not fail
+    def force = 
         [ P -> P <*
             [ (bot M) -> return (cut M)
             | X       -> return X ] ]
@@ -51,10 +51,7 @@ namespace Search (
 
     ## Search::serial p q - try alternative p then force q
     def serial =
-        [ P0 P1 -> P0 <* 
-            [ (top X) -> no_fail (P1 X)
-            | (bot M) -> return (bot M)
-            | (cut M) -> return (cut M) ] ]
+        [ P0 P1 -> P0 <* force P1 ]
 
     ## Search::apply p f - apply f to the argument being calculated
     def apply =
@@ -78,13 +75,13 @@ namespace Search (
     ## Search::<+> p q - try alternatives p or q
     def <+> = parallel
 
-    ## Search::<+> p q - try alternatives p then q
+    ## Search::<j> p q - try alternative p then q
     def <-> = serial
 
-    ## Search::</> p q - try alternatives p then q optionally
+    ## Search::</> p q - try alternative p then q optionally
     def </> = serial_opt
 
-    ## Search::<*> p q - try alternatives p then force q
+    ## Search::<*> p q - try alternative p then force q
     def <*> = sequential
 
     ## Search::<@> p f - apply f to the result of p
