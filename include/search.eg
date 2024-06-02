@@ -30,12 +30,6 @@ namespace Search (
             | (cut _) -> return (cut M)
             | X       -> return X ] ]
 
-    ## Search::force p - this search may not fail
-    def force = 
-        [ P -> P <*
-            [ (bot M) -> return (cut M)
-            | X       -> return X ] ]
-
     ## Search::parallel p q - try alternatives p or q
     def parallel =
         [ P0 P1 S0 ->
@@ -46,12 +40,13 @@ namespace Search (
     def sequential =
         [ P0 P1 -> P0 <* 
             [ (top X)  -> P1 X
-            | (bot M)  -> return (bot M)
-            | (cut M)  -> return (cut M) ] ]
+            | X        -> return X ] ]
 
     ## Search::serial p q - try alternative p then force q
     def serial =
-        [ P0 P1 -> P0 <* force P1 ]
+        [ P0 P1 -> P0 <* 
+            [ (top X)  -> P1 X <* [ (bot X) -> return (cut X) | X -> return X]
+            | X        -> return X ] ]
 
     ## Search::apply p f - apply f to the argument being calculated
     def apply =
@@ -75,14 +70,14 @@ namespace Search (
     ## Search::<+> p q - try alternatives p or q
     def <+> = parallel
 
-    ## Search::<j> p q - try alternative p then q
-    def <-> = serial
+    ## Search::<-> p q - try alternative p then q
+    def <-> = sequential
+
+    ## Search::<*> p q - try alternative p then force q
+    def <*> = serial
 
     ## Search::</> p q - try alternative p then q optionally
     def </> = serial_opt
-
-    ## Search::<*> p q - try alternative p then force q
-    def <*> = sequential
 
     ## Search::<@> p f - apply f to the result of p
     def <@>  = apply
@@ -90,9 +85,6 @@ namespace Search (
     ## Search::<!> p m - set the failure message to m
     def <!> = message
 
-    # convenience routines
-
-    
     ## Search::one p - one time p and return a singleton result
     def one =
         [ P -> P <@> [A -> {A} ] ]

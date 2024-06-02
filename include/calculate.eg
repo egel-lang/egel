@@ -9,8 +9,6 @@ namespace Calculate (
 
     using System
 
-    # calculations, minimalist
-
     ## Calculate::return a - calculate further with value a
     def return =
         [ A S -> (A, S) ]
@@ -25,8 +23,6 @@ namespace Calculate (
 
     ## Calculate::<* f g - first do f, then g
     def <* = chain
-
-    # convenience functions
 
     ## Calculate::skip - return a none
     def skip =
