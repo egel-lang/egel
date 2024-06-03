@@ -133,6 +133,7 @@ using TokenReaderPtr = std::shared_ptr<TokenReader>;
 
 class TokenReader {
 public:
+
     virtual Token look(unsigned int n = 0) = 0;
     virtual void skip() = 0;
 
@@ -692,6 +693,49 @@ Token adjust_reserved(Token &&t) {
     return t;
 }
 
+icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
+    icu::UnicodeString s1;
+    for (int i = 0; i < s.length(); i = s.moveIndex32(i, 1)) {
+        UChar32 c = s.char32At(i);
+        switch (c) {
+            case '\a':
+                s1 += "\\a";
+                break;
+            case '\b':
+                s1 += "\\b";
+                break;
+            case '\t':
+                s1 += "\\t";
+                break;
+            case '\n':
+                s1 += "\\n";
+                break;
+            case '\v':
+                s1 += "\\v";
+                break;
+            case '\f':
+                s1 += "\\f";
+                break;
+            case '\r':
+                s1 += "\\r";
+                break;
+            case '\"':
+                s1 += "\\\"";
+                break;
+            case '\'':
+                s1 += "\\'";
+                break;
+            case '\\':
+                s1 += "\\\\";
+                break;
+            default:
+                s1 += c;
+                break;
+        }
+    }
+    return s1;
+}
+
 TokenReaderPtr tokenize_from_reader(CharReader &reader) {
     TokenVector token_writer = TokenVector();
 
@@ -789,6 +833,12 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
                 }
                 c = reader.look();
                 str += c;
+
+                // treat it as a normal string means escaping the content
+                UnicodeString s;
+                str.extract(1, str.countChar32() - 2, s);
+                str = "\"" + unicode_escape(s) + "\"";
+ 
                 reader.skip();
                 reader.skip();
                 reader.skip();
