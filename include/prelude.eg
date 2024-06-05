@@ -315,15 +315,20 @@ namespace List (
     def not_elem =
         [ X -> all ((/=) X) ]
 
-    ## List::union x l - union of two lists (nˆ2 complexity)
+    ## List::union l0 l1 - union of two lists (nˆ2 complexity)
     def union =
         [ nil YY            -> YY
         | (cons X XX) YY    -> if elem X YY then union XX YY else cons X (union XX YY) ]
 
-    ## List::intersection x l - intersection of two lists (nˆ2 complexity)
+    ## List::intersection l0 l1 - intersection of two lists (nˆ2 complexity)
     def intersection =
         [ nil YY            -> nil
-        | (cons X XX) YY    -> if elem X YY then cons X (intersection XX YY) else intersection XX YY  ]
+        | (cons X XX) YY    -> if elem X YY then cons X (intersection XX YY) else intersection XX YY ]
+
+    ## List::difference l0 l1 - intersection of two lists (nˆ2 complexity)
+    def difference =
+        [ nil YY            -> nil
+        | (cons X XX) YY    -> if elem X YY then difference XX YY else cons X (difference XX YY) ]
 
     ## List::insert_everywhere x l - insert a member in every position of a list
     def insert_everywhere =
