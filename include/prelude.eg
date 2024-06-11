@@ -197,6 +197,11 @@ namespace List (
         [ 0 X -> nil
         | N X -> cons X (repeat (N - 1) X) ]
 
+    ## List::power l - powerset of a list
+    def power =
+        [ {} -> {{}}
+        | {X|XX} -> [XX -> XX ++ map [XX -> {X|XX}] XX] (power XX) ]
+
     ## List::combine ll - all lists that are the product of the members of a list of lists
     def combine =
         [ {} -> {{}}
