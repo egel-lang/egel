@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git submodule update --init --recursive
+
 # the vendor libraries are installed in vendor/local
 mkdir local
 

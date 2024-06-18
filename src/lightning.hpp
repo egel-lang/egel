@@ -809,7 +809,7 @@ public:
         _reg_n = _analyzebytecode.register_count();
 
         // reserve space in the stack for registers and flag
-//        _regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
+        //_regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
         _regs_offset   = jit_allocai((_reg_n+128) * sizeof(VMObjectPtr)); // XXX MAJOR WARNING BELLS! THIS FIXES A BUG WITH LARGE FUNCTIONS AND I DON"T KNOW WHY
         _flag_offset   = jit_allocai(sizeof(void*)); // stores a bool but use word size
         _return_offset = jit_allocai(sizeof(VMObjectPtr*));
