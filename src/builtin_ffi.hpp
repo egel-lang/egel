@@ -159,29 +159,64 @@ public:
 
     bool is_return_type(const VMObjectPtr& o) {
         return machine->is_data(o) && (
-          machine->is_data_text(o, c_bool)  || 
-          machine->is_data_text(o, c_char)  || 
-          machine->is_data_text(o, c_wchar)  || 
-          machine->is_data_text(o, c_byte)  || 
-          machine->is_data_text(o, c_ubyte)  || 
-          machine->is_data_text(o, c_short)  || 
-          machine->is_data_text(o, c_ushort)  || 
-          machine->is_data_text(o, c_int)  || 
-          machine->is_data_text(o, c_uint)  || 
-          machine->is_data_text(o, c_long)  || 
-          machine->is_data_text(o, c_ulong)  || 
-          machine->is_data_text(o, c_longlong)  || 
-          machine->is_data_text(o, c_ulonglong)  || 
-          machine->is_data_text(o, c_size_t)  || 
-          machine->is_data_text(o, c_ssize_t)  || 
-          machine->is_data_text(o, c_time_t)  || 
-          machine->is_data_text(o, c_float)  || 
-          machine->is_data_text(o, c_double)  || 
-          machine->is_data_text(o, c_longdouble)  || 
-          machine->is_data_text(o, c_char_p)  || 
-          machine->is_data_text(o, c_wchar_p)  || 
-          machine->is_data_text(o, c_void_p)  
+          machine()->is_data_text(o, c_bool)  || 
+          machine()->is_data_text(o, c_char)  || 
+          machine()->is_data_text(o, c_wchar)  || 
+          machine()->is_data_text(o, c_byte)  || 
+          machine()->is_data_text(o, c_ubyte)  || 
+          machine()->is_data_text(o, c_short)  || 
+          machine()->is_data_text(o, c_ushort)  || 
+          machine()->is_data_text(o, c_int)  || 
+          machine()->is_data_text(o, c_uint)  || 
+          machine()->is_data_text(o, c_long)  || 
+          machine()->is_data_text(o, c_ulong)  || 
+          machine()->is_data_text(o, c_longlong)  || 
+          machine()->is_data_text(o, c_ulonglong)  || 
+          machine()->is_data_text(o, c_size_t)  || 
+          machine()->is_data_text(o, c_ssize_t)  || 
+          machine()->is_data_text(o, c_time_t)  || 
+          machine()->is_data_text(o, c_float)  || 
+          machine()->is_data_text(o, c_double)  || 
+          machine()->is_data_text(o, c_longdouble)  || 
+          machine()->is_data_text(o, c_char_p)  || 
+          machine()->is_data_text(o, c_wchar_p)  || 
+          machine()->is_data_text(o, c_void_p)  
         )
+    }
+
+    bool is_arg_type(const VMObjectPtr& o) {
+        if (machine()->is_array(o) && (machine()->array_size(o) == 2)) {
+
+            auto o0 = machine()->array_get(o,0);
+            auto o1 = machine()->array_get(o,1);
+
+            return (
+              (machine()->is_data_text(o0, c_bool) && machine()->is_bool(o1))  || 
+              (machine()->is_data_text(o0, c_char) && machine()->is_char(o1))  || 
+              (machine()->is_data_text(o0, c_wchar) && machine()->is_char(o1))  || 
+              (machine()->is_data_text(o0, c_byte) && machine()->is_int(o1))  || 
+              (machine()->is_data_text(o0, c_ubyte) && machine()->is_int(o1))  || 
+              (machine()->is_data_text(o0, c_short) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_ushort) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_int) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_uint) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_long) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_ulong) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_longlong) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_ulonglong) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_size_t) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_ssize_t) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_time_t) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_float) && machine()->is_float(o1)) || 
+              (machine()->is_data_text(o0, c_double) && machine()->is_float(o1)) || 
+              (machine()->is_data_text(o0, c_longdouble) && machine()->is_float(o1)) || 
+              (machine()->is_data_text(o0, c_char_p) && machine()->is_int(o1))|| 
+              (machine()->is_data_text(o0, c_wchar_p) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_void_p) && machine()->is_int(o1)) 
+            );
+        } else {
+            return false;
+        }
     }
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
