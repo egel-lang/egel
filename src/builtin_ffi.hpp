@@ -210,9 +210,9 @@ public:
               (machine()->is_data_text(o0, c_float) && machine()->is_float(o1)) || 
               (machine()->is_data_text(o0, c_double) && machine()->is_float(o1)) || 
               (machine()->is_data_text(o0, c_longdouble) && machine()->is_float(o1)) || 
-              (machine()->is_data_text(o0, c_char_p) && machine()->is_int(o1))|| 
-              (machine()->is_data_text(o0, c_wchar_p) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_void_p) && machine()->is_int(o1)) 
+              (machine()->is_data_text(o0, c_char_p) && (machine()->is_text(o1) || machine()->is_none(o1)))|| 
+              (machine()->is_data_text(o0, c_wchar_p) && (machine()->is_text(o1) || machine()->is_none(o1))) || 
+              (machine()->is_data_text(o0, c_void_p) && (machine()->is_int(o1) || machine()->is_none(o1))) 
             );
         } else {
             return false;
