@@ -71,8 +71,6 @@ public:
 
         dlerror();
 
-        //std::cout << "loading: " << get_path() << std::endl; // DEBUG
-
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
         _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
         if (!_handle) {
@@ -84,6 +82,15 @@ public:
 
     }
 
+    VMObjectPtr function(const icu::UnicodeString &s) {
+        auto sym = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
+        auto ptr = dlsym(_handle, sym);
+        VMObjectPtrs oo;
+        oo.push_back(VMObjectData::create(vm, FFI, c_void_p));
+        oo.push_back(machine()->create_int((int)ptr));
+        return machine()->create_array(oo);
+    }
+
     void unload() override {
         dlclose(_handle);
     }
@@ -93,7 +100,7 @@ private:
 }
 
 
-// ## FFI::find_library s - try to find a library
+// ## FFI::find_library s - find a library
 class FindLibrary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, FindLibrary, FFI, "find_library");
@@ -107,7 +114,7 @@ public:
     }
 };
 
-// ## FFI::load_library s - try to load a library
+// ## FFI::load_library s - load a library
 class LoadLibrary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, LoadLibrary, FFI, "load_library");
@@ -131,14 +138,16 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1) const override {
         if (machine()->is_type(typeid(Library), arg0) && machine()->is_text(arg1)) {
+            auto l = Library;;cast(arg0);
             auto s = machine()->get_text(arg1);
+            return l->function(s);
         } else {
             throw machine()->bad_args(this, arg0);
         }
     }
 }
 
-// ## FFI::call f x - call a function
+// ## FFI::call f r x - call a function
 
 inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     std::vector<VMObjectPtr> oo;

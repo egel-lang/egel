@@ -777,40 +777,20 @@ public:
         set_options(oo);
         set_machine(vm);
         set_environment(env);
-        // next code is slightly conceptually dirty, needs a better solution
-        auto tm  = ModuleInternal::create("internal", vm, &builtin_time);
-        auto sys = ModuleInternal::create("internal", vm, &builtin_system);
-        auto mth = ModuleInternal::create("internal", vm, &builtin_math);
-        auto str = ModuleInternal::create("internal", vm, &builtin_string);
-        auto run = ModuleInternal::create("internal", vm, &builtin_runtime);
-        auto thd = ModuleInternal::create("internal", vm, &builtin_thread);
-        auto prc = ModuleInternal::create("internal", vm, &builtin_process);
-        auto evl = ModuleInternal::create("internal", vm, &builtin_eval);
-        auto asy = ModuleInternal::create("internal", vm, &builtin_async);
-        auto dct = ModuleInternal::create("internal", vm, &builtin_dict);
-        auto nnd = ModuleInternal::create("internal", vm, &builtin_nand);
-        tm->load();
-        sys->load();
-        mth->load();
-        str->load();
-        run->load();
-        thd->load();
-        prc->load();
-        evl->load();
-        asy->load();
-        dct->load();
-        nnd->load();
-        _loading.push_back(tm);
-        _loading.push_back(sys);
-        _loading.push_back(mth);
-        _loading.push_back(str);
-        _loading.push_back(run);
-        _loading.push_back(thd);
-        _loading.push_back(prc);
-        _loading.push_back(evl);
-        _loading.push_back(asy);
-        _loading.push_back(dct);
-        _loading.push_back(nnd);
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_time) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_system) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_math) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_string) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_runtime) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_thread) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_process) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_eval) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_async) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_dict) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_nand) );
+        for (const auto& m: _loading) {
+            m-> load();
+        }
         process();
         flush();
     }
