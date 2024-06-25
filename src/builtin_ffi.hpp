@@ -25,9 +25,6 @@
 | c_char_p     | char*              | text or none
 | c_wchar_p    | wchar_t*           | text or none
 | c_void_p     | void*              | int or none
-| c_struct     | struct             | list of fields
-| c_union      | union              | list of fields
-| c_array      | array              | list of data
 ---------------------------------------------------------
 
 */
@@ -57,9 +54,6 @@ const auto c_longdouble = "c_longdouble";
 const auto c_char_p = "c_char_p";
 const auto c_wchar_p = "c_wchar_p";
 const auto c_void_p = "c_void_p";
-const auto c_struct = "c_struct";
-const auto c_union = "c_union";
-const auto c_array = "c_array";
 
 // ## FFI::library - opaque library object
 class Library : public Opaque {
@@ -148,6 +142,58 @@ public:
 }
 
 // ## FFI::call f r x - call a function
+class Call : public Triadic {
+public:
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Call, FFI, "call");
+
+    bool is_data_text(const VMObjectPtr& o, const icu::UnicodeString &s) {
+        return machine()->is_data(o) && (machine()->get_text(o) == s);
+    }
+
+    bool is_function_ptr(const VMObjectPtr& o) {
+        return machine()->is_array(o) 
+                && (machine()->array_size(o) == 2)
+                && machine()->is_data_text(machine()->array_get(o,0), c_void_p)
+                && machine()->is_int(machine()->array_get(o,1));
+    }
+
+    bool is_return_type(const VMObjectPtr& o) {
+        return machine->is_data(o) && (
+          machine->is_data_text(o, c_bool)  || 
+          machine->is_data_text(o, c_char)  || 
+          machine->is_data_text(o, c_wchar)  || 
+          machine->is_data_text(o, c_byte)  || 
+          machine->is_data_text(o, c_ubyte)  || 
+          machine->is_data_text(o, c_short)  || 
+          machine->is_data_text(o, c_ushort)  || 
+          machine->is_data_text(o, c_int)  || 
+          machine->is_data_text(o, c_uint)  || 
+          machine->is_data_text(o, c_long)  || 
+          machine->is_data_text(o, c_ulong)  || 
+          machine->is_data_text(o, c_longlong)  || 
+          machine->is_data_text(o, c_ulonglong)  || 
+          machine->is_data_text(o, c_size_t)  || 
+          machine->is_data_text(o, c_ssize_t)  || 
+          machine->is_data_text(o, c_time_t)  || 
+          machine->is_data_text(o, c_float)  || 
+          machine->is_data_text(o, c_double)  || 
+          machine->is_data_text(o, c_longdouble)  || 
+          machine->is_data_text(o, c_char_p)  || 
+          machine->is_data_text(o, c_wchar_p)  || 
+          machine->is_data_text(o, c_void_p)  
+        )
+    }
+
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
+        if (machine()->is_type(typeid(Library), arg0) && machine()->is_text(arg1)) {
+            auto l = Library;;cast(arg0);
+            auto s = machine()->get_text(arg1);
+            return l->function(s);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+}
 
 inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     std::vector<VMObjectPtr> oo;
@@ -174,9 +220,6 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(VMObjectData::create(vm, FFI, c_char_p));
     oo.push_back(VMObjectData::create(vm, FFI, c_wchar_p));
     oo.push_back(VMObjectData::create(vm, FFI, c_void_p));
-    oo.push_back(VMObjectData::create(vm, FFI, c_struct));
-    oo.push_back(VMObjectData::create(vm, FFI, c_union));
-    oo.push_back(VMObjectData::create(vm, FFI, c_array));
 }
 
 }
