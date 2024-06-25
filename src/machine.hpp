@@ -496,6 +496,11 @@ public:
         return o->tag() == VM_OBJECT_TEXT;
     }
 
+    bool is_type(const std::type_info& t, const VMObjectPtr &o) override {
+        auto& r = *o.get();
+        return typeid(r) == t;
+    }
+
     vm_int_t get_integer(const VMObjectPtr &o) override {
         return VMObjectInteger::value(o);
     }

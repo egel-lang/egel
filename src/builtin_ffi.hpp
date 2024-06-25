@@ -61,6 +61,38 @@ const auto c_struct = "c_struct";
 const auto c_union = "c_union";
 const auto c_array = "c_array";
 
+// ## FFI::library - opaque library object
+class Library : public Opaque {
+public:
+    OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Library, FFI, "library");
+
+    void load(const uci::Unicodestring &s) {
+        char *error;
+
+        dlerror();
+
+        //std::cout << "loading: " << get_path() << std::endl; // DEBUG
+
+        auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
+        _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
+        if (!_handle) {
+            icu::UnicodeString err = "dynamic load error: ";
+            err += dlerror();
+            err += " on open(" + get_path() + ")";
+            throw ErrorIO(err);
+        }
+
+    }
+
+    void unload() override {
+        dlclose(_handle);
+    }
+
+private:
+    void *_handle;
+}
+
+
 // ## FFI::find_library s - try to find a library
 class FindLibrary : public Monadic {
 public:
@@ -83,6 +115,9 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
+            auto l = FFI::Library::create();
+            FFI::Library::cast(l)->load(s);
+            return l;
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -90,6 +125,18 @@ public:
 };
 
 // ## FFI::function l s - find a function
+class Function : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Function, FFI, "function");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1) const override {
+        if (machine()->is_type(typeid(Library), arg0) && machine()->is_text(arg1)) {
+            auto s = machine()->get_text(arg1);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+}
 
 // ## FFI::call f x - call a function
 

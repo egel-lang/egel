@@ -493,6 +493,7 @@ public:
     virtual bool is_float(const VMObjectPtr &o) = 0;
     virtual bool is_char(const VMObjectPtr &o) = 0;
     virtual bool is_text(const VMObjectPtr &o) = 0;
+    virtual bool is_type(const std::type_info& t, const VMObjectPtr &o) = 0; 
 
     virtual vm_int_t get_integer(const VMObjectPtr &o) = 0;
     virtual vm_float_t get_float(const VMObjectPtr &o) = 0;
