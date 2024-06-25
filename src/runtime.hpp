@@ -529,6 +529,7 @@ public:
     virtual bool is_combinator(const VMObjectPtr &o) = 0;
     virtual bool is_opaque(const VMObjectPtr &o) = 0;
     virtual bool is_data(const VMObjectPtr &o) = 0;
+    virtual bool is_data_text(const VMObjectPtr &o, const icu::UnicodeString& s) = 0;
     virtual bool is_bytecode(const VMObjectPtr &o) = 0;
 
     virtual vm_text_t symbol(const VMObjectPtr &o) = 0;

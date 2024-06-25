@@ -635,6 +635,10 @@ public:
         return o->subtag_test(VM_SUB_DATA);
     }
 
+    bool is_data_text(const VMObjectPtr &o, const icu::UnicodeString &s) override {
+        return is_data(o) && (get_combinator_string(o->symbol()) == s);
+    }
+
     bool is_bytecode(const VMObjectPtr &o) override {
         return o->subtag_test(VM_SUB_BYTECODE);
     }
