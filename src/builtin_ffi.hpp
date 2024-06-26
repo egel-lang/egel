@@ -219,6 +219,169 @@ public:
         }
     }
 
+    ffi_type* to_ffi_type(const VMObjectPtr &o) {
+        if ( machine()->is_data_text(o, c_bool) ) {
+            return &ffi_type_bool;
+        } else if ( machine()->is_data_text(o, c_char) ) {
+            return &ffi_type_char;
+        } else if ( machine()->is_data_text(o, c_wchar) ) {
+            return &ffi_type_w_char;
+        } else if ( machine()->is_data_text(o, c_byte) ) {
+            return &ffi_type_byte;
+        } else if ( machine()->is_data_text(o, c_ubyte) ) {
+            return &ffi_type_ubyte;
+        } else if ( machine()->is_data_text(o, c_short) ) {
+            return &ffi_type_short;
+        } else if ( machine()->is_data_text(o, c_ushort) ) {
+            return &ffi_type_ushort;
+        } else if ( machine()->is_data_text(o, c_int) ) {
+            return &ffi_type_int;
+        } else if ( machine()->is_data_text(o, c_uint) ) {
+            return &ffi_type_uint;
+        } else if ( machine()->is_data_text(o, c_long) ) {
+            return &ffi_type_long;
+        } else if ( machine()->is_data_text(o, c_ulong) ) {
+            return &ffi_type_ulong;
+        } else if ( machine()->is_data_text(o, c_longlong) ) {
+            return &ffi_type_longlong;
+        } else if ( machine()->is_data_text(o, c_ulonglong) ) {
+            return &ffi_type_ulonglong;
+        } else if ( machine()->is_data_text(o, c_size_t) ) {
+            return &ffi_type_size_t;
+        } else if ( machine()->is_data_text(o, c_ssize_t) ) {
+            return &ffi_type_ssize_t;
+        } else if ( machine()->is_data_text(o, c_time_t) ) {
+            return &ffi_type_time_t;
+        } else if ( machine()->is_data_text(o, c_float) ) {
+            return &ffi_type_float;
+        } else if ( machine()->is_data_text(o, c_double) ) {
+            return &ffi_type_double;
+        } else if ( machine()->is_data_text(o, c_longdouble) ) {
+            return &ffi_type_longdouble;
+        } else if ( machine()->is_data_text(o, c_char_p) ) {
+            return &ffi_type_char_p;
+        } else if ( machine()->is_data_text(o, c_wchar_p) ) {
+            return &ffi_type_wchar_p;
+        } else if ( machine()->is_data_text(o, c_void_p)  ) {
+            return &ffi_type_void_p;
+        } else {
+            PANIC("ffi type expected");
+        }
+    }
+
+    void* to_ffi_value(const VMObjectPtr &o) {
+        if (machine()->is_array(o) && (machine()->array_size(o) == 2)) {
+
+            auto o0 = machine()->array_get(o,0);
+            auto o1 = machine()->array_get(o,1);
+            if ( machine()->is_data_text(o0, c_bool) ) {
+                if (machine()->is_false(o1)) {
+                    return (void*) false;
+                } else {
+                    return (void*) true;
+                }
+            } else if ( machine()->is_data_text(o0, c_char) ) {
+                return (void*) ( (char) machine()->get_char(o1) );
+            } else if ( machine()->is_data_text(o0, c_wchar) ) {
+                return (void*) ( (char) machine()->get_char(o1) );
+            } else if ( machine()->is_data_text(o0, c_byte) ) {
+                return (void*) ( (char) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_ubyte) ) {
+                return (void*) ( (char) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_short) ) {
+                return (void*) ( (short) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_ushort) ) {
+                return (void*) ( (unsigned short) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_int) ) {
+                return (void*) ( (int) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_uint) ) {
+                return (void*) ( (unsigned int) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_long) ) {
+                return (void*) ( (long) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_ulong) ) {
+                return (void*) ( (unsigned long) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_longlong) ) {
+                return (void*) ( (long long) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_ulonglong) ) {
+                return (void*) ( (unsigned long long) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_size_t) ) {
+                return (void*) ( (size_t) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_ssize_t) ) {
+                return (void*) ( (ssize_t) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_time_t) ) {
+                return (void*) ( (time_t) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_float) ) {
+                return (void*) ( (float) machine()->get_float(o1) );
+            } else if ( machine()->is_data_text(o0, c_double) ) {
+                return (void*) ( (double) machine()->get_float(o1) );
+            } else if ( machine()->is_data_text(o0, c_longdouble) ) {
+                return (void*) ( (long double) machine()->get_float(o1) );
+            } else if ( machine()->is_data_text(o0, c_char_p) ) {
+                if (machine()->is_none(o1)) {
+                    return nullptr;
+                } else {
+                }
+            } else if ( machine()->is_data_text(o0, c_wchar_p) ) {
+                if (machine()->is_none(o1)) {
+                    return nullptr;
+                } else {
+                }
+            } else if ( machine()->is_data_text(o0, c_void_p)  ) {
+                if (machine()->is_none(o1)) {
+                    return nullptr;
+                } else {
+                }
+            } else {
+                PANIC("ffi value expected");
+            }
+        } else {
+            PANIC("ffi value expected");
+        }
+    }
+/*
+int
+     main(int argc, const char **argv)
+     {
+         ffi_cif cif;
+         ffi_type *arg_types[2];
+         void *arg_values[2];
+         ffi_status status;
+
+         // Because the return value from foo() is smaller than sizeof(long), it
+         // must be passed as ffi_arg or ffi_sarg.
+         ffi_arg result;
+
+         // Specify the data type of each argument. Available types are defined
+         // in <ffi/ffi.h>.
+         arg_types[0] = &ffi_type_uint;
+         arg_types[1] = &ffi_type_float;
+
+         // Prepare the ffi_cif structure.
+         if ((status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI,
+             2, &ffi_type_uint8, arg_types)) != FFI_OK)
+         {
+             // Handle the ffi_status error.
+         }
+
+         // Specify the values of each argument.
+         unsigned int arg1 = 42;
+         float arg2 = 5.1;
+
+         arg_values[0] = &arg1;
+         arg_values[1] = &arg2;
+
+         // Invoke the function.
+         ffi_call(&cif, FFI_FN(foo), &result, arg_values);
+
+         // The ffi_arg 'result' now contains the unsigned char returned from foo(),
+         // which can be accessed by a typecast.
+         printf("result is %hhu", (unsigned char)result);
+
+         return 0;
+     }
+*/
+
+
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
         if (machine()->is_type(typeid(Library), arg0) && machine()->is_text(arg1)) {
             auto l = Library;;cast(arg0);
