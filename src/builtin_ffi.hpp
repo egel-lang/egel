@@ -338,6 +338,72 @@ public:
             PANIC("ffi value expected");
         }
     }
+
+    VMObjectPtr from_ffi_value(const ffi_type* t, const void* v) {
+        if ( &ffi_type_bool == t ) {
+            if ( ((bool) v) == false ) {
+                return machine()->create_false();
+            } else {
+                return machine()->create_true();
+            }
+        } else if ( &ffi_type_char == t ) {
+            return machine()->create_char((UChar32) v);
+        } else if ( &ffi_type_w_char == t ) {
+            return machine()->create_char((UChar32) v);
+        } else if ( &ffi_type_byte == t ) {
+            return machine()->create_int((int) ((char) v));
+        } else if ( &ffi_type_ubyte == t ) {
+            return machine()->create_int((int) ((unsigned char) v));
+        } else if ( &ffi_type_short == t ) {
+            return machine()->create_int((int) ((short) v));
+        } else if ( &ffi_type_ushort == t ) {
+            return machine()->create_int((int) ((unsigned short) v));
+        } else if ( &ffi_type_int == t ) {
+            return machine()->create_int((int) ((int) v));
+        } else if ( &ffi_type_uint == t ) {
+            return machine()->create_int((int) ((unsigned int) v));
+        } else if ( &ffi_type_long == t ) {
+            return machine()->create_int((int) ((long) v));
+        } else if ( &ffi_type_ulong == t ) {
+            return machine()->create_int((int) ((unsigned long) v));
+        } else if ( &ffi_type_longlong == t ) {
+            return machine()->create_int((int) ((long) v));
+        } else if ( &ffi_type_ulonglong == t ) {
+            return machine()->create_int((int) ((unsigned long long) v));
+        } else if ( &ffi_type_size_t == t ) {
+            return machine()->create_int((int) ((size_t) v));
+        } else if ( &ffi_type_ssize_t == t ) {
+            return machine()->create_int((int) ((ssize_t) v));
+        } else if ( &ffi_type_time_t == t ) {
+            return machine()->create_int((int) ((time_t) v));
+        } else if ( &ffi_type_float == t ) {
+            return machine()->create_float((long double) ((float) v));
+        } else if ( &ffi_type_double == t ) {
+            return machine()->create_float((long double) ((double) v));
+        } else if ( &ffi_type_longdouble == t ) {
+            return machine()->create_float((long double) ((long double) v));
+        } else if ( &ffi_type_char_p == t ) {
+            if ( v == nullptr ) {
+                return machine()->create_none();
+            } else {
+                return machine()->create_int((int) v);
+            }
+        } else if ( &ffi_type_wchar_p == t ) {
+            if ( v == nullptr ) {
+                return machine()->create_none();
+            } else {
+                return machine()->create_int((int) v);
+            }
+        } else if ( &ffi_type_void_p == t ) {
+            if ( v == nullptr ) {
+                return machine()->create_none();
+            } else {
+                return machine()->create_int((int) v);
+            }
+        } else {
+            PANIC("ffi type expected");
+        }
+    }
 /*
 int
      main(int argc, const char **argv)
