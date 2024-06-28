@@ -1,3 +1,8 @@
+#pragma once
+
+#include "runtime.hpp"
+#include "ffi.h"
+
 /*
 
 ---------------------------------------------------------
