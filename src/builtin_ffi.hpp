@@ -146,10 +146,6 @@ class Call : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Call, FFI, "call");
 
-    bool is_data_text(const VMObjectPtr& o, const icu::UnicodeString &s) {
-        return machine()->is_data(o) && (machine()->get_text(o) == s);
-    }
-
     bool is_function_ptr(const VMObjectPtr& o) {
         return machine()->is_array(o) 
                 && (machine()->array_size(o) == 2)
@@ -326,18 +322,24 @@ public:
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
+                    auto s = machine()->get_text(o1);
+                    return (void*) VM::unicode_to_utf8_chars(s);
                 }
             /*
             } else if ( machine()->is_data_text(o0, c_wchar_p) ) {
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
+                    auto s = machine()->get_text(o1);
+                    return // no wchar
                 }
             */
             } else if ( machine()->is_data_text(o0, c_void_p)  ) {
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
+                    auto n = machine()->get_int(o1);
+                    return (void*) n;
                 }
             } else {
                 PANIC("ffi value expected");
@@ -487,12 +489,55 @@ int
 
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
-        if (machine()->is_type(typeid(Library), arg0) && machine()->is_text(arg1)) {
-            auto l = Library;;cast(arg0);
-            auto s = machine()->get_text(arg1);
-            return l->function(s);
+        if (is_function_ptr(arg0) && machine()->is_list(arg1) && is_return_type(arg2)) {
+            auto oo = machine()->from_list(arg2);
+            for (auto &o: oo) {
+                if (!is_arg_type(o) {
+                    throw machine()->bad_args(this, arg0, arg1, arg2);
+                }
+            }
+
+            auto n = oo.size();
+            
+            ffi_cif cif;
+            ffi_type *arg_types = (ffi_type*) malloc(n * sizeof(ffi_type*));
+            ffi_type *ret_type = nullptr;
+            void *arg_values = (void*) malloc(n * sizeof(void*));
+            ffi_status status;
+            ffi_arg result;
+
+            ret_type = to_ffi_type(arg1);
+            for (int i = 0; i < n; i++) {
+                auto o = machine()->get_array(oo[i],0);
+                arg_types[i] = to_ffi_type(o);
+            }
+
+            if ((status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI,
+                 n, ret_type, arg_types)) != FFI_OK) {
+                 throw machine()->create_text("error in cif");
+            }
+
+            for (int i = 0; i < n; i++) {
+                arg_values[i] = to_ffi_value(oo[i]);
+            }
+
+            auto p = (void*) to_ffi_value(arg0);
+
+            ffi_call(&cif, FFI_FN(p), &result, arg_values);
+
+            auto r = from_ffi_value(ret_type, &result);
+
+            for (int i = 0; i < n; i++) {
+                if (arg_types[i] == &ffi_type_char_p) {
+                    free(arg_types[i];
+                }
+            }
+            free(arg_types);
+            free(arg_values);
+
+            return r;
         } else {
-            throw machine()->bad_args(this, arg0);
+            throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
 }
