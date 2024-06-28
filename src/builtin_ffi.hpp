@@ -161,7 +161,7 @@ public:
         return machine->is_data(o) && (
           machine()->is_data_text(o, c_bool)  || 
           machine()->is_data_text(o, c_char)  || 
-          machine()->is_data_text(o, c_wchar)  || 
+          // machine()->is_data_text(o, c_wchar)  || 
           machine()->is_data_text(o, c_byte)  || 
           machine()->is_data_text(o, c_ubyte)  || 
           machine()->is_data_text(o, c_short)  || 
@@ -179,7 +179,7 @@ public:
           machine()->is_data_text(o, c_double)  || 
           machine()->is_data_text(o, c_longdouble)  || 
           machine()->is_data_text(o, c_char_p)  || 
-          machine()->is_data_text(o, c_wchar_p)  || 
+          // machine()->is_data_text(o, c_wchar_p)  || 
           machine()->is_data_text(o, c_void_p)  
         )
     }
@@ -193,7 +193,7 @@ public:
             return (
               (machine()->is_data_text(o0, c_bool) && machine()->is_bool(o1))  || 
               (machine()->is_data_text(o0, c_char) && machine()->is_char(o1))  || 
-              (machine()->is_data_text(o0, c_wchar) && machine()->is_char(o1))  || 
+              // (machine()->is_data_text(o0, c_wchar) && machine()->is_char(o1))  || 
               (machine()->is_data_text(o0, c_byte) && machine()->is_int(o1))  || 
               (machine()->is_data_text(o0, c_ubyte) && machine()->is_int(o1))  || 
               (machine()->is_data_text(o0, c_short) && machine()->is_int(o1)) || 
@@ -211,7 +211,7 @@ public:
               (machine()->is_data_text(o0, c_double) && machine()->is_float(o1)) || 
               (machine()->is_data_text(o0, c_longdouble) && machine()->is_float(o1)) || 
               (machine()->is_data_text(o0, c_char_p) && (machine()->is_text(o1) || machine()->is_none(o1)))|| 
-              (machine()->is_data_text(o0, c_wchar_p) && (machine()->is_text(o1) || machine()->is_none(o1))) || 
+              // (machine()->is_data_text(o0, c_wchar_p) && (machine()->is_text(o1) || machine()->is_none(o1))) || 
               (machine()->is_data_text(o0, c_void_p) && (machine()->is_int(o1) || machine()->is_none(o1))) 
             );
         } else {
@@ -224,8 +224,10 @@ public:
             return &ffi_type_bool;
         } else if ( machine()->is_data_text(o, c_char) ) {
             return &ffi_type_char;
+        /*
         } else if ( machine()->is_data_text(o, c_wchar) ) {
             return &ffi_type_w_char;
+        */
         } else if ( machine()->is_data_text(o, c_byte) ) {
             return &ffi_type_byte;
         } else if ( machine()->is_data_text(o, c_ubyte) ) {
@@ -260,8 +262,10 @@ public:
             return &ffi_type_longdouble;
         } else if ( machine()->is_data_text(o, c_char_p) ) {
             return &ffi_type_char_p;
+        /*
         } else if ( machine()->is_data_text(o, c_wchar_p) ) {
             return &ffi_type_wchar_p;
+        */
         } else if ( machine()->is_data_text(o, c_void_p)  ) {
             return &ffi_type_void_p;
         } else {
@@ -282,8 +286,10 @@ public:
                 }
             } else if ( machine()->is_data_text(o0, c_char) ) {
                 return (void*) ( (char) machine()->get_char(o1) );
+            /*
             } else if ( machine()->is_data_text(o0, c_wchar) ) {
                 return (void*) ( (char) machine()->get_char(o1) );
+            */
             } else if ( machine()->is_data_text(o0, c_byte) ) {
                 return (void*) ( (char) machine()->get_int(o1) );
             } else if ( machine()->is_data_text(o0, c_ubyte) ) {
@@ -321,11 +327,13 @@ public:
                     return nullptr;
                 } else {
                 }
+            /*
             } else if ( machine()->is_data_text(o0, c_wchar_p) ) {
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
                 }
+            */
             } else if ( machine()->is_data_text(o0, c_void_p)  ) {
                 if (machine()->is_none(o1)) {
                     return nullptr;
@@ -351,9 +359,11 @@ public:
         } else if ( &ffi_type_char == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_char));
             oo.push_back(machine()->create_char((UChar32) v));
+        /*
         } else if ( &ffi_type_w_char == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
             oo.push_back(machine()->create_char((UChar32) v));
+        */
         } else if ( &ffi_type_byte == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_byte));
             oo.push_back(machine()->create_int((int) ((char) v)));
@@ -407,22 +417,30 @@ public:
             if ( v == nullptr ) {
                 oo.push_back(machine()->create_none());
             } else {
+                char* v0 = (char*) v;
+                auto s = VM::unicode_from_utf8_chars(buffer);
+                oo.push_back(machine()->create_text(s));
+                free(v);
             }
+        /*
         } else if ( &ffi_type_wchar_p == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_wchar_p));
             if ( v == nullptr ) {
                 oo.push_back(machine()->create_none());
             } else {
             }
+        */
         } else if ( &ffi_type_void_p == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_void_p));
             if ( v == nullptr ) {
                 oo.push_back(machine()->create_none());
             } else {
+                oo.push_back(machine()->create_int((int) ((void*) v)));
             }
         } else {
             PANIC("ffi type expected");
         }
+        return machine()->create_array(oo);
     }
 /*
 int
