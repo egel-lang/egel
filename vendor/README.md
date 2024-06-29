@@ -10,7 +10,8 @@ less forces the developer to build and compile used
 external libraries as part of a project.
 
 These submodules contain the external dependencies of
-the egel interpreter (icu4c, fmt, and gnu lightning).
+the egel interpreter (icu4c, ffi, fmt, and gnu
+lightning).
 
 ICU4C is a big package and, together with fmt, will
 compile fine.

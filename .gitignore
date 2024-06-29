@@ -81,6 +81,9 @@ src/gcm.cache/*
 
 vendor/local/*
 
+# libffi stuff
+vendor/libffi/*
+
 # GNU lightning stuff
 vendor/lightning-2.2.2/build-aux
 vendor/lightning-2.2.2/*/Makefile

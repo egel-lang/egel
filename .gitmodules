@@ -8,3 +8,6 @@
 [submodule "vendor/fmt"]
 	path = vendor/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "vendor/libffi"]
+	path = vendor/libffi
+	url = https://github.com/libffi/libffi.git
