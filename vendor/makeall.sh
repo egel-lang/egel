@@ -8,10 +8,10 @@ mkdir local
 # libicu
 pushd icu/icu4c/source
 chmod +x runConfigureICU configure install-sh
-./runConfigureICU MacOSX --prefix=$(realpath "../../../local")
-#runConfigureICU Linux
-#runConfigureICU Cygwin/MSCV
-make
+./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
+#./runConfigureICU Linux --enable-static --prefix=$(realpath "../../../local")
+#./runConfigureICU Cygwin/MSCV --enable-static --prefix=$(realpath "../../../local")
+make --enable-static
 make install
 popd
 
