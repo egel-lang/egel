@@ -110,7 +110,7 @@ endif()
 file(GLOB EGEL_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file(GLOB EGEL_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.hpp")
 
-# check for Threads, fmt, icu4c, and GNU lightning
+# check for Threads, fmt, ffi, icu4c, and GNU lightning
 find_package(Threads REQUIRED)
 
 include_directories("${CMAKE_SOURCE_DIR}/src") # egel
@@ -127,6 +127,10 @@ message("icudata: ${ICUDATA}")
 message("icuio:   ${ICUIO}")
 message("icutu:   ${ICUTU}")
 message("icuuc:   ${ICUUC}")
+
+find_library(FFI NAMES ffi PATHS vendor/local/lib NO_DEFAULT_PATH)
+
+message("ffi: ${FFI}")
 
 find_library(LIGHTNING NAMES lightning PATHS vendor/local/lib NO_DEFAULT_PATH)
 
@@ -147,21 +151,21 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_link_libraries(objlib PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
+target_link_libraries(objlib PRIVATE Threads::Threads ${FFI} ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
-target_link_libraries(egel PRIVATE ${CMAKE_DL_LIBS} Threads::Threads ${ICUTU} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUUC} ${FMT} ${LIGHTNING})
+target_link_libraries(egel PRIVATE ${CMAKE_DL_LIBS} Threads::Threads ${FFI} ${ICUTU} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUUC} ${FMT} ${LIGHTNING})
 
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
+target_link_libraries(egellib PRIVATE Threads::Threads ${FFI} ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 
 # static Egel library
 add_library(egellib_static STATIC $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib_static PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib_static PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
+target_link_libraries(egellib_static PRIVATE Threads::Threads ${FFI} ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 
 #
 # the dynamic .ego Egel libraries
@@ -213,6 +217,14 @@ file(GLOB ICULIBS CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/vendor/local/lib/*icu*.dylib"
 )
 install(FILES ${ICULIBS}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+file(GLOB FFILIBS CONFIGURE_DEPENDS 
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*ffi*.so"
+    "${CMAKE_SOURCE_DIR}/vendor/local/lib/*ffi*.dylib"
+)
+install(FILES ${FFILIBS}
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
