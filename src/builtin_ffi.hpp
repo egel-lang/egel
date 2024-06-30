@@ -2,6 +2,7 @@
 
 #include "runtime.hpp"
 #include "ffi.h"
+#include <dlfcn.h>
 
 /*
 
@@ -11,8 +12,8 @@
 | c_bool       | bool               | true or false
 | c_char       | char               | char
 | c_wchar      | wchar_t            | text
-| c_byte       | char               | int
-| c_ubyte      | unsigned char      | int
+| c_int8       | char               | int
+| c_uint8      | unsigned char      | int
 | c_short      | short              | int
 | c_ushort     | unsigned short     | int
 | c_int        | int                | int
@@ -36,12 +37,12 @@
 
 namespace egel {
 
-const auto FFI = "Foreign";
+const icu::UnicodeString FFI = "Foreign";
 const auto c_bool = "c_bool";
 const auto c_char = "c_char";
 const auto c_wchar = "c_wchar";
-const auto c_byte = "c_byte";
-const auto c_ubyte = "c_ubyte";
+const auto c_int8 = "c_int8";
+const auto c_uint8 = "c_uint8";
 const auto c_short = "c_short";
 const auto c_ushort = "c_ushort";
 const auto c_int = "c_int";
@@ -65,11 +66,19 @@ class Library : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Library, FFI, "library");
 
-    void load(const uci::Unicodestring &s) {
-        char *error;
+    int compare(const VMObjectPtr &o) {
+        return -1; // XXX
+    }
 
-        dlerror();
+    void set_path(const icu::UnicodeString &s) {
+        _path = s;
+    }
 
+    icu::UnicodeString get_path() {
+        return _path;
+    }
+    void load(const icu::UnicodeString &s) {
+        set_path(s);
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
         _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
         if (!_handle) {
@@ -82,21 +91,22 @@ public:
     }
 
     VMObjectPtr function(const icu::UnicodeString &s) {
-        auto sym = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
+        auto sym = VM::unicode_to_utf8_chars(s);  // XXX: leaks?
         auto ptr = dlsym(_handle, sym);
         VMObjectPtrs oo;
-        oo.push_back(VMObjectData::create(vm, FFI, c_void_p));
-        oo.push_back(machine()->create_int((int)ptr));
+        oo.push_back(VMObjectData::create(machine(), FFI, c_void_p));
+        oo.push_back(machine()->create_integer((long long)ptr));
         return machine()->create_array(oo);
     }
 
-    void unload() override {
+    void unload() {
         dlclose(_handle);
     }
 
 private:
+    icu::UnicodeString _path;
     void *_handle;
-}
+};
 
 
 // ## FFI::find_library s - find a library
@@ -107,6 +117,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
+            return machine()->create_none(); // XXX: not implemented yet
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -121,8 +132,8 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
-            auto l = FFI::Library::create();
-            FFI::Library::cast(l)->load(s);
+            auto l = Library::create(machine());
+            Library::cast(l)->load(s);
             return l;
         } else {
             throw machine()->bad_args(this, arg0);
@@ -137,14 +148,14 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1) const override {
         if (machine()->is_type(typeid(Library), arg0) && machine()->is_text(arg1)) {
-            auto l = Library;;cast(arg0);
+            auto l = Library::cast(arg0);
             auto s = machine()->get_text(arg1);
             return l->function(s);
         } else {
             throw machine()->bad_args(this, arg0);
         }
     }
-}
+};
 
 // ## FFI::call f r x - call a function
 class Call : public Triadic {
@@ -155,16 +166,16 @@ public:
         return machine()->is_array(o) 
                 && (machine()->array_size(o) == 2)
                 && machine()->is_data_text(machine()->array_get(o,0), c_void_p)
-                && machine()->is_int(machine()->array_get(o,1));
+                && machine()->is_integer(machine()->array_get(o,1));
     }
 
     bool is_return_type(const VMObjectPtr& o) {
-        return machine->is_data(o) && (
+        return machine()->is_data(o) && (
           machine()->is_data_text(o, c_bool)  || 
           machine()->is_data_text(o, c_char)  || 
           // machine()->is_data_text(o, c_wchar)  || 
-          machine()->is_data_text(o, c_byte)  || 
-          machine()->is_data_text(o, c_ubyte)  || 
+          machine()->is_data_text(o, c_int8)  || 
+          machine()->is_data_text(o, c_uint8)  || 
           machine()->is_data_text(o, c_short)  || 
           machine()->is_data_text(o, c_ushort)  || 
           machine()->is_data_text(o, c_int)  || 
@@ -182,7 +193,7 @@ public:
           machine()->is_data_text(o, c_char_p)  || 
           // machine()->is_data_text(o, c_wchar_p)  || 
           machine()->is_data_text(o, c_void_p)  
-        )
+        );
     }
 
     bool is_arg_type(const VMObjectPtr& o) {
@@ -195,25 +206,25 @@ public:
               (machine()->is_data_text(o0, c_bool) && machine()->is_bool(o1))  || 
               (machine()->is_data_text(o0, c_char) && machine()->is_char(o1))  || 
               // (machine()->is_data_text(o0, c_wchar) && machine()->is_char(o1))  || 
-              (machine()->is_data_text(o0, c_byte) && machine()->is_int(o1))  || 
-              (machine()->is_data_text(o0, c_ubyte) && machine()->is_int(o1))  || 
-              (machine()->is_data_text(o0, c_short) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_ushort) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_int) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_uint) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_long) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_ulong) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_longlong) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_ulonglong) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_size_t) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_ssize_t) && machine()->is_int(o1)) || 
-              (machine()->is_data_text(o0, c_time_t) && machine()->is_int(o1)) || 
+              (machine()->is_data_text(o0, c_int8) && machine()->is_integer(o1))  || 
+              (machine()->is_data_text(o0, c_uint8) && machine()->is_integer(o1))  || 
+              (machine()->is_data_text(o0, c_short) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_ushort) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_int) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_uint) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_long) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_ulong) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_longlong) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_ulonglong) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_size_t) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_ssize_t) && machine()->is_integer(o1)) || 
+              (machine()->is_data_text(o0, c_time_t) && machine()->is_integer(o1)) || 
               (machine()->is_data_text(o0, c_float) && machine()->is_float(o1)) || 
               (machine()->is_data_text(o0, c_double) && machine()->is_float(o1)) || 
               (machine()->is_data_text(o0, c_longdouble) && machine()->is_float(o1)) || 
               (machine()->is_data_text(o0, c_char_p) && (machine()->is_text(o1) || machine()->is_none(o1)))|| 
               // (machine()->is_data_text(o0, c_wchar_p) && (machine()->is_text(o1) || machine()->is_none(o1))) || 
-              (machine()->is_data_text(o0, c_void_p) && (machine()->is_int(o1) || machine()->is_none(o1))) 
+              (machine()->is_data_text(o0, c_void_p) && (machine()->is_integer(o1) || machine()->is_none(o1))) 
             );
         } else {
             return false;
@@ -229,10 +240,10 @@ public:
         } else if ( machine()->is_data_text(o, c_wchar) ) {
             return &ffi_type_w_char;
         */
-        } else if ( machine()->is_data_text(o, c_byte) ) {
-            return &ffi_type_byte;
-        } else if ( machine()->is_data_text(o, c_ubyte) ) {
-            return &ffi_type_ubyte;
+        } else if ( machine()->is_data_text(o, c_int8) ) {
+            return &ffi_type_int8;
+        } else if ( machine()->is_data_text(o, c_uint8) ) {
+            return &ffi_type_uint8;
         } else if ( machine()->is_data_text(o, c_short) ) {
             return &ffi_type_short;
         } else if ( machine()->is_data_text(o, c_ushort) ) {
@@ -291,9 +302,9 @@ public:
             } else if ( machine()->is_data_text(o0, c_wchar) ) {
                 return (void*) ( (char) machine()->get_char(o1) );
             */
-            } else if ( machine()->is_data_text(o0, c_byte) ) {
+            } else if ( machine()->is_data_text(o0, c_int8) ) {
                 return (void*) ( (char) machine()->get_int(o1) );
-            } else if ( machine()->is_data_text(o0, c_ubyte) ) {
+            } else if ( machine()->is_data_text(o0, c_uint8) ) {
                 return (void*) ( (char) machine()->get_int(o1) );
             } else if ( machine()->is_data_text(o0, c_short) ) {
                 return (void*) ( (short) machine()->get_int(o1) );
@@ -371,45 +382,45 @@ public:
             oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
             oo.push_back(machine()->create_char((UChar32) v));
         */
-        } else if ( &ffi_type_byte == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_byte));
-            oo.push_back(machine()->create_int((int) ((char) v)));
-        } else if ( &ffi_type_ubyte == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_ubyte));
-            oo.push_back(machine()->create_int((int) ((unsigned char) v)));
+        } else if ( &ffi_type_int8 == t ) {
+            oo.push_back(VMObjectData::create(vm, FFI, c_int8));
+            oo.push_back(machine()->create_integer((int) ((char) v)));
+        } else if ( &ffi_type_uint8 == t ) {
+            oo.push_back(VMObjectData::create(vm, FFI, c_uint8));
+            oo.push_back(machine()->create_integer((int) ((unsigned char) v)));
         } else if ( &ffi_type_short == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_short));
-            oo.push_back(machine()->create_int((int) ((short) v)));
+            oo.push_back(machine()->create_integer((int) ((short) v)));
         } else if ( &ffi_type_ushort == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_ushort));
-            oo.push_back(machine()->create_int((int) ((unsigned short) v)));
+            oo.push_back(machine()->create_integer((int) ((unsigned short) v)));
         } else if ( &ffi_type_int == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_int));
-            oo.push_back(machine()->create_int((int) ((int) v)));
+            oo.push_back(machine()->create_integer((int) ((int) v)));
         } else if ( &ffi_type_uint == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_uint));
-            oo.push_back(machine()->create_int((int) ((unsigned int) v)));
+            oo.push_back(machine()->create_integer((int) ((unsigned int) v)));
         } else if ( &ffi_type_long == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_long));
-            oo.push_back(machine()->create_int((int) ((long) v)));
+            oo.push_back(machine()->create_integer((int) ((long) v)));
         } else if ( &ffi_type_ulong == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_ulong));
-            oo.push_back(machine()->create_int((int) ((unsigned long) v)));
+            oo.push_back(machine()->create_integer((int) ((unsigned long) v)));
         } else if ( &ffi_type_longlong == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_longlong));
-            oo.push_back(machine()->create_int((int) ((long) v)));
+            oo.push_back(machine()->create_integer((int) ((long) v)));
         } else if ( &ffi_type_ulonglong == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_ulonglong));
-            oo.push_back(machine()->create_int((int) ((unsigned long long) v)));
+            oo.push_back(machine()->create_integer((int) ((unsigned long long) v)));
         } else if ( &ffi_type_size_t == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_size_t));
-            oo.push_back(machine()->create_int((int) ((size_t) v)));
+            oo.push_back(machine()->create_integer((int) ((size_t) v)));
         } else if ( &ffi_type_ssize_t == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_ssize_t));
-            oo.push_back(machine()->create_int((int) ((ssize_t) v)));
+            oo.push_back(machine()->create_integer((int) ((ssize_t) v)));
         } else if ( &ffi_type_time_t == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_time_t));
-            oo.push_back(machine()->create_int((int) ((time_t) v)));
+            oo.push_back(machine()->create_integer((int) ((time_t) v)));
         } else if ( &ffi_type_float == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_float));
             oo.push_back(machine()->create_float((long double) ((float) v)));
@@ -442,7 +453,7 @@ public:
             if ( v == nullptr ) {
                 oo.push_back(machine()->create_none());
             } else {
-                oo.push_back(machine()->create_int((int) ((void*) v)));
+                oo.push_back(machine()->create_integer((int) ((void*) v)));
             }
         } else {
             PANIC("ffi type expected");
@@ -545,16 +556,16 @@ int
             throw machine()->bad_args(this, arg0, arg1, arg2);
         }
     }
-}
+};
 
-inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
+inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(VMObjectData::create(vm, FFI, c_bool));
     oo.push_back(VMObjectData::create(vm, FFI, c_char));
     oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
-    oo.push_back(VMObjectData::create(vm, FFI, c_byte));
-    oo.push_back(VMObjectData::create(vm, FFI, c_ubyte));
+    oo.push_back(VMObjectData::create(vm, FFI, c_int8));
+    oo.push_back(VMObjectData::create(vm, FFI, c_uint8));
     oo.push_back(VMObjectData::create(vm, FFI, c_short));
     oo.push_back(VMObjectData::create(vm, FFI, c_ushort));
     oo.push_back(VMObjectData::create(vm, FFI, c_int));
@@ -572,6 +583,10 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(VMObjectData::create(vm, FFI, c_char_p));
     oo.push_back(VMObjectData::create(vm, FFI, c_wchar_p));
     oo.push_back(VMObjectData::create(vm, FFI, c_void_p));
+
+    oo.push_back(LoadLibrary::create(vm));
+    oo.push_back(Function::create(vm));
+    oo.push_back(Call::create(vm));
 
     return oo;
 }
