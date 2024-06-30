@@ -12,8 +12,8 @@
 | c_bool       | bool               | true or false
 | c_char       | char               | char
 | c_wchar      | wchar_t            | text
-| c_int8       | char               | int
-| c_uint8      | unsigned char      | int
+| c_byte       | char               | int
+| c_ubyte      | unsigned char      | int
 | c_short      | short              | int
 | c_ushort     | unsigned short     | int
 | c_int        | int                | int
@@ -41,8 +41,8 @@ const icu::UnicodeString FFI = "Foreign";
 const auto c_bool = "c_bool";
 const auto c_char = "c_char";
 const auto c_wchar = "c_wchar";
-const auto c_int8 = "c_int8";
-const auto c_uint8 = "c_uint8";
+const auto c_byte = "c_byte";
+const auto c_ubyte = "c_ubyte";
 const auto c_short = "c_short";
 const auto c_ushort = "c_ushort";
 const auto c_int = "c_int";
@@ -174,8 +174,8 @@ public:
           machine()->is_data_text(o, c_bool)  || 
           machine()->is_data_text(o, c_char)  || 
           // machine()->is_data_text(o, c_wchar)  || 
-          machine()->is_data_text(o, c_int8)  || 
-          machine()->is_data_text(o, c_uint8)  || 
+          machine()->is_data_text(o, c_byte)  || 
+          machine()->is_data_text(o, c_ubyte)  || 
           machine()->is_data_text(o, c_short)  || 
           machine()->is_data_text(o, c_ushort)  || 
           machine()->is_data_text(o, c_int)  || 
@@ -206,8 +206,8 @@ public:
               (machine()->is_data_text(o0, c_bool) && machine()->is_bool(o1))  || 
               (machine()->is_data_text(o0, c_char) && machine()->is_char(o1))  || 
               // (machine()->is_data_text(o0, c_wchar) && machine()->is_char(o1))  || 
-              (machine()->is_data_text(o0, c_int8) && machine()->is_integer(o1))  || 
-              (machine()->is_data_text(o0, c_uint8) && machine()->is_integer(o1))  || 
+              (machine()->is_data_text(o0, c_byte) && machine()->is_integer(o1))  || 
+              (machine()->is_data_text(o0, c_ubyte) && machine()->is_integer(o1))  || 
               (machine()->is_data_text(o0, c_short) && machine()->is_integer(o1)) || 
               (machine()->is_data_text(o0, c_ushort) && machine()->is_integer(o1)) || 
               (machine()->is_data_text(o0, c_int) && machine()->is_integer(o1)) || 
@@ -233,39 +233,39 @@ public:
 
     ffi_type* to_ffi_type(const VMObjectPtr &o) {
         if ( machine()->is_data_text(o, c_bool) ) {
-            return &ffi_type_bool;
+            return &ffi_type_sint32;
         } else if ( machine()->is_data_text(o, c_char) ) {
-            return &ffi_type_char;
+            return &ffi_type_uint8;
         /*
         } else if ( machine()->is_data_text(o, c_wchar) ) {
             return &ffi_type_w_char;
         */
-        } else if ( machine()->is_data_text(o, c_int8) ) {
+        } else if ( machine()->is_data_text(o, c_byte) ) {
             return &ffi_type_int8;
-        } else if ( machine()->is_data_text(o, c_uint8) ) {
+        } else if ( machine()->is_data_text(o, c_ubyte) ) {
             return &ffi_type_uint8;
         } else if ( machine()->is_data_text(o, c_short) ) {
-            return &ffi_type_short;
+            return &ffi_type_sint16;
         } else if ( machine()->is_data_text(o, c_ushort) ) {
-            return &ffi_type_ushort;
+            return &ffi_type_uint16;
         } else if ( machine()->is_data_text(o, c_int) ) {
-            return &ffi_type_int;
+            return &ffi_type_sint32;
         } else if ( machine()->is_data_text(o, c_uint) ) {
-            return &ffi_type_uint;
+            return &ffi_type_uint32;
         } else if ( machine()->is_data_text(o, c_long) ) {
-            return &ffi_type_long;
+            return &ffi_type_sint64;
         } else if ( machine()->is_data_text(o, c_ulong) ) {
-            return &ffi_type_ulong;
+            return &ffi_type_uint64;
         } else if ( machine()->is_data_text(o, c_longlong) ) {
-            return &ffi_type_longlong;
+            return &ffi_type_sint64;
         } else if ( machine()->is_data_text(o, c_ulonglong) ) {
-            return &ffi_type_ulonglong;
+            return &ffi_type_uint64;
         } else if ( machine()->is_data_text(o, c_size_t) ) {
-            return &ffi_type_size_t;
+            return &ffi_type_uint64;
         } else if ( machine()->is_data_text(o, c_ssize_t) ) {
-            return &ffi_type_ssize_t;
+            return &ffi_type_sint64;
         } else if ( machine()->is_data_text(o, c_time_t) ) {
-            return &ffi_type_time_t;
+            return &ffi_type_uint64;
         } else if ( machine()->is_data_text(o, c_float) ) {
             return &ffi_type_float;
         } else if ( machine()->is_data_text(o, c_double) ) {
@@ -273,13 +273,13 @@ public:
         } else if ( machine()->is_data_text(o, c_longdouble) ) {
             return &ffi_type_longdouble;
         } else if ( machine()->is_data_text(o, c_char_p) ) {
-            return &ffi_type_char_p;
+            return &ffi_type_pointer;
         /*
         } else if ( machine()->is_data_text(o, c_wchar_p) ) {
             return &ffi_type_wchar_p;
         */
         } else if ( machine()->is_data_text(o, c_void_p)  ) {
-            return &ffi_type_void_p;
+            return &ffi_type_pointer;
         } else {
             PANIC("ffi type expected");
         }
@@ -302,32 +302,32 @@ public:
             } else if ( machine()->is_data_text(o0, c_wchar) ) {
                 return (void*) ( (char) machine()->get_char(o1) );
             */
-            } else if ( machine()->is_data_text(o0, c_int8) ) {
-                return (void*) ( (char) machine()->get_int(o1) );
-            } else if ( machine()->is_data_text(o0, c_uint8) ) {
-                return (void*) ( (char) machine()->get_int(o1) );
+            } else if ( machine()->is_data_text(o0, c_byte) ) {
+                return (void*) ( (char) machine()->get_integer(o1) );
+            } else if ( machine()->is_data_text(o0, c_ubyte) ) {
+                return (void*) ( (char) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_short) ) {
-                return (void*) ( (short) machine()->get_int(o1) );
+                return (void*) ( (short) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_ushort) ) {
-                return (void*) ( (unsigned short) machine()->get_int(o1) );
+                return (void*) ( (unsigned short) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_int) ) {
-                return (void*) ( (int) machine()->get_int(o1) );
+                return (void*) ( (int) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_uint) ) {
-                return (void*) ( (unsigned int) machine()->get_int(o1) );
+                return (void*) ( (unsigned int) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_long) ) {
-                return (void*) ( (long) machine()->get_int(o1) );
+                return (void*) ( (long) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_ulong) ) {
-                return (void*) ( (unsigned long) machine()->get_int(o1) );
+                return (void*) ( (unsigned long) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_longlong) ) {
-                return (void*) ( (long long) machine()->get_int(o1) );
+                return (void*) ( (long long) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_ulonglong) ) {
-                return (void*) ( (unsigned long long) machine()->get_int(o1) );
+                return (void*) ( (unsigned long long) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_size_t) ) {
-                return (void*) ( (size_t) machine()->get_int(o1) );
+                return (void*) ( (size_t) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_ssize_t) ) {
-                return (void*) ( (ssize_t) machine()->get_int(o1) );
+                return (void*) ( (ssize_t) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_time_t) ) {
-                return (void*) ( (time_t) machine()->get_int(o1) );
+                return (void*) ( (time_t) machine()->get_integer(o1) );
             } else if ( machine()->is_data_text(o0, c_float) ) {
                 return (void*) ( (float) machine()->get_float(o1) );
             } else if ( machine()->is_data_text(o0, c_double) ) {
@@ -354,7 +354,7 @@ public:
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
-                    auto n = machine()->get_int(o1);
+                    auto n = machine()->get_integer(o1);
                     return (void*) n;
                 }
             } else {
@@ -382,11 +382,11 @@ public:
             oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
             oo.push_back(machine()->create_char((UChar32) v));
         */
-        } else if ( &ffi_type_int8 == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_int8));
+        } else if ( &ffi_type_byte == t ) {
+            oo.push_back(VMObjectData::create(vm, FFI, c_byte));
             oo.push_back(machine()->create_integer((int) ((char) v)));
-        } else if ( &ffi_type_uint8 == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_uint8));
+        } else if ( &ffi_type_ubyte == t ) {
+            oo.push_back(VMObjectData::create(vm, FFI, c_ubyte));
             oo.push_back(machine()->create_integer((int) ((unsigned char) v)));
         } else if ( &ffi_type_short == t ) {
             oo.push_back(VMObjectData::create(vm, FFI, c_short));
@@ -480,7 +480,7 @@ int
 
          // Prepare the ffi_cif structure.
          if ((status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI,
-             2, &ffi_type_uint8, arg_types)) != FFI_OK)
+             2, &ffi_type_ubyte, arg_types)) != FFI_OK)
          {
              // Handle the ffi_status error.
          }
@@ -564,8 +564,8 @@ inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     oo.push_back(VMObjectData::create(vm, FFI, c_bool));
     oo.push_back(VMObjectData::create(vm, FFI, c_char));
     oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
-    oo.push_back(VMObjectData::create(vm, FFI, c_int8));
-    oo.push_back(VMObjectData::create(vm, FFI, c_uint8));
+    oo.push_back(VMObjectData::create(vm, FFI, c_byte));
+    oo.push_back(VMObjectData::create(vm, FFI, c_ubyte));
     oo.push_back(VMObjectData::create(vm, FFI, c_short));
     oo.push_back(VMObjectData::create(vm, FFI, c_ushort));
     oo.push_back(VMObjectData::create(vm, FFI, c_int));
