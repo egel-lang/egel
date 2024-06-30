@@ -291,55 +291,85 @@ public:
             auto o0 = machine()->array_get(o,0);
             auto o1 = machine()->array_get(o,1);
             if ( machine()->is_data_text(o0, c_bool) ) {
-                if (machine()->is_false(o1)) {
-                    return (void*) false;
-                } else {
-                    return (void*) true;
-                }
             } else if ( machine()->is_data_text(o0, c_char) ) {
-                return (void*) ( (char) machine()->get_char(o1) );
+                void* p = malloc(sizeof(char));
+                *(static_cast<char*>(p)) = static_cast<char>(machine()->get_char(o1));
+                return p;
             /*
             } else if ( machine()->is_data_text(o0, c_wchar) ) {
                 return (void*) ( (char) machine()->get_char(o1) );
             */
             } else if ( machine()->is_data_text(o0, c_byte) ) {
-                return (void*) ( (char) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(char));
+                *(static_cast<char*>(p)) = static_cast<char>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_ubyte) ) {
-                return (void*) ( (char) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(char));
+                *(static_cast<char*>(p)) = static_cast<char>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_short) ) {
-                return (void*) ( (short) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(short));
+                *(static_cast<short*>(p)) = static_cast<short>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_ushort) ) {
-                return (void*) ( (unsigned short) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(unsigned short));
+                *(static_cast<unsigned short*>(p)) = static_cast<unsigned short>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_int) ) {
-                return (void*) ( (int) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(int));
+                *(static_cast<int*>(p)) = static_cast<int>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_uint) ) {
-                return (void*) ( (unsigned int) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(unsigned int));
+                *(static_cast<unsigned int*>(p)) = static_cast<unsigned int>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_long) ) {
-                return (void*) ( (long) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(long));
+                *(static_cast<long*>(p)) = static_cast<long>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_ulong) ) {
-                return (void*) ( (unsigned long) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(unsigned long));
+                *(static_cast<unsigned long*>(p)) = static_cast<unsigned long>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_longlong) ) {
-                return (void*) ( (long long) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(long long));
+                *(static_cast<long long*>(p)) = static_cast<long long>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_ulonglong) ) {
-                return (void*) ( (unsigned long long) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(unsigned long long));
+                *(static_cast<unsigned long long*>(p)) = static_cast<unsigned long long>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_size_t) ) {
-                return (void*) ( (size_t) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(size_t));
+                *(static_cast<size_t*>(p)) = static_cast<size_t>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_ssize_t) ) {
-                return (void*) ( (ssize_t) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(ssize_t));
+                *(static_cast<ssize_t*>(p)) = static_cast<ssize_t>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_time_t) ) {
-                return (void*) ( (time_t) machine()->get_integer(o1) );
+                void* p = malloc(sizeof(time_t));
+                *(static_cast<time_t*>(p)) = static_cast<time_t>(machine()->get_integer(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_float) ) {
-                return (void*) ( (float) machine()->get_float(o1) );
+                void* p = malloc(sizeof(float));
+                *(static_cast<float*>(p)) = static_cast<float>(machine()->get_float(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_double) ) {
-                return (void*) ( (double) machine()->get_float(o1) );
+                void* p = malloc(sizeof(double));
+                *(static_cast<double*>(p)) = static_cast<double>(machine()->get_float(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_longdouble) ) {
-                return (void*) ( (long double) machine()->get_float(o1) );
+                void* p = malloc(sizeof(long double));
+                *(static_cast<long double*>(p)) = static_cast<long double>(machine()->get_float(o1));
+                return p;
             } else if ( machine()->is_data_text(o0, c_char_p) ) {
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
                     auto s = machine()->get_text(o1);
-                    return (void*) VM::unicode_to_utf8_chars(s);
+                    auto cc = VM::unicode_to_utf8_chars(s);
+                    return static_cast<void*>(cc);
                 }
             /*
             } else if ( machine()->is_data_text(o0, c_wchar_p) ) {
@@ -354,8 +384,7 @@ public:
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
-                    auto n = machine()->get_integer(o1);
-                    return (void*) n;
+                    return static_cast<void*>(machine()->get_integer(o1));
                 }
             } else {
                 PANIC("ffi value expected");
@@ -365,6 +394,7 @@ public:
         }
     }
 
+/*
     VMObjectPtr from_ffi_value(const ffi_type* t, const void* v) {
         VMObjectPtrs oo;
         if ( &ffi_type_bool == t ) {
@@ -460,6 +490,7 @@ public:
         }
         return machine()->create_array(oo);
     }
+*/
 /*
 int
      main(int argc, const char **argv)

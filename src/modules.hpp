@@ -11,7 +11,7 @@
 #include "builtin_runtime.hpp"
 #include "builtin_system.hpp"
 #include "builtin_dict.hpp"
-//#include "builtin_ffi.hpp"
+#include "builtin_ffi.hpp"
 #include "constants.hpp"
 #include "desugar.hpp"
 #include "emit.hpp"
@@ -787,7 +787,7 @@ public:
         _loading.push_back( ModuleInternal::create("internal", vm, &builtin_eval) );
         _loading.push_back( ModuleInternal::create("internal", vm, &builtin_async) );
         _loading.push_back( ModuleInternal::create("internal", vm, &builtin_dict) );
-        //_loading.push_back( ModuleInternal::create("internal", vm, &builtin_ffi) );
+        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_ffi) );
         for (const auto& m: _loading) {
             m-> load();
         }
