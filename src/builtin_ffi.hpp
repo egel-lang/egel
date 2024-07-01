@@ -235,7 +235,9 @@ public:
     }
 
     ffi_type* to_ffi_type(const VMObjectPtr &o) const {
-        if ( machine()->is_data_text(o, c_bool) ) {
+        if ( machine()->is_data_text(o, c_void) ) {
+            return &ffi_type_void;
+        } else if ( machine()->is_data_text(o, c_bool) ) {
             return &ffi_type_sint32;
         } else if ( machine()->is_data_text(o, c_char) ) {
             return &ffi_type_uint8;
