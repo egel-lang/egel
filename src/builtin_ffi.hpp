@@ -241,7 +241,7 @@ public:
             return &ffi_type_w_char;
         */
         } else if ( machine()->is_data_text(o, c_byte) ) {
-            return &ffi_type_int8;
+            return &ffi_type_sint8;
         } else if ( machine()->is_data_text(o, c_ubyte) ) {
             return &ffi_type_uint8;
         } else if ( machine()->is_data_text(o, c_short) ) {
@@ -291,6 +291,13 @@ public:
             auto o0 = machine()->array_get(o,0);
             auto o1 = machine()->array_get(o,1);
             if ( machine()->is_data_text(o0, c_bool) ) {
+                void* p = malloc(sizeof(bool));
+                if (machine()->is_false(o1)) {
+                    *(static_cast<bool*>(p)) = false;
+                } else {
+                    *(static_cast<bool*>(p)) = true;
+                }
+                return p;
             } else if ( machine()->is_data_text(o0, c_char) ) {
                 void* p = malloc(sizeof(char));
                 *(static_cast<char*>(p)) = static_cast<char>(machine()->get_char(o1));
@@ -384,7 +391,7 @@ public:
                 if (machine()->is_none(o1)) {
                     return nullptr;
                 } else {
-                    return static_cast<void*>(machine()->get_integer(o1));
+                    return reinterpret_cast<void*>((machine()->get_integer(o1)));
                 }
             } else {
                 PANIC("ffi value expected");
@@ -394,103 +401,81 @@ public:
         }
     }
 
-/*
-    VMObjectPtr from_ffi_value(const ffi_type* t, const void* v) {
+    VMObjectPtr from_ffi_value(const VMObjectPtr &t, void* v) {
         VMObjectPtrs oo;
-        if ( &ffi_type_bool == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_bool));
-            if ( ((bool) v) == false ) {
-                oo.push_back(machine()->create_false());
-            } else {
+        oo.push_back(t);
+        if ( machine()->is_data_text(t, c_bool) ) {
+            bool b = *(reinterpret_cast<bool*>(v));
+            if (b) {
                 oo.push_back(machine()->create_true());
-            }
-        } else if ( &ffi_type_char == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_char));
-            oo.push_back(machine()->create_char((UChar32) v));
-        /*
-        } else if ( &ffi_type_w_char == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
-            oo.push_back(machine()->create_char((UChar32) v));
-        */
-        } else if ( &ffi_type_byte == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_byte));
-            oo.push_back(machine()->create_integer((int) ((char) v)));
-        } else if ( &ffi_type_ubyte == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_ubyte));
-            oo.push_back(machine()->create_integer((int) ((unsigned char) v)));
-        } else if ( &ffi_type_short == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_short));
-            oo.push_back(machine()->create_integer((int) ((short) v)));
-        } else if ( &ffi_type_ushort == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_ushort));
-            oo.push_back(machine()->create_integer((int) ((unsigned short) v)));
-        } else if ( &ffi_type_int == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_int));
-            oo.push_back(machine()->create_integer((int) ((int) v)));
-        } else if ( &ffi_type_uint == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_uint));
-            oo.push_back(machine()->create_integer((int) ((unsigned int) v)));
-        } else if ( &ffi_type_long == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_long));
-            oo.push_back(machine()->create_integer((int) ((long) v)));
-        } else if ( &ffi_type_ulong == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_ulong));
-            oo.push_back(machine()->create_integer((int) ((unsigned long) v)));
-        } else if ( &ffi_type_longlong == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_longlong));
-            oo.push_back(machine()->create_integer((int) ((long) v)));
-        } else if ( &ffi_type_ulonglong == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_ulonglong));
-            oo.push_back(machine()->create_integer((int) ((unsigned long long) v)));
-        } else if ( &ffi_type_size_t == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_size_t));
-            oo.push_back(machine()->create_integer((int) ((size_t) v)));
-        } else if ( &ffi_type_ssize_t == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_ssize_t));
-            oo.push_back(machine()->create_integer((int) ((ssize_t) v)));
-        } else if ( &ffi_type_time_t == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_time_t));
-            oo.push_back(machine()->create_integer((int) ((time_t) v)));
-        } else if ( &ffi_type_float == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_float));
-            oo.push_back(machine()->create_float((long double) ((float) v)));
-        } else if ( &ffi_type_double == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_double));
-            oo.push_back(machine()->create_float((long double) ((double) v)));
-        } else if ( &ffi_type_longdouble == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_longdouble));
-            oo.push_back(machine()->create_float((long double) ((long double) v)));
-        } else if ( &ffi_type_char_p == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_char_p));
-            if ( v == nullptr ) {
-                oo.push_back(machine()->create_none());
             } else {
-                char* v0 = (char*) v;
-                auto s = VM::unicode_from_utf8_chars(buffer);
-                oo.push_back(machine()->create_text(s));
-                free(v);
+                oo.push_back(machine()->create_false());
             }
-        /*
-        } else if ( &ffi_type_wchar_p == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_wchar_p));
-            if ( v == nullptr ) {
-                oo.push_back(machine()->create_none());
-            } else {
-            }
-        */
-        } else if ( &ffi_type_void_p == t ) {
-            oo.push_back(VMObjectData::create(vm, FFI, c_void_p));
-            if ( v == nullptr ) {
-                oo.push_back(machine()->create_none());
-            } else {
-                oo.push_back(machine()->create_integer((int) ((void*) v)));
-            }
+        } else if ( machine()->is_data_text(t, c_char) ) {
+            UChar32 c = *(static_cast<UChar32*>(v));
+            oo.push_back(machine()->create_char(c));
+        //} else if ( machine()->is_data_text(t, c_wchar) ) {
+        } else if ( machine()->is_data_text(t, c_byte) ) {
+            char b = *(static_cast<char*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(b)));
+        } else if ( machine()->is_data_text(t, c_ubyte) ) {
+            unsigned char b = *(static_cast<unsigned char*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(b)));
+        } else if ( machine()->is_data_text(t, c_short) ) {
+            short n = *(static_cast<short*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_ushort) ) {
+            unsigned short n = *(static_cast<unsigned short*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_int) ) {
+            int n = *(static_cast<int*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_uint) ) {
+            unsigned int n = *(static_cast<unsigned int*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_long) ) {
+            long n = *(static_cast<long*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_ulong) ) {
+            unsigned long n = *(static_cast<unsigned long*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_longlong) ) {
+            long long n = *(static_cast<long long*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_ulonglong) ) {
+            unsigned long long n = *(static_cast<unsigned long long*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_size_t) ) {
+            size_t n = *(static_cast<size_t*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_ssize_t) ) {
+            ssize_t n = *(static_cast<ssize_t*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_time_t) ) {
+            time_t n = *(static_cast<time_t*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+        } else if ( machine()->is_data_text(t, c_float) ) {
+            float f = *(static_cast<float*>(v));
+            oo.push_back(machine()->create_float(static_ca<t,vm_float_t>(f)));
+        } else if ( machine()->is_data_text(t, c_double) ) {
+            double f = *(static_cast<double*>(v));
+            oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
+        } else if ( machine()->is_data_text(t, c_longdouble) ) {
+            long double f = *(static_cast<long double*>(v));
+            oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
+        } else if ( machine()->is_data_text(t, c_char_p) ) {
+            char* cc = *(static_cast<char*>(v));
+            auto s = VM::unicode_from_utf8_chars(cc);
+            oo.push_back(machine()->create_text(s));
+        //} else if ( machine()->is_data_text(t, c_wchar_p) ) {
+        } else if ( machine()->is_data_text(t, c_void_p)  ) {
+            void* p = *(static_cast<void*>(v));
+            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(p)));
         } else {
             PANIC("ffi type expected");
         }
         return machine()->create_array(oo);
     }
-*/
 /*
 int
      main(int argc, const char **argv)
