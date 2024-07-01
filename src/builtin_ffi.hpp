@@ -9,6 +9,7 @@
 ---------------------------------------------------------
 | tag          | c language type    | egel representation
 ---------------------------------------------------------
+| c_void       | void               | none
 | c_bool       | bool               | true or false
 | c_char       | char               | char
 | c_wchar      | wchar_t            | text
@@ -38,6 +39,7 @@
 namespace egel {
 
 const icu::UnicodeString FFI = "FFI";
+const auto c_void = "c_void";
 const auto c_bool = "c_bool";
 const auto c_char = "c_char";
 const auto c_wchar = "c_wchar";
@@ -171,6 +173,7 @@ public:
 
     bool is_return_type(const VMObjectPtr& o) const {
         return machine()->is_data(o) && (
+          machine()->is_data_text(o, c_void)  || 
           machine()->is_data_text(o, c_bool)  || 
           machine()->is_data_text(o, c_char)  || 
           // machine()->is_data_text(o, c_wchar)  || 
@@ -413,7 +416,10 @@ public:
     VMObjectPtr from_ffi_value(const VMObjectPtr &t, void* v) const {
         VMObjectPtrs oo;
         oo.push_back(t);
-        if ( machine()->is_data_text(t, c_bool) ) {
+
+        if ( machine()->is_data_text(t, c_void) ) {
+            oo.push_back(machine()->create_none());
+        } else if ( machine()->is_data_text(t, c_bool) ) {
             bool b = *(reinterpret_cast<bool*>(v));
             if (b) {
                 oo.push_back(machine()->create_true());
@@ -592,6 +598,7 @@ int
 inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
+    oo.push_back(VMObjectData::create(vm, FFI, c_void));
     oo.push_back(VMObjectData::create(vm, FFI, c_bool));
     oo.push_back(VMObjectData::create(vm, FFI, c_char));
     oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
