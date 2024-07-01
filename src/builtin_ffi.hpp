@@ -562,13 +562,9 @@ int
 
             auto r = from_ffi_value(arg1, &result);
 
-/*
             for (size_t i = 0; i < n; i++) {
-                if (arg_types[i] == &ffi_type_char_p) {
-                    free(arg_types[i]);
-                }
+                free(arg_types[i]);
             }
-*/
             free(arg_types);
             free(arg_values);
 
