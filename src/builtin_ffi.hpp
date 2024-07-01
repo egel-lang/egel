@@ -133,7 +133,7 @@ public:
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
             auto l = Library::create(machine());
-            Library::cast(l)->load(s);
+            (std::static_pointer_cast<Library>(l))->load(s);
             return l;
         } else {
             throw machine()->bad_args(this, arg0);
@@ -148,7 +148,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1) const override {
         if (machine()->is_type(typeid(Library), arg0) && machine()->is_text(arg1)) {
-            auto l = Library::cast(arg0);
+            auto l = std::static_pointer_cast<Library>(arg0);
             auto s = machine()->get_text(arg1);
             return l->function(s);
         } else {
@@ -162,14 +162,14 @@ class Call : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Call, FFI, "call");
 
-    bool is_function_ptr(const VMObjectPtr& o) {
+    bool is_function_ptr(const VMObjectPtr& o) const {
         return machine()->is_array(o) 
                 && (machine()->array_size(o) == 2)
                 && machine()->is_data_text(machine()->array_get(o,0), c_void_p)
                 && machine()->is_integer(machine()->array_get(o,1));
     }
 
-    bool is_return_type(const VMObjectPtr& o) {
+    bool is_return_type(const VMObjectPtr& o) const {
         return machine()->is_data(o) && (
           machine()->is_data_text(o, c_bool)  || 
           machine()->is_data_text(o, c_char)  || 
@@ -196,7 +196,7 @@ public:
         );
     }
 
-    bool is_arg_type(const VMObjectPtr& o) {
+    bool is_arg_type(const VMObjectPtr& o) const {
         if (machine()->is_array(o) && (machine()->array_size(o) == 2)) {
 
             auto o0 = machine()->array_get(o,0);
@@ -231,7 +231,7 @@ public:
         }
     }
 
-    ffi_type* to_ffi_type(const VMObjectPtr &o) {
+    ffi_type* to_ffi_type(const VMObjectPtr &o) const {
         if ( machine()->is_data_text(o, c_bool) ) {
             return &ffi_type_sint32;
         } else if ( machine()->is_data_text(o, c_char) ) {
@@ -282,10 +282,11 @@ public:
             return &ffi_type_pointer;
         } else {
             PANIC("ffi type expected");
+            return nullptr; // keep compiler happy
         }
     }
 
-    void* to_ffi_value(const VMObjectPtr &o) {
+    void* to_ffi_value(const VMObjectPtr &o) const {
         if (machine()->is_array(o) && (machine()->array_size(o) == 2)) {
 
             auto o0 = machine()->array_get(o,0);
@@ -395,13 +396,15 @@ public:
                 }
             } else {
                 PANIC("ffi value expected");
+                return nullptr; // keep compiler happy
             }
         } else {
             PANIC("ffi value expected");
+            return nullptr; // keep compiler happy
         }
     }
 
-    VMObjectPtr from_ffi_value(const VMObjectPtr &t, void* v) {
+    VMObjectPtr from_ffi_value(const VMObjectPtr &t, void* v) const {
         VMObjectPtrs oo;
         oo.push_back(t);
         if ( machine()->is_data_text(t, c_bool) ) {
@@ -456,7 +459,7 @@ public:
             oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
         } else if ( machine()->is_data_text(t, c_float) ) {
             float f = *(static_cast<float*>(v));
-            oo.push_back(machine()->create_float(static_ca<t,vm_float_t>(f)));
+            oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
         } else if ( machine()->is_data_text(t, c_double) ) {
             double f = *(static_cast<double*>(v));
             oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
@@ -464,13 +467,13 @@ public:
             long double f = *(static_cast<long double*>(v));
             oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
         } else if ( machine()->is_data_text(t, c_char_p) ) {
-            char* cc = *(static_cast<char*>(v));
+            char* cc = (static_cast<char*>(v));
             auto s = VM::unicode_from_utf8_chars(cc);
             oo.push_back(machine()->create_text(s));
         //} else if ( machine()->is_data_text(t, c_wchar_p) ) {
         } else if ( machine()->is_data_text(t, c_void_p)  ) {
-            void* p = *(static_cast<void*>(v));
-            oo.push_back(machine()->create_integer(static_cast<vm_int_t>(p)));
+            void* p = (static_cast<void*>(v));
+            oo.push_back(machine()->create_integer(reinterpret_cast<vm_int_t>(p)));
         } else {
             PANIC("ffi type expected");
         }
@@ -521,10 +524,10 @@ int
 
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
-        if (is_function_ptr(arg0) && machine()->is_list(arg1) && is_return_type(arg2)) {
+        if (is_function_ptr(arg0) && is_return_type(arg1) && machine()->is_list(arg2)) {
             auto oo = machine()->from_list(arg2);
             for (auto &o: oo) {
-                if (!is_arg_type(o) {
+                if (!is_arg_type(o)) {
                     throw machine()->bad_args(this, arg0, arg1, arg2);
                 }
             }
@@ -532,15 +535,15 @@ int
             auto n = oo.size();
             
             ffi_cif cif;
-            ffi_type *arg_types = (ffi_type*) malloc(n * sizeof(ffi_type*));
+            ffi_type **arg_types = (ffi_type**) malloc(n * sizeof(ffi_type*));
             ffi_type *ret_type = nullptr;
-            void *arg_values = (void*) malloc(n * sizeof(void*));
+            void **arg_values = (void**) malloc(n * sizeof(void*));
             ffi_status status;
             ffi_arg result;
 
             ret_type = to_ffi_type(arg1);
-            for (int i = 0; i < n; i++) {
-                auto o = machine()->get_array(oo[i],0);
+            for (size_t i = 0; i < n; i++) {
+                auto o = machine()->array_get(oo[i],0);
                 arg_types[i] = to_ffi_type(o);
             }
 
@@ -549,21 +552,23 @@ int
                  throw machine()->create_text("error in cif");
             }
 
-            for (int i = 0; i < n; i++) {
+            for (size_t i = 0; i < n; i++) {
                 arg_values[i] = to_ffi_value(oo[i]);
             }
 
-            auto p = (void*) to_ffi_value(arg0);
+            void* p = to_ffi_value(arg0);
 
             ffi_call(&cif, FFI_FN(p), &result, arg_values);
 
-            auto r = from_ffi_value(ret_type, &result);
+            auto r = from_ffi_value(arg1, &result);
 
-            for (int i = 0; i < n; i++) {
+/*
+            for (size_t i = 0; i < n; i++) {
                 if (arg_types[i] == &ffi_type_char_p) {
-                    free(arg_types[i];
+                    free(arg_types[i]);
                 }
             }
+*/
             free(arg_types);
             free(arg_values);
 
