@@ -372,12 +372,15 @@ public:
                 *(static_cast<long double*>(p)) = static_cast<long double>(machine()->get_float(o1));
                 return p;
             } else if ( machine()->is_data_text(o0, c_char_p) ) {
+                void* p = malloc(sizeof(void*));
                 if (machine()->is_none(o1)) {
-                    return nullptr;
+                    *(static_cast<char**>(p)) = nullptr;
+                    return p;
                 } else {
                     auto s = machine()->get_text(o1);
                     auto cc = VM::unicode_to_utf8_chars(s);
-                    return static_cast<void*>(cc);
+                    *(static_cast<char**>(p)) = reinterpret_cast<char*>(cc);
+                    return p;
                 }
             /*
             } else if ( machine()->is_data_text(o0, c_wchar_p) ) {
@@ -389,10 +392,13 @@ public:
                 }
             */
             } else if ( machine()->is_data_text(o0, c_void_p)  ) {
+                void* p = malloc(sizeof(void*));
                 if (machine()->is_none(o1)) {
-                    return nullptr;
+                    *(static_cast<void**>(p)) = nullptr;
+                    return p;
                 } else {
-                    return reinterpret_cast<void*>((machine()->get_integer(o1)));
+                    *(static_cast<void**>(p)) = reinterpret_cast<void*>(machine()->get_integer(o1));
+                    return p;
                 }
             } else {
                 PANIC("ffi value expected");
@@ -467,13 +473,21 @@ public:
             long double f = *(static_cast<long double*>(v));
             oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
         } else if ( machine()->is_data_text(t, c_char_p) ) {
-            char* cc = (static_cast<char*>(v));
-            auto s = VM::unicode_from_utf8_chars(cc);
-            oo.push_back(machine()->create_text(s));
+            char* cc = *(static_cast<char**>(v));
+            if (cc == nullptr) {
+                oo.push_back(machine()->create_none());
+            } else {
+                auto s = VM::unicode_from_utf8_chars(cc);
+                oo.push_back(machine()->create_text(s));
+            }
         //} else if ( machine()->is_data_text(t, c_wchar_p) ) {
         } else if ( machine()->is_data_text(t, c_void_p)  ) {
-            void* p = (static_cast<void*>(v));
-            oo.push_back(machine()->create_integer(reinterpret_cast<vm_int_t>(p)));
+            void* p = *(static_cast<void**>(v));
+            if (p == nullptr) {
+                oo.push_back(machine()->create_none());
+            } else {
+                oo.push_back(machine()->create_integer(reinterpret_cast<vm_int_t>(p)));
+            }
         } else {
             PANIC("ffi type expected");
         }
