@@ -37,7 +37,7 @@
 
 namespace egel {
 
-const icu::UnicodeString FFI = "Foreign";
+const icu::UnicodeString FFI = "FFI";
 const auto c_bool = "c_bool";
 const auto c_char = "c_char";
 const auto c_wchar = "c_wchar";
