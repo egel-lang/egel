@@ -1,0 +1,12 @@
+import "prelude.eg"
+
+using System
+using FFI
+
+val lib = load_library "libtest.dylib"
+
+def func = [F -> function lib F]
+
+def test_void = call (func "id_void") c_void {}
+
+def main = test_void
