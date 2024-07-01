@@ -39,29 +39,29 @@
 namespace egel {
 
 const icu::UnicodeString FFI = "FFI";
-const auto c_void = "c_void";
-const auto c_bool = "c_bool";
-const auto c_char = "c_char";
-const auto c_wchar = "c_wchar";
-const auto c_byte = "c_byte";
-const auto c_ubyte = "c_ubyte";
-const auto c_short = "c_short";
-const auto c_ushort = "c_ushort";
-const auto c_int = "c_int";
-const auto c_uint = "c_uint";
-const auto c_long = "c_long";
-const auto c_ulong = "c_ulong";
-const auto c_longlong = "c_longlong";
-const auto c_ulonglong = "c_ulonglong";
-const auto c_size_t = "c_size_t";
-const auto c_ssize_t = "c_ssize_t";
-const auto c_time_t = "c_time_t";
-const auto c_float = "c_float";
-const auto c_double = "c_double";
-const auto c_longdouble = "c_longdouble";
-const auto c_char_p = "c_char_p";
-const auto c_wchar_p = "c_wchar_p";
-const auto c_void_p = "c_void_p";
+const auto c_void = FFI + "::" + "c_void";
+const auto c_bool = FFI + "::" + "c_bool";
+const auto c_char = FFI + "::" + "c_char";
+const auto c_wchar = FFI + "::" + "c_wchar";
+const auto c_byte = FFI + "::" + "c_byte";
+const auto c_ubyte = FFI + "::" + "c_ubyte";
+const auto c_short = FFI + "::" + "c_short";
+const auto c_ushort = FFI + "::" + "c_ushort";
+const auto c_int = FFI + "::" + "c_int";
+const auto c_uint = FFI + "::" + "c_uint";
+const auto c_long = FFI + "::" + "c_long";
+const auto c_ulong = FFI + "::" + "c_ulong";
+const auto c_longlong = FFI + "::" + "c_longlong";
+const auto c_ulonglong = FFI + "::" + "c_ulonglong";
+const auto c_size_t = FFI + "::" + "c_size_t";
+const auto c_ssize_t = FFI + "::" + "c_ssize_t";
+const auto c_time_t = FFI + "::" + "c_time_t";
+const auto c_float = FFI + "::" + "c_float";
+const auto c_double = FFI + "::" + "c_double";
+const auto c_longdouble = FFI + "::" + "c_longdouble";
+const auto c_char_p = FFI + "::" + "c_char_p";
+const auto c_wchar_p = FFI + "::" + "c_wchar_p";
+const auto c_void_p = FFI + "::" + "c_void_p";
 
 // ## FFI::library - opaque library object
 class Library : public Opaque {
@@ -96,7 +96,7 @@ public:
         auto sym = VM::unicode_to_utf8_chars(s);  // XXX: leaks?
         auto ptr = dlsym(_handle, sym);
         VMObjectPtrs oo;
-        oo.push_back(VMObjectData::create(machine(), FFI, c_void_p));
+        oo.push_back(VMObjectData::create(machine(), c_void_p));
         oo.push_back(machine()->create_integer((long long)ptr));
         return machine()->create_array(oo);
     }
@@ -544,6 +544,9 @@ int
 
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
+        if (is_function_ptr(arg0)) std::cout << "found f pointer" << arg0 << std::endl;
+        if (is_return_type(arg1)) std::cout << "found return" << arg1 << std::endl;
+        if (machine()->is_list(arg2)) std::cout << "found list" << arg2 << std::endl;
         if (is_function_ptr(arg0) && is_return_type(arg1) && machine()->is_list(arg2)) {
             auto oo = machine()->from_list(arg2);
             for (auto &o: oo) {
@@ -598,29 +601,29 @@ int
 inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
-    oo.push_back(VMObjectData::create(vm, FFI, c_void));
-    oo.push_back(VMObjectData::create(vm, FFI, c_bool));
-    oo.push_back(VMObjectData::create(vm, FFI, c_char));
-    oo.push_back(VMObjectData::create(vm, FFI, c_wchar));
-    oo.push_back(VMObjectData::create(vm, FFI, c_byte));
-    oo.push_back(VMObjectData::create(vm, FFI, c_ubyte));
-    oo.push_back(VMObjectData::create(vm, FFI, c_short));
-    oo.push_back(VMObjectData::create(vm, FFI, c_ushort));
-    oo.push_back(VMObjectData::create(vm, FFI, c_int));
-    oo.push_back(VMObjectData::create(vm, FFI, c_uint));
-    oo.push_back(VMObjectData::create(vm, FFI, c_long));
-    oo.push_back(VMObjectData::create(vm, FFI, c_ulong));
-    oo.push_back(VMObjectData::create(vm, FFI, c_longlong));
-    oo.push_back(VMObjectData::create(vm, FFI, c_ulonglong));
-    oo.push_back(VMObjectData::create(vm, FFI, c_size_t));
-    oo.push_back(VMObjectData::create(vm, FFI, c_ssize_t));
-    oo.push_back(VMObjectData::create(vm, FFI, c_time_t));
-    oo.push_back(VMObjectData::create(vm, FFI, c_float));
-    oo.push_back(VMObjectData::create(vm, FFI, c_double));
-    oo.push_back(VMObjectData::create(vm, FFI, c_longdouble));
-    oo.push_back(VMObjectData::create(vm, FFI, c_char_p));
-    oo.push_back(VMObjectData::create(vm, FFI, c_wchar_p));
-    oo.push_back(VMObjectData::create(vm, FFI, c_void_p));
+    oo.push_back(VMObjectData::create(vm, c_void));
+    oo.push_back(VMObjectData::create(vm, c_bool));
+    oo.push_back(VMObjectData::create(vm, c_char));
+    oo.push_back(VMObjectData::create(vm, c_wchar));
+    oo.push_back(VMObjectData::create(vm, c_byte));
+    oo.push_back(VMObjectData::create(vm, c_ubyte));
+    oo.push_back(VMObjectData::create(vm, c_short));
+    oo.push_back(VMObjectData::create(vm, c_ushort));
+    oo.push_back(VMObjectData::create(vm, c_int));
+    oo.push_back(VMObjectData::create(vm, c_uint));
+    oo.push_back(VMObjectData::create(vm, c_long));
+    oo.push_back(VMObjectData::create(vm, c_ulong));
+    oo.push_back(VMObjectData::create(vm, c_longlong));
+    oo.push_back(VMObjectData::create(vm, c_ulonglong));
+    oo.push_back(VMObjectData::create(vm, c_size_t));
+    oo.push_back(VMObjectData::create(vm, c_ssize_t));
+    oo.push_back(VMObjectData::create(vm, c_time_t));
+    oo.push_back(VMObjectData::create(vm, c_float));
+    oo.push_back(VMObjectData::create(vm, c_double));
+    oo.push_back(VMObjectData::create(vm, c_longdouble));
+    oo.push_back(VMObjectData::create(vm, c_char_p));
+    oo.push_back(VMObjectData::create(vm, c_wchar_p));
+    oo.push_back(VMObjectData::create(vm, c_void_p));
 
     oo.push_back(LoadLibrary::create(vm));
     oo.push_back(Function::create(vm));
