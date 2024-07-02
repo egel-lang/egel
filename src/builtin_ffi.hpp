@@ -95,6 +95,7 @@ public:
     VMObjectPtr function(const icu::UnicodeString &s) {
         auto sym = VM::unicode_to_utf8_chars(s);  // XXX: leaks?
         auto ptr = dlsym(_handle, sym);
+        std::cerr << "function " << ptr << std::endl;
         VMObjectPtrs oo;
         oo.push_back(VMObjectData::create(machine(), c_void_p));
         oo.push_back(machine()->create_integer((long long)ptr));
@@ -581,8 +582,11 @@ int
                 arg_values[i] = to_ffi_value(oo[i]);
             }
 
-            void* p = to_ffi_value(arg0);
+            void** pp = reinterpret_cast<void**>(to_ffi_value(arg0));
+            void* p = *pp;
+            free(pp);
 
+            std::cerr << "ffi_call " << p << "(n = " << n << ")" << std::endl;
             ffi_call(&cif, FFI_FN(p), &result, arg_values);
 
             auto r = from_ffi_value(arg1, &result);
