@@ -658,6 +658,44 @@ public:
     }
 };
 
+// ## FFI::to_utf8 s - get void* from text
+class ToUTF8 : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUTF8, FFI, "to_utf8");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_text(arg0)) { 
+            auto s = machine()->get_text(arg0);
+            auto ptr = VM::unicode_to_utf8_chars(s);
+            VMObjectPtrs oo;
+            oo.push_back(VMObjectData::create(machine(), c_void_p));
+            oo.push_back(machine()->create_integer(reinterpret_cast<long long>(ptr)));
+            return machine()->create_array(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+// ## FFI::from_utf8 s - get void* from text
+class FromUTF8 : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, FromUTF8, FFI, "from_utf8");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_array(arg0) 
+                && (machine()->array_size(arg0) == 2)
+                && machine()->is_data_text(machine()->array_get(arg0,0), c_void_p)
+                && machine()->is_integer(machine()->array_get(arg0,1))) {
+            auto n = machine()->get_integer(machine()->array_get(arg0,1));
+            auto s = VM::unicode_from_utf8_chars(reinterpret_cast<char*>(n));
+            return machine()->create_text(s);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -691,6 +729,10 @@ inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
 
     oo.push_back(Malloc::create(vm));
     oo.push_back(Free::create(vm));
+
+    oo.push_back(ToUTF8::create(vm));
+    oo.push_back(FromUTF8::create(vm));
+
     return oo;
 }
 
