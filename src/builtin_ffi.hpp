@@ -97,7 +97,7 @@ public:
         auto ptr = dlsym(_handle, sym);
         VMObjectPtrs oo;
         oo.push_back(VMObjectData::create(machine(), c_void_p));
-        oo.push_back(machine()->create_integer((long long)ptr));
+        oo.push_back(machine()->create_integer(reinterpret_cast<long long>(ptr)));
         return machine()->create_array(oo);
     }
 
@@ -620,6 +620,44 @@ int
     }
 };
 
+// ## FFI::malloc n - allocate a number of bytes
+class Malloc : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Malloc, FFI, "malloc");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_integer(arg0)) {
+            auto n = machine()->get_integer(arg0);
+            void* ptr = malloc(n);
+            VMObjectPtrs oo;
+            oo.push_back(VMObjectData::create(machine(), c_void_p));
+            oo.push_back(machine()->create_integer(reinterpret_cast<long long>(ptr)));
+            return machine()->create_array(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+// ## FFI::free p - free memory
+class Free : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Free, FFI, "free");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_array(arg0) 
+                && (machine()->array_size(arg0) == 2)
+                && machine()->is_data_text(machine()->array_get(arg0,0), c_void_p)
+                && machine()->is_integer(machine()->array_get(arg0,1))) {
+            auto n = machine()->get_integer(machine()->array_get(arg0,1));
+            free(reinterpret_cast<void*>(n));
+            return machine()->create_none();
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -651,6 +689,8 @@ inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     oo.push_back(Function::create(vm));
     oo.push_back(Call::create(vm));
 
+    oo.push_back(Malloc::create(vm));
+    oo.push_back(Free::create(vm));
     return oo;
 }
 
