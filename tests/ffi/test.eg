@@ -9,4 +9,6 @@ def func = [F -> function lib F]
 
 def test_void = call (func "id_void") c_void {}
 
-def main = test_void
+def test_byte = call (func "id_byte") c_byte {c_byte 255}
+
+def main = test_void; test_byte
