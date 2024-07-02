@@ -658,6 +658,110 @@ public:
     }
 };
 
+// ## FFI::peek p n t - peek n bytes beyond p for value of type t
+class Peek : public Triadic {
+public:
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Peek, FFI, "peek");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
+        if (machine()->is_array(arg0) 
+                && (machine()->array_size(arg0) == 2)
+                && machine()->is_data_text(machine()->array_get(arg0,0), c_void_p)
+                && machine()->is_integer(machine()->array_get(arg0,1))
+                && machine()->is_integer(arg1)
+                && machine()->is_data(arg2)) {
+            auto n0 = machine()->get_integer(machine()->array_get(arg0,1));
+            auto n1 = machine()->get_integer(arg1);
+            auto ptr = reinterpret_cast<char*>(n0)+n1;
+
+            VMObjectPtrs oo;
+            oo.push_back(arg2);
+
+            if ( machine()->is_data_text(arg2, c_bool) ) {
+                bool b = *(reinterpret_cast<bool*>(ptr));
+                if (b) {
+                    oo.push_back(machine()->create_true());
+                } else {
+                    oo.push_back(machine()->create_false());
+                }
+            } else if ( machine()->is_data_text(arg2, c_char) ) {
+                UChar32 c = *(reinterpret_cast<UChar32*>(ptr));
+                oo.push_back(machine()->create_char(c));
+            //} else if ( machine()->is_data_text(arg2, c_wchar) ) {
+            } else if ( machine()->is_data_text(arg2, c_byte) ) {
+                char b = *(reinterpret_cast<char*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(b)));
+            } else if ( machine()->is_data_text(arg2, c_ubyte) ) {
+                unsigned char b = *(reinterpret_cast<unsigned char*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(b)));
+            } else if ( machine()->is_data_text(arg2, c_short) ) {
+                short n = *(reinterpret_cast<short*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_ushort) ) {
+                unsigned short n = *(reinterpret_cast<unsigned short*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_int) ) {
+                int n = *(reinterpret_cast<int*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_uint) ) {
+                unsigned int n = *(reinterpret_cast<unsigned int*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_long) ) {
+                long n = *(reinterpret_cast<long*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_ulong) ) {
+                unsigned long n = *(reinterpret_cast<unsigned long*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_longlong) ) {
+                long long n = *(reinterpret_cast<long long*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_ulonglong) ) {
+                unsigned long long n = *(reinterpret_cast<unsigned long long*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_size_t) ) {
+                size_t n = *(reinterpret_cast<size_t*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_ssize_t) ) {
+                ssize_t n = *(reinterpret_cast<ssize_t*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_time_t) ) {
+                time_t n = *(reinterpret_cast<time_t*>(ptr));
+                oo.push_back(machine()->create_integer(static_cast<vm_int_t>(n)));
+            } else if ( machine()->is_data_text(arg2, c_float) ) {
+                float f = *(reinterpret_cast<float*>(ptr));
+                oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
+            } else if ( machine()->is_data_text(arg2, c_double) ) {
+                double f = *(reinterpret_cast<double*>(ptr));
+                oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
+            } else if ( machine()->is_data_text(arg2, c_longdouble) ) {
+                long double f = *(reinterpret_cast<long double*>(ptr));
+                oo.push_back(machine()->create_float(static_cast<vm_float_t>(f)));
+            } else if ( machine()->is_data_text(arg2, c_char_p) ) {
+                char* cc = *(reinterpret_cast<char**>(ptr));
+                if (cc == nullptr) {
+                    oo.push_back(machine()->create_none());
+                } else {
+                    auto s = VM::unicode_from_utf8_chars(cc);
+                    oo.push_back(machine()->create_text(s));
+                }
+            //} else if ( machine()->is_data_text(arg2, c_wchar_p) ) {
+            } else if ( machine()->is_data_text(arg2, c_void_p)  ) {
+                void* p = *(reinterpret_cast<void**>(ptr));
+                if (p == nullptr) {
+                    oo.push_back(machine()->create_none());
+                } else {
+                    oo.push_back(machine()->create_integer(reinterpret_cast<vm_int_t>(p)));
+                }
+            } else {
+                PANIC("ffi type expected");
+            }
+            return machine()->create_array(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 // ## FFI::to_utf8 s - get void* from text
 class ToUTF8 : public Monadic {
 public:
