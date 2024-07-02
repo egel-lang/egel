@@ -9,6 +9,22 @@ def func = [F -> function lib F]
 
 def test_void = call (func "id_void") c_void {}
 
-def test_byte = call (func "id_byte") c_byte {c_byte 255}
+def test_char = [C -> call (func "id_char") c_char {c_char C}]
 
-def main = test_void; test_byte
+def test_byte = [B -> call (func "id_byte") c_byte {c_byte B}]
+
+def test_ubyte = [B -> call (func "id_byte") c_ubyte {c_ubyte B}]
+
+def test_short = [B -> call (func "id_short") c_short {c_short B}]
+
+def test_int = [N -> call (func "id_int") c_int {c_int N}]
+
+def test_void_p = [N -> call (func "id_void_p") c_void_p {c_void_p N}]
+
+def test_char_p = [T -> call (func "id_char_p") c_char_p {c_char_p T}]
+
+def main = 
+    test_void;
+    let TT = {(test_char, 'a'), (test_byte, -1), (test_ubyte, 255), (test_short, 65436), 
+              (test_int, 12345), (test_void_p, none), (test_void_p, 123456789), (test_char_p, none), (test_char_p, "hello world!")} in
+    List::map [(F, X) -> let Y = F X in format "{} {} = {}" F X Y ] TT

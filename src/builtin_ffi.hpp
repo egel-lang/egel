@@ -95,7 +95,6 @@ public:
     VMObjectPtr function(const icu::UnicodeString &s) {
         auto sym = VM::unicode_to_utf8_chars(s);  // XXX: leaks?
         auto ptr = dlsym(_handle, sym);
-        std::cerr << "function " << ptr << std::endl;
         VMObjectPtrs oo;
         oo.push_back(VMObjectData::create(machine(), c_void_p));
         oo.push_back(machine()->create_integer((long long)ptr));
@@ -547,9 +546,6 @@ int
 
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
-        if (is_function_ptr(arg0)) std::cout << "found f pointer" << arg0 << std::endl;
-        if (is_return_type(arg1)) std::cout << "found return" << arg1 << std::endl;
-        if (machine()->is_list(arg2)) std::cout << "found list" << arg2 << std::endl;
         if (is_function_ptr(arg0) && is_return_type(arg1) && machine()->is_list(arg2)) {
             auto oo = machine()->from_list(arg2);
             for (auto &o: oo) {
@@ -586,13 +582,13 @@ int
             void* p = *pp;
             free(pp);
 
-            std::cerr << "ffi_call " << p << "(n = " << n << ")" << std::endl;
+            //std::cerr << "ffi_call " << p << "(n = " << n << ")" << std::endl;
             ffi_call(&cif, FFI_FN(p), &result, arg_values);
 
             auto r = from_ffi_value(arg1, &result);
 
             for (size_t i = 0; i < n; i++) {
-                free(arg_types[i]);
+                free(arg_values[i]);
             }
             free(arg_types);
             free(arg_values);
