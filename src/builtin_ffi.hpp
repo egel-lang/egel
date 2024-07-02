@@ -580,18 +580,38 @@ int
 
             void** pp = reinterpret_cast<void**>(to_ffi_value(arg0));
             void* p = *pp;
-            free(pp);
 
             //std::cerr << "ffi_call " << p << "(n = " << n << ")" << std::endl;
             ffi_call(&cif, FFI_FN(p), &result, arg_values);
 
             auto r = from_ffi_value(arg1, &result);
 
+            // char* has copying semantics both in and out but prevent double free
+            char* cout = nullptr;
+            if (machine()->is_data_text(machine()->array_get(r,0), c_char_p)) {
+                cout = reinterpret_cast<char*>(result);
+            }
+            for (size_t i = 0; i < n; i++) {
+                if (machine()->is_data_text(machine()->array_get(oo[i],0), c_char_p)) {
+                    char *cc = *reinterpret_cast<char**>(arg_values[i]);
+                    if ((cc != cout) && (cc != nullptr)) {
+                        //std::cerr << "cc " << ((void*) cc) << std::endl;
+                        free(cc);
+                    }
+                }
+            }
+            if (cout != nullptr) {
+                //std::cerr << "cout " << ((void*) cout) << std::endl;
+                free(cout);
+            }
+            
+            // free the rest
             for (size_t i = 0; i < n; i++) {
                 free(arg_values[i]);
             }
             free(arg_types);
             free(arg_values);
+            free(pp);
 
             return r;
         } else {
