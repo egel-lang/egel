@@ -8,8 +8,8 @@ Installation
 ------------
 
 This interpreter is being developed on Linux/MacOS/BSD and uses icu4c for 
-Unicode support, fmt for formatting, and GNU lightning as a ahead-of-time
-backend. 
+Unicode support, fmt for formatting, ffi as a foreign function interface,
+and GNU lightning as a ahead-of-time backend. 
 
 The interpreter can be compiled with a current C++ compiler and employs
 cmake to build.
