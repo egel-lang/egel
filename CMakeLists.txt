@@ -1,1 +1,1 @@
-CMakeLists.vendor
+CMakeLists.foss

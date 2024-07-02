@@ -115,26 +115,28 @@ file(GLOB EGEL_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.hpp")
 # check for ffi, ICU, Threads, fmt
 # ICU components: data, i18n, io, le, lx, test, tu and uc.
 find_package(PkgConfig)
-pkg_check_modules(LIBFFI REQUIRED IMPORTED_TARGET libffi)
+pkg_check_modules(FFI REQUIRED libffi)
 
 find_package(ICU 60.0 REQUIRED COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
 find_package(fmt 7.1 REQUIRED)
 
+pkg_check_modules(LIGHTNING REQUIRED lightning)
+
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories("${ICU_INCLUDE_DIRS}")
-include_directories(/usr/local/include) ## for GNU lightning
-include_directories(/usr/include) ## for GNU lightning
+#include_directories(/usr/local/include) ## for GNU lightning
+#include_directories(/usr/include) ## for GNU lightning
 
 # objects
 add_library(objlib OBJECT ${EGEL_SOURCES})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_link_libraries(objlib PkgConfig::LIBFFI fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_libraries(objlib ${FFI_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
 target_link_directories(objlib PRIVATE /usr/local/lib) # for GNU lightning
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
-target_link_libraries(egel ${CMAKE_DL_LIBS} PkgConfig::LIBFFI fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_libraries(egel ${CMAKE_DL_LIBS} ${FFI_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
 target_link_directories(egel PRIVATE /usr/local/lib) # for GNU lightning
 # target_link_libraries(egel stdc++fs) # for old gcc
 
@@ -147,7 +149,7 @@ target_link_directories(egellib PRIVATE /usr/local/lib) # for GNU lightning
 # static Egel library
 add_library(egellib_static STATIC $<TARGET_OBJECTS:objlib>)
 set_target_properties(egellib_static PROPERTIES OUTPUT_NAME egel)
-target_link_libraries(egellib_static PkgConfig::LIBFFI fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_libraries(egellib_static ${FFI_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
 target_link_directories(egellib_static PRIVATE /usr/local/lib) # for GNU lightning
 
 #

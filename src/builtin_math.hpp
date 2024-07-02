@@ -25,7 +25,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return machine()->create_bool(isfinite(f));
+            return machine()->create_bool(std::isfinite(f));
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -40,7 +40,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return machine()->create_bool(isinf(f));
+            return machine()->create_bool(std::isinf(f));
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -55,7 +55,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return machine()->create_bool(isnan(f));
+            return machine()->create_bool(std::isnan(f));
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -70,7 +70,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return machine()->create_bool(isnormal(f));
+            return machine()->create_bool(std::isnormal(f));
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -552,7 +552,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            auto b = signbit(f);
+            auto b = std::signbit(f);
             return machine()->create_integer((b != 0) ? (-1) : (1));
         } else {
             throw machine()->bad_args(this, arg0);
