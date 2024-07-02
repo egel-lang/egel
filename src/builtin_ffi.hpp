@@ -800,6 +800,98 @@ public:
     }
 };
 
+// ## FFI::poke p n v - poke n bytes beyond p a value v
+class Poke : public Triadic {
+public:
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Poke, FFI, "poke");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
+        if (machine()->is_array(arg0) 
+                && (machine()->array_size(arg0) == 2)
+                && machine()->is_data_text(machine()->array_get(arg0,0), c_void_p)
+                && machine()->is_integer(machine()->array_get(arg0,1))
+                && machine()->is_integer(arg1)
+                && machine()->is_array(arg2)
+                && (machine()->array_size(arg2) == 2)
+                && machine()->is_data(machine()->array_get(arg2,0))) {
+            auto n0 = machine()->get_integer(machine()->array_get(arg0,1));
+            auto n1 = machine()->get_integer(arg1);
+            auto ptr = reinterpret_cast<char*>(n0)+n1;
+
+            auto o0 = machine()->array_get(arg2,0);
+            auto o1 = machine()->array_get(arg2,1);
+            if ( machine()->is_data_text(o0, c_bool) ) {
+                if (machine()->is_false(o1)) {
+                    *(reinterpret_cast<bool*>(ptr)) = false;
+                } else {
+                    *(reinterpret_cast<bool*>(ptr)) = true;
+                }
+            } else if ( machine()->is_data_text(o0, c_char) ) {
+                *(reinterpret_cast<char*>(ptr)) = static_cast<char>(machine()->get_char(o1));
+            /*
+            } else if ( machine()->is_data_text(o0, c_wchar) ) {
+                return (void*) ( (char) machine()->get_char(o1) );
+            */
+            } else if ( machine()->is_data_text(o0, c_byte) ) {
+                *(reinterpret_cast<char*>(ptr)) = static_cast<char>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_ubyte) ) {
+                *(reinterpret_cast<char*>(ptr)) = static_cast<char>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_short) ) {
+                *(reinterpret_cast<short*>(ptr)) = static_cast<short>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_ushort) ) {
+                *(reinterpret_cast<unsigned short*>(ptr)) = static_cast<unsigned short>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_int) ) {
+                *(reinterpret_cast<int*>(ptr)) = static_cast<int>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_uint) ) {
+                *(reinterpret_cast<unsigned int*>(ptr)) = static_cast<unsigned int>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_long) ) {
+                *(reinterpret_cast<long*>(ptr)) = static_cast<long>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_ulong) ) {
+                *(reinterpret_cast<unsigned long*>(ptr)) = static_cast<unsigned long>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_longlong) ) {
+                *(reinterpret_cast<long long*>(ptr)) = static_cast<long long>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_ulonglong) ) {
+                *(reinterpret_cast<unsigned long long*>(ptr)) = static_cast<unsigned long long>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_size_t) ) {
+                *(reinterpret_cast<size_t*>(ptr)) = static_cast<size_t>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_ssize_t) ) {
+                *(reinterpret_cast<ssize_t*>(ptr)) = static_cast<ssize_t>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_time_t) ) {
+                *(reinterpret_cast<time_t*>(ptr)) = static_cast<time_t>(machine()->get_integer(o1));
+            } else if ( machine()->is_data_text(o0, c_float) ) {
+                *(reinterpret_cast<float*>(ptr)) = static_cast<float>(machine()->get_float(o1));
+            } else if ( machine()->is_data_text(o0, c_double) ) {
+                *(reinterpret_cast<double*>(ptr)) = static_cast<double>(machine()->get_float(o1));
+            } else if ( machine()->is_data_text(o0, c_longdouble) ) {
+                *(reinterpret_cast<long double*>(ptr)) = static_cast<long double>(machine()->get_float(o1));
+            } else if ( machine()->is_data_text(o0, c_char_p) ) {
+                if (machine()->is_none(o1)) {
+                    *(reinterpret_cast<char**>(ptr)) = nullptr;
+                } else {
+                    auto s = machine()->get_text(o1);
+                    auto cc = VM::unicode_to_utf8_chars(s);
+                    *(reinterpret_cast<char**>(ptr)) = reinterpret_cast<char*>(cc);
+                }
+            /*
+            } else if ( machine()->is_data_text(o0, c_wchar_p) ) {
+            */
+            } else if ( machine()->is_data_text(o0, c_void_p)  ) {
+                if (machine()->is_none(o1)) {
+                    *(reinterpret_cast<void**>(ptr)) = nullptr;
+                } else {
+                    *(reinterpret_cast<void**>(ptr)) = reinterpret_cast<void*>(machine()->get_integer(o1));
+                }
+            } else {
+                PANIC("ffi value expected");
+                return nullptr; // keep compiler happy
+            }
+            return machine()->create_none();
+        } else {
+            throw machine()->bad_args(this, arg0, arg1, arg2);
+        }
+    }
+};
+
 inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -833,6 +925,8 @@ inline std::vector<VMObjectPtr> builtin_ffi(VM *vm) {
 
     oo.push_back(Malloc::create(vm));
     oo.push_back(Free::create(vm));
+    oo.push_back(Peek::create(vm));
+    oo.push_back(Poke::create(vm));
 
     oo.push_back(ToUTF8::create(vm));
     oo.push_back(FromUTF8::create(vm));
