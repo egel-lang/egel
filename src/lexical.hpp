@@ -320,8 +320,8 @@ bool is_exponent(UChar32 c) {
 }
 
 bool is_escaped(UChar32 c) {
-    return ((c == (UChar32)'\\') || (c == (UChar32)'t') ||
-            (c == (UChar32)'\'') || (c == (UChar32)'"') || (c == (UChar32)'n'));
+    return ((c == (UChar32)'\\') || (c == (UChar32)'t') || (c == (UChar32)'\'') 
+         || (c == (UChar32)'"')  || (c == (UChar32)'r') || (c == (UChar32)'n'));
 }
 
 bool is_math(UChar32 c) {
