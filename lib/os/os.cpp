@@ -934,6 +934,39 @@ public:
     }
 };
 
+// ## OS::exec c - system exec command
+class Exec : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, Exec, "OS", "exec");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            auto cmd = VM::unicode_to_utf8_chars(s);
+            
+            std::array<char, 128> buffer;
+            std::string result;
+            std::unique_ptr<FILE, void(*)(FILE*)> pipe(popen(cmd, "r"),
+                [](FILE * f) -> void
+                {
+                    // wrapper to ignore the return value from pclose() is needed with newer versions of gnu g++
+                    std::ignore = pclose(f);
+                });
+            //std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+            if (!pipe) {
+                throw std::runtime_error("popen() failed!");
+            }
+            while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
+                result += buffer.data();
+            }
+            auto r = VM::unicode_from_utf8_chars(result.c_str());
+            return machine()->create_text(r);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
 }
@@ -962,6 +995,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Eof::create(vm));
     oo.push_back(Flock::create(vm));
     oo.push_back(Exit::create(vm));
+    oo.push_back(Exec::create(vm));
 
     // hacked TCP protocol
     oo.push_back(ServerObject::create(vm));
