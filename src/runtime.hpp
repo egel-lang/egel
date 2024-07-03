@@ -629,7 +629,7 @@ public:
     virtual VMObjectPtrs get_bytedata(const VMObjectPtr &o) = 0;
     virtual icu::UnicodeString serialize(const VMObjectPtr &o) = 0;
     virtual VMObjectPtr deserialize(const icu::UnicodeString &s) = 0;
-    virtual VMObjectPtrs bundle(const VMObjectPtr &o) = 0;
+    virtual VMObjectPtrs dependencies(const VMObjectPtr &o) = 0;
 
     virtual int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) = 0;
 

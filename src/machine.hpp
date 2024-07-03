@@ -666,8 +666,8 @@ public:
         return deserialize_from_string(this, s);
     }
 
-    VMObjectPtrs bundle(const VMObjectPtr &o) override {
-        return egel::bundle(this, o);
+    VMObjectPtrs dependencies(const VMObjectPtr &o) override {
+        return egel::dependencies(this, o);
     }
 
     icu::UnicodeString symbol(const VMObjectPtr &o) override {

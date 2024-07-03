@@ -284,12 +284,12 @@ public:
     }
 };
 
-class Bundle : public Monadic {
+class Dependencies : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Bundle, "System", "bundle");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dependencies, "System", "dependencies");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        auto oo = machine()->bundle(arg0);
+        auto oo = machine()->dependencies(arg0);
         return machine()->to_list(oo);
     }
 };
@@ -400,7 +400,7 @@ std::vector<VMObjectPtr> builtin_runtime(VM *vm) {
     oo.push_back(GetArray::create(vm));
     oo.push_back(GetBytecode::create(vm));
     oo.push_back(GetBytedata::create(vm));
-    oo.push_back(Bundle::create(vm));
+    oo.push_back(Dependencies::create(vm));
     return oo;
 }
 

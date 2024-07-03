@@ -96,7 +96,7 @@ public:
         return Status::OK;
     }
     
-    virtual Status EgelBundle(ServerContext* context, const EgelTexts* in, EgelText* out) override {
+    virtual Status EgelDependencies(ServerContext* context, const EgelTexts* in, EgelText* out) override {
         auto texts = in->texts();
         for (auto &t : texts) {
 //std::cout << "received: " << t << "\n";
@@ -185,7 +185,7 @@ public:
         }
     }
 
-    EgelRpcReturn EgelBundle(const std::vector<std::string>& data) {
+    EgelRpcReturn EgelDependencies(const std::vector<std::string>& data) {
         EgelTexts in;
         EgelText out;
 
@@ -195,7 +195,7 @@ public:
 
         ClientContext context;
 
-        Status status = _stub->EgelBundle(&context, in, &out);
+        Status status = _stub->EgelDependencies(&context, in, &out);
 
         if (status.ok()) {
             EgelRpcReturn r;
@@ -287,14 +287,14 @@ public:
     }
 
     VMObjectPtr call(const VMObjectPtr& o) {
-        // send the bundle
-        auto oo = machine()->bundle(o);
+        // send the dependencies
+        auto oo = machine()->dependencies(o);
         std::vector<std::string> ss;
         for (auto &o : oo) {
             auto s = machine()->disassemble(o);
             ss.push_back(unicode_to_string(s));
         }
-        auto r = _connection->EgelBundle(ss);
+        auto r = _connection->EgelDependencies(ss);
 
         if (!r.okay) {
             throw machine()->create_text("call failed");

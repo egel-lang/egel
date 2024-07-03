@@ -747,7 +747,7 @@ inline VMObjectPtr deserialize_from_string(VM *m, const icu::UnicodeString &s) {
     return o;
 };
 
-inline VMObjectPtrs bundle(VM *m, const VMObjectPtr &o) {
+inline VMObjectPtrs dependencies(VM *m, const VMObjectPtr &o) {
     VMObjectsStack work0;
     work0.push(o);
 
