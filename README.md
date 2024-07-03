@@ -19,7 +19,7 @@ managers provide C++ libraries.
 
 1. The open source model (various Unixes and BSDs) where C++ libraries are
    compiled and dissimated by the operating system distributor. Use your
-   package manager to install libicu, fmt, and GNU lightning.
+   package manager to install libicu, libffi, fmt, and GNU lightning.
 
 2. The vendor based model (MacOS and Windows) where C++ libraries are 
    usually not provided since they are brittle to link against, and where
@@ -31,7 +31,6 @@ managers provide C++ libraries.
    directory that should help somewhat.
 
 CMake files are provided for both models, select the one you want to use
-in cmake with 
 and rename either to `CMakeLists.txt`.
 
 After that the interpreter is made with `cmake` in the standard manner. Run
