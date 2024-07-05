@@ -329,8 +329,8 @@ public:
         if ((Regex::is_regex_pattern(arg0)) && (machine()->is_text(arg1)) &&
             (machine()->is_text(arg2))) {
             auto pat = Regex::regex_pattern_cast(arg0);
-            auto s0 = machine()->get_text(arg1);
-            auto s1 = machine()->get_text(arg2);
+            auto s0 = machine()->get_text(arg2);
+            auto s1 = machine()->get_text(arg1);
 
             auto r = pat->matcher(s0);
             if (r == nullptr) throw machine()->bad_args(this, arg0, arg1, arg2);
