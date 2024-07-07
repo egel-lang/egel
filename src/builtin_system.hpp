@@ -444,7 +444,8 @@ public:
     }
 };
 
-// ## System::get field obj - retrieve an object field
+// deprecated! System::get field obj - retrieve an object field
+/*
 class GetField : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, GetField, "System", "get");
@@ -477,8 +478,10 @@ public:
         }
     }
 };
+*/
 
-// ## System::set field val obj - set an object field
+// deprecated! System::set field val obj - set an object field
+/*
 class SetField : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, SetField, "System", "set");
@@ -514,8 +517,10 @@ public:
         }
     }
 };
+*/
 
-// ## System::extend obj0 obj1 - extend object obj0 with every field from obj1
+// deprecated! System::extend obj0 obj1 - extend object obj0 with every field from obj1
+/*
 class ExtendField : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, ExtendField, "System", "extend");
@@ -558,6 +563,7 @@ public:
         }
     }
 };
+*/
 
 // ## System::to_int x - Try and convert an object to int
 class Toint : public Monadic {
@@ -667,7 +673,7 @@ protected:
     VMObjectPtr _ref = nullptr;
 };
 
-// ## System::ref x - create a reference object from x
+// ## System::ref x - create a reference object
 class Ref : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ref, "System", "ref");
@@ -679,7 +685,7 @@ public:
     }
 };
 
-// ## System::get_ref ref - get the stored value from ref
+// ## System::get_ref ref - dereference
 class Getref : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Getref, "System", "get_ref");
@@ -696,7 +702,7 @@ public:
     }
 };
 
-// ## System::set_ref ref x - set reference object ref to x
+// ## System::set_ref ref x - set reference objec
 class Setref : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Setref, "System", "set_ref");
@@ -736,7 +742,7 @@ public:
     }
 };
 
-// ## System::pack s - create a string from a list of code points
+// ## System::pack s - create a string from a list of chars
 class Pack : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Pack, "System", "pack");
@@ -781,8 +787,7 @@ public:
     }
 };
 
-// ## System::arg n - return the n-th application argument, otherwise return
-//'none'
+// ## System::arg n - the n-th application argument, or none
 class Arg : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Arg, "System", "arg");
@@ -802,8 +807,7 @@ public:
     }
 };
 
-// ## System::get_env s - return the value of environment variable s, otherwise
-//  return 'none'
+// ## System::get_env s - the value of environment variable, or none
 class Getenv : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Getenv, "System", "get_env");
@@ -826,7 +830,8 @@ public:
     }
 };
 
-// ## System::&& - short-circuited and (deprecated)
+// deprecated! System::&& - short-circuited and
+/*
 class LazyAnd : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyAnd, "System", "&&");
@@ -847,8 +852,10 @@ public:
         }
     }
 };
+*/
 
-// ## System::|| - short-circuited or (deprecated)
+// deprecated! System::|| - short-circuited or
+/*
 class LazyOr : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, LazyOr, "System", "||");
@@ -869,8 +876,9 @@ public:
         }
     }
 };
+*/
 
-// ## System::print o0 .. on - print terms, don't escape characters or texts
+// ## System::print o0 .. on - print terms
 class Print : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Print, "System", "print");
@@ -909,8 +917,7 @@ public:
     }
 };
 
-// ## System::format fmt x ...  - create a string from formatted string fmt and
-//  objects x,..
+// ## System::format fmt x0 ...  - create a formatted strin
 class Format : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Format, "System", "format");
@@ -1017,7 +1024,8 @@ public:
     }
 };
 
-// ## System::fast_foldl f z xx - fast_foldl
+// deprecated! System::fast_foldl f z xx - fast_foldl
+/*
 class Foldl : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Foldl, "System", "fast_foldl");
@@ -1052,6 +1060,7 @@ public:
         return acc;
     }              
 };
+*/
 
 inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     std::vector<VMObjectPtr> oo;
@@ -1109,10 +1118,6 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(Unpack::create(vm));
     oo.push_back(Pack::create(vm));
 
-    // lazy operators
-    //    oo.push_back(LazyAnd::create(vm));
-    //    oo.push_back(LazyOr::create(vm));
-
     // system info, override if sandboxed
     oo.push_back(Arg::create(vm));
     oo.push_back(Getenv::create(vm));
@@ -1123,19 +1128,17 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(Format::create(vm));
 
     // references
-    // oo.push_back(Reference::create(vm)); // XXXX
     oo.push_back(VMObjectStub::create(vm, "System::reference"));  // XXXX
     oo.push_back(Ref::create(vm));
     oo.push_back(Setref::create(vm));
     oo.push_back(Getref::create(vm));
 
     // OO fields
+/* deprecated
     oo.push_back(GetField::create(vm));
     oo.push_back(SetField::create(vm));
     oo.push_back(ExtendField::create(vm));
-
-    // fast builtins
-    oo.push_back(Foldl::create(vm));
+*/
 
     return oo;
 }

@@ -169,11 +169,11 @@ namespace Gen (
     def range = 
         [ XX F -> Gen::map F XX ]
 
-    ## Gen::range l0 l1 f - iterate over elements of two lists
+    ## Gen::range2 l0 l1 f - iterate over elements of two lists
     def range2 =
         [ XG YG F -> Gen::flatten (Gen::range XG [X -> Gen::range YG [Y -> F X Y]]) ]
 
-    ## Gen::range l0 l1 l2 f - iterate over elements of three lists
+    ## Gen::range3 l0 l1 l2 f - iterate over elements of three lists
     def range3 =
         [ XG YG ZG F -> Gen::flatten (Gen::range XG [X -> range2 YG ZG [Y Z  -> F X Y Z]]) ]
 
