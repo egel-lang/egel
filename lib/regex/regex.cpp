@@ -285,8 +285,7 @@ public:
     }
 };
 
-// ## Regex::replace pat s0 s1 - replace the first occurence of pattern in a
-//  string with a string
+// ## Regex::replace pat s0 s1 - replace the first occurence of a pattern
 class Replace : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
@@ -317,8 +316,7 @@ public:
     }
 };
 
-// ## Regex::replace_all pat s0 s1 - replace the all occurences of pattern in a
-//  string with a string
+// ## Regex::replace_all pat s0 s1 - replace all occurences of a pattern 
 class ReplaceAll : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
