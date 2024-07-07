@@ -357,7 +357,7 @@ public:
     }
 };
 
-// ## Math::expm1 x - subtracting 1 from exp x
+// ## Math::expm1 x - subtracting 1 from exp
 class Expm1 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Expm1, "Math", "expm1");
@@ -418,8 +418,7 @@ public:
     }
 };
 
-// ## Math::log1p x - the natural logarithm (loge, also ln) of 1 + x for
-//  a number x
+// ## Math::log1p x - the natural logarithm of the next number
 class Log1p : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log1p, "Math", "log1p");
@@ -541,8 +540,7 @@ public:
     }
 };
 
-// ## Math::sign x - the sign of the x, indicating whether x is
-//  positive, negative or zero
+// ## Math::sign x - the sign of the a number
 class Sign : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sign, "Math", "sign");
