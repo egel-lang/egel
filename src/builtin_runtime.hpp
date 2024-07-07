@@ -320,24 +320,7 @@ public:
     }
 };
 
-//## System::get_tag s - get the type of symbol s
-class GetTag: public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetTag, "System", "get_tag");
-
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (machine()->is_text(arg0)) {
-            auto s = machine()->get_text(arg0);
-            auto o = machine()->get_data_string(s);
-
-            return VMObjectText::create("stub");
-        } else {
-        throw machine()->bad_args(this, arg0);
-        }
-    }
-};
-
-//## System::set_data s - define symbol s as data
+//## System::set_data s - define text as data
 class SetData: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, SetData, "System", "set_data");
@@ -354,7 +337,7 @@ public:
     }
 };
 
-//## System::set_def s e - define symbol s as expression e
+//## System::set_def s e - define text as expression
 class SetDef: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, SetDef, "System", "set_def");
@@ -363,7 +346,7 @@ public:
 override { if (machine()->is_text(arg0)) { auto s = machine()->get_text(arg0);
             auto o = machine()->get_data_string(s);
 
-            return VMObjectText::create("stub");
+            throw VMObjectText::create("stub");
         } else {
         throw machine()->bad_args(this, arg0, arg1);
         }

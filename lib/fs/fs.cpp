@@ -909,8 +909,7 @@ public:
     }
 };
 
-// ## OS::hard_link_count p - returns the number of hard links referring to the
-//  specific file
+// ## OS::hard_link_count p - returns the number of hard links 
 class HardLinkCount : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HardLinkCount, OS_STRING, "hard_link_count");
@@ -1077,8 +1076,7 @@ public:
     }
 };
 
-// ## OS::remove_all p - removes a file or directory and all its contents,
-//  recursively
+// ## OS::remove_all p - removes a file or directory and all its contents
 class RemoveAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RemoveAll, OS_STRING, "remove_all");
@@ -1124,8 +1122,7 @@ public:
     }
 };
 
-// ## OS::resize_file p n - changes the size of a regular file by truncation or
-//  zero-fill
+// ## OS::resize_file p n - changes the size of a regular file 
 class ResizeFile : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ResizeFile, OS_STRING, "resize_file");
@@ -1259,8 +1256,7 @@ public:
     }
 };
 
-// ## OS::is_character_file p - checks whether the given path refers to a
-//  character device
+// ## OS::is_character_file p - the given path refers to a character device
 class IsCharacterFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsCharacterFile, OS_STRING,
@@ -1372,8 +1368,7 @@ public:
     }
 };
 
-// ## OS::is_regular_file p - checks whether the argument refers to a regular
-//  file
+// ## OS::is_regular_file p - the argument refers to a regular file
 class IsRegularFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRegularFile, OS_STRING, "is_regular_file");

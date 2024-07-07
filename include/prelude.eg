@@ -87,9 +87,6 @@ namespace System (
     ## System::$ - a very mysterious operator
     #def $ = [F X -> F X]
 
-    def @@ =
-        [ SELF NAME -> (get NAME SELF) SELF ]
-
     ## System::abs x - absolute
     def abs = [X -> if X < 0 then 0 - X else X ]
 
@@ -213,10 +210,10 @@ namespace List (
         [ 0 (cons X XX) -> X
         | N (cons X XX) -> nth (N - 1) XX ]
 
-    ## List::index_of x xx - index of x in xx
+    ## List::index_of x xx - index of a member in list
     def index_of = 
          let F = fix 
-             [ F N X {} -> throw "not found" 
+             [ F N X {} -> -1
              | F N X {Y|YY} -> if X == Y then N else F (N+1) X YY ] in
         [ X YY -> F 0 X YY ]
 
@@ -225,19 +222,19 @@ namespace List (
         [ 0 X (cons Y YY) -> cons X YY
         | I X (cons Y YY) -> cons Y (insert (I - 1) X YY) ]
 
-    ## List::take n l - take the first n elements of a list
+    ## List::take n l - take the first elements of a list
     def take =
         [ 0 XX -> nil
         | N nil -> nil
         | N (cons X XX) -> cons X (take (N - 1) XX) ]
 
-    ## List::drop n l - drop the first n elements of a list
+    ## List::drop n l - drop the first elements of a list
     def drop =
         [ 0 XX -> XX
         | N nil -> nil
         | N (cons X XX) -> drop (N - 1) XX ]
 
-    ## List::split_at n l - take and drop the first n elements of a list
+    ## List::split_at n l - take and drop the first elements of a list
     def split_at =
         [ N XX -> if N <= 0 then (nil, XX) else
             [ nil -> (nil,nil)
@@ -249,7 +246,7 @@ namespace List (
         | N L   -> if 0 < N then cons (take N L) (chunks N (drop N L))
                    else nil ]
 
-    ## List::from_to f t - list of numbers for l to t (inclusive)
+    ## List::from_to l u - list of numbers for lower to upper (inclusive)
     def from_to =
         [ X Y -> 
             if X < Y then cons X (from_to (X+1) Y)

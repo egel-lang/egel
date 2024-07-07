@@ -181,8 +181,7 @@ public:
     }
 };
 
-// ## Regex::look_match pat s0 - returns the initial matched part of the string,
-//  or none
+// ## Regex::look_match pat s0 - the initial matched part of the string
 class LookMatch : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
@@ -253,7 +252,7 @@ public:
     }
 };
 
-// ## Regex::matches pat s0 - return a list of pattern matches in a string
+// ## Regex::matches pat s0 - a list of pattern matches in a string
 class Matches : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Matches, REGEX_STRING, "matches");
@@ -350,7 +349,7 @@ public:
     }
 };
 
-// ## Regex::group pat s0 - return the matched groups in a string
+// ## Regex::group pat s0 - the matched groups in a string
 class Group : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Group, REGEX_STRING, "group");

@@ -91,7 +91,7 @@ public:
     }
 };
 
-// ## System::wait_for f n - check whether f reduced in n milliseconds
+// ## System::wait_for f n - check whether future reduced during milliseconds
 class WaitFor : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, WaitFor, "System", "wait_for");
@@ -110,7 +110,7 @@ public:
     }
 };
 
-// ## System::is_valid f - check whether f reduced
+// ## System::is_valid f - check whether future is reduced
 class IsValid : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsValid, "System", "is_valid");

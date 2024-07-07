@@ -658,7 +658,7 @@ public:
     }
 };
 
-// ## FFI::peek p n t - peek n bytes beyond p for value of type t
+// ## FFI::peek p n t - peek a number of bytes beyond for value of type
 class Peek : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Peek, FFI, "peek");
@@ -762,45 +762,7 @@ public:
     }
 };
 
-// ## FFI::to_utf8 s - get void* from text
-class ToUTF8 : public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUTF8, FFI, "to_utf8");
-
-    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        if (machine()->is_text(arg0)) { 
-            auto s = machine()->get_text(arg0);
-            auto ptr = VM::unicode_to_utf8_chars(s);
-            VMObjectPtrs oo;
-            oo.push_back(VMObjectData::create(machine(), c_void_p));
-            oo.push_back(machine()->create_integer(reinterpret_cast<long long>(ptr)));
-            return machine()->create_array(oo);
-        } else {
-            throw machine()->bad_args(this, arg0);
-        }
-    }
-};
-
-// ## FFI::from_utf8 s - get void* from text
-class FromUTF8 : public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, FromUTF8, FFI, "from_utf8");
-
-    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        if (machine()->is_array(arg0) 
-                && (machine()->array_size(arg0) == 2)
-                && machine()->is_data_text(machine()->array_get(arg0,0), c_void_p)
-                && machine()->is_integer(machine()->array_get(arg0,1))) {
-            auto n = machine()->get_integer(machine()->array_get(arg0,1));
-            auto s = VM::unicode_from_utf8_chars(reinterpret_cast<char*>(n));
-            return machine()->create_text(s);
-        } else {
-            throw machine()->bad_args(this, arg0);
-        }
-    }
-};
-
-// ## FFI::poke p n v - poke n bytes beyond p a value v
+// ## FFI::poke p n v - poke a value a number of bytes beyond pointer
 class Poke : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Poke, FFI, "poke");
@@ -888,6 +850,44 @@ public:
             return machine()->create_none();
         } else {
             throw machine()->bad_args(this, arg0, arg1, arg2);
+        }
+    }
+};
+
+// ## FFI::to_utf8 s - get pointer from text
+class ToUTF8 : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUTF8, FFI, "to_utf8");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_text(arg0)) { 
+            auto s = machine()->get_text(arg0);
+            auto ptr = VM::unicode_to_utf8_chars(s);
+            VMObjectPtrs oo;
+            oo.push_back(VMObjectData::create(machine(), c_void_p));
+            oo.push_back(machine()->create_integer(reinterpret_cast<long long>(ptr)));
+            return machine()->create_array(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+// ## FFI::from_utf8 s - get text from pointer
+class FromUTF8 : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, FromUTF8, FFI, "from_utf8");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_array(arg0) 
+                && (machine()->array_size(arg0) == 2)
+                && machine()->is_data_text(machine()->array_get(arg0,0), c_void_p)
+                && machine()->is_integer(machine()->array_get(arg0,1))) {
+            auto n = machine()->get_integer(machine()->array_get(arg0,1));
+            auto s = VM::unicode_from_utf8_chars(reinterpret_cast<char*>(n));
+            return machine()->create_text(s);
+        } else {
+            throw machine()->bad_args(this, arg0);
         }
     }
 };
