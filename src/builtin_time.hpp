@@ -29,6 +29,7 @@ enum class clock_type : int {
  Date/time classes revolve about four abstractions: clocks, time points,
  durations, and calendar times.
 */
+// ## Time::duration - a duration
 class Duration: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Duration, STRING_TIME, "duration");
@@ -78,6 +79,7 @@ private:
     std::chrono::duration<int, std::milli> _duration;
 };
 
+// ## Time::time_point - a time point
 class TimePoint: public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, TimePoint, STRING_TIME, "time_point");
@@ -629,11 +631,7 @@ protected:
     enum clock_type _clock_type;
 };
 
-// ## Time::duration - opaque values which represent time durations
-// ## Time::time_points - opaque values which represent time points
-// ## Time::tm - opaque values which represent calendar times
-
-// ## OS:empty p - checks whether the path is empty
+// ## Time::clock s - create a clock object
 class Clock : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Clock, STRING_TIME, "clock");
@@ -677,6 +675,7 @@ public:
     }
 };
 
+// ## Time::now c - current time according to a clock
 class Now : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Now, STRING_TIME, "now");
@@ -691,6 +690,7 @@ public:
     }
 };
 
+// ## Time::is_steady c - is a steady clock
 class IsSteady : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsSteady, STRING_TIME, "is_steady");
@@ -721,6 +721,7 @@ public:
 };
 */
 
+// ## Time::milliseconds n - a number of milliseconds
 class Milliseconds : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Milliseconds, STRING_TIME, "milliseconds");
@@ -735,6 +736,7 @@ public:
     }
 };
 
+// ## Time::seconds n - a number of seconds
 class Seconds : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Seconds, STRING_TIME, "seconds");
@@ -749,6 +751,7 @@ public:
     }
 };
 
+// ## Time::minutes n - a number of minutes
 class Minutes : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Minutes, STRING_TIME, "minutes");
@@ -763,6 +766,7 @@ public:
     }
 };
 
+// ## Time::hours n - a number of hours
 class Hours : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Hours, STRING_TIME, "hours");
@@ -777,6 +781,7 @@ public:
     }
 };
 
+// ## Time::days n - a number of days
 class Days : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Days, STRING_TIME, "days");
@@ -791,6 +796,7 @@ public:
     }
 };
 
+// ## Time::weeks n - a number of weeks
 class Weeks : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Weeks, STRING_TIME, "weeks");
@@ -805,6 +811,7 @@ public:
     }
 };
 
+// ## Time::months n - a number of months
 class Months : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Months, STRING_TIME, "months");
@@ -819,6 +826,7 @@ public:
     }
 };
 
+// ## Time::years n - a number of years
 class Years : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Years, STRING_TIME, "years");
