@@ -190,9 +190,16 @@ void display_usage() {
     };
 }
 
-void display_version() {
+void display_version(const OptionsPtr &oo) {
     std::cout << EXECUTABLE_NAME << ' ' << EXECUTABLE_VERSION << std::endl;
     std::cout << EXECUTABLE_COPYRIGHT << ' ' << EXECUTABLE_AUTHORS << std::endl;
+    std::cout << "    EGEL_PATH: \"" << VM::env_egel_path() << "\"" << std::endl;
+    std::cout << "     EGEL_PS0: \"" << VM::env_egel_ps0()  << "\"" << std::endl;
+    std::cout << "             :";
+    for (const auto &p:oo->get_include_path()) {
+        std::cout << " \"" << p << "\"";
+    }
+    std::cout << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -205,6 +212,27 @@ int main(int argc, char *argv[]) {
         return (EXIT_FAILURE);
     };
 
+    // options
+    OptionsPtr oo = Options::create();
+
+    // add local directory to the search path
+    oo->add_include_path(icu::UnicodeString("."));
+
+    // check for include paths
+    for (auto &p : pp) {
+        if (p.first == ("-I")) {
+            oo->add_include_path(p.second);
+        };
+    };
+
+    // add include path from environment
+    auto path = VM::env_egel_path();
+    if (path != "") {
+        oo->add_include_path(path);
+    } else {
+        oo->add_include_path(EGEL_PATH);
+    }
+
     // check for -h or -v
     for (auto &p : pp) {
         if (p.first == ("-h")) {
@@ -212,33 +240,10 @@ int main(int argc, char *argv[]) {
             return (EXIT_SUCCESS);
         };
         if (p.first == ("-v")) {
-            display_version();
+            display_version(oo);
             return (EXIT_SUCCESS);
         };
     };
-
-    // options
-    OptionsPtr oo = Options::create();
-
-    // check for include paths
-    bool hasI = false;
-    for (auto &p : pp) {
-        if (p.first == ("-I")) {
-            oo->add_include_path(p.second);
-            hasI = true;
-        };
-    };
-
-    // add local directory to the search path if no other where given
-    if (!hasI) oo->add_include_path(icu::UnicodeString("./"));
-
-    // add include path from environment
-    auto istr = getenv("EGEL_PATH");
-    if (istr != nullptr) {
-        oo->add_include_path(icu::UnicodeString(istr, -1, US_INV));
-    } else {
-        oo->add_include_path(EGEL_PATH);
-    }
 
     // check for flags
     for (auto &p : pp) {

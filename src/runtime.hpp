@@ -642,6 +642,28 @@ public:
                                  const VMObjectPtr &a2) = 0;
 
     // convenience
+    static icu::UnicodeString env_egel_path() {
+        const char *env_p = std::getenv("EGEL_PATH");
+        icu::UnicodeString path;
+        if (env_p) {
+            path = icu::UnicodeString(env_p);
+        } else {
+            path = "";
+        }
+        return path;
+    }
+
+    static icu::UnicodeString env_egel_ps0() {
+        const char *env_p = std::getenv("EGEL_PS0");
+        icu::UnicodeString ps0;
+        if (env_p) {
+            ps0 = icu::UnicodeString(env_p);
+        } else {
+            ps0 = ">> ";
+        }
+        return ps0;
+    }
+
     static std::string unicode_to_string(const icu::UnicodeString &s) {
         std::string utf8;
         s.toUTF8String(utf8);
