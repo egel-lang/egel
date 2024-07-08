@@ -154,7 +154,7 @@ Supply a command to use `egel -e` as a simple calculator. Double semicolons are 
 The following files should be in the `EGEL_PATH` directory.
 
  * `prelude.eg` `calculate.eg` `search.eg`:
-   The standard Egel prelude and additional theories.
+   The standard Egel prelude and additional scripts.
 
  * `os.ego` `fs.ego` `regex.ego`:
    input/output, filesystem, regexes dynamic libraries.
