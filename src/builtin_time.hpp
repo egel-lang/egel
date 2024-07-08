@@ -637,7 +637,10 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Clock, STRING_TIME, "clock");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        if (machine()->is_text(arg0)) {
+        if (machine()->is_none(arg0)) {
+            auto c = TimeClock::create(machine(), clock_type::SYSTEM_CLOCK);
+            return c;
+        } else if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
             if (s == "system") {
                 auto c = TimeClock::create(machine(), clock_type::SYSTEM_CLOCK);
