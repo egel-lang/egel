@@ -53,7 +53,7 @@ namespace Gen (
     def reverse = 
        foldl (flip cons) nil
 
-    ## Gen::block n - list of number from 0 to n exclusive
+    ## Gen::block n - list of number from lower to upper exclusive
     def block =
         [ 0 -> nil
         | N -> cons (N - 1)  [ _ -> (block (N - 1)) ] ]
@@ -78,11 +78,11 @@ namespace Gen (
         [ 0 XX -> XX
         | N (cons X XX) -> drop (N - 1) (XX none) ]
 
-    ## Gen::repeat n - infinite list of n
+    ## Gen::repeat n - infinite list of elements
     def repeat =
         [ N -> cons N [ _ -> repeat N ] ]
 
-    ## Gen::cycle l - infinite list of cycling list l
+    ## Gen::cycle l - infinite list of cycling list
     def cycle =
         [ nil -> nil
         | LL  -> [ (cons X XX) -> cons X [_ -> (XX none) Gen::++ (cycle LL)] ] LL ]
