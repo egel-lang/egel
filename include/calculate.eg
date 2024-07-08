@@ -9,37 +9,37 @@ namespace Calculate (
 
     using System
 
-    ## Calculate::return a - calculate further with value a
+    ## Calculate::return a - calculate further with value
     def return =
         [ A S -> (A, S) ]
 
-    ## Calculate::chain f g - first do f, then g
+    ## Calculate::chain f g - chain two calculations
     def chain =
         [ F G S0 -> [(A, S1) -> G A S1] (F S0) ]
 
-    ## Calculate::run f s - run calculation f on state s
+    ## Calculate::run f s - run calculation on state
     def run =
         [ F S -> [(A, S) -> A] (F S) ]
 
-    ## Calculate::<* f g - first do f, then g
+    ## Calculate::<* f g - chain
     def <* = chain
 
     ## Calculate::skip - return a none
     def skip =
         return none
 
-    ## Calculate::apply f g - first do f, then modify argument with g
+    ## Calculate::apply f g - apply a function to a calculation
     def apply =
         [ F G -> chain F [A S -> (G A, S)] ]
 
-    ## Calculate::modify f g - first do f, then modify state with g
+    ## Calculate::modify f g - modify state
     def modify =
         [ F G -> chain F [A S -> (A, G S)] ]
 
-    ## Calculate::<@ f g - first do f, then apply g to argument
+    ## Calculate::<@ f g - apply
     def <@ = apply
 
-    ## Calculate::<+ f g - first do f, then modify state with g
+    ## Calculate::<+ f g - modify
     def <+ = modify
 
 )

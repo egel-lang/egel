@@ -23,83 +23,83 @@ namespace Search (
     def raise =
         return (cut none)
 
-    ## Search::message m - fail or raise with message m
+    ## Search::message m - fail or raise with message
     def message =
         [ P M -> P <*
             [ (bot _) -> return (bot M)
             | (cut _) -> return (cut M)
             | X       -> return X ] ]
 
-    ## Search::parallel p q - try alternatives p or q
+    ## Search::parallel p q - try both alternatives
     def parallel =
         [ P0 P1 S0 ->
             [ (bot R1, S1) -> P1 S0
             | L            -> L ] (P0 S0) ]
 
-    ## Search::sequential - try alternative p then q
+    ## Search::sequential - try alternatives sequentially
     def sequential =
         [ P0 P1 -> P0 <* 
             [ (top X)  -> P1 X
             | X        -> return X ] ]
 
-    ## Search::serial p q - try alternative p then force q
+    ## Search::serial p q - try alternative, then force the next
     def serial =
         [ P0 P1 -> P0 <* 
             [ (top X)  -> P1 X <* [ (bot X) -> return (cut X) | X -> return X]
             | X        -> return X ] ]
 
-    ## Search::apply p f - apply f to the argument being calculated
+    ## Search::apply p f - apply to the argument being calculated
     def apply =
         [ P F -> P <* 
             [ (top X) -> return (top (F X))
             | (bot M) -> return (bot M)
             | (cut M) -> return (cut M) ] ]
 
-    ## Search::opt p v - optionally succeed p with value v
+    ## Search::opt p v - optionally succeed with a value
     def opt =
         [ P R0 S0 ->
             [ (bot R1, S1) -> (top R0, S0)
             | L            -> L          ] (P R0 S0) ]
 
-    ## Search::serial_opt p q - optionally succeed p with value v
+    ## Search::serial_opt p q - optionally succeed with value
     def serial_opt =
         [ P0 P1 -> P0 <*  
             [ (top M) -> opt P1 M
             | L       -> return L ] ]
 
-    ## Search::<+> p q - try alternatives p or q
+    ## Search::<+> p q - try both alternatives  
     def <+> = parallel
 
-    ## Search::<-> p q - try alternative p then q
+    ## Search::<-> p q - try composition of alternatives
     def <-> = sequential
 
-    ## Search::<*> p q - try alternative p then force q
+    ## Search::<*> p q - try alternative then force
     def <*> = serial
 
-    ## Search::</> p q - try alternative p then q optionally
+    ## Search::</> p q - try alternative then optionally
     def </> = serial_opt
 
-    ## Search::<@> p f - apply f to the result of p
+    ## Search::<@> p f - apply function to the result
     def <@>  = apply
 
-    ## Search::<!> p m - set the failure message to m
+    ## Search::<!> p m - set the failure message
     def <!> = message
 
-    ## Search::one p - one time p and return a singleton result
+    ## Search::one p - one time and return a singleton result
     def one =
         [ P -> P <@> [A -> {A} ] ]
 
-    ## Search::plus p - one or more p and return a list result
+    ## Search::plus p - one or more and return a list result
     def plus =
         [ P ->
             (one P) </> \L0 ->
             (plus P) <@> \L1 -> L0 ++ L1 ]
 
-    ## Search::star p - zero or more p and return a list result
+    ## Search::star p - zero or more and return a list result
     def star =
         [ P -> plus P <+> success nil ]
 
-    ## Search::plus_sep p s - one or more p separated by s
+    ## Search::plus_sep p s - one or more with separator
     def plus_sep = 
         [ P Q ->
             one P </> \L0 -> 
@@ -108,11 +108,11 @@ namespace Search (
             L0 ++ L1 
         ]
 
-    ## Search::star_sep p s - zero or more p separated by s
+    ## Search::star_sep p s - zero or more with separator
     def star_sep = 
         [ P Q -> plus_sep P Q <+> success nil ]
 
-    ## Search::search p f t e s - search with p on state s 
+    ## Search::search p f t e s - search on state with three handlers
     def search = 
         [ P F T E S ->
             let (A,B) = P S in
