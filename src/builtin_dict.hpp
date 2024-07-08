@@ -102,9 +102,9 @@ public:
 };
 
 // ## Dict::get d k - get a value by key
-class DictGet : public Dyadic {
+class DictGet : public Binary {
 public:
-    DYADIC_PREAMBLE(VM_SUB_EGO, DictGet, STRING_DICT, "get");
+    BINARY_PREAMBLE(VM_SUB_EGO, DictGet, STRING_DICT, "get");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {

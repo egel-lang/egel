@@ -6,12 +6,11 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + fix deep-recursion term printing bugs
-+ replace all class preamlble macros with templates
++ replace all class preamble macros with templates
 + add import/export lists to using/namespace
 + vararg function definitions
 + move to C++20 (modules, modern syntax)
   when libfmt makes it into llvm and gcc?
-+ import works on identifiers
 + integer move instruction in bytecode
 + generators to prelude, generator for dict
 + rewrite generators
@@ -20,13 +19,11 @@ A list of all major changes between versions of the interpreter.
 + add backtick `` `f`` as a shorthand for `quote "f"`
 + dynamic dispatch
 + cleanup internals regarding combinator declarations
-+ rewrite the runtime to make the interpreter performant
 + module rework and compile into local module
 + time and date
 + complex numbers
 * clean up ref (make it serializable)
 + generate C++ from .eg file (module compilation)
-+ dict objects
 + target MSVC
 
 ## The bleeding, cutting edge
