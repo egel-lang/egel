@@ -1,0 +1,9 @@
+import "prelude.eg"
+
+using System
+using Time
+
+val t0 = now (clock none)
+
+def main =
+    print (format "{}\n" (t0 + hours 1))
