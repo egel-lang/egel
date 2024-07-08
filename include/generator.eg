@@ -68,12 +68,12 @@ namespace Gen (
         [ 0 X (cons Y YY) -> cons X YY
         | I X (cons Y YY) -> cons Y [_ -> (insert (I - 1) X (YY none)) ] ]
 
-    ## Gen::take n l - take the first n elements of a list
+    ## Gen::take n l - take the first elements of a list
     def take =
         [ 0 XX -> nil
         | N (cons X XX) -> cons X [_ -> (take (N - 1) (XX none)) ] ]
 
-    ## Gen::drop n l - drop the first n elements of a list
+    ## Gen::drop n l - drop the first elements of a list
     def drop =
         [ 0 XX -> XX
         | N (cons X XX) -> drop (N - 1) (XX none) ]
