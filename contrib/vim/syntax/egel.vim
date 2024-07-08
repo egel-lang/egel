@@ -14,7 +14,8 @@ syn case match
 
 syn keyword egelKeyword			if then else let in try catch throw do
 syn keyword egelKeyword			data def val
-syn keyword egelDirective		import using namespace
+syn keyword egelDirective		import using
+syn keyword egelNamespace		namespace
 
 syn keyword egelTodo			contained  TODO XXX
 
