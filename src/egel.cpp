@@ -192,7 +192,6 @@ void display_usage() {
 
 void display_version(const OptionsPtr &oo) {
     std::cout << EXECUTABLE_NAME << ' ' << EXECUTABLE_VERSION << std::endl;
-    std::cout << EXECUTABLE_COPYRIGHT << ' ' << EXECUTABLE_AUTHORS << std::endl;
     std::cout << "    EGEL_PATH: \"" << VM::env_egel_path() << "\"" << std::endl;
     std::cout << "     EGEL_PS0: \"" << VM::env_egel_ps0()  << "\"" << std::endl;
     std::cout << "             :";
@@ -200,6 +199,7 @@ void display_version(const OptionsPtr &oo) {
         std::cout << " \"" << p << "\"";
     }
     std::cout << std::endl;
+    std::cout << EXECUTABLE_COPYRIGHT << ' ' << EXECUTABLE_AUTHORS << std::endl;
 }
 
 int main(int argc, char *argv[]) {
