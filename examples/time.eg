@@ -1,3 +1,6 @@
+# WARNING: this abstraction turned out different than I expected.
+# Use at your own risk.
+
 import "prelude.eg"
 
 using System
