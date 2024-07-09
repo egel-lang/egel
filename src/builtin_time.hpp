@@ -631,6 +631,57 @@ protected:
     enum clock_type _clock_type;
 };
 
+// ## Time::date - a date
+class Date: public Opaque {
+public:
+    OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Date, STRING_TIME, "date");
+
+    Date(const Date& d)
+        : Opaque(VM_SUB_BUILTIN, d.machine(), d.symbol()) {
+        _date = d.date();
+    }
+
+    static VMObjectPtr create(VM* m, const std::tm  d) {
+        auto o = std::make_shared<Date>(m);
+        o->set_date(d);
+        return o;
+    }
+
+    static bool is_date(const VMObjectPtr& o) {
+        auto& r = *o.get();
+        return typeid(r) == typeid(Date);
+    }
+
+    static std::shared_ptr<Date> cast(const VMObjectPtr& o) {
+        return std::static_pointer_cast<Date>(o);
+    }
+
+    int compare(const VMObjectPtr& o) override {
+        auto tm0 = date();
+        auto tm1 = cast(o)->date();
+        auto t0 = std::mktime(&tm0);
+        auto t1 = std::mktime(&tm1);
+        if (t0 < t1) {
+            return -1;
+        } else if (t1 < t0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    void set_date(const std::tm &d) {
+        _date = d;
+    }
+
+    std::tm date() const {
+        return _date;
+    }
+
+private:
+    std::tm _date;
+};
+
 // ## Time::clock s - create a clock object
 class Clock : public Monadic {
 public:
