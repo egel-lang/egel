@@ -999,6 +999,10 @@ public:
                         auto d = Duration::cast(arg);
                         auto d0 = d->duration();
                         store.push_back(d0);
+                    } else if (Date::is_date(arg)) {
+                        auto d = Date::cast(arg);
+                        auto d0 = d->date();
+                        store.push_back(d0);
                     } else {
                         auto a = arg->to_text();
                         auto s0 = VM::unicode_to_utf8_chars(a);

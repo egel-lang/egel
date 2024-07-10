@@ -9,4 +9,7 @@ using Time
 val t0 = now (clock none)
 
 def main =
-    print (format "{:%F %T %Z}\n" (t0 + hours 1))
+    print (format "{:%F %T %Z}\n" (t0 + hours 1));
+    print (format "{:%Y-%m-%d %H:%M:%S}\n" (localtime t0));
+    print (format "{:%Y-%m-%d %H:%M:%S}\n" (gmtime t0));
+    none
