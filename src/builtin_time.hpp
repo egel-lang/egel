@@ -718,6 +718,7 @@ public:
         tm.tm_hour = vm->get_integer(oo[3]);
         tm.tm_min = vm->get_integer(oo[4]);
         tm.tm_sec = vm->get_integer(oo[5]);
+        std::mktime(&tm); // call to adjust all fields
         return create(vm, tm);
     }
 
