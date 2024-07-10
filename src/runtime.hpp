@@ -141,6 +141,24 @@ class VMObject;
 using VMObjectPtr = std::shared_ptr<VMObject>;
 using VMWeakObjectPtr = std::weak_ptr<VMObject>;
 
+class GC {
+public:
+    GC(): _oo() {
+    }
+
+    void push(const VMObjectPtr &o) {
+        _oo.push(o);
+    }
+
+    void clear() {
+        while (!_oo.empty()) _oo.pop();
+    }
+private:
+    std::stack<VMObjectPtr> _oo;
+};
+
+inline GC garbage_collector;
+
 class VMObject {
 public:
     VMObject(const vm_tag_t t) : _tag(t), _subtag(-1) {
@@ -1147,7 +1165,9 @@ public:
     }
 
     ~VMObjectArray() {
-        delete[] _array;
+        for (int i = 0; i < _size; i++) {
+            garbage_collector.push(_array[i]);
+        }
     }
 
     VMObjectPtr clone() const {
