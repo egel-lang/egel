@@ -1,11 +1,5 @@
 #pragma once
 
-#include "runtime.hpp"
-#include "assembler.hpp"
-#include "environment.hpp"
-#include "eval.hpp"
-#include "modules.hpp"
-
 #include <chrono>
 #include <iomanip>
 #include <map>
@@ -16,6 +10,12 @@
 #include <thread>
 #include <tuple>
 #include <vector>
+
+#include "assembler.hpp"
+#include "environment.hpp"
+#include "eval.hpp"
+#include "modules.hpp"
+#include "runtime.hpp"
 
 namespace egel {
 
@@ -144,7 +144,7 @@ public:
     VMObjectResult(VM *m, const symbol_t s, VMReduceResult *r, const bool exc)
         : VMObjectCombinator(VM_SUB_BUILTIN, m, s),
           _result(r),
-          _exception(exc){};
+          _exception(exc) {};
 
     VMObjectResult(const VMObjectResult &d)
         : VMObjectResult(d.machine(), d.symbol(), d._result, d._exception) {
@@ -304,13 +304,13 @@ public:
     }
 
     bool has_combinator(const icu::UnicodeString &n0,
-                               const icu::UnicodeString &n1) override {
+                        const icu::UnicodeString &n1) override {
         auto i = enter_symbol(n0, n1);
         return has_combinator(i);
     }
 
     bool has_combinator(const std::vector<icu::UnicodeString> &nn,
-                               const icu::UnicodeString &n) override {
+                        const icu::UnicodeString &n) override {
         auto i = enter_symbol(nn, n);
         return has_combinator(i);
     }
@@ -379,7 +379,7 @@ public:
         ee.push_back(nullptr);  // k
         ee.push_back(nullptr);  // exc
         ee.push_back(exc);      // c
-        //ee.push_back(nullptr);  // arg0
+        // ee.push_back(nullptr);  // arg0
         auto e = create_array(ee);
 
         auto i = VMObjectInteger::create(5);
@@ -497,8 +497,8 @@ public:
         return o->tag() == VM_OBJECT_TEXT;
     }
 
-    bool is_type(const std::type_info& t, const VMObjectPtr &o) override {
-        auto& r = *o.get();
+    bool is_type(const std::type_info &t, const VMObjectPtr &o) override {
+        auto &r = *o.get();
         return typeid(r) == t;
     }
 
@@ -551,7 +551,8 @@ public:
         return _tuple;
     }
 
-    VMObjectPtr create_tuple(const VMObjectPtr& o0, const VMObjectPtr &o1) override {
+    VMObjectPtr create_tuple(const VMObjectPtr &o0,
+                             const VMObjectPtr &o1) override {
         VMObjectPtrs oo;
         oo.push_back(_tuple);
         oo.push_back(o0);
@@ -559,7 +560,8 @@ public:
         return create_array(oo);
     }
 
-    VMObjectPtr create_tuple(const VMObjectPtr& o0, const VMObjectPtr &o1, const VMObjectPtr& o2) override {
+    VMObjectPtr create_tuple(const VMObjectPtr &o0, const VMObjectPtr &o1,
+                             const VMObjectPtr &o2) override {
         VMObjectPtrs oo;
         oo.push_back(_tuple);
         oo.push_back(o0);
@@ -568,10 +570,10 @@ public:
         return create_array(oo);
     }
 
-    VMObjectPtr create_tuple(const VMObjectPtrs& oo) override {
+    VMObjectPtr create_tuple(const VMObjectPtrs &oo) override {
         VMObjectPtrs oo0;
         oo0.push_back(_tuple);
-        for (auto const &o:oo) {
+        for (auto const &o : oo) {
             oo0.push_back(o);
         }
         return create_array(oo0);
@@ -645,7 +647,8 @@ public:
         return o->subtag_test(VM_SUB_DATA);
     }
 
-    bool is_data_text(const VMObjectPtr &o, const icu::UnicodeString &s) override {
+    bool is_data_text(const VMObjectPtr &o,
+                      const icu::UnicodeString &s) override {
         return is_data(o) && (get_combinator_string(o->symbol()) == s);
     }
 
@@ -983,16 +986,16 @@ public:
         return to_list(oo);
     }
 
-/*
-    VMObjectPtr query_data() override {
-        VMObjectPtrs oo;
-        auto sz = _data.size();
-        for (unsigned int i = 0; i < sz; i++) {
-            oo.push_back(_data.get(i));
+    /*
+        VMObjectPtr query_data() override {
+            VMObjectPtrs oo;
+            auto sz = _data.size();
+            for (unsigned int i = 0; i < sz; i++) {
+                oo.push_back(_data.get(i));
+            }
+            return to_list(oo);
         }
-        return to_list(oo);
-    }
-*/
+    */
 
     int compare(const VMObjectPtr &o0, const VMObjectPtr &o1) override {
         CompareVMObjectPtr compare;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
+
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -171,7 +172,7 @@ public:
     }
 };
 
-inline std::vector<VMObjectPtr> builtin_dict(VM *vm) {
+inline std::vector<VMObjectPtr> builtin_dict(VM* vm) {
     std::vector<VMObjectPtr> oo;
 
     oo.push_back(Dict::create(vm));

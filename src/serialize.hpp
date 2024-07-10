@@ -1,13 +1,13 @@
 #pragma once
 
-#include "runtime.hpp"
-#include "modules.hpp"
-
 #include <functional>
 #include <iostream>
 #include <map>
 #include <stack>
 #include <vector>
+
+#include "modules.hpp"
+#include "runtime.hpp"
 
 // unfortunately it looks better to copy the entire object
 // hierarchy of the runtime in order not to taint runtimes

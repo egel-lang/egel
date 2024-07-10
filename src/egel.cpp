@@ -1,5 +1,5 @@
-#include "runtime.hpp"
 #include "machine.hpp"
+#include "runtime.hpp"
 
 using namespace egel;
 
@@ -192,10 +192,11 @@ void display_usage() {
 
 void display_version(const OptionsPtr &oo) {
     std::cout << EXECUTABLE_NAME << ' ' << EXECUTABLE_VERSION << std::endl;
-    std::cout << "    EGEL_PATH: \"" << VM::env_egel_path() << "\"" << std::endl;
-    std::cout << "     EGEL_PS0: \"" << VM::env_egel_ps0()  << "\"" << std::endl;
+    std::cout << "    EGEL_PATH: \"" << VM::env_egel_path() << "\""
+              << std::endl;
+    std::cout << "     EGEL_PS0: \"" << VM::env_egel_ps0() << "\"" << std::endl;
     std::cout << "             :";
-    for (const auto &p:oo->get_include_path()) {
+    for (const auto &p : oo->get_include_path()) {
         std::cout << " \"" << p << "\"";
     }
     std::cout << std::endl;

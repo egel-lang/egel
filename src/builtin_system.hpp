@@ -1,20 +1,20 @@
 #pragma once
 
-#include "runtime.hpp"
-#include "bytecode.hpp"
-
-#include <fmt/core.h>
 #include <fmt/chrono.h>
+#include <fmt/core.h>
 #include <math.h>
 #include <stdlib.h>
 
 #include <iostream>
 #include <map>
+
+#include "bytecode.hpp"
+#include "runtime.hpp"
 #if __has_include(<fmt/args.h>)
 #include <fmt/args.h>
 #endif
 
-#include "builtin_time.hpp" // 'unavoidable' abstraction breach due to format
+#include "builtin_time.hpp"  // 'unavoidable' abstraction breach due to format
 
 namespace egel {
 
@@ -519,7 +519,8 @@ public:
 };
 */
 
-// deprecated! System::extend obj0 obj1 - extend object obj0 with every field from obj1
+// deprecated! System::extend obj0 obj1 - extend object obj0 with every field
+// from obj1
 /*
 class ExtendField : public Dyadic {
 public:
@@ -633,7 +634,7 @@ public:
             return arg0;
         } else {
             return machine()->create_text(arg0->to_text());
-            //throw machine()->bad_args(this, arg0);
+            // throw machine()->bad_args(this, arg0);
         }
     }
 };
@@ -955,45 +956,50 @@ public:
                     } else if (TimePoint::is_time_point(arg)) {
                         auto tp = TimePoint::cast(arg);
                         switch (tp->get_clock_type()) {
-                        case clock_type::SYSTEM_CLOCK: {
-                            auto t0 = tp->time_point_system_clock();
-                            store.push_back(t0);
-                        }
-                        break;
-/*
-                        case clock_type::STEADY_CLOCK: {
-                            auto t0 = tp->time_point_steady_clock();
-                            store.push_back(t0);
-                        }
-                        break;
-                        case clock_type::HIGH_RESOLUTION_CLOCK: {
-                            auto t0 = tp->time_point_high_resolution_clock();
-                            store.push_back(t0);
-                        }
-                        break;
-*/
-/*
-                        case UTC_CLOCK:
-                            auto t0 = tp->time_point_utc_clock();
-                            store.push_back(t0);
-                        break;
-                        case TAI_CLOCK:
-                            auto t0 = tp->time_point_tai_clock();
-                            store.push_back(t0);
-                        break;
-                        case GPS_CLOCK:
-                            auto t0 = tp->time_point_gps_clock();
-                            store.push_back(t0);
-                        break;
-                        case FILE_CLOCK:
-                            auto t0 = tp->time_point_file_clock();
-                            store.push_back(t0);
-                        break;
-*/
-                        default: {
-                            PANIC("end of case");
-                            return nullptr;
-                        }
+                            case clock_type::SYSTEM_CLOCK: {
+                                auto t0 = tp->time_point_system_clock();
+                                store.push_back(t0);
+                            } break;
+                                /*
+                                                        case
+                                   clock_type::STEADY_CLOCK: { auto t0 =
+                                   tp->time_point_steady_clock();
+                                                            store.push_back(t0);
+                                                        }
+                                                        break;
+                                                        case
+                                   clock_type::HIGH_RESOLUTION_CLOCK: { auto t0
+                                   = tp->time_point_high_resolution_clock();
+                                                            store.push_back(t0);
+                                                        }
+                                                        break;
+                                */
+                                /*
+                                                        case UTC_CLOCK:
+                                                            auto t0 =
+                                   tp->time_point_utc_clock();
+                                                            store.push_back(t0);
+                                                        break;
+                                                        case TAI_CLOCK:
+                                                            auto t0 =
+                                   tp->time_point_tai_clock();
+                                                            store.push_back(t0);
+                                                        break;
+                                                        case GPS_CLOCK:
+                                                            auto t0 =
+                                   tp->time_point_gps_clock();
+                                                            store.push_back(t0);
+                                                        break;
+                                                        case FILE_CLOCK:
+                                                            auto t0 =
+                                   tp->time_point_file_clock();
+                                                            store.push_back(t0);
+                                                        break;
+                                */
+                            default: {
+                                PANIC("end of case");
+                                return nullptr;
+                            }
                         }
                     } else if (Duration::is_duration(arg)) {
                         auto d = Duration::cast(arg);
@@ -1034,17 +1040,17 @@ class Foldl : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Foldl, "System", "fast_foldl");
 
-    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const VMObjectPtr &arg2) const override {
-        auto vm = machine();
-        
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1, const
+VMObjectPtr &arg2) const override { auto vm = machine();
+
         auto f = arg0;
         auto acc = arg1;
         auto xx = arg2;
-        while(!vm->is_nil(xx)) { 
-            if (vm->is_array(xx) && (vm->array_size(xx) == 3) && (vm->is_cons(vm->array_get(xx,0)))) {
-                auto x = vm->array_get(xx,1);
-                xx = vm->array_get(xx,2);
-                
+        while(!vm->is_nil(xx)) {
+            if (vm->is_array(xx) && (vm->array_size(xx) == 3) &&
+(vm->is_cons(vm->array_get(xx,0)))) { auto x = vm->array_get(xx,1); xx =
+vm->array_get(xx,2);
+
                 auto thunk = vm->create_array(3);
                 vm->array_set(thunk, 0, f);
                 vm->array_set(thunk, 1, acc);
@@ -1058,11 +1064,11 @@ public:
                 }
             } else {
                 throw machine()->bad_args(this, arg0, arg1, arg2);
-            }      
+            }
         }
 
         return acc;
-    }              
+    }
 };
 */
 
@@ -1138,11 +1144,11 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(Getref::create(vm));
 
     // OO fields
-/* deprecated
-    oo.push_back(GetField::create(vm));
-    oo.push_back(SetField::create(vm));
-    oo.push_back(ExtendField::create(vm));
-*/
+    /* deprecated
+        oo.push_back(GetField::create(vm));
+        oo.push_back(SetField::create(vm));
+        oo.push_back(ExtendField::create(vm));
+    */
 
     return oo;
 }

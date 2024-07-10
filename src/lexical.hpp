@@ -1,15 +1,14 @@
 #pragma once
 
-#include "runtime.hpp"
-#include "constants.hpp"
-#include "error.hpp"
-#include "position.hpp"
-#include "reader.hpp"
-
 #include <iostream>
 #include <memory>
 #include <vector>
 
+#include "constants.hpp"
+#include "error.hpp"
+#include "position.hpp"
+#include "reader.hpp"
+#include "runtime.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
 #include "unicode/ustream.h"
@@ -133,7 +132,6 @@ using TokenReaderPtr = std::shared_ptr<TokenReader>;
 
 class TokenReader {
 public:
-
     virtual Token look(unsigned int n = 0) = 0;
     virtual void skip() = 0;
 
@@ -320,8 +318,9 @@ bool is_exponent(UChar32 c) {
 }
 
 bool is_escaped(UChar32 c) {
-    return ((c == (UChar32)'\\') || (c == (UChar32)'t') || (c == (UChar32)'\'') 
-         || (c == (UChar32)'"')  || (c == (UChar32)'r') || (c == (UChar32)'n'));
+    return ((c == (UChar32)'\\') || (c == (UChar32)'t') ||
+            (c == (UChar32)'\'') || (c == (UChar32)'"') ||
+            (c == (UChar32)'r') || (c == (UChar32)'n'));
 }
 
 bool is_math(UChar32 c) {
@@ -838,7 +837,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
                 UnicodeString s;
                 str.extract(1, str.countChar32() - 2, s);
                 str = "\"" + unicode_escape(s) + "\"";
- 
+
                 reader.skip();
                 reader.skip();
                 reader.skip();
@@ -997,28 +996,28 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
 
     return token_writer.clone_reader();
 
-handle_error : {
+handle_error: {
     Position p = reader.position();
     throw ErrorLexical(
         p, icu::UnicodeString("unrecognized lexeme ") + reader.look());
 }
 
-handle_char_error : {
+handle_char_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in char");
 }
 
-handle_string_error : {
+handle_string_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in string");
 }
 
-handle_hexint_error : {
+handle_hexint_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in hexadecimal int");
 }
 
-handle_float_error : {
+handle_float_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in float");
 }
@@ -1030,7 +1029,8 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
     bool text = true;
     while (!reader.end()) {
         if (text) {
-            if (reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) =='`') {
+            if (reader.look(0) == '`' && reader.look(1) == '`' &&
+                reader.look(2) == '`') {
                 while (!reader.end() && !is_eol(reader.look())) reader.skip();
                 text = !text;
             } else {
@@ -1040,12 +1040,15 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
         } else {
             while (!reader.end() && is_whitespace(reader.look())) reader.skip();
 
-            while (!reader.end() && !(reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) == '`')) {
+            while (!reader.end() &&
+                   !(reader.look(0) == '`' && reader.look(1) == '`' &&
+                     reader.look(2) == '`')) {
                 Position p = reader.position();
                 UChar32 c = reader.look();
 
                 if (is_hash(c)) {
-                    while (!reader.end() && !is_eol(reader.look())) reader.skip();
+                    while (!reader.end() && !is_eol(reader.look()))
+                        reader.skip();
                 } else if (is_comma(c)) {
                     token_writer.push(Token(TOKEN_COMMA, p, c));
                     reader.skip();
@@ -1072,7 +1075,8 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                     c = reader.look();
                     if (is_colon(c)) {
                         reader.skip();
-                        token_writer.push(Token(TOKEN_DCOLON, p, STRING_DCOLON));
+                        token_writer.push(
+                            Token(TOKEN_DCOLON, p, STRING_DCOLON));
                     } else {
                         token_writer.push(Token(TOKEN_COLON, p, c));
                     }
@@ -1095,7 +1099,8 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                     icu::UnicodeString str = icu::UnicodeString("");
                     str += c;
                     reader.skip();
-                    if (reader.end() || is_eol(reader.look())) goto handle_char_error;
+                    if (reader.end() || is_eol(reader.look()))
+                        goto handle_char_error;
                     c = reader.look();
                     str += c;
                     if (is_backslash(c)) {
@@ -1107,15 +1112,16 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                         str += c;
                     };
                     reader.skip();
-                    if (reader.end() || is_eol(reader.look())) goto handle_char_error;
+                    if (reader.end() || is_eol(reader.look()))
+                        goto handle_char_error;
                     c = reader.look();
                     if (!is_quote(c)) goto handle_char_error;
                     str += c;
                     reader.skip();
                     token_writer.push(Token(TOKEN_CHAR, p, str));
                 } else if (is_dquote(c)) {
-                    if (is_dquote(reader.look(1)) && is_dquote(reader.look(2)) &&
-                        is_eol(reader.look(3))) {
+                    if (is_dquote(reader.look(1)) &&
+                        is_dquote(reader.look(2)) && is_eol(reader.look(3))) {
                         icu::UnicodeString str = icu::UnicodeString("");
                         str += c;
                         reader.skip();
@@ -1164,17 +1170,20 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                         token_writer.push(Token(TOKEN_TEXT, p, str));
                     }
                     //        } else if (is_digit(c) || (is_minus(c) &&
-                    //        is_digit(reader.look(1)))) { // no longer lex a leading
-                    //        minus
-                } else if (is_digit(c) || (is_minus(c) && is_digit(reader.look(1)))) {
+                    //        is_digit(reader.look(1)))) { // no longer lex a
+                    //        leading minus
+                } else if (is_digit(c) ||
+                           (is_minus(c) && is_digit(reader.look(1)))) {
                     // XXX: LL(2), to be solved by swapping skip/look
-                    /* This code handles numbers which are integers and floats. Integer
-                     * and float regular expressions are simplistic and overlap on their
-                     * prefixes.
+                    /* This code handles numbers which are integers and floats.
+                     * Integer and float regular expressions are simplistic and
+                     * overlap on their prefixes.
                      *
-                     * An integer is in the regexp "[-]?[0-9]+". A float is either
+                     * An integer is in the regexp "[-]?[0-9]+". A float is
+                     * either
                      * "[-]?[0-9]+[.][0-9]+" or expanded with an exponent
-                     * "[-]?[0-9]+[.][0-9]+[e][-]?[0-9]+". A hexint is "0x[0-9a-f]+".
+                     * "[-]?[0-9]+[.][0-9]+[e][-]?[0-9]+". A hexint is
+                     * "0x[0-9a-f]+".
                      */
                     icu::UnicodeString str = icu::UnicodeString("");
                     // handle leading '-'
@@ -1202,8 +1211,8 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                             c = reader.look();
                         };
                         token_writer.push(Token(TOKEN_INTEGER, p, str));
-                        // any '.' occurence signals the start of a forced floating
-                        // point
+                        // any '.' occurence signals the start of a forced
+                        // floating point
                     } else if (!is_dot(c)) {
                         token_writer.push(Token(TOKEN_INTEGER, p, str));
                     } else {
@@ -1219,8 +1228,8 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                             reader.skip();
                             c = reader.look();
                         };
-                        // any 'e' occurence signals a forced floating point with an
-                        // exponent
+                        // any 'e' occurence signals a forced floating point
+                        // with an exponent
                         if (!is_exponent(c)) {
                             token_writer.push(Token(TOKEN_FLOAT, p, str));
                         } else {
@@ -1253,7 +1262,8 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                         reader.skip();
                         c = reader.look();
                     };
-                    token_writer.push(adjust_reserved(Token(TOKEN_OPERATOR, p, str)));
+                    token_writer.push(
+                        adjust_reserved(Token(TOKEN_OPERATOR, p, str)));
                 } else if (is_uppercase(c)) {
                     icu::UnicodeString str = icu::UnicodeString("");
                     while (is_letter(c)) {
@@ -1261,7 +1271,8 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                         reader.skip();
                         c = reader.look();
                     };
-                    token_writer.push(adjust_reserved(Token(TOKEN_UPPERCASE, p, str)));
+                    token_writer.push(
+                        adjust_reserved(Token(TOKEN_UPPERCASE, p, str)));
                 } else if (is_lowercase(c)) {
                     icu::UnicodeString str = icu::UnicodeString("");
                     while (is_letter(c)) {
@@ -1269,9 +1280,10 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                         reader.skip();
                         c = reader.look();
                     };
-                    token_writer.push(adjust_reserved(Token(TOKEN_LOWERCASE, p, str)));
-                } else if (is_underscore(
-                               c)) {  // XXX: push a lowercase for an underscore?
+                    token_writer.push(
+                        adjust_reserved(Token(TOKEN_LOWERCASE, p, str)));
+                } else if (is_underscore(c)) {  // XXX: push a lowercase for an
+                                                // underscore?
                     icu::UnicodeString str = icu::UnicodeString("");
                     str += c;
                     reader.skip();
@@ -1280,11 +1292,12 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
                     goto handle_error;
                 }
 
-                while (!reader.end() && is_whitespace(reader.look())) reader.skip();
-
+                while (!reader.end() && is_whitespace(reader.look()))
+                    reader.skip();
             }
 
-            if (reader.look(0) == '`' && reader.look(1) == '`' && reader.look(2) =='`') {
+            if (reader.look(0) == '`' && reader.look(1) == '`' &&
+                reader.look(2) == '`') {
                 while (!reader.end() && !is_eol(reader.look())) reader.skip();
                 if (is_eol(reader.look())) reader.skip();
                 text = !text;
@@ -1299,28 +1312,28 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
 
     return token_writer.clone_reader();
 
-handle_error : {
+handle_error: {
     Position p = reader.position();
     throw ErrorLexical(
         p, icu::UnicodeString("unrecognized lexeme ") + reader.look());
 }
 
-handle_char_error : {
+handle_char_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in char");
 }
 
-handle_string_error : {
+handle_string_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in string");
 }
 
-handle_hexint_error : {
+handle_hexint_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in hexadecimal int");
 }
 
-handle_float_error : {
+handle_float_error: {
     Position p = reader.position();
     throw ErrorLexical(p, "error in float");
 }

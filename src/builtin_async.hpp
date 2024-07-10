@@ -1,10 +1,11 @@
 #pragma once
 
-#include "runtime.hpp"
-
 #include <stdlib.h>
+
 #include <chrono>
 #include <future>
+
+#include "runtime.hpp"
 
 /**
  * Egel's async tasks implementation.
@@ -23,11 +24,11 @@ public:
         return -1;  // XXX: fix this once
     }
 
-    static VMReduceResult reduce(VM* vm, const VMObjectPtr &o) {
+    static VMReduceResult reduce(VM *vm, const VMObjectPtr &o) {
         return vm->reduce(o);
     }
 
-    void async(const VMObjectPtr& o) {
+    void async(const VMObjectPtr &o) {
         VMObjectPtrs thunk;
         thunk.push_back(o);
         thunk.push_back(machine()->create_none());
@@ -39,7 +40,6 @@ public:
     VMReduceResult await() {
         return _future.get();
     }
-
 
     bool wait_for(int n) {
         std::chrono::milliseconds ms(n);
@@ -96,10 +96,12 @@ class WaitFor : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, WaitFor, "System", "wait_for");
 
-    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr &arg0,
+                      const VMObjectPtr &arg1) const override {
         symbol_t s = machine()->enter_symbol("System", "future");
 
-        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == s) && (machine()->is_integer(arg1))) {
+        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == s) &&
+            (machine()->is_integer(arg1))) {
             auto f = std::static_pointer_cast<Future>(arg0);
             auto n = machine()->get_integer(arg1);
             auto b = f->wait_for(n);
@@ -131,8 +133,8 @@ public:
 inline std::vector<VMObjectPtr> builtin_async(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
-    //oo.push_back(Future::create(vm)); // XXX: I always forget whether this
-    // is needed
+    // oo.push_back(Future::create(vm)); // XXX: I always forget whether this
+    //  is needed
     oo.push_back(VMObjectStub::create(
         vm, "System::future"));  // XXX: I always forget whether this is needed
     oo.push_back(Async::create(vm));

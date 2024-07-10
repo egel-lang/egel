@@ -1,10 +1,9 @@
 #pragma once
 
-#include "runtime.hpp"
-
 #include <iostream>
 #include <sstream>
 
+#include "runtime.hpp"
 #include "unicode/unistr.h"
 #include "unicode/ustream.h"
 

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "runtime.hpp"
 #include "ast.hpp"
 #include "environment.hpp"
 #include "error.hpp"
 #include "position.hpp"
+#include "runtime.hpp"
 #include "transform.hpp"
 
 namespace egel {
@@ -339,7 +339,7 @@ public:
         return rewrite(a);
     }
 
-    VM* machine() {
+    VM *machine() {
         return _machine;
     }
 
@@ -350,7 +350,7 @@ public:
     void reset() {
         _root = true;
         _tick = 0;
-        _redexes = std::vector<std::tuple<ptr<Ast>,ptr<Ast>>>();
+        _redexes = std::vector<std::tuple<ptr<Ast>, ptr<Ast>>>();
     }
 
     void root_set(bool b) {
@@ -360,7 +360,7 @@ public:
     bool is_root() {
         return _root;
     }
-        
+
     ptr<Ast> fresh_variable(const Position &p) {
         auto v = icu::UnicodeString("R_") + VM::unicode_from_int(tick());
         return AstExprVariable::create(p, v);
@@ -374,22 +374,23 @@ public:
         return _redexes.size() > 0;
     }
 
-    std::tuple<ptr<Ast>,ptr<Ast>> redexes_pop() {
+    std::tuple<ptr<Ast>, ptr<Ast>> redexes_pop() {
         auto n = _redexes.size() - 1;
         auto t = _redexes[n];
-        _redexes.erase(_redexes.begin()+n);
+        _redexes.erase(_redexes.begin() + n);
         return t;
     }
 
     bool is_combinator_redex(const ptr<Ast> &e) {
         if (e->tag() == AST_EXPR_COMBINATOR) {
-           auto [p, nn, n] = AstExprCombinator::split(e);
-           if (machine()->has_combinator(nn, n)) {
+            auto [p, nn, n] = AstExprCombinator::split(e);
+            if (machine()->has_combinator(nn, n)) {
                 auto c = machine()->get_combinator(nn, n);
                 return !(machine()->is_data(c) || machine()->is_opaque(c));
-           } else {
-                return true; // XXX: undeclared combinators are redexes, not always true
-           }
+            } else {
+                return true;  // XXX: undeclared combinators are redexes, not
+                              // always true
+            }
         } else {
             return false;
         }
@@ -404,10 +405,10 @@ public:
             return false;
         }
     }
-    
+
     ptr<Ast> rewrite_expr_combinator(const Position &p,
-                                             const UnicodeStrings &nn,
-                                             const icu::UnicodeString &n) override {
+                                     const UnicodeStrings &nn,
+                                     const icu::UnicodeString &n) override {
         auto c = AstExprCombinator::create(p, nn, n);
         if (!is_root() && is_combinator_redex(c)) {
             auto v = fresh_variable(p);
@@ -418,9 +419,8 @@ public:
         }
     }
 
-    ptr<Ast> rewrite_expr_operator(const Position &p,
-                                           const UnicodeStrings &nn,
-                                           const icu::UnicodeString &n) override {
+    ptr<Ast> rewrite_expr_operator(const Position &p, const UnicodeStrings &nn,
+                                   const icu::UnicodeString &n) override {
         // NOTE: a single operators is unlikely to be a redex
         auto c = AstExprOperator::create(p, nn, n);
         if (!is_root()) {
@@ -458,7 +458,6 @@ public:
                 auto v = fresh_variable(p);
                 redexes_push(v, r);
                 return v;
-
             }
         } else {
             root_set(false);
@@ -468,7 +467,7 @@ public:
     }
 
     ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
-                                        const ptr<Ast> &g, const ptr<Ast> &e) override {
+                                const ptr<Ast> &g, const ptr<Ast> &e) override {
         reset();
         auto e0 = rewrite(e);
         while (redexes_has()) {
@@ -511,11 +510,12 @@ public:
             return nullptr;
         }
     }
+
 private:
-    VM*         _machine;
-    std::vector<std::tuple<ptr<Ast>,ptr<Ast>>>   _redexes;
-    int         _tick;
-    bool        _root;
+    VM *_machine;
+    std::vector<std::tuple<ptr<Ast>, ptr<Ast>>> _redexes;
+    int _tick;
+    bool _root;
 };
 
 inline ptr<Ast> pass_reredex(const ptr<Ast> &a, VM *m) {

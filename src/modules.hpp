@@ -1,17 +1,21 @@
 #pragma once
 
-#include "runtime.hpp"
+#include <dlfcn.h>  // XXX: I wish I could get rid of this
+
+#include <memory>
+#include <vector>
+
 #include "ast.hpp"
-#include "builtin_eval.hpp"
-#include "builtin_math.hpp"
-#include "builtin_string.hpp"
-#include "builtin_process.hpp"
-#include "builtin_thread.hpp"
 #include "builtin_async.hpp"
-#include "builtin_runtime.hpp"
-#include "builtin_system.hpp"
 #include "builtin_dict.hpp"
+#include "builtin_eval.hpp"
 #include "builtin_ffi.hpp"
+#include "builtin_math.hpp"
+#include "builtin_process.hpp"
+#include "builtin_runtime.hpp"
+#include "builtin_string.hpp"
+#include "builtin_system.hpp"
+#include "builtin_thread.hpp"
 #include "constants.hpp"
 #include "desugar.hpp"
 #include "emit.hpp"
@@ -19,14 +23,10 @@
 #include "error.hpp"
 #include "lexical.hpp"
 #include "lift.hpp"
+#include "lightning.hpp"
+#include "runtime.hpp"
 #include "semantical.hpp"
 #include "syntactical.hpp"
-#include "lightning.hpp"
-
-#include <dlfcn.h>  // XXX: I wish I could get rid of this
-
-#include <memory>
-#include <vector>
 
 namespace egel {
 // convenience
@@ -140,21 +140,21 @@ public:
 public:
     // this is why OO is sometimes bad. but I am lazy at the moment.
     // pretend every module is equivalent to an Egel source file.
-    virtual void syntactical(){};
+    virtual void syntactical() {};
 
-    virtual void declarations(NamespacePtr &env){};
+    virtual void declarations(NamespacePtr &env) {};
 
-    virtual void semantical(NamespacePtr &env){};
+    virtual void semantical(NamespacePtr &env) {};
 
-    virtual void desugar(){};
+    virtual void desugar() {};
 
-    virtual void lift(VM *m){};
+    virtual void lift(VM *m) {};
 
-    virtual void datagen(VM *m){};
+    virtual void datagen(VM *m) {};
 
-    virtual void codegen(VM *m){};
+    virtual void codegen(VM *m) {};
 
-    virtual void jit(VM *m){};
+    virtual void jit(VM *m) {};
 
 private:
     module_tag_t _tag;
@@ -357,7 +357,7 @@ public:
 
         dlerror();
 
-        //std::cout << "loading: " << get_path() << std::endl; // DEBUG
+        // std::cout << "loading: " << get_path() << std::endl; // DEBUG
 
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
         _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
@@ -568,7 +568,7 @@ public:
 
     void datagen(VM *vm) override {
         auto oo = egel::emit_data(vm, _ast);
-        for (auto &o:oo) {
+        for (auto &o : oo) {
             _combinators.push_back(o);
         }
     }
@@ -579,7 +579,7 @@ public:
             vm->render(std::cout);
             exit(EXIT_SUCCESS);
         };
-        for (auto &o:oo) {
+        for (auto &o : oo) {
             _combinators.push_back(o);
         }
     }
@@ -605,7 +605,7 @@ private:
 class ModuleEgg : public Module {
 public:
     ModuleEgg(const icu::UnicodeString &path, const icu::UnicodeString &fn,
-                 VM *m)
+              VM *m)
         : Module(MODULE_EGG, path, fn, m), _source(""), _ast(0) {
     }
 
@@ -719,7 +719,7 @@ public:
 
     void datagen(VM *vm) override {
         auto oo = egel::emit_data(vm, _ast);
-        for (auto &o:oo) {
+        for (auto &o : oo) {
             _combinators.push_back(o);
         }
     }
@@ -730,7 +730,7 @@ public:
             vm->render(std::cout);
             exit(EXIT_SUCCESS);
         };
-        for (auto &o:oo) {
+        for (auto &o : oo) {
             _combinators.push_back(o);
         }
     }
@@ -777,19 +777,30 @@ public:
         set_options(oo);
         set_machine(vm);
         set_environment(env);
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_time) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_system) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_math) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_string) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_runtime) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_thread) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_process) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_eval) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_async) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_dict) );
-        _loading.push_back( ModuleInternal::create("internal", vm, &builtin_ffi) );
-        for (const auto& m: _loading) {
-            m-> load();
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_time));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_system));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_math));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_string));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_runtime));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_thread));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_process));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_eval));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_async));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_dict));
+        _loading.push_back(
+            ModuleInternal::create("internal", vm, &builtin_ffi));
+        for (const auto &m : _loading) {
+            m->load();
         }
         process();
         flush();
@@ -929,11 +940,11 @@ protected:
 
     void process() {
         // DEBUG
-/*
-        for (auto &m : _loading) {
-            std::cout << "loading loop: " << m->get_path() << std::endl;
-        }
-*/
+        /*
+                for (auto &m : _loading) {
+                    std::cout << "loading loop: " << m->get_path() << std::endl;
+                }
+        */
         for (auto &m : _loading) {
             m->declarations(_environment);
         }

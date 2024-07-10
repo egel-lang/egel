@@ -1,17 +1,17 @@
 #pragma once
 
-#include "runtime.hpp"
+#include <functional>
+
 #include "machine.hpp"
 #include "modules.hpp"
-
-#include <functional>
+#include "runtime.hpp"
 
 namespace egel {
 
 class EvalResult : public VMObjectCombinator {
 public:
     EvalResult(VM *m, const symbol_t s, const callback_t call)
-        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _callback(call){};
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _callback(call) {};
 
     EvalResult(const EvalResult &d)
         : EvalResult(d.machine(), d.symbol(), d.callback()) {
@@ -27,7 +27,8 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         auto tt = machine()->get_array(thunk);
-        auto arg0 = tt[tt.size()-1]; // XXX: poor man's fix for a regression bug
+        auto arg0 =
+            tt[tt.size() - 1];  // XXX: poor man's fix for a regression bug
 
         (_callback)(machine(), arg0);
         return nullptr;

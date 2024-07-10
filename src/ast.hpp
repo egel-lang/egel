@@ -1,15 +1,14 @@
 #pragma once
 
-#include "runtime.hpp"
-#include "constants.hpp"
-#include "error.hpp"
-#include "position.hpp"
-
 #include <memory>
 #include <set>
 #include <sstream>
 #include <vector>
 
+#include "constants.hpp"
+#include "error.hpp"
+#include "position.hpp"
+#include "runtime.hpp"
 
 namespace egel {
 
@@ -203,7 +202,7 @@ private:
 class AstExprInteger : public AstAtom {
 public:
     AstExprInteger(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_INTEGER, p, text){};
+        : AstAtom(AST_EXPR_INTEGER, p, text) {};
 
     AstExprInteger(const AstExprInteger &l)
         : AstExprInteger(l.position(), l.text()) {
@@ -228,7 +227,7 @@ public:
 class AstExprHexInteger : public AstAtom {
 public:
     AstExprHexInteger(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_HEXINTEGER, p, text){};
+        : AstAtom(AST_EXPR_HEXINTEGER, p, text) {};
 
     AstExprHexInteger(const AstExprHexInteger &l)
         : AstExprHexInteger(l.position(), l.text()) {
@@ -253,7 +252,7 @@ public:
 class AstExprFloat : public AstAtom {
 public:
     AstExprFloat(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_FLOAT, p, text){};
+        : AstAtom(AST_EXPR_FLOAT, p, text) {};
 
     AstExprFloat(const AstExprFloat &l) : AstExprFloat(l.position(), l.text()) {
     }
@@ -277,7 +276,7 @@ public:
 class AstExprCharacter : public AstAtom {
 public:
     AstExprCharacter(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_CHARACTER, p, text){};
+        : AstAtom(AST_EXPR_CHARACTER, p, text) {};
 
     AstExprCharacter(const AstExprCharacter &l)
         : AstExprCharacter(l.position(), l.text()) {
@@ -302,7 +301,7 @@ public:
 class AstExprText : public AstAtom {
 public:
     AstExprText(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_TEXT, p, text){};
+        : AstAtom(AST_EXPR_TEXT, p, text) {};
 
     AstExprText(const AstExprFloat &l) : AstExprText(l.position(), l.text()) {
     }
@@ -328,7 +327,7 @@ public:
 class AstExprVariable : public AstAtom {
 public:
     AstExprVariable(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_VARIABLE, p, text){};
+        : AstAtom(AST_EXPR_VARIABLE, p, text) {};
 
     AstExprVariable(const AstExprVariable &l)
         : AstExprVariable(l.position(), l.text()) {
@@ -353,7 +352,7 @@ public:
 class AstExprWildcard : public AstAtom {
 public:
     AstExprWildcard(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_WILDCARD, p, text){};
+        : AstAtom(AST_EXPR_WILDCARD, p, text) {};
 
     AstExprWildcard(const AstExprWildcard &l)
         : AstExprWildcard(l.position(), l.text()) {
@@ -448,7 +447,7 @@ public:
 
     AstExprCombinator(const Position &p, const UnicodeStrings &pp,
                       const icu::UnicodeString &c)
-        : Ast(AST_EXPR_COMBINATOR, p), _path(pp), _combinator(c){};
+        : Ast(AST_EXPR_COMBINATOR, p), _path(pp), _combinator(c) {};
 
     AstExprCombinator(const Position &p, const icu::UnicodeString &n,
                       const icu::UnicodeString &c)
@@ -534,7 +533,7 @@ class AstExprOperator : public Ast {
 public:
     AstExprOperator(const Position &p, const UnicodeStrings &pp,
                     const icu::UnicodeString &c)
-        : Ast(AST_EXPR_OPERATOR, p), _path(pp), _combinator(c){};
+        : Ast(AST_EXPR_OPERATOR, p), _path(pp), _combinator(c) {};
 
     AstExprOperator(const Position &p, const icu::UnicodeString &n,
                     const icu::UnicodeString &c)

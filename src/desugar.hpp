@@ -1,12 +1,11 @@
 #pragma once
 
-#include "runtime.hpp"
-
 #include "ast.hpp"
 #include "desugar.hpp"
 #include "environment.hpp"
 #include "error.hpp"
 #include "position.hpp"
+#include "runtime.hpp"
 #include "transform.hpp"
 
 // XXX: merge these small passes when stable.
@@ -301,7 +300,8 @@ public:
                               const ptr<Ast> &c) override {
         auto t0 = rewrite(t);
         auto c0 = rewrite(c);
-        auto handle = AstExprCombinator::create(p, STRING_SYSTEM, STRING_HANDLE);
+        auto handle =
+            AstExprCombinator::create(p, STRING_SYSTEM, STRING_HANDLE);
 
         auto b0 = AstExprWildcard::create(p, "_");
         ptrs<Ast> bb0;
@@ -314,7 +314,6 @@ public:
         ptrs<Ast> cc0;
         cc0.push_back(c1);
         auto c2 = AstExprBlock::create(p, cc0);
-
 
         return AstExprApplication::create(p, handle, c2, t2);
     }

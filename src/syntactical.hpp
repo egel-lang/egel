@@ -1,11 +1,10 @@
 #pragma once
 
-#include "runtime.hpp"
-
 #include "ast.hpp"
 #include "error.hpp"
 #include "lexical.hpp"
 #include "operators.hpp"
+#include "runtime.hpp"
 #include "syntactical.hpp"
 #include "transform.hpp"
 

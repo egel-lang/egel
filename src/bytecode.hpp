@@ -1,13 +1,13 @@
 #pragma once
 
-#include "runtime.hpp"
-
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <sstream>
 #include <tuple>
 #include <vector>
+
+#include "runtime.hpp"
 
 namespace egel {
 
@@ -313,8 +313,7 @@ public:
     void write(std::ostream &os, VM *vm) {
         for (unsigned int n = 0; n < _data.size(); n++) {
             os << std::hex << std::setw(6) << n << std::dec << " ";
-            os << _data[n] << " " << vm->get_data(_data[n])
-               << std::endl;
+            os << _data[n] << " " << vm->get_data(_data[n]) << std::endl;
         }
     }
 
@@ -614,19 +613,19 @@ private:
 class VMObjectBytecode : public VMObjectCombinator {
 public:
     VMObjectBytecode(VM *m, const Code &c, const Data &d, const symbol_t s)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, s), _code(c), _data(d){};
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, s), _code(c), _data(d) {};
 
     VMObjectBytecode(VM *m, const Code &c, const Data &d,
                      const icu::UnicodeString &n)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, n), _code(c), _data(d){};
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, n), _code(c), _data(d) {};
 
     VMObjectBytecode(VM *m, const Code &c, const Data &d,
                      const icu::UnicodeString &n0, const icu::UnicodeString &n1)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, n0, n1), _code(c), _data(d){};
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, n0, n1), _code(c), _data(d) {};
 
     VMObjectBytecode(VM *m, const Code &c, const Data &d,
                      const UnicodeStrings &nn, const icu::UnicodeString &n)
-        : VMObjectCombinator(VM_SUB_BYTECODE, m, nn, n), _code(c), _data(d){};
+        : VMObjectCombinator(VM_SUB_BYTECODE, m, nn, n), _code(c), _data(d) {};
 
     VMObjectBytecode(const VMObjectBytecode &d)
         : VMObjectBytecode(d.machine(), d.code(), d.data(), d.symbol()) {

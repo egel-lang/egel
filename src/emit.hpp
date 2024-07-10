@@ -1,14 +1,13 @@
 #pragma once
 
-#include "runtime.hpp"
+#include <memory>
+#include <vector>
 
 #include "ast.hpp"
 #include "bytecode.hpp"
 #include "environment.hpp"
+#include "runtime.hpp"
 #include "transform.hpp"
-
-#include <memory>
-#include <vector>
 
 namespace egel {
 
@@ -22,7 +21,7 @@ public:
         visit(a);
         return _out;
     }
- 
+
     void visit_directive_import(const Position &p,
                                 const icu::UnicodeString &i) override {
     }
@@ -55,7 +54,7 @@ public:
 
 private:
     VM *_machine;
-    std::vector<VMObjectPtr>    _out;
+    std::vector<VMObjectPtr> _out;
 };
 
 std::vector<VMObjectPtr> emit_data(VM *m, const ptr<Ast> &a) {
@@ -225,7 +224,7 @@ public:
     void visit_pattern(const ptr<Ast> &e) {
         switch (e->tag()) {
             case AST_EXPR_INTEGER: {
-                auto [p,v] = AstExprInteger::split(e);
+                auto [p, v] = AstExprInteger::split(e);
                 if (v.startsWith("0x")) {
                     auto i = VM::unicode_to_hexint(v);
                     auto o = machine()->create_integer(i);
@@ -237,30 +236,30 @@ public:
                 }
             } break;
             case AST_EXPR_FLOAT: {
-                auto [p,v] = AstExprFloat::split(e);
+                auto [p, v] = AstExprFloat::split(e);
                 auto f = VM::unicode_to_float(v);
                 auto o = machine()->create_float(f);
                 visit_pattern_constant(o);
             } break;
             case AST_EXPR_CHARACTER: {
-                auto [p,v] = AstExprCharacter::split(e);
+                auto [p, v] = AstExprCharacter::split(e);
                 auto c = VM::unicode_to_char(v);
                 auto o = machine()->create_char(c);
                 visit_pattern_constant(o);
             } break;
             case AST_EXPR_TEXT: {
-                auto [p,v] = AstExprText::split(e);
+                auto [p, v] = AstExprText::split(e);
                 auto c = VM::unicode_to_text(v);
                 auto o = machine()->create_text(c);
                 visit_pattern_constant(o);
             } break;
             case AST_EXPR_COMBINATOR: {
-                auto [p,nn,n] = AstExprCombinator::split(e);
+                auto [p, nn, n] = AstExprCombinator::split(e);
                 auto o = machine()->get_combinator(nn, n);
                 visit_pattern_constant(o);
             } break;
             case AST_EXPR_TAG: {
-                auto [p,v,t] = AstExprTag::split(e);
+                auto [p, v, t] = AstExprTag::split(e);
                 auto r = get_pattern_register();
                 auto l = get_fail_label();
 
@@ -281,12 +280,12 @@ public:
                 }
             } break;
             case AST_EXPR_VARIABLE: {
-                auto [p,v] = AstExprVariable::split(e);
+                auto [p, v] = AstExprVariable::split(e);
                 auto r = get_pattern_register();
                 add_variable_binding(v, r);
             } break;
             case AST_EXPR_APPLICATION: {
-                auto [p,ee] = AstExprApplication::split(e);
+                auto [p, ee] = AstExprApplication::split(e);
                 auto r = get_pattern_register();
                 auto l = get_fail_label();
 
@@ -324,7 +323,7 @@ public:
     reg_t visit_tree(const ptr<Ast> &e) {
         switch (e->tag()) {
             case AST_EXPR_INTEGER: {
-                auto [p,v] = AstExprInteger::split(e);
+                auto [p, v] = AstExprInteger::split(e);
                 if (v.startsWith("0x")) {
                     auto i = VM::unicode_to_hexint(v);
                     auto o = machine()->create_integer(i);
@@ -336,30 +335,30 @@ public:
                 }
             } break;
             case AST_EXPR_FLOAT: {
-                auto [p,v] = AstExprFloat::split(e);
+                auto [p, v] = AstExprFloat::split(e);
                 auto f = VM::unicode_to_float(v);
                 auto o = machine()->create_float(f);
                 return visit_tree_constant(o);
             } break;
             case AST_EXPR_CHARACTER: {
-                auto [p,v] = AstExprCharacter::split(e);
+                auto [p, v] = AstExprCharacter::split(e);
                 auto c = VM::unicode_to_char(v);
                 auto o = machine()->create_char(c);
                 return visit_tree_constant(o);
             } break;
             case AST_EXPR_TEXT: {
-                auto [p,v] = AstExprText::split(e);
+                auto [p, v] = AstExprText::split(e);
                 auto c = VM::unicode_to_text(v);
                 auto o = machine()->create_text(c);
                 return visit_tree_constant(o);
             } break;
             case AST_EXPR_COMBINATOR: {
-                auto [p,nn,n] = AstExprCombinator::split(e);
+                auto [p, nn, n] = AstExprCombinator::split(e);
                 auto o = machine()->get_combinator(nn, n);
                 return visit_tree_constant(o);
             } break;
             case AST_EXPR_VARIABLE: {
-                auto [p,v] = AstExprVariable::split(e);
+                auto [p, v] = AstExprVariable::split(e);
                 if (has_variable_binding(v)) {
                     auto r = get_variable_binding(v);
                     auto r0 = get_coder()->generate_register();
@@ -374,15 +373,16 @@ public:
                 }
             } break;
             case AST_EXPR_APPLICATION: {
-                auto [p,ee] = AstExprApplication::split(e);
+                auto [p, ee] = AstExprApplication::split(e);
 
                 auto t = get_coder()->generate_register();
                 int i = 0;
 
                 std::queue<reg_t> children;
                 // first unravel all child nodes
-                for (auto &e:ee) {
-                    set_cursor(t,i); i++;
+                for (auto &e : ee) {
+                    set_cursor(t, i);
+                    i++;
                     if (e->tag() == AST_EXPR_APPLICATION) {
                         auto c = visit_tree(e);
                         children.push(c);
@@ -394,18 +394,25 @@ public:
                 reg_t first = 0;
                 reg_t last = 0;
                 i = 0;
-                for (auto &e:ee) {
-                    set_cursor(t,i); i++;
+                for (auto &e : ee) {
+                    set_cursor(t, i);
+                    i++;
                     if (e->tag() == AST_EXPR_APPLICATION) {
                         auto c = children.front();
                         children.pop();
                         auto r = get_coder()->generate_register();
-                        if (f) { f = false; first = r; }
+                        if (f) {
+                            f = false;
+                            first = r;
+                        }
                         last = r;
                         get_coder()->emit_op_mov(r, c);
                     } else {
                         auto r = visit_tree(e);
-                        if (f) { f = false; first = r; }
+                        if (f) {
+                            f = false;
+                            first = r;
+                        }
                         last = r;
                     }
                 }
@@ -444,7 +451,7 @@ public:
     reg_t visit_redex(const ptr<Ast> &e) {
         switch (e->tag()) {
             case AST_EXPR_COMBINATOR: {
-                auto [p,nn,n] = AstExprCombinator::split(e);
+                auto [p, nn, n] = AstExprCombinator::split(e);
                 auto o = machine()->get_combinator(nn, n);
                 auto d = get_coder()->emit_data(o);
                 auto r = get_coder()->generate_register();
@@ -452,7 +459,7 @@ public:
                 return visit_redex_small(r);
             } break;
             case AST_EXPR_VARIABLE: {
-                auto [p,v] = AstExprVariable::split(e);
+                auto [p, v] = AstExprVariable::split(e);
                 if (has_variable_binding(v)) {
                     auto r = get_variable_binding(v);
                     return visit_redex_small(r);
@@ -462,15 +469,16 @@ public:
                 }
             } break;
             case AST_EXPR_APPLICATION: {
-                auto [p,ee] = AstExprApplication::split(e);
+                auto [p, ee] = AstExprApplication::split(e);
 
                 std::queue<reg_t> children;
 
                 auto t = get_coder()->generate_register();
                 int i = 4;
                 // first unravel all child nodes
-                for (auto &e:ee) {
-                    set_cursor(t,i); i++;
+                for (auto &e : ee) {
+                    set_cursor(t, i);
+                    i++;
                     if (e->tag() == AST_EXPR_APPLICATION) {
                         auto c = visit_tree(e);
                         children.push(c);
@@ -490,8 +498,9 @@ public:
 
                 i = 4;
                 reg_t last = 0;
-                for (auto &e:ee) {
-                    set_cursor(t,i); i++;
+                for (auto &e : ee) {
+                    set_cursor(t, i);
+                    i++;
                     if (e->tag() == AST_EXPR_APPLICATION) {
                         auto c = children.front();
                         children.pop();
@@ -510,18 +519,16 @@ public:
             } break;
             default: {
                 PANIC("redex expected");
-                return 0; // keep compiler happy
+                return 0;  // keep compiler happy
             };
         }
     }
 
     bool is_redex(const ptr<Ast> o) {
         auto t = o->tag();
-        if ( (t == AST_EXPR_INTEGER) 
-            || (t == AST_EXPR_HEXINTEGER) 
-            || (t == AST_EXPR_FLOAT)
-            || (t == AST_EXPR_CHARACTER)
-            || (t == AST_EXPR_TEXT)) {
+        if ((t == AST_EXPR_INTEGER) || (t == AST_EXPR_HEXINTEGER) ||
+            (t == AST_EXPR_FLOAT) || (t == AST_EXPR_CHARACTER) ||
+            (t == AST_EXPR_TEXT)) {
             return false;
         } else if (t == AST_EXPR_VARIABLE) {
             return true;
@@ -661,7 +668,6 @@ public:
                                 const icu::UnicodeString &i) override {
         // cut
     }
-
 
     void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
         // cut

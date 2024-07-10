@@ -27,7 +27,7 @@ class VMObjectThreadResult : public VMObjectCombinator {
 public:
     VMObjectThreadResult(VM *m, const symbol_t s, const VMObjectPtr &tuple,
                          int pos)
-        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos){};
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos) {};
 
     VMObjectThreadResult(const VMObjectThreadResult &d)
         : VMObjectThreadResult(d.machine(), d.symbol(), d._tuple, d._pos) {
@@ -57,7 +57,7 @@ class VMObjectThreadException : public VMObjectCombinator {
 public:
     VMObjectThreadException(VM *m, const symbol_t s, const VMObjectPtr &tuple,
                             int pos)
-        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos){};
+        : VMObjectCombinator(VM_SUB_BUILTIN, m, s), _tuple(tuple), _pos(pos) {};
 
     VMObjectThreadException(const VMObjectThreadException &d)
         : VMObjectThreadException(d.machine(), d.symbol(), d._tuple, d._pos) {
