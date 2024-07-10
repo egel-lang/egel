@@ -51,7 +51,9 @@ and a number of dynamically loadable Egel object files in the
 `build` directory.
 
 For a system-wide install run `make install` after a build
-as root.
+as root. 
+
+(MacOS dyld doesn't look in /usr/local/lib anymore, set the path.)
 
 On some systems the `EGEL_PATH` environment variable needs to be set.
 See the man page for further information on that.
