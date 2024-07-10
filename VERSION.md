@@ -27,6 +27,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ non-recursive print
 + time and date
 
 ## v0.1.10 - egel, let's go!

@@ -1225,10 +1225,6 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
 
-    bool is_well_formed_tuple(VMObjectPtr &ee) const;
-    bool is_well_formed_nil(VMObjectPtr &ee) const;
-    bool is_well_formed_cons(VMObjectPtr &ee) const;
-    void render(std::ostream &os) const override;
     VMObjectPtrs value() const {
         auto oo = VMObjectPtrs(_size);
         for (int i = 0; i < _size; i++) {
@@ -1236,6 +1232,14 @@ public:
         }
         return oo;
     }
+
+    bool is_well_formed_tuple(VMObjectPtr &ee) const;
+
+    bool is_well_formed_nil(VMObjectPtr &ee) const;
+
+    bool is_well_formed_cons(VMObjectPtr &ee) const;
+
+    void render(std::ostream &os) const override;
 
 private:
     VMObjectPtr *_array;
