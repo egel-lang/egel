@@ -147,13 +147,20 @@ public:
     }
 
     void push(const VMObjectPtr &o) {
+        //std::lock_guard<std::mutex> lock(other.mtx);
         _oo.push(o);
     }
 
-    void clear() {
-        while (!_oo.empty()) _oo.pop();
+    void pop() {
+        //std::lock_guard<std::mutex> lock(other.mtx);
+        _oo.pop();
     }
+    void clear() {
+        while (!_oo.empty()) pop();
+    }
+
 private:
+    mutable std::mutex mtx;
     std::stack<VMObjectPtr> _oo;
 };
 
