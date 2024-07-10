@@ -29,6 +29,7 @@ A list of all major changes between versions of the interpreter.
 + remove cascading free bug at expense of performance
 + non-recursive print
 + time and date
++ print float with fmt
 + ffi
 
 ## v0.1.10 - egel, let's go!
