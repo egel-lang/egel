@@ -27,6 +27,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ remove cascading free bug at expense of performance
 + non-recursive print
 + time and date
 
