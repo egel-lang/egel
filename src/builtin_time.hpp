@@ -6,7 +6,6 @@
 
 #include <ctime>
 #include <chrono>
-//#include <date/tz.h> // unavailable yet
 
 #include "runtime.hpp"
 
@@ -681,6 +680,47 @@ public:
         return _date;
     }
 
+    static VMObjectPtr to_tuple(VM *vm, const VMObjectPtr& o) {
+        auto d = cast(o)->date();
+        VMObjectPtrs oo;
+        oo.push_back(vm->create_integer(d.tm_year + 1900));
+        oo.push_back(vm->create_integer(d.tm_mon));
+        oo.push_back(vm->create_integer(d.tm_mday));
+        oo.push_back(vm->create_integer(d.tm_hour));
+        oo.push_back(vm->create_integer(d.tm_min));
+        oo.push_back(vm->create_integer(d.tm_sec));
+        return vm->create_tuple(oo);
+    }
+
+    static bool is_tuple(VM *vm, const VMObjectPtr& o) {
+        if (vm->is_tuple(o)) {
+            VMObjectPtrs oo = vm->from_tuple(o);
+            if (oo.size() != 6) {
+                return false;
+            }
+            for (auto const &o:oo) {
+                if (!vm->is_integer(o)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static VMObjectPtr from_tuple(VM *vm, const VMObjectPtr& o) {
+        VMObjectPtrs oo = vm->from_tuple(o);
+        std::tm tm{};
+        tm.tm_year = vm->get_integer(oo[0]) - 1900;
+        tm.tm_mon = vm->get_integer(oo[1]);
+        tm.tm_mday = vm->get_integer(oo[2]);
+        tm.tm_hour = vm->get_integer(oo[3]);
+        tm.tm_min = vm->get_integer(oo[4]);
+        tm.tm_sec = vm->get_integer(oo[5]);
+        return create(vm, tm);
+    }
+
 private:
     std::tm _date;
 };
@@ -959,15 +999,15 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         if (machine()->is_text(arg0) && TimePoint::is_time_point(arg1)) {        
             auto s = machine()->get_text(arg0);
-            auto time_zone = date::locate_zone(s);
+            auto time_zone = std::chrono::locate_zone(VM::unicode_to_string(s));
             auto tp = TimePoint::cast(arg1);
             switch (tp->get_clock_type()) {
                 case clock_type::SYSTEM_CLOCK: {
                     auto t = tp->time_point_system_clock();
-                    std::time_t time_t_val = std::chrono::system_clock::to_time_t(t);
-                    date::zoned_time zoned_time(time_zone, time_point);
+                    //std::time_t time_t_val = std::chrono::system_clock::to_time_t(t);
+                    std::chrono::zoned_time zoned_time(time_zone, t);
                     auto local_time = zoned_time.get_local_time();
-                    std::time_t local_time_t = date::local_time<std::chrono::seconds>(local_time).time_since_epoch().count();
+                    std::time_t local_time_t = std::chrono::local_time<std::chrono::seconds>(local_time).time_since_epoch().count();
                     std::tm tm_val = *std::localtime(&localtime_t);
                     return Date::create(machine(), tm_val);
                 }

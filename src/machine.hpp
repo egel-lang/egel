@@ -567,6 +567,15 @@ public:
         return create_array(oo);
     }
 
+    VMObjectPtr create_tuple(const VMObjectPtrs& oo) override {
+        VMObjectPtrs oo0;
+        oo0.push_back(_tuple);
+        for (auto const &o:oo) {
+            oo0.push_back(o);
+        }
+        return create_array(oo0);
+    }
+
     bool is_none(const VMObjectPtr &o) override {
         return (object_none_test(o));
     }
