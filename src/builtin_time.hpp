@@ -938,10 +938,10 @@ public:
     }
 };
 
-// ## Time::localtime n - time point to local date
+// ## Time::local_time n - time point to local date
 class Localtime : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Localtime, STRING_TIME, "localtime");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Localtime, STRING_TIME, "local_time");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimePoint::is_time_point(arg0)) {        
@@ -964,10 +964,10 @@ public:
     }
 };
 
-// ## Time::gmtime n - time point to gm date
+// ## Time::gm_time n - time point to gm date
 class GMTime : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GMTime, STRING_TIME, "gmtime");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GMTime, STRING_TIME, "gm_time");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimePoint::is_time_point(arg0)) {        
@@ -991,7 +991,7 @@ public:
 };
 
 /*
-// ## Time::zonetime n - time point to zone date
+// Time::zonetime n - time point to zone date
 class Zonetime : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Zonetime, STRING_TIME, "zonetime");
@@ -1041,6 +1041,35 @@ public:
     }
 };
 
+// ## Time::date_to_tuple n - date to tuple
+class DateToTuple : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, DateToTuple, STRING_TIME, "date_to_tuple");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (Date::is_date(arg0)) {        
+            return Date::to_tuple(machine(), arg0);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+// ## Time::date_from_tuple n - date from tuple
+class DateFromTuple : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, DateFromTuple, STRING_TIME, "date_from_tuple");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (Date::is_tuple(machine(), arg0)) {        
+            return Date::from_tuple(machine(), arg0);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+
 inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -1060,6 +1089,9 @@ inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     oo.push_back(Years::create(vm));
     oo.push_back(Localtime::create(vm));
     oo.push_back(GMTime::create(vm));
+    oo.push_back(DateToTime::create(vm));
+    oo.push_back(DateToTuple::create(vm));
+    oo.push_back(DateFromTuple::create(vm));
 
     return oo;
 }
