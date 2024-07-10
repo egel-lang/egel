@@ -6,7 +6,7 @@
 
 #include <ctime>
 #include <chrono>
-//#include "date/tz.h" -- unavailable yet
+//#include <date/tz.h> // unavailable yet
 
 #include "runtime.hpp"
 
@@ -936,7 +936,7 @@ public:
                 case clock_type::SYSTEM_CLOCK: {
                     auto t = tp->time_point_system_clock();
                     std::time_t time_t_val = std::chrono::system_clock::to_time_t(t);
-                    std::tm tm_val = *std::localtime(&time_t_val);
+                    std::tm tm_val = *std::gmtime(&time_t_val);
                     return Date::create(machine(), tm_val);
                 }
                 break;
@@ -982,6 +982,24 @@ public:
     }
 };
 */
+
+// ## Time::date_to_time n - date to time point
+class DateToTime : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, DateToTime, STRING_TIME, "date_to_time");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (Date::is_date(arg0)) {        
+            auto d = Date::cast(arg0);
+            std::tm tm = d->date();
+            std::time_t time_t_value = std::mktime(&tm);
+            auto tp = std::chrono::system_clock::from_time_t(time_t_value);
+            return TimePoint::create_system(machine(), tp);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
 
 inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     std::vector<VMObjectPtr> oo;
