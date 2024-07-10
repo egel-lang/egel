@@ -16,6 +16,8 @@
 #include <stack>
 #include <vector>
 
+#include <fmt/core.h>
+
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
 #include "unicode/ustdio.h"
@@ -1035,10 +1037,8 @@ public:
     }
 
     void render(std::ostream &os) const override {
-        os.precision(EGEL_FLOAT_PRECISION);
-        // os.setf(std::ios::fixed, std::ios::floatfield);
-        os.setf(std::ios::showpoint);
-        os << value();
+        std::string s = fmt::format("{}", value());
+        os << s;
     }
 
     vm_float_t value() const {
