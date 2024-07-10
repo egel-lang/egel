@@ -895,6 +895,58 @@ public:
     }
 };
 
+// ## Time::localtime n - time point to local date
+class Localtime : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Localtime, STRING_TIME, "localtime");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (TimePoint::is_time_point(arg0)) {        
+            auto tp = TimePoint::cast(arg0);
+            switch (tp->get_clock_type()) {
+                case clock_type::SYSTEM_CLOCK: {
+                    auto t = tp->time_point_system_clock();
+                    std::time_t time_t_val = std::chrono::system_clock::to_time_t(t);
+                    std::tm tm_val = *std::localtime(&time_t_val);
+                    return Date::create(machine(), tm_val);
+                }
+                break;
+                default: {
+                    throw machine()->bad_args(this, arg0);
+                }
+           }
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+// ## Time::gmtime n - time point to gm date
+class GMTime : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, GMTime, STRING_TIME, "gmtime");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (TimePoint::is_time_point(arg0)) {        
+            auto tp = TimePoint::cast(arg0);
+            switch (tp->get_clock_type()) {
+                case clock_type::SYSTEM_CLOCK: {
+                    auto t = tp->time_point_system_clock();
+                    std::time_t time_t_val = std::chrono::system_clock::to_time_t(t);
+                    std::tm tm_val = *std::localtime(&time_t_val);
+                    return Date::create(machine(), tm_val);
+                }
+                break;
+                default: {
+                    throw machine()->bad_args(this, arg0);
+                }
+           }
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
