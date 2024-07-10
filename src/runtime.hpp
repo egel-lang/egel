@@ -1175,6 +1175,7 @@ public:
         for (int i = 0; i < _size; i++) {
             garbage_collector.push(_array[i]);
         }
+        delete[] _array;
     }
 
     VMObjectPtr clone() const {
