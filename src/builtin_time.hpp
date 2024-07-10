@@ -693,11 +693,8 @@ public:
     }
 
     static bool is_tuple(VM *vm, const VMObjectPtr& o) {
-        if (vm->is_tuple(o)) {
+        if (vm->is_array(o) && vm->array_size(o) == 7 && vm->is_tuple(vm->array_get(o,0))) {
             VMObjectPtrs oo = vm->from_tuple(o);
-            if (oo.size() != 6) {
-                return false;
-            }
             for (auto const &o:oo) {
                 if (!vm->is_integer(o)) {
                     return false;
@@ -718,6 +715,7 @@ public:
         tm.tm_hour = vm->get_integer(oo[3]);
         tm.tm_min = vm->get_integer(oo[4]);
         tm.tm_sec = vm->get_integer(oo[5]);
+        tm.tm_isdst = -1; // XXX pray this works
         std::mktime(&tm); // call to adjust all fields
         return create(vm, tm);
     }

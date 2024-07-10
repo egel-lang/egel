@@ -10,8 +10,9 @@
 #include <limits>
 #include <memory>
 #include <set>
-#include <sstream>
 #include <vector>
+#include <stack>
+#include <sstream>
 #include <cstring>
 
 #include "unicode/uchar.h"
@@ -140,11 +141,6 @@ class VMObject;
 using VMObjectPtr = std::shared_ptr<VMObject>;
 using VMWeakObjectPtr = std::weak_ptr<VMObject>;
 
-// forward declarations for pretty printing
-inline void render_tuple(const VMObjectPtr &tt, std::ostream &os);
-inline void render_nil(const VMObjectPtr &n, std::ostream &os);
-inline void render_cons(const VMObjectPtr &cc, std::ostream &os);
-
 class VMObject {
 public:
     VMObject(const vm_tag_t t) : _tag(t), _subtag(-1) {
@@ -184,7 +180,9 @@ public:
 
     virtual void render(std::ostream &os) const = 0;
 
-    virtual void debug(std::ostream &os) const = 0;
+    virtual void debug(std::ostream &os) const {
+        render(os);
+    }
 
     virtual symbol_t symbol() const = 0;
 
@@ -915,10 +913,6 @@ public:
     VMObjectLiteral(const vm_tag_t &t) : VMObject(t) {
     }
 
-    void debug(std::ostream &os) const override {
-        render(os);
-    }
-
     // note: reduce is defined later in this header file for portability
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
 };
@@ -1106,6 +1100,23 @@ private:
     icu::UnicodeString _value;
 };
 
+class VMObjectRawText : public VMObjectText {
+public:
+    VMObjectRawText(const icu::UnicodeString &v)
+        : VMObjectText(v){};
+
+    VMObjectRawText(const VMObjectRawText &l) : VMObjectRawText(l.value()) {
+    }
+
+    static VMObjectPtr create(const icu::UnicodeString &v) {
+        return std::make_shared<VMObjectRawText>(v);
+    }
+
+    void render(std::ostream &os) const override {
+        os << value();
+    }
+};
+
 class VMObjectArray : public VMObject {
 public:
     VMObjectArray() : VMObject(VM_OBJECT_ARRAY) {
@@ -1214,40 +1225,10 @@ public:
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
 
-    void debug(std::ostream &os) const override {
-        render(os);
-    }
-
-    void render(std::ostream &os) const override {
-        if (size() == 0) {
-            os << "()";
-            return;
-        }
-        auto head = value()[0];
-        if ((head != nullptr) && (head->symbol() == SYMBOL_TUPLE)) {
-            render_tuple(this->clone(), os);  // XXX: still need clone...
-        } else if ((head != nullptr) && (head->symbol() == SYMBOL_CONS) &&
-                   (value().size() == 3)) {
-            render_cons(this->clone(), os);
-        } else {
-            os << '(';
-            bool first = true;
-            for (auto &v : value()) {
-                if (first) {
-                    first = false;
-                } else {
-                    os << ' ';
-                }
-                if (v == nullptr) {
-                    os << ".";
-                } else {
-                    v->render(os);
-                }
-            }
-            os << ')';
-        }
-    }
-
+    bool is_well_formed_tuple(VMObjectPtr &ee) const;
+    bool is_well_formed_nil(VMObjectPtr &ee) const;
+    bool is_well_formed_cons(VMObjectPtr &ee) const;
+    void render(std::ostream &os) const override;
     VMObjectPtrs value() const {
         auto oo = VMObjectPtrs(_size);
         for (int i = 0; i < _size; i++) {
@@ -1401,10 +1382,6 @@ public:
         return k;
     }
 
-    void debug(std::ostream &os) const override {
-        render(os);
-    }
-
     void render(std::ostream &os) const override {
         os << '<' << text() << '>';
     }
@@ -1488,10 +1465,6 @@ public:
         } else {
             return _machine->get_combinator_string(_symbol);
         }
-    }
-
-    void debug(std::ostream &os) const override {
-        render(os);
     }
 
     void render(std::ostream &os) const override {
@@ -2908,6 +2881,122 @@ public:
     }
 };
 
+    bool VMObjectArray::is_well_formed_tuple(VMObjectPtr &ee) const {
+        if (ee == nullptr) {
+            return false;
+        } else if (ee->tag() == VM_OBJECT_ARRAY) {
+            auto v = VMObjectArray::value(ee);
+            if (v.size() == 1) {
+                return false;
+            } else {
+                auto head = v[0];
+                if (head->tag() == VM_OBJECT_COMBINATOR) {
+                    auto h = VMObjectCombinator::cast(head);
+                    return h->symbol() == SYMBOL_TUPLE;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    };
+
+    bool VMObjectArray::is_well_formed_nil(VMObjectPtr &ee) const {
+        if (ee->tag() == VM_OBJECT_COMBINATOR) {
+            auto sym = VMObjectCombinator::symbol(ee);
+            return sym == SYMBOL_NIL;
+        } else {
+            return false;
+        }
+    };
+
+    bool VMObjectArray::is_well_formed_cons(VMObjectPtr &ee) const {
+        if (ee == nullptr) {
+            return false;
+        } else if (ee->tag() == VM_OBJECT_ARRAY) {
+            auto v = VMObjectArray::value(ee);
+            if (v.size() != 3) {
+                return false;
+            } else {
+                auto head = v[0];
+                if (head->tag() == VM_OBJECT_COMBINATOR) {
+                    auto h = VMObjectCombinator::cast(head);
+                    return h->symbol() == SYMBOL_CONS;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    };
+
+    void VMObjectArray::render(std::ostream &os) const {
+        std::stack<VMObjectPtr> work;
+
+        work.push(this->clone()); // XXX: still need clone
+
+        while (!work.empty()) {
+            VMObjectPtr o = work.top();
+            work.pop();
+            if (o == nullptr) {
+                work.push(VMObjectRawText::create("."));
+            } else if (o->tag() == VM_OBJECT_ARRAY) {
+                auto aa = VMObjectArray::value(o);
+                if (aa.size() == 0) {
+                    work.push(VMObjectRawText::create("()"));
+                } else if (aa.size() == 1) {
+                    work.push(VMObjectRawText::create(")"));
+                    work.push(aa[0]);
+                    work.push(VMObjectRawText::create("("));
+                } else if (is_well_formed_tuple(o)) {
+                    work.push(VMObjectRawText::create(")"));
+                    for (int n = (int) aa.size() - 1; n > 0;  n--) {
+                        work.push(aa[n]);
+                        if (n != 1) {
+                            work.push(VMObjectRawText::create(", "));
+                        }
+                    }
+                    work.push(VMObjectRawText::create("("));
+                } else if (is_well_formed_cons(o)) {
+                    work.push(VMObjectRawText::create("}"));
+                    std::stack<VMObjectPtr> oo;
+                    VMObjectPtr l = o;
+                    while (is_well_formed_cons(l)) {
+                        auto aa = VMObjectArray::value(l);
+                        oo.push(aa[1]);
+                        l = aa[2];
+                    }
+                    if (!is_well_formed_nil(l)) {
+                        work.push(l);
+                        work.push(VMObjectRawText::create("| "));
+                    }
+                    while(!oo.empty()) {
+                        auto o = oo.top();
+                        oo.pop();
+                        work.push(o);
+                        if (!oo.empty()) {
+                            work.push(VMObjectRawText::create(", "));
+                        }
+                    }
+                    work.push(VMObjectRawText::create("{"));
+                } else {
+                    work.push(VMObjectRawText::create(")"));
+                    for (int n = (int) aa.size() - 1; n >= 0;  n--) {
+                        work.push(aa[n]);
+                        if (n != 0) {
+                            work.push(VMObjectRawText::create(" "));
+                        }
+                    }
+                    work.push(VMObjectRawText::create("("));
+                }
+            } else {
+                o->render(os);
+            }
+        }
+    };
+
 #define TERNARY_PREAMBLE(t, c, n0, n1)              \
     c(VM *m) : Ternary(t, m, n0, n1) {              \
     }                                               \
@@ -2918,152 +3007,5 @@ public:
     static VMObjectPtr create(VM *m) {              \
         return std::shared_ptr<c>(new c(m));        \
     }
-
-// 'pretty' printing
-
-inline void render_tuple(const VMObjectPtr &tt, std::ostream &os) {
-    if (tt == nullptr) {
-        os << '.';
-    } else if (tt->tag() == VM_OBJECT_ARRAY) {
-        os << '(';
-        auto vv = VMObjectArray::value(tt);
-        int sz = (int)vv.size();
-        if (sz == 2) {  // NOTE, handle 'tuple 0 = (0,)' differently
-            if (vv[0] == nullptr) {
-                os << '.';
-            } else {
-                vv[0]->render(os);
-            }
-            os << ' ';
-            if (vv[1] == nullptr) {
-                os << '.';
-            } else {
-                vv[1]->render(os);
-            }
-        } else {
-            for (int n = 1; n < sz; n++) {
-                if (vv[n] == nullptr) {
-                    os << '.';
-                } else {
-                    vv[n]->render(os);
-                    if (n < sz - 1) {
-                        os << ", ";
-                    }
-                }
-            }
-        }
-        os << ')';
-    } else {
-        PANIC("not a tuple");
-    }
-};
-
-inline void render_nil(const VMObjectPtr &n, std::ostream &os) {
-    if (n == nullptr) {
-        os << '.';
-    } else {
-        os << "{}";
-    }
-};
-
-inline void render_array_raw(const VMObjectPtr &ee, std::ostream &os) {
-    if (ee == nullptr) {
-        os << '.';
-    } else if (ee->tag() == VM_OBJECT_ARRAY) {
-        auto vv = VMObjectArray::value(ee);
-        os << '(';
-        bool first = true;
-        for (auto &v : vv) {
-            if (first) {
-                first = false;
-            } else {
-                os << ' ';
-            }
-            if (v == nullptr) {
-                os << ".";
-            } else {
-                v->render(os);
-            }
-        }
-        os << ')';
-    } else {
-        PANIC("array expected");
-    }
-};
-
-inline bool is_well_formed_nil(const VMObjectPtr &ee) {
-    if (ee->tag() == VM_OBJECT_COMBINATOR) {
-        auto sym = VMObjectCombinator::symbol(ee);
-        return sym == SYMBOL_NIL;
-    } else {
-        return false;
-    }
-};
-
-inline bool is_well_formed_const(const VMObjectPtr &ee) {
-    if (ee == nullptr) {
-        return false;
-    } else if (ee->tag() == VM_OBJECT_ARRAY) {
-        auto v = VMObjectArray::value(ee);
-        if (v.size() != 3) {
-            return false;
-        } else {
-            auto head = v[0];
-            if (head->tag() == VM_OBJECT_COMBINATOR) {
-                auto h = VMObjectCombinator::cast(head);
-                return h->symbol() == SYMBOL_CONS;
-            } else {
-                return false;
-            }
-        }
-    } else {
-        return false;
-    }
-};
-
-inline void render_cons_elements(const VMObjectPtr &ee, std::ostream &os) {
-    if (ee == nullptr) {
-        os << '.';
-    } else if (is_well_formed_nil(ee)) {
-    } else if (is_well_formed_const(ee)) {
-        auto v = VMObjectArray::value(ee);
-        if ((v[2] != nullptr) && is_well_formed_nil(v[2])) {
-            if (v[1] == nullptr) {
-                os << ".";
-            } else {
-                v[1]->render(os);
-            }
-        } else if ((v[2] != nullptr) && is_well_formed_const(v[2])) {
-            if (v[1] == nullptr) {
-                os << ".";
-            } else {
-                v[1]->render(os);
-            }
-            os << ", ";
-            render_cons_elements(v[2], os);
-        } else {
-            if (v[1] == nullptr) {
-                os << ".";
-            } else {
-                v[1]->render(os);
-            }
-            os << "| ";
-            if (v[2] == nullptr) {
-                os << ".";
-            } else {
-                v[2]->render(os);
-            }
-        }
-    } else {
-        os << "|";
-        ee->render(os);
-    }
-};
-
-inline void render_cons(const VMObjectPtr &c, std::ostream &os) {
-    os << "{";
-    render_cons_elements(c, os);
-    os << "}";
-};
 
 };  // namespace egel

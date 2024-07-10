@@ -20,13 +20,14 @@ A list of all major changes between versions of the interpreter.
 + dynamic dispatch
 + cleanup internals regarding combinator declarations
 + module rework and compile into local module
-+ time and date
 + complex numbers
 * clean up ref (make it serializable)
 + generate C++ from .eg file (module compilation)
 + target MSVC
 
 ## The bleeding, cutting edge
+
++ time and date
 
 ## v0.1.10 - egel, let's go!
 
