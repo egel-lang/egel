@@ -3,7 +3,10 @@
 #include <variant>
 #include <stdlib.h>
 #include <filesystem>
+
+#include <ctime>
 #include <chrono>
+//#include "date/tz.h" -- unavailable yet
 
 #include "runtime.hpp"
 
@@ -947,6 +950,39 @@ public:
     }
 };
 
+/*
+// ## Time::zonetime n - time point to zone date
+class Zonetime : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Zonetime, STRING_TIME, "zonetime");
+
+    VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
+        if (machine()->is_text(arg0) && TimePoint::is_time_point(arg1)) {        
+            auto s = machine()->get_text(arg0);
+            auto time_zone = date::locate_zone(s);
+            auto tp = TimePoint::cast(arg1);
+            switch (tp->get_clock_type()) {
+                case clock_type::SYSTEM_CLOCK: {
+                    auto t = tp->time_point_system_clock();
+                    std::time_t time_t_val = std::chrono::system_clock::to_time_t(t);
+                    date::zoned_time zoned_time(time_zone, time_point);
+                    auto local_time = zoned_time.get_local_time();
+                    std::time_t local_time_t = date::local_time<std::chrono::seconds>(local_time).time_since_epoch().count();
+                    std::tm tm_val = *std::localtime(&localtime_t);
+                    return Date::create(machine(), tm_val);
+                }
+                break;
+                default: {
+                    throw machine()->bad_args(this, arg0);
+                }
+           }
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+*/
+
 inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -964,6 +1000,8 @@ inline std::vector<VMObjectPtr> builtin_time(VM *vm) {
     oo.push_back(Weeks::create(vm));
     oo.push_back(Months::create(vm));
     oo.push_back(Years::create(vm));
+    oo.push_back(Localtime::create(vm));
+    oo.push_back(GMTime::create(vm));
 
     return oo;
 }
