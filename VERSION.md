@@ -5,7 +5,6 @@ A list of all major changes between versions of the interpreter.
 
 ## Pending goals
 
-+ fix deep-recursion term printing bugs
 + replace all class preamble macros with templates
 + add import/export lists to using/namespace
 + vararg function definitions
@@ -30,6 +29,7 @@ A list of all major changes between versions of the interpreter.
 + remove cascading free bug at expense of performance
 + non-recursive print
 + time and date
++ ffi
 
 ## v0.1.10 - egel, let's go!
 
