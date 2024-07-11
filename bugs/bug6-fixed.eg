@@ -5,6 +5,8 @@
 # native c++ RAII behavior on shared pointers
 # a stopgap solution is to break these large structure down gracefully
 
+# solved with a stopgap solution at great performance cost
+
 
 import "prelude.eg"
 
