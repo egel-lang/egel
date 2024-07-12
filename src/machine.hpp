@@ -194,7 +194,12 @@ private:
 class Machine final : public VM {
 public:
     Machine() {
+#ifdef __APPLE__
         set_stack_size(8*1024*1024); 
+#elif __linux__
+        set_stack_size(128*1024*1024); 
+#else
+#endif
         populate();
     }
 
