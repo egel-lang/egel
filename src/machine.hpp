@@ -194,7 +194,7 @@ private:
 class Machine final : public VM {
 public:
     Machine() {
-        set_stack_size(128*1024*1024); 
+        set_stack_size(8*1024*1024); 
         populate();
     }
 
