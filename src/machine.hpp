@@ -19,6 +19,28 @@
 
 namespace egel {
 
+// hardcode a larger stack
+#include <sys/resource.h> 
+void set_stack_size(size_t size) {
+    struct rlimit rl;
+    int result;
+
+    // Get current stack limit
+    result = getrlimit(RLIMIT_STACK, &rl);
+    if (result == 0) {
+        // Set new stack limit
+        rl.rlim_cur = size;
+        result = setrlimit(RLIMIT_STACK, &rl);
+        if (result != 0) {
+            perror("setrlimit");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        perror("getrlimit");
+        exit(EXIT_FAILURE);
+    }
+}
+
 class SymbolTable {
 public:
     SymbolTable()
@@ -172,6 +194,7 @@ private:
 class Machine final : public VM {
 public:
     Machine() {
+        set_stack_size(128*1024*1024); 
         populate();
     }
 
