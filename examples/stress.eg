@@ -1,0 +1,10 @@
+# Feed large terms into the parser and evaluate them.
+# The goal is to be able to do this for several million.
+
+import "prelude.eg"
+
+using System
+using List
+
+def main =
+    from_to 0 10000 |> to_text |> eval |> sum
