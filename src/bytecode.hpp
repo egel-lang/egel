@@ -13,7 +13,7 @@ namespace egel {
 
 class VMObjectBytecode;
 
-using reg_t = uint16_t;
+using reg_t = uint32_t;
 using index_t = uint16_t;
 using label_t = uint32_t;
 
@@ -175,7 +175,7 @@ public:
     }
 
     reg_t fetch_register() {
-        return fetch_i16();
+        return fetch_i32();
     }
 
     label_t fetch_label() {
@@ -404,7 +404,7 @@ public:
     }
 
     void emit_reg(const reg_t r) {
-        emit_i16(r);
+        emit_i32(r);
     }
 
     void emit_lbl(const label_t l) {
@@ -464,12 +464,12 @@ public:
     }
 
     void emit_op_concatx(const reg_t x, const reg_t y, const reg_t z,
-                         const reg_t i) {
+                         const index_t i) {
         emit_op(OP_CONCATX);
         emit_reg(x);
         emit_reg(y);
         emit_reg(z);
-        emit_reg(i);
+        emit_idx(i);
     }
 
     void emit_op_test(const reg_t x, const reg_t y) {
@@ -548,6 +548,9 @@ public:
                 case OP_RETURN:
                     pc += OP_SIZE + 1 * OP_REG_SIZE;
                     break;
+                default:
+                    PANIC("relabel case");
+                    break;
             }
         }
     }
@@ -574,7 +577,7 @@ private:
 
 #define LOOK_op(c, pc) c[pc++]
 #define FETCH_op(c, pc) FETCH_i8(c, pc)
-#define FETCH_reg(c, pc) FETCH_i16(c, pc)
+#define FETCH_reg(c, pc) FETCH_i32(c, pc)
 #define FETCH_idx(c, pc) FETCH_i16(c, pc)
 #define FETCH_lbl(c, pc) FETCH_i32(c, pc)
 

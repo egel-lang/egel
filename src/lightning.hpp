@@ -318,7 +318,7 @@ public:
     }
 
     reg_t fetch_register() {
-        return fetch_i16();
+        return fetch_i32();
     }
 
     label_t fetch_label() {
