@@ -33,6 +33,8 @@ managers provide C++ libraries.
 CMake files are provided for both models, select the one you want to use
 and rename either to `CMakeLists.txt`.
 
+A static build cmake script based of the vendor model is also provided.
+
 After that the interpreter is made with `cmake` in the standard manner. Run
 the following commands on a Linux system.
 
