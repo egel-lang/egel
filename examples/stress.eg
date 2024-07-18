@@ -7,4 +7,4 @@ using System
 using List
 
 def main =
-    from_to 0 10000 |> to_text |> eval |> sum
+    from_to 0 100000 |> to_text |> eval |> sum

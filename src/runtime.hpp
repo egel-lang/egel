@@ -144,6 +144,9 @@ class VMObject;
 using VMObjectPtr = std::shared_ptr<VMObject>;
 using VMWeakObjectPtr = std::weak_ptr<VMObject>;
 
+#define SAFE_FREE 1
+
+#ifdef SAFE_FREE
 class GC {
 public:
     GC() {
@@ -187,6 +190,7 @@ private:
 };
 
 inline GC garbage_collector;
+#endif
 
 class VMObject {
 public:
@@ -1195,9 +1199,11 @@ public:
     }
 
     ~VMObjectArray() {
+#ifdef SAFE_FREE
         for (int i = 0; i < _size; i++) {
             garbage_collector.push(_array[i]);
         }
+#endif
         delete[] _array;
     }
 
