@@ -1,1 +1,1 @@
-CMakeLists.static
+CMakeLists.foss
