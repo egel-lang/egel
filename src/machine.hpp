@@ -429,9 +429,6 @@ public:
                 std::cout << "on : " << trampoline << std::endl;
 #endif
                 trampoline = f->reduce(trampoline);
-#ifdef SAFE_FREE
-                garbage_collector.clear();
-#endif
             } else if (*run == SLEEPING) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             } else {  // *run == HALTED

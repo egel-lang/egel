@@ -144,54 +144,6 @@ class VMObject;
 using VMObjectPtr = std::shared_ptr<VMObject>;
 using VMWeakObjectPtr = std::weak_ptr<VMObject>;
 
-#define SAFE_FREE 1
-
-#ifdef SAFE_FREE
-class GC {
-public:
-    GC() {
-    }
-
-    void push(const VMObjectPtr &o) {
-        std::lock_guard<std::mutex> lock(mtx_in);
-        _in.push(o);
-    }
-
-    void copy() {
-        std::scoped_lock lock(mtx_in, mtx_out);
-        while (!_in.empty()) {
-            _out.push(_in.top());
-            _in.pop();
-        }
-    }
-
-    bool done() {
-        std::scoped_lock lock(mtx_in, mtx_out);
-        return _in.empty() && _out.empty();
-    }
-
-    void empty() {
-        std::lock_guard<std::mutex> lock(mtx_out);
-        while (!_out.empty()) _out.pop();
-    }
-
-    void clear() {
-        while (!done()) {
-            copy();
-            empty();
-        }
-    }
-
-private:
-    mutable std::mutex mtx_in;
-    mutable std::mutex mtx_out;
-    std::stack<VMObjectPtr> _in;
-    std::stack<VMObjectPtr> _out;
-};
-
-inline GC garbage_collector;
-#endif
-
 class VMObject {
 public:
     VMObject(const vm_tag_t t) : _tag(t), _subtag(-1) {
@@ -1169,6 +1121,13 @@ public:
     }
 };
 
+#define GC_STOPGAP yes
+
+#ifdef GC_STOPGAP
+inline thread_local std::stack<VMObjectPtr> defer;
+inline thread_local bool deferring = false;
+#endif
+ 
 class VMObjectArray : public VMObject {
 public:
     VMObjectArray() : VMObject(VM_OBJECT_ARRAY) {
@@ -1198,13 +1157,28 @@ public:
         _array = new VMObjectPtr[size];
     }
 
-    ~VMObjectArray() {
-#ifdef SAFE_FREE
-        for (int i = 0; i < _size; i++) {
-            garbage_collector.push(_array[i]);
+
+   ~VMObjectArray() {
+#ifdef GC_STOPGAP
+        if (deferring) {
+            for (int i = 0; i < _size; i++) {
+                defer.push(_array[i]);
+            }
+            delete[] _array;
+        } else {
+            deferring = true;
+            for (int i = 0; i < _size; i++) {
+                defer.push(_array[i]);
+            }
+            delete[] _array;
+            while (!defer.empty()) {
+                defer.pop();
+            }
+            deferring = false;
         }
-#endif
+#else
         delete[] _array;
+#endif
     }
 
     VMObjectPtr clone() const {
@@ -1273,12 +1247,6 @@ public:
     void set(unsigned int i, const VMObjectPtr &o) {
         _array[i] = o;
     }
-
-    /*
-        void push_back(const VMObjectPtr &o) {
-            _value.push_back(o);
-        }
-    */
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override;
 
