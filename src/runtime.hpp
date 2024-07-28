@@ -1904,6 +1904,13 @@ public:
     }                                              \
     static VMObjectPtr create(VM *m) {             \
         return std::shared_ptr<c>(new c(m));       \
+    } \
+    static bool is_type(const VMObjectPtr& o) { \
+        auto& r = *o.get(); \
+        return typeid(r) == typeid(c); \
+    } \
+    static std::shared_ptr<c> cast(const VMObjectPtr& o) { \
+        return std::static_pointer_cast<c>(o); \
     }
 
 // convenience classes for combinators which take and return constants

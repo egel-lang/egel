@@ -53,10 +53,6 @@ public:
         return typeid(r) == typeid(Duration);
     }
 
-    static std::shared_ptr<Duration> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<Duration>(o);
-    }
-
     int compare(const VMObjectPtr& o) override {
         auto d = cast(o)->duration();
         if (duration() < d) {
@@ -146,10 +142,6 @@ public:
     static bool is_time_point(const VMObjectPtr& o) {
         auto& r = *o.get();
         return typeid(r) == typeid(TimePoint);
-    }
-
-    static std::shared_ptr<TimePoint> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<TimePoint>(o);
     }
 
     clock_type get_clock_type() const {
@@ -538,10 +530,6 @@ public:
         return typeid(r) == typeid(TimeClock);
     }
 
-    static std::shared_ptr<TimeClock> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<TimeClock>(o);
-    }
-
     int compare(const VMObjectPtr& o) override {
         auto tp = cast(o)->get_clock_type();
         if (get_clock_type() < tp)
@@ -661,10 +649,6 @@ public:
     static bool is_date(const VMObjectPtr& o) {
         auto& r = *o.get();
         return typeid(r) == typeid(Date);
-    }
-
-    static std::shared_ptr<Date> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<Date>(o);
     }
 
     int compare(const VMObjectPtr& o) override {

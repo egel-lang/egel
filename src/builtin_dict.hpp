@@ -31,10 +31,6 @@ public:
         return VMObjectPtr(new Dictionary(m, d));
     }
 
-    static std::shared_ptr<Dictionary> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<Dictionary>(o);
-    }
-
     int compare(const VMObjectPtr& o) override {
         return -1;  // XXX: for later
     }

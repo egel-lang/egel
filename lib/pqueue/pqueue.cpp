@@ -41,10 +41,6 @@ public:
         return VMObjectPtr(new PQueue(m, d));
     }
 
-    static std::shared_ptr<PQueue> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<PQueue>(o);
-    }
-
     int compare(const VMObjectPtr& o) override {
         return -1;  // XXX: for later
     }
