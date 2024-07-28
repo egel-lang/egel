@@ -89,7 +89,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
+        if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);
             return m->create_bool(d->has(arg1));
         } else {
@@ -105,8 +105,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
+        if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);
             return d->get(arg1);
         } else {
@@ -122,8 +121,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
-        auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
+        if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);
             d->set(arg1, arg2);
             return arg0;
@@ -140,8 +138,7 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
+        if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);
             d->erase(arg1);
             return d;
@@ -157,11 +154,10 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, DictKeys, STRING_DICT, "keys");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        auto m = machine();
-        if (m->is_opaque(arg0) && m->symbol(arg0) == "Dict::dictionary") {
+        if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);
             auto oo = d->keys();
-            return m->to_list(oo);
+            return machine()->to_list(oo);
         } else {
             throw machine()->bad_args(this, arg0);
         }
