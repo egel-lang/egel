@@ -150,9 +150,9 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        if (machine()->is_type(typeid(Library), arg0) &&
+        if (Library::is_type(arg0) &&
             machine()->is_text(arg1)) {
-            auto l = std::static_pointer_cast<Library>(arg0);
+            auto l = Library::cast(arg0);
             auto s = machine()->get_text(arg1);
             return l->function(s);
         } else {

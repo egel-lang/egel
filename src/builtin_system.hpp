@@ -692,10 +692,8 @@ public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Getref, "System", "get_ref");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        symbol_t sym = machine()->enter_symbol("System", "reference");
-
-        if ((arg0->tag() == VM_OBJECT_OPAQUE) && (arg0->symbol() == sym)) {
-            auto r = std::static_pointer_cast<Reference>(arg0);
+        if (Reference::is_type(arg0)) {
+            auto r = Reference::cast(arg0);
             return r->get_ref();
         } else {
             throw machine()->bad_args(this, arg0);
@@ -710,10 +708,8 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
-        symbol_t sym = machine()->enter_symbol("System", "reference");
-
-        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == sym)) {
-            auto r = std::static_pointer_cast<Reference>(arg0);
+        if (Reference::is_type(arg0)) {
+            auto r = Reference::cast(arg0);
             r->set_ref(arg1);
             return arg0;
         } else {

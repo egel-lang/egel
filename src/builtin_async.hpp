@@ -75,10 +75,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Await, "System", "await");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        symbol_t s = machine()->enter_symbol("System", "future");
-
-        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == s)) {
-            auto f = std::static_pointer_cast<Future>(arg0);
+        if (Future::is_type(arg0)) {
+            auto f = Future::cast(arg0);
             auto r = f->await();
             if (r.exception) {
                 throw r.result;
@@ -98,11 +96,9 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
-        symbol_t s = machine()->enter_symbol("System", "future");
-
-        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == s) &&
+        if (Future::is_type(arg0) &&
             (machine()->is_integer(arg1))) {
-            auto f = std::static_pointer_cast<Future>(arg0);
+            auto f = Future::cast(arg0);
             auto n = machine()->get_integer(arg1);
             auto b = f->wait_for(n);
             return machine()->create_bool(b);
@@ -118,10 +114,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsValid, "System", "is_valid");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        symbol_t s = machine()->enter_symbol("System", "future");
-
-        if ((machine()->is_opaque(arg0)) && (arg0->symbol() == s)) {
-            auto f = std::static_pointer_cast<Future>(arg0);
+        if (Future::is_type(arg0)) {
+            auto f = Future::cast(arg0);
             auto b = f->valid();
             return machine()->create_bool(b);
         } else {
