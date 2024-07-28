@@ -433,10 +433,6 @@ protected:
     ChannelPtr _value;
 };
 
-#define CHANNEL_TEST(o, sym) \
-    ((machine()->is_opaque(o)) && (VMObjectOpaque::symbol(o) == sym))
-#define CHANNEL_VALUE(o) ((std::static_pointer_cast<ChannelValue>(o))->value())
-
 // ## OS::cin - standard input channel
 class Stdin : public Medadic {
 public:
@@ -527,11 +523,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Close, "OS", "close");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             chan->close();
             return machine()->create_none();
         } else {
@@ -546,11 +539,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Read, "OS", "read");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             UnicodeString str = chan->read();
             return machine()->create_text(str);
         } else {
@@ -565,11 +555,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadByte, "OS", "read_byte");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             int b = chan->read_byte();
             return machine()->create_integer(b);
         } else {
@@ -584,11 +571,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadLine, "OS", "read_line");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             UnicodeString str = chan->read_line();
             return machine()->create_text(str);
         } else {
@@ -603,11 +587,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadAll, "OS", "read_all");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             UnicodeString str = chan->read_all();
             return machine()->create_text(str);
         } else {
@@ -623,11 +604,8 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             if (machine()->is_text(arg1)) {
                 auto s = machine()->get_text(arg1);
                 chan->write(s);
@@ -648,11 +626,8 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             if (machine()->is_integer(arg1)) {
                 auto b = machine()->get_integer(arg1);
                 chan->write_byte(b);
@@ -673,11 +648,8 @@ public:
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             if (machine()->is_text(arg1)) {
                 auto s = machine()->get_text(arg1);
                 chan->write_line(s);
@@ -697,11 +669,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flush, "OS", "flush");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             chan->flush();
             return machine()->create_none();
         } else {
@@ -716,11 +685,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Eof, "OS", "eof");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "channel");
-
-        if (CHANNEL_TEST(arg0, sym)) {
-            auto chan = CHANNEL_VALUE(arg0);
+        if (ChannelValue::is_type(arg0)) {
+            auto chan = ChannelValue::cast(arg0)->value();
             return machine()->create_bool(chan->eof());
         } else {
             throw machine()->bad_args(this, arg0);
@@ -854,11 +820,8 @@ public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Accept, "OS", "accept");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
-        static symbol_t sym = 0;
-        if (sym == 0) sym = machine()->enter_symbol("OS", "serverobject");
-
-        if (SERVER_OBJECT_TEST(arg0, sym)) {
-            auto so = SERVER_OBJECT_CAST(arg0);
+        if (ServerObject::is_type(arg0)) {
+            auto so = ServerObject::cast(arg0);
             auto chan = so->accept();
             return chan;
         } else {
