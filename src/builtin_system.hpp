@@ -1100,6 +1100,7 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(VMThrow::create(vm));
     oo.push_back(VMHandle::create(vm));
     oo.push_back(VMStall::create(vm));
+    oo.push_back(VMNapp::create(vm));
 
     // K, Id combinators
     oo.push_back(K::create(vm));

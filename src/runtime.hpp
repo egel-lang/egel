@@ -1882,6 +1882,68 @@ public:
     }
 };
 
+// the napp combinator, used in the runtime by do
+class VMNapp : public VMObjectCombinator {
+public:
+    VMNapp(VM *m) : VMObjectCombinator(VM_SUB_BUILTIN, m, "System", "napp") {
+    }
+
+    VMNapp(const VMNapp &t) : VMNapp(t.machine()) {
+    }
+
+    static VMObjectPtr create(VM *m) {
+        return std::make_shared<VMNapp>(m);
+    }
+
+    // napp f g x0..xn = f (g x0..xn)
+    VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
+        auto tt = VMObjectArray::value(thunk);
+        if (tt.size() > 6) {
+
+            // set up f thunk
+            VMObjectPtrs ff;
+            ff.push_back(tt[0]); // rt
+            ff.push_back(tt[1]); // rti
+            ff.push_back(tt[2]); // k
+            ff.push_back(tt[3]); // exc
+            ff.push_back(tt[5]); // f
+            ff.push_back(nullptr); // .
+            auto f_thunk = VMObjectArray::create(ff);
+
+            // set up g thunk
+            VMObjectPtrs gg;
+            gg.push_back(f_thunk); // rt
+            gg.push_back(machine()->create_integer(5)); // rti
+            gg.push_back(f_thunk); // k
+            gg.push_back(tt[3]); // exc
+            gg.push_back(tt[6]); // g
+            for (unsigned int i = 7; i < tt.size(); i++) {
+                gg.push_back(tt[i]);
+            }
+            auto g_thunk = VMObjectArray::create(gg);
+
+            return g_thunk;
+        } else {
+            auto rt = tt[0];
+            auto rti = tt[1];
+            auto k = tt[2];
+            auto exc = tt[3];
+
+            VMObjectPtrs rr;
+            for (unsigned int i = 4; i < tt.size(); i++) {
+                rr.push_back(tt[i]);
+            }
+            auto r = VMObjectArray::create(rr);
+
+            auto index = VMObjectInteger::value(rti);
+            auto rta = VMObjectArray::cast(rt);
+            rta->set(index, r);
+
+            return k;
+        }
+   }
+};
+
 // convenience classes for defining built-in combinators
 // XXX: deceprate this
 
