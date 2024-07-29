@@ -98,6 +98,16 @@ namespace System (
 
     ## System::** x y - power (temporary)
     def ** = [ N 0 -> 1 | N M -> N * (N ** (M - 1)) ]
+
+    ## System::printf s x0 .. xn - print formatted
+    def printf =
+        [ F:text A B C D E -> print (format F A B C D E)
+        | F:text A B C D   -> print (format F A B C D)
+        | F:text A B C     -> print (format F A B C)
+        | F:text A B       -> print (format F A B)
+        | F:text A         -> print (format F A)
+        | F:text           -> print (format F) ]
+
 )
 
 namespace Option (
