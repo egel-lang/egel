@@ -73,10 +73,10 @@ namespace System (
 
     ## System::proj n (x, .., y) - projection on tuple
     def proj =
-        [ N (A B)       -> List::nth N {A,B}
-        | N (A B C)     -> List::nth N {A,B,C}
-        | N (A B C D)   -> List::nth N {A,B,C,D}
-        | N (A B C D E) -> List::nth N {A,B,C,D,E} ]
+        [ N (A, B)          -> List::nth N {A,B}
+        | N (A, B, C)       -> List::nth N {A,B,C}
+        | N (A, B, C, D)    -> List::nth N {A,B,C,D}
+        | N (A, B, C, D, E) -> List::nth N {A,B,C,D,E} ]
 
     ## System::fst (x, y) - proj1 on tuple
     def fst = [ (X,Y) -> X ]
