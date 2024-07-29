@@ -875,6 +875,31 @@ public:
 };
 */
 
+// ## System::munch o0 .. on - terms to list
+class Munch : public Variadic {
+public:
+    VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Munch, "System", "munch");
+
+    VMObjectPtr apply(const VMObjectPtrs &args) const override {
+        return machine()->to_list(args);
+    }
+};
+
+// ## System::unmunch {o0 .. on} - list to terms
+class Unmunch : public Unary {
+public:
+    UNARY_PREAMBLE(VM_SUB_BUILTIN, Unmunch, "System", "unmunch");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_list(arg0)) {
+            auto oo = machine()->from_list(arg0);
+            return machine()->create_array(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 // ## System::print o0 .. on - print terms
 class Print : public Variadic {
 public:
@@ -1127,6 +1152,10 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     // system info, override if sandboxed
     oo.push_back(Arg::create(vm));
     oo.push_back(Getenv::create(vm));
+
+    // munching
+    oo.push_back(Munch::create(vm));
+    oo.push_back(Unmunch::create(vm));
 
     // the builtin print & getline, override if sandboxed
     oo.push_back(Print::create(vm));
