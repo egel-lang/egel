@@ -420,7 +420,6 @@ namespace System (
     using List
 
     def args = trace_while ((+) 1) [N -> ((/=) none) (System::arg N)] 0 |> map System::arg
-
 )
 
 namespace String (
@@ -429,5 +428,15 @@ namespace String (
     def split = 
         [ N S -> (String::extract 0 N S, String::extract N (String::length S - N) S) ]
 
+)
+
+namespace Math (
+    using System
+
+    def lift_unary =
+        [ F X:int -> to_int (F (to_float X)) | F X -> F X ]
+
+    def lift_binary =
+        [ F X:int Y:int -> to_int (F (to_float X) (to_float Y)) | F X Y -> F X Y ]
 )
 

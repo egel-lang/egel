@@ -26,6 +26,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ printf
 + static cmake build
 + double register size (u32)
 + hardcoded larger stack usage
