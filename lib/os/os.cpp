@@ -930,6 +930,41 @@ public:
     }
 };
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <conio.h>
+#elif defined(__unix__) || defined(__unix) || defined(__APPLE__) && defined(__MACH__)
+#include <termios.h>
+#include <unistd.h>
+#endif
+
+char get_key() {
+#if defined(_WIN32) || defined(_WIN64)
+    return _getch();  // Windows: Waits for a key press without echoing it
+#elif defined(__unix__) || defined(__unix) || defined(__APPLE__) && defined(__MACH__)
+    struct termios oldt, newt;
+    tcgetattr(STDIN_FILENO, &oldt);           // Get current terminal settings
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);         // Disable canonical mode and echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);  // Apply new settings
+
+    char ch;
+    std::cin.get(ch);                         // Wait for key press
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);  // Restore old settings
+    return ch;
+#endif
+};
+
+class GetKey : public Medadic {
+public:
+    MEDADIC_PREAMBLE(VM_SUB_EGO, GetKey, "OS", "get_key");
+
+    VMObjectPtr apply() const override {
+        auto ch = (vm_char_t) get_key();
+        return machine()->create_char(ch);
+    }
+};
+
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
 }
@@ -959,6 +994,7 @@ extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
     oo.push_back(Flock::create(vm));
     oo.push_back(Exit::create(vm));
     oo.push_back(Exec::create(vm));
+    oo.push_back(GetKey::create(vm));
 
     // hacked TCP protocol
     oo.push_back(ServerObject::create(vm));
