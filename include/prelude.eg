@@ -438,5 +438,9 @@ namespace Math (
 
     def lift_binary =
         [ F X:int Y:int -> to_int (F (to_float X) (to_float Y)) | F X Y -> F X Y ]
+
+    def absi = lift_unary abs
+
+    def powi = lift_binary pow
 )
 
