@@ -1,0 +1,26 @@
+import "prelude.eg"
+import "os.ego"
+
+namespace Slides (
+    using List
+    using System
+
+    def show_slide =
+        [ N SS -> OS::exec (format "clear; cat {}" (nth N SS)) |> [X -> print X] ]
+
+    def next_slide =
+        [ N M ->
+            [' '  -> (N+1) % M
+            |'\n' -> (N+1) % M
+            |'b'  -> (((N - 1) % M) + M) % M
+            |'q'  -> none
+            |_    -> N ] OS::get_key ]
+
+    def show_slides =
+        [ N M SS -> show_slide N SS; next_slide N M ||> [N -> show_slides N M SS] ]
+)
+
+def main =
+    let SS = System::iter 2 List::tail (System::args) in
+    [ {} -> System::print "usage: slides fn0..fnn\n"
+    | SS -> Slides::show_slides 0 (List::length SS) SS ] SS
