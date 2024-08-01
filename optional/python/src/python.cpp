@@ -63,7 +63,23 @@ public:
         inc_ref();
     }
 
-    ~CPythonObject() {
+    CPythonObject& operator=(const CPythonObject& other) {
+        if (this != &other) {
+            dec_ref();
+            this->_object = other._object;
+            inc_ref();
+        }
+        return *this;
+    }
+
+    PyObject* operator=(PyObject* o) {
+        dec_ref();
+        _object = o;
+        inc_ref();
+        return _object;
+    }
+
+   ~CPythonObject() {
         dec_ref();
         _object = nullptr;
     }
@@ -95,12 +111,6 @@ public:
         return _object;
     }
 
-    PyObject* operator=(PyObject* o) {
-        dec_ref();
-        _object = o;
-        inc_ref();
-        return _object;
-    }
 
     operator bool() {
         return (_object) ? true : false;
@@ -281,10 +291,6 @@ public:
 
     static bool test(const VMObjectPtr& o) {
         return (o->subtag() == VM_SUB_PYTHON_OBJECT);
-    }
-
-    static PythonObjectPtr cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<PythonObject>(o);
     }
 
     static CPythonObject value(const VMObjectPtr& o) {
@@ -517,7 +523,7 @@ public:
             char* cc = unicode_to_char(s);
 
             auto attr = PyObject_GetAttrString(mod, cc);
-            delete cc;
+            delete[] cc;
             if (attr) {
                 return PythonObject::create(machine(), attr);
             } else {
@@ -545,7 +551,7 @@ public:
             auto a = PYTHON_OBJECT_VALUE(arg2);
 
             PyObject_SetAttrString(mod, n, a);
-            delete n;
+            delete[] n;
             return machine()->create_none();
         } else {
             throw machine()->bad_args(this, arg0, arg1, arg2);
@@ -1052,7 +1058,7 @@ public:
             auto s = machine()->get_text(arg0);
             char* code = unicode_to_char(s);
             PyRun_SimpleString(code);
-            delete code;
+            delete[] code;
             auto e = PyErr_Occurred();
             if (e) {
                 throw PythonObject::create(machine(), e);
@@ -1082,7 +1088,7 @@ public:
                 throw machine()->create_text("cannot open file: " + fn0);
             }
             PyRun_SimpleFile(fp, fn1);
-            delete fn1;
+            delete[] fn1;
             fclose(fp);
             auto e = PyErr_Occurred();
             if (e) {
@@ -1108,7 +1114,7 @@ public:
             auto m0 = machine()->get_text(arg0);
             char* m1 = unicode_to_char(m0);
             PyObject* mod = PyImport_AddModule(m1);
-            delete m1;
+            delete[] m1;
             if (mod == nullptr) {
                 auto e = PyErr_Occurred();
                 if (e) {
@@ -1138,7 +1144,7 @@ public:
             char* fn1 = unicode_to_char(fn0);
             PyObject* fn2 = PyUnicode_DecodeFSDefault(fn1);
             PyObject* mod = PyImport_Import(fn2);
-            delete fn1;
+            delete[] fn1;
             Py_XDECREF(fn2);
             if (mod == nullptr) {
                 auto e = PyErr_Occurred();
@@ -1172,7 +1178,7 @@ public:
             char* cc = unicode_to_char(s);
 
             auto func0 = PyObject_GetAttrString(mod, cc);
-            delete cc;
+            delete[] cc;
             if (func0 && PyCallable_Check(func0)) {
                 return PythonObject::create(machine(), func0);
             } else {

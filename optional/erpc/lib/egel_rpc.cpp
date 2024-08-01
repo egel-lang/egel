@@ -274,10 +274,6 @@ public:
         delete _connection;
     }
 
-    static std::shared_ptr<RpcConnection> cast(const VMObjectPtr& o) {
-        return std::static_pointer_cast<RpcConnection>(o);
-    }
-
     static VMObjectPtr create(VM* m, const std::string& address) {
         return VMObjectPtr(new RpcConnection(m, address));
     }

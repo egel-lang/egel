@@ -7,7 +7,7 @@ using namespace egel;
 
 #define EXECUTABLE_VERSION_MAJOR "0"
 #define EXECUTABLE_VERSION_MINOR "1"
-#define EXECUTABLE_VERSION_PATCH "10"
+#define EXECUTABLE_VERSION_PATCH "11"
 
 #define EXECUTABLE_VERSION                                \
     EXECUTABLE_VERSION_MAJOR "." EXECUTABLE_VERSION_MINOR \
