@@ -955,6 +955,7 @@ char get_key() {
 #endif
 };
 
+// ## OS::get_key - key press from console
 class GetKey : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, GetKey, "OS", "get_key");
