@@ -12,7 +12,7 @@ Unicode support, fmt for formatting, ffi as a foreign function interface,
 and GNU lightning as a ahead-of-time backend. 
 
 The interpreter can be compiled with a current C++ compiler and employs
-cmake to build.
+cmake to build. In general, you will need root access to build egel.
 
 There are roughly two manners in which operating systems and package
 managers provide C++ libraries.
