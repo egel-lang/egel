@@ -8,8 +8,8 @@ mkdir local
 # libicu
 pushd icu/icu4c/source
 chmod +x runConfigureICU configure install-sh
-./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
-#./runConfigureICU Linux --enable-static --prefix=$(realpath "../../../local")
+#./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
+./runConfigureICU Linux --enable-static --prefix=$(realpath "../../../local")
 #./runConfigureICU Cygwin/MSCV --enable-static --prefix=$(realpath "../../../local")
 make --enable-static
 make install
@@ -24,8 +24,9 @@ make check
 make install
 popd
 
-# lightning (from a tarball since the other with a bootstrap fails)
-pushd lightning-2.2.2
+# lightning, depends on libtools and texinfo
+pushd lightning
+./bootstrap
 ./configure --prefix=$(realpath "../local")
 make
 make check
