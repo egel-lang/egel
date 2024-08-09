@@ -8,8 +8,9 @@ mkdir local
 # libicu
 pushd icu/icu4c/source
 chmod +x runConfigureICU configure install-sh
-#./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
 ./runConfigureICU Linux --enable-static --prefix=$(realpath "../../../local")
+#./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
+#./runConfigureICU FreeBSD --enable-static --prefix=$(realpath "../../../local")
 #./runConfigureICU Cygwin/MSCV --enable-static --prefix=$(realpath "../../../local")
 make --enable-static
 make install
