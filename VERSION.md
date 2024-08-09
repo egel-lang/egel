@@ -26,6 +26,8 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ default submodules to latest stable version
+
 ## v0.1.11 - no kink shaming the couch
 
 + printf
