@@ -124,6 +124,22 @@ public:
     }
 };
 
+// ## System::sleep n - sleep for a number of milliseconds
+class Sleep : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sleep, "System", "sleep");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_integer(arg0)) {
+            auto n = machine()->get_integer(arg0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(n));
+            return machine()->create_none();
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 inline std::vector<VMObjectPtr> builtin_async(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
@@ -135,6 +151,7 @@ inline std::vector<VMObjectPtr> builtin_async(VM *vm) {
     oo.push_back(Await::create(vm));
     oo.push_back(WaitFor::create(vm));
     oo.push_back(IsValid::create(vm));
+    oo.push_back(Sleep::create(vm));
 
     return oo;
 }
