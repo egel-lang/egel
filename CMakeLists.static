@@ -161,7 +161,7 @@ target_link_libraries(objlib PRIVATE Threads::Threads ${FFI} ${ICUUC} ${ICUI18N}
 
 # the Egel interpreter
 add_executable(egel $<TARGET_OBJECTS:objlib>)
-target_link_libraries(egel PRIVATE ${CMAKE_DL_LIBS} Threads::Threads ${FFI} ${ICUIO} ${ICUI18N} ${ICUTU} ${ICUDATA} ${ICUUC} ${FMT} ${LIGHTNING})
+target_link_libraries(egel PRIVATE ${CMAKE_DL_LIBS} Threads::Threads ${FFI} ${ICUIO} ${ICUI18N} ${ICUTU} ${ICUUC} ${ICUDATA} ${FMT} ${LIGHTNING})
 
 # shared Egel library
 add_library(egellib SHARED $<TARGET_OBJECTS:objlib>)
