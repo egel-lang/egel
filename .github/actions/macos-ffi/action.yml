@@ -32,16 +32,16 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      pushd vendor/libffi
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
-      make
+      pushd vendor/libffi
+      make --enable-static
       popd
     shell: bash
 
   - name: Install FFI
     run: |
-      pushd vendor/libffi
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+      pushd vendor/libffi
       make install
       popd
     shell: bash
