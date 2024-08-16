@@ -13,24 +13,29 @@ runs:
     run: |
       sudo apt-get update
       sudo apt-get install -y build-essential autoconf automake libtool texinfo
+    shell: bash
 
   - name: Download GNU Lightning source
     run: |
       wget https://ftp.gnu.org/gnu/lightning/lightning-2.2.3.tar.gz
       tar -xzvf lightning-2.2.3.tar.gz
+    shell: bash
 
   - name: Configure GNU Lightning
     run: |
       cd lightning-2.2.3
       ./bootstrap
       ./configure
+    shell: bash
 
   - name: Compile GNU Lightning
     run: |
       cd lightning-2.2.3
       make
+    shell: bash
 
   - name: Install GNU Lightning
     run: |
       cd lightning-2.2.3
       sudo make install
+    shell: bash
