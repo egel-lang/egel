@@ -20,8 +20,8 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      ls -la
       pushd vendor/icu/icu4c/source
+      ls -la
       chmod +x runConfigureICU configure install-sh
       ./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
       popd

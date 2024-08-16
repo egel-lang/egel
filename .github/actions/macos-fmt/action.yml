@@ -20,8 +20,8 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      ls -la
       pushd vendor/fmt
+      ls -la
       mkdir build
       cd build
       cmake -DCMAKE_INSTALL_PREFIX="../../local" ..
