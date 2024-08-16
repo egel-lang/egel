@@ -26,8 +26,9 @@ runs:
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
       ls -la
-      ls /usr/local/bin
-      libtool --version
+      which glibtool
+      export LIBTOOL=glibtool
+      export LIBTOOLIZE=glibtoolize
       ./autogen.sh
       ./configure --prefix=$(realpath "../local")
       popd
