@@ -24,7 +24,7 @@ runs:
       pushd vendor/libffi
       ls -la
       ./autogen.sh
-      ./configure --prefix=$(realpath "../local")
+      ./configure --prefix=$(realpath "../local") --disable-shared
       popd
     shell: bash
 
