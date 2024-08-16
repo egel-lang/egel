@@ -23,8 +23,9 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      export PATH="$HOMEBREW_PREFIX/opt/make/libtool/libexec/gnubin:$PATH"
+      export PATH="/opt/homebrew/opt/make/libtool/libexec/gnubin:$PATH"
       pushd vendor/libffi
+      ls -la /opt/homebrew/opt/make/libtool/libexec/gnubin
       #ls -la
       #ls /opt/homebrew/Cellar/libtool/2.4.7/share/aclocal
       #export LIBTOOL=`which glibtool`
