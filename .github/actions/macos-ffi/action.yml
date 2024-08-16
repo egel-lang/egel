@@ -25,14 +25,14 @@ runs:
       export CXXFLAGS="-fPIC"
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
-      sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
-      locate aclocal
       ls -la
+      ls /opt/homebrew/Cellar/libtool/2.4.7/share/aclocal
       export LIBTOOL=`which glibtool`
       export LIBTOOLIZE=`which glibtoolize`
-      echo "libtool:    " $LIBTOOL
-      echo "libtoolize: " $LIBTOOLIZE
-      export ACLOCAL_PATH=$HOME/install/libtool/share/aclocal:$ACLOCAL_PATH
+      export ACLOCAL_PATH=/opt/homebrew/Cellar/libtool/2.4.7/share/aclocal:$ACLOCAL_PATH
+      echo "libtool:      " $LIBTOOL
+      echo "libtoolize:   " $LIBTOOLIZE
+      echo "aclocal path: " $ACLOCAL_PATH
       ./autogen.sh
       ./configure
       popd
