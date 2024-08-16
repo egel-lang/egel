@@ -20,10 +20,10 @@ jobs:
           echo github.workspace: ${{ github.workspace }}
           echo env.BUILD_TYPE: ${{ env.BUILD_TYPE }}
 
-      - name: Populate vendor directory
-        run: |
-          git submodule update --init --recursive
-          mkdir vendor/local
+#      - name: Populate vendor directory
+#        run: |
+#          git submodule update --init --recursive
+#          mkdir vendor/local
 
       - name: Build ICU static lib
         uses: ./.github/actions/macos-icu
