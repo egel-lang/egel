@@ -32,7 +32,7 @@ runs:
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
       pushd vendor/icu/icu4c/source
-      make --enable-static
+      make
       popd
     shell: bash
 
