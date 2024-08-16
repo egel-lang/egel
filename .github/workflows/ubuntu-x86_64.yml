@@ -1,0 +1,38 @@
+name: Build ubuntu-x86_64
+
+on:
+  workflow_call:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+          echo
+          echo github.workspace: ${{ github.workspace }}
+          echo env.BUILD_TYPE: ${{ env.BUILD_TYPE }}
+
+      - name: Checkout code
+        run: |
+          sudo apt-get install -y libicu-dev
+          sudo apt-get install -y libfmt-dev
+          sudo apt-get install -y libffi-dev
+
+      - name: Install GNU lightning
+        uses: ./.github/workflows/ubuntu-lightning.yml
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Test
+        working-directory: ${{github.workspace}}/build
+        run: ./egel -v

@@ -1,9 +1,6 @@
 name: Build and Install GNU Lightning
 
-on:
-  workflow_call:
-
-jobs:
+runs:
   build-and-install:
     runs-on: ubuntu-latest
     
@@ -36,8 +33,3 @@ jobs:
       run: |
         cd lightning-2.2.3
         sudo make install
-
-    - name: Verify installation
-      run: |
-        lightning -V  # Replace with actual command to verify GNU Lightning installation
-

@@ -1,0 +1,15 @@
+name: Main Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-ubuntu-x86_64:
+    uses: ./.github/workflows/ubuntu-x86_64.yml
+
+#  build-apple-silicon:
+#    uses: ./.github/workflows/apple-silicon.yml
+
