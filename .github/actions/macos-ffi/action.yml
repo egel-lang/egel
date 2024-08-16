@@ -8,7 +8,7 @@ runs:
   steps:
   - name: Install dependencies
     run: |
-      brew install gcc libtool make autoconf automake pkgconf texinfo
+      brew install gcc libtool make autoconf automake texinfo
     shell: bash
 
   - name: Checkout FFI source
@@ -27,7 +27,6 @@ runs:
       pushd vendor/libffi
       ls -la
       autoupdate
-      ./autogen.sh
       ./configure --prefix=$(realpath "../local")
       make
       popd
