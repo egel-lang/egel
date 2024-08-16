@@ -14,6 +14,9 @@ runs:
   - name: Checkout FFI source
     run: |
       git submodule update --init --recursive ./vendor/libffi
+      pushd vendor/libffi
+      git checkout v3.4.4
+      popd
     shell: bash
 
   - name: Configure FFI
