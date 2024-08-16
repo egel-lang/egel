@@ -25,6 +25,7 @@ runs:
       export CXXFLAGS="-fPIC"
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
+      sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
       locate aclocal
       ls -la
       export LIBTOOL=`which glibtool`
