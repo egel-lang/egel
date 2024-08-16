@@ -1,0 +1,43 @@
+name: Build and Install GNU Lightning
+
+on:
+  workflow_call:
+
+jobs:
+  build-and-install:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential autoconf automake libtool texinfo
+
+    - name: Download GNU Lightning source
+      run: |
+        wget https://ftp.gnu.org/gnu/lightning/lightning-2.2.3.tar.gz
+        tar -xzvf lightning-2.2.3.tar.gz
+
+    - name: Configure GNU Lightning
+      run: |
+        cd lightning-2.2.3
+        ./bootstrap
+        ./configure
+
+    - name: Compile GNU Lightning
+      run: |
+        cd lightning-2.2.3
+        make
+
+    - name: Install GNU Lightning
+      run: |
+        cd lightning-2.2.3
+        sudo make install
+
+    - name: Verify installation
+      run: |
+        lightning -V  # Replace with actual command to verify GNU Lightning installation
+
