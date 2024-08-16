@@ -1,0 +1,44 @@
+name: ICU4C
+
+description: Build and Install ICU4C
+
+runs:
+  using: "composite"
+    
+  steps:
+  - name: Install dependencies
+    run: |
+      echo "ICU dependencies"
+    shell: bash
+
+  - name: Checkout ICU source
+    run: |
+      git submodule update --init --recursive ./vendor/icu
+    shell: bash
+
+  - name: Configure ICU
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      pushd vendor/icu
+      ls -la
+      chmod +x runConfigureICU configure install-sh
+      ./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
+      popd
+    shell: bash
+
+  - name: Compile ICU
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      pushd vendor/icu
+      make --enable-static
+      popd
+    shell: bash
+
+  - name: Install ICU
+    run: |
+      pushd vendor/icu
+      sudo make install
+      popd
+    shell: bash

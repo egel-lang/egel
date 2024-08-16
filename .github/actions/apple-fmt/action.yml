@@ -1,0 +1,45 @@
+name: FMT
+
+description: Build and Install FMT
+
+runs:
+  using: "composite"
+    
+  steps:
+  - name: Install dependencies
+    run: |
+      echo "FMT dependencies"
+    shell: bash
+
+  - name: Checkout FMT source
+    run: |
+      git submodule update --init --recursive ./vendor/fmt
+    shell: bash
+
+  - name: Configure FMT
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      ls -la
+      pushd vendor/fmt
+      mkdir build
+      cd build
+      cmake -DCMAKE_INSTALL_PREFIX="../../local" ..
+      popd
+    shell: bash
+
+  - name: Compile FMT
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      pushd vendor/fmt
+      make
+      popd
+    shell: bash
+
+  - name: Install FMT
+    run: |
+      pushd vendor/fmt
+      sudo make install
+      popd
+    shell: bash

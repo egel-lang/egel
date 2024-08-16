@@ -1,0 +1,45 @@
+name: GNU Lightning
+
+description: Build and Install GNU Lightning
+
+runs:
+  using: "composite"
+    
+  steps:
+  - name: Install dependencies
+    run: |
+      sudo brew update
+      sudo brew install -y build-essential autoconf automake libtool texinfo
+    shell: bash
+
+  - name: Checkout GNU Lightning source
+    run: |
+      git submodule update --init --recursive ./vendor/lightning
+    shell: bash
+
+  - name: Configure GNU Lightning
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      pushd vendor/lightning
+      ls -la
+      ./bootstrap
+      ./configure --prefix=$(realpath "../local")
+      popd
+    shell: bash
+
+  - name: Compile GNU Lightning
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      pushd vendor/lightning
+      make
+      popd
+    shell: bash
+
+  - name: Install GNU Lightning
+    run: |
+      pushd vendor/lightning
+      sudo make install
+      popd
+    shell: bash

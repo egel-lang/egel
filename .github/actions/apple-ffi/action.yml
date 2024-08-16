@@ -1,0 +1,44 @@
+name: FFI
+
+description: Build and Install FFI
+
+runs:
+  using: "composite"
+    
+  steps:
+  - name: Install dependencies
+    run: |
+      echo "FFI dependencies"
+    shell: bash
+
+  - name: Checkout FFI source
+    run: |
+      git submodule update --init --recursive ./vendor/libffi
+    shell: bash
+
+  - name: Configure FFI
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      pushd vendor/libffi
+      ls -la
+      ./autogen.sh
+      ./configure --prefix=$(realpath "../local")
+      popd
+    shell: bash
+
+  - name: Compile FFI
+    run: |
+      export CFLAGS="-fPIC"
+      export CXXFLAGS="-fPIC"
+      pushd vendor/libffi
+      make
+      popd
+    shell: bash
+
+  - name: Install FFI
+    run: |
+      pushd vendor/libffi
+      sudo make install
+      popd
+    shell: bash
