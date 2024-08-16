@@ -20,8 +20,8 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      pushd vendor/icu
       ls -la
+      pushd vendor/icu/icu4c/source
       chmod +x runConfigureICU configure install-sh
       ./runConfigureICU MacOSX --enable-static --prefix=$(realpath "../../../local")
       popd
@@ -31,14 +31,14 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      pushd vendor/icu
+      pushd vendor/icu/icu4c/source
       make --enable-static
       popd
     shell: bash
 
   - name: Install ICU
     run: |
-      pushd vendor/icu
+      pushd vendor/icu/icu4c/source
       sudo make install
       popd
     shell: bash
