@@ -1,4 +1,6 @@
-name: Build and Install GNU Lightning
+name: GNU Lightning
+
+description: Build and Install GNU Lightning
 
 runs:
   build-and-install:
