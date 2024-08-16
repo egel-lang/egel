@@ -33,7 +33,7 @@ runs:
       export CXXFLAGS="-fPIC"
       pushd vendor/icu/icu4c/source
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
-      make --enable-static
+      make
       popd
     shell: bash
 
