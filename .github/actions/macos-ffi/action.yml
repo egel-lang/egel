@@ -27,8 +27,8 @@ runs:
       pushd vendor/libffi
       ls -la
       which glibtool
-      export LIBTOOL=glibtool
-      export LIBTOOLIZE=glibtoolize
+      export LIBTOOL=`which glibtool`
+      export LIBTOOLIZE=`which glibtoolize`
       ./autogen.sh
       ./configure --prefix=$(realpath "../local")
       popd
