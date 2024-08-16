@@ -8,7 +8,7 @@ runs:
   steps:
   - name: Install dependencies
     run: |
-      brew install gcc libtool make autoconf automake texinfo
+      brew install gcc make autoconf automake libtool texinfo
     shell: bash
 
   - name: Checkout FFI source
@@ -26,9 +26,8 @@ runs:
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
       ls -la
-      autoupdate
+      ./autogen.sh
       ./configure --prefix=$(realpath "../local")
-      make
       popd
     shell: bash
 
