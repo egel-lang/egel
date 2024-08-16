@@ -15,7 +15,7 @@ runs:
     run: |
       git submodule update --init --recursive ./vendor/libffi
       pushd vendor/libffi
-      git checkout v3.4.4
+      git checkout v3.4.2
       popd
     shell: bash
 
@@ -42,7 +42,7 @@ runs:
     shell: bash
 
   - name: Install FFI
-    if: always()
+    #if: always()
     run: |
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
