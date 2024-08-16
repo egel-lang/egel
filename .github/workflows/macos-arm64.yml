@@ -25,10 +25,16 @@ jobs:
           git submodule update --init --recursive
           mkdir vendor/local
 
-      - name: Build static libs
+      - name: Build ICU static lib
         uses: ./.github/actions/macos-icu
+
+      - name: Build FMT static lib
         uses: ./.github/actions/macos-fmt
+
+      - name: Build FFI static lib
         uses: ./.github/actions/macos-ffi
+
+      - name: Build GNU Lightning static lib
         uses: ./.github/actions/macos-lightning
 
       - name: Link static cmake
