@@ -24,9 +24,6 @@ jobs:
         run: |
           mkdir vendor/local
 
-      - name: Build ICU static lib
-        uses: ./.github/actions/macos-icu
-
       - name: Build FMT static lib
         uses: ./.github/actions/macos-fmt
 
@@ -35,6 +32,9 @@ jobs:
 
       - name: Build GNU Lightning static lib
         uses: ./.github/actions/macos-lightning
+
+      - name: Build ICU static lib
+        uses: ./.github/actions/macos-icu
 
       - name: Link static cmake
         run: |

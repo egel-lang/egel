@@ -8,7 +8,7 @@ runs:
   steps:
   - name: Install dependencies
     run: |
-      echo "FMT dependencies"
+      brew install make
     shell: bash
 
   - name: Checkout FMT source
@@ -32,14 +32,14 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      pushd vendor/fmt
+      pushd vendor/fmt/build
       make
       popd
     shell: bash
 
   - name: Install FMT
     run: |
-      pushd vendor/fmt
+      pushd vendor/fmt/build
       make install
       popd
     shell: bash
