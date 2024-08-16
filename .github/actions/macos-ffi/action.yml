@@ -30,8 +30,9 @@ runs:
       export LIBTOOLIZE=`which glibtoolize`
       echo "libtool:    " $LIBTOOL
       echo "libtoolize: " $LIBTOOLIZE
+      export ACLOCAL_PATH=$HOME/install/libtool/share/aclocal:$ACLOCAL_PATH
       ./autogen.sh
-      ./configure --prefix=$(realpath "../local")
+      ./configure
       popd
     shell: bash
 
@@ -50,6 +51,6 @@ runs:
     run: |
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
-      make install
+      make install DESTDIR="../local"
       popd
     shell: bash
