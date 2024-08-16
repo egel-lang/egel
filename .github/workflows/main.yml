@@ -4,10 +4,8 @@ on: [push, pull_request]
 
 jobs:
   build-ubuntu-x86_64:
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/ubuntu-x86_64.yml
 
   build-macos-arm64:
-    runs-on: macos-latest
     uses: ./.github/workflows/macos-arm64.yml
 
