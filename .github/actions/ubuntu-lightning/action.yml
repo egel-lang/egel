@@ -24,19 +24,22 @@ runs:
   - name: Configure GNU Lightning
     run: |
       ls
-      cd lightning-2.2.3
+      pushd lightning-2.2.3
       ./bootstrap
       ./configure
+      popd
     shell: bash
 
   - name: Compile GNU Lightning
     run: |
-      cd lightning-2.2.3
+      pushd lightning-2.2.3
       make
+      popd
     shell: bash
 
   - name: Install GNU Lightning
     run: |
-      cd lightning-2.2.3
+      pushd lightning-2.2.3
       sudo make install
+      popd
     shell: bash
