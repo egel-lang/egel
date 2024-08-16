@@ -39,6 +39,7 @@ runs:
     shell: bash
 
   - name: Install FFI
+    if: always()
     run: |
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
