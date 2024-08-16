@@ -6,38 +6,35 @@ runs:
   using: "composite"
     
   steps:
-  - name: Checkout repository
-    uses: actions/checkout@v3
-
   - name: Install dependencies
     run: |
       sudo apt-get update
       sudo apt-get install -y build-essential autoconf automake libtool texinfo
     shell: bash
 
-  - name: Download GNU Lightning source
+  - name: Checkout GNU Lightning source
     run: |
-      wget https://ftp.gnu.org/gnu/lightning/lightning-2.2.3.tar.gz
-      tar -xzvf lightning-2.2.3.tar.gz
+      cd vendor/lightning
+      git checkout
     shell: bash
 
   - name: Configure GNU Lightning
     run: |
-      pushd lightning-2.2.3
+      pushd vendor/lightning
       ./configure
       popd
     shell: bash
 
   - name: Compile GNU Lightning
     run: |
-      pushd lightning-2.2.3
+      pushd vendor/lightning
       make
       popd
     shell: bash
 
   - name: Install GNU Lightning
     run: |
-      pushd lightning-2.2.3
+      pushd vendor/lightning
       sudo make install
       popd
     shell: bash

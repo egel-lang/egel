@@ -21,7 +21,9 @@ jobs:
           echo env.BUILD_TYPE: ${{ env.BUILD_TYPE }}
 
       - name: Populate vendor directory
-        run: git submodule update --init --recursive
+        run: |
+          git submodule update --init --recursive
+          mkdir vendor/local
 
       - name: Build static libs
         uses: ./.github/actions/apple-icu
