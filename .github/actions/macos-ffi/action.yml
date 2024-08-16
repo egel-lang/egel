@@ -8,7 +8,7 @@ runs:
   steps:
   - name: Install dependencies
     run: |
-      brew install gcc libtool make autoconf autogen automake pkgconf texinfo
+      brew install gcc libtool make autoconf automake pkgconf texinfo
     shell: bash
 
   - name: Checkout FFI source
