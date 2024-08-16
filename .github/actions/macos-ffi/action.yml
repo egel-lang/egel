@@ -26,9 +26,9 @@ runs:
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
       ls -la
-      ./autogen.sh
       autoupdate
       autoreconf -i
+      ./autogen.sh
       ./configure --prefix=$(realpath "../local")
       make
       popd
