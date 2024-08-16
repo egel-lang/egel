@@ -29,7 +29,8 @@ runs:
       ls -la
       ls -la /opt/homebrew/opt/libtool/libexec/gnubin
       echo "path:          " $PATH
-      ./autogen.sh
+      #./autogen.sh
+      autoreconf -v -i
       ./configure
       popd
     shell: bash
