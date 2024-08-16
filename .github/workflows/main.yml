@@ -6,6 +6,6 @@ jobs:
   build-ubuntu-x86_64:
     uses: ./.github/workflows/ubuntu-x86_64.yml
 
-#  build-apple-silicon:
-#    uses: ./.github/workflows/apple-silicon.yml
+  build-macos-arm64:
+    uses: ./.github/workflows/macos-arm64.yml
 
