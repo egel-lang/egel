@@ -14,7 +14,7 @@ runs:
 
   - name: Checkout GNU Lightning source
     run: |
-      git submodule update --init --recurse ./vendor/lightning
+      git submodule update --init --recursive ./vendor/lightning
     shell: bash
 
   - name: Configure GNU Lightning
