@@ -22,7 +22,7 @@ runs:
   - name: Configure GNU Lightning
     run: |
       pushd vendor/lightning
-      ls
+      ls -la
       ./bootstrap
       ./configure
       popd
