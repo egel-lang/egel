@@ -34,7 +34,7 @@ runs:
       export CXXFLAGS="-fPIC"
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
-      make --enable-static
+      make
       popd
     shell: bash
 
