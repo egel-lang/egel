@@ -14,9 +14,7 @@ runs:
 
   - name: Checkout GNU Lightning source
     run: |
-      pushd vendor/lightning
-      git submodule --checkout --recurse-submodules
-      popd
+      git submodule update --init --recurse ./vendor/lightning
     shell: bash
 
   - name: Configure GNU Lightning
