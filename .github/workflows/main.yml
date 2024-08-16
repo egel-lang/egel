@@ -3,7 +3,7 @@ name: Main Workflow
 on: [push, pull_request]
 
 jobs:
-  build-ubuntu-x86_64:
+  #  build-ubuntu-x86_64:
     #    uses: ./.github/workflows/ubuntu-x86_64.yml
 
   build-macos-arm64:
