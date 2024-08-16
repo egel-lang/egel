@@ -23,16 +23,17 @@ runs:
     run: |
       export CFLAGS="-fPIC"
       export CXXFLAGS="-fPIC"
-      export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+      export PATH="$HOMEBREW_PREFIX/opt/make/libtool/libexec/gnubin:$PATH"
       pushd vendor/libffi
-      ls -la
-      ls /opt/homebrew/Cellar/libtool/2.4.7/share/aclocal
-      export LIBTOOL=`which glibtool`
-      export LIBTOOLIZE=`which glibtoolize`
-      export ACLOCAL_PATH=/opt/homebrew/Cellar/libtool/2.4.7/share/aclocal:$ACLOCAL_PATH
-      echo "libtool:      " $LIBTOOL
-      echo "libtoolize:   " $LIBTOOLIZE
-      echo "aclocal path: " $ACLOCAL_PATH
+      #ls -la
+      #ls /opt/homebrew/Cellar/libtool/2.4.7/share/aclocal
+      #export LIBTOOL=`which glibtool`
+      #export LIBTOOLIZE=`which glibtoolize`
+      #export ACLOCAL_PATH=/opt/homebrew/Cellar/libtool/2.4.7/share/aclocal:$ACLOCAL_PATH
+      echo "path:          " $LIBTOOL
+      #echo "libtool:      " $LIBTOOL
+      #echo "libtoolize:   " $LIBTOOLIZE
+      #echo "aclocal path: " $ACLOCAL_PATH
       ./autogen.sh
       ./configure
       popd
