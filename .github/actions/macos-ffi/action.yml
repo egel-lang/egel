@@ -28,6 +28,7 @@ runs:
       ls -la
       ./autogen.sh
       autoupdate
+      autoreconf -i
       ./configure --prefix=$(realpath "../local")
       make
       popd
