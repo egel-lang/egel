@@ -24,14 +24,14 @@ jobs:
         run: |
           mkdir vendor/local
 
-      - name: Build FMT static lib
-        uses: ./.github/actions/macos-fmt
-
       - name: Build FFI static lib
         uses: ./.github/actions/macos-ffi
 
       - name: Build GNU Lightning static lib
         uses: ./.github/actions/macos-lightning
+
+      - name: Build FMT static lib
+        uses: ./.github/actions/macos-fmt
 
       - name: Build ICU static lib
         uses: ./.github/actions/macos-icu

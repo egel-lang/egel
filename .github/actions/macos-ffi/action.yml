@@ -8,7 +8,7 @@ runs:
   steps:
   - name: Install dependencies
     run: |
-      echo "FFI dependencies"
+      brew install make autoconf autogen
     shell: bash
 
   - name: Checkout FFI source
