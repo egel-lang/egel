@@ -40,6 +40,6 @@ runs:
   - name: Install FMT
     run: |
       pushd vendor/fmt
-      sudo make install
+      make install
       popd
     shell: bash

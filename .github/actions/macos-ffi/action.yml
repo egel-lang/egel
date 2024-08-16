@@ -39,6 +39,6 @@ runs:
   - name: Install FFI
     run: |
       pushd vendor/libffi
-      sudo make install
+      make install
       popd
     shell: bash

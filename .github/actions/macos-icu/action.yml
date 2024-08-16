@@ -39,6 +39,6 @@ runs:
   - name: Install ICU
     run: |
       pushd vendor/icu/icu4c/source
-      sudo make install
+      make install PREFIX="../../../local"
       popd
     shell: bash

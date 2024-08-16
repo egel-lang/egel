@@ -40,6 +40,6 @@ runs:
   - name: Install GNU Lightning
     run: |
       pushd vendor/lightning
-      sudo make install
+      make install
       popd
     shell: bash
