@@ -25,6 +25,7 @@ runs:
       export CXXFLAGS="-fPIC"
       export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
       pushd vendor/libffi
+      locate aclocal
       ls -la
       export LIBTOOL=`which glibtool`
       export LIBTOOLIZE=`which glibtoolize`
