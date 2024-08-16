@@ -15,7 +15,7 @@ runs:
   - name: Checkout GNU Lightning source
     run: |
       pushd vendor/lightning
-      git checkout --recurse-submodules
+      git submodule --checkout --recurse-submodules
       popd
     shell: bash
 
