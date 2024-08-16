@@ -27,7 +27,7 @@ runs:
       pushd vendor/libffi
       ls -la
       ./autogen.sh
-      ./configure --prefix=$(realpath "../local") --disable-shared
+      ./configure --prefix=$(realpath "../local") --enable-static
       popd
     shell: bash
 
