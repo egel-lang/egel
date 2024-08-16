@@ -31,7 +31,7 @@ runs:
       #export LIBTOOL=`which glibtool`
       #export LIBTOOLIZE=`which glibtoolize`
       #export ACLOCAL_PATH=/opt/homebrew/Cellar/libtool/2.4.7/share/aclocal:$ACLOCAL_PATH
-      echo "path:          " $LIBTOOL
+      echo "path:          " $PATH
       #echo "libtool:      " $LIBTOOL
       #echo "libtoolize:   " $LIBTOOLIZE
       #echo "aclocal path: " $ACLOCAL_PATH
