@@ -3,6 +3,8 @@ name: GNU Lightning
 description: Build and Install GNU Lightning
 
 runs:
+  using: "composite"
+
   build-and-install:
     runs-on: ubuntu-latest
     
