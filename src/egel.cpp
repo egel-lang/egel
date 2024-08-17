@@ -16,7 +16,7 @@ using namespace egel;
 #define EXECUTABLE_COPYRIGHT "Copyright (C) 2017"
 #define EXECUTABLE_AUTHORS "M.C.A. (Marco) Devillers"
 
-#define EGEL_PATH "/usr/local/lib/egel"
+#define EGEL_PATH ".:/usr/local/lib/egel"
 
 enum arg_t {
     OPTION_NONE,
@@ -192,14 +192,12 @@ void display_usage() {
 
 void display_version(const OptionsPtr &oo) {
     std::cout << EXECUTABLE_NAME << ' ' << EXECUTABLE_VERSION << std::endl;
-    std::cout << "    EGEL_PATH: \"" << VM::env_egel_path() << "\""
-              << std::endl;
-    std::cout << "     EGEL_PS0: \"" << VM::env_egel_ps0() << "\"" << std::endl;
-    std::cout << "             :";
+    std::cout << "    EGEL_PATH: ";
     for (const auto &p : oo->get_include_path()) {
-        std::cout << " \"" << p << "\"";
+        std::cout << "\"" << p << "\" ";
     }
     std::cout << std::endl;
+    std::cout << "     EGEL_PS0: \"" << VM::env_egel_ps0() << "\"" << std::endl;
     std::cout << EXECUTABLE_COPYRIGHT << ' ' << EXECUTABLE_AUTHORS << std::endl;
 }
 
@@ -216,23 +214,20 @@ int main(int argc, char *argv[]) {
     // options
     OptionsPtr oo = Options::create();
 
-    // add local directory to the search path
-    oo->add_include_path(icu::UnicodeString("."));
+    // add include path from environment
+    auto path = VM::env_egel_path();
+    if (path != "") {
+        oo->set_include_path(path);
+    } else {
+        oo->set_include_path(EGEL_PATH);
+    }
 
-    // check for include paths
+    // add include paths from prompt
     for (auto &p : pp) {
         if (p.first == ("-I")) {
             oo->add_include_path(p.second);
         };
     };
-
-    // add include path from environment
-    auto path = VM::env_egel_path();
-    if (path != "") {
-        oo->add_include_path(path);
-    } else {
-        oo->add_include_path(EGEL_PATH);
-    }
 
     // check for -h or -v
     for (auto &p : pp) {

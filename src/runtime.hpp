@@ -249,11 +249,10 @@ public:
           _lift_flag(false),
           _bytecode_flag(false) {
         _include_path = UnicodeStrings();
-        _library_path = UnicodeStrings();
     }
 
     Options(bool i, bool t, bool u, bool s, bool d, bool l, bool b,
-            const UnicodeStrings &ii, const UnicodeStrings &ll)
+            const UnicodeStrings &ii)
         : _interactive_flag(i),
           _tokenize_flag(t),
           _unparse_flag(u),
@@ -261,8 +260,8 @@ public:
           _desugar_flag(d),
           _lift_flag(l),
           _bytecode_flag(b),
-          _include_path(ii),
-          _library_path(ll) {
+          _include_path(ii)
+          {
     }
 
     Options(const Options &o)
@@ -273,8 +272,8 @@ public:
           _desugar_flag(o._desugar_flag),
           _lift_flag(o._lift_flag),
           _bytecode_flag(o._bytecode_flag),
-          _include_path(o._include_path),
-          _library_path(o._library_path) {
+          _include_path(o._include_path)
+          {
     }
 
     static OptionsPtr create() {
@@ -289,20 +288,31 @@ public:
         return _include_path;
     }
 
-    void set_library_path(const UnicodeStrings &dd) {
-        _library_path = dd;
+    std::vector<icu::UnicodeString> split_on_colon(const icu::UnicodeString& s) {
+        std::vector<icu::UnicodeString> parts;
+        int32_t start = 0;
+        int32_t end = 0;
+
+        while ((end = s.indexOf(':', start)) != -1) {
+            parts.push_back(s.tempSubStringBetween(start, end));
+            start = end + 1;
+        }
+
+        parts.push_back(s.tempSubStringBetween(start, s.length()));
+
+        return parts;
     }
 
-    UnicodeStrings get_library_path() const {
-        return _library_path;
+    void set_include_path(const icu::UnicodeString &p) {
+        auto pp = split_on_colon(p);
+        
+        for (auto &p : pp) {
+            _include_path.push_back(p);
+        }
     }
 
     void add_include_path(const icu::UnicodeString &p) {
         _include_path.push_back(p);
-    }
-
-    void add_library_path(const icu::UnicodeString &p) {
-        _library_path.push_back(p);
     }
 
     void set_interactive(bool f) {
@@ -374,11 +384,6 @@ public:
             os << i << ":";
         }
         os << std::endl;
-        os << "library:    ";
-        for (auto &i : _library_path) {
-            os << i << ":";
-        }
-        os << std::endl;
     }
 
     friend std::ostream &operator<<(std::ostream &os, const OptionsPtr &m) {
@@ -395,7 +400,6 @@ private:
     bool _lift_flag;
     bool _bytecode_flag;
     UnicodeStrings _include_path;
-    UnicodeStrings _library_path;
 };
 
 struct VMReduceResult {
