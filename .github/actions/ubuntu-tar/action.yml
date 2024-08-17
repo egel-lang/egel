@@ -1,0 +1,17 @@
+name: Ubuntu Tar Artefact
+
+description: Create an Ubuntu Tar Artefact
+
+runs:
+  using: "composite"
+    
+  steps:
+  - name: Create tar package
+    run: |
+      contrib/scripts/tarpackage.sh
+    shell: bash
+
+  - name: Upload artefact
+    run: |
+    shell: bash
+
