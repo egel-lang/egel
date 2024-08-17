@@ -16,7 +16,11 @@ using namespace egel;
 #define EXECUTABLE_COPYRIGHT "Copyright (C) 2017"
 #define EXECUTABLE_AUTHORS "M.C.A. (Marco) Devillers"
 
-#define EGEL_PATH ".:/usr/local/lib/egel"
+#ifdef _WIN32
+#define EGEL_PATH "."
+#else
+#define EGEL_PATH ".:/usr/local/lib/egel:/usr/lib/egel"
+#endif
 
 enum arg_t {
     OPTION_NONE,
