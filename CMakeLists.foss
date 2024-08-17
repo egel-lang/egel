@@ -32,17 +32,8 @@ string(REGEX REPLACE ${VERSION_PATCH_REGEX} "\\1" VERSION_PATCH "${VERSION_PATCH
 
 set(PVERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
-# steal the search path of the interpreter
-set(EGEL_PATH_REGEX "#define EGEL_PATH[ \t]+\"(.+)\"")
-
-file(STRINGS "${CMAKE_SOURCE_DIR}/src/egel.cpp"
-    EGEL_PATH REGEX ${EGEL_PATH_REGEX})
-
-string(REGEX REPLACE ${EGEL_PATH_REGEX} "\\1" EGEL_PATH "${EGEL_PATH}")
-
 # report findings
 message("egel version: ${PVERSION}")
-message("egel path: ${EGEL_PATH}")
 
 # add 'fallback' modules
 # set(CMAKE_MODULE_PATH "contrib/cmake/modules;${CMAKE_MODULE_PATH}")

@@ -412,6 +412,37 @@ public:
     }
 };
 
+// ## System::> x y - builtin greater
+class Greater : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Greater, "System", ">");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0,
+                      const VMObjectPtr &arg1) const override {
+        CompareVMObjectPtr compare;
+        if (compare(arg0, arg1) > 0) {
+            return machine()->create_true();
+        } else {
+            return machine()->create_false();
+        }
+    }
+};
+
+// ## System::>= x y - builtin greater or equals
+class GreaterEq : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, GreaterEq, "System", ">=");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0,
+                      const VMObjectPtr &arg1) const override {
+        CompareVMObjectPtr compare;
+        if (compare(arg0, arg1) >= 0) {
+            return machine()->create_true();
+        } else {
+            return machine()->create_false();
+        }
+    }
+};
 // ## System::== x y - builtin equality
 class Eq : public Dyadic {
 public:
@@ -1132,6 +1163,8 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
 
     oo.push_back(Less::create(vm));
     oo.push_back(LessEq::create(vm));
+    oo.push_back(Greater::create(vm));
+    oo.push_back(GreaterEq::create(vm));
     oo.push_back(Eq::create(vm));
     oo.push_back(NegEq::create(vm));
 
