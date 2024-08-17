@@ -24,7 +24,7 @@ runs:
     run: |
       tarname=${{ steps.tarname.outputs.TARNAME }}
       echo "contents of created $tarname"
-      tar -tf $tarname
+      tar -tf $tarname.tgz
     shell: bash
 
   - name: Upload artefact
