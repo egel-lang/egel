@@ -10,14 +10,21 @@ runs:
     id: tarname
     run: |
       egelversion=`contrib/scripts/version.sh src/egel.cpp`
-      echo "::set-output name=TARNAME::egel-ubuntu-$egelversion"
+      echo "TARNAME=egel-ubuntu-$egelversion" >> $GITHUB_OUTPUT
     shell: bash
 
   - name: Create tar package
     run: |
       tarname=${{ steps.tarname.outputs.TARNAME }}
       echo "creating: $tarname"
-      contrib/scripts/tarpackage.sh $tarname .
+      contrib/scripts/tarpackage.sh $tarname . /usr/local/lib/liblightning*
+    shell: bash
+
+  - name: List tar package
+    run: |
+      tarname=${{ steps.tarname.outputs.TARNAME }}
+      echo "contents of created $tarname"
+      tar -tf $tarname
     shell: bash
 
   - name: Upload artefact
