@@ -162,7 +162,7 @@ The following files should be in the `EGEL_PATH` directory.
 ## ENVIRONMENT
 
  * `EGEL_PATH`:
-    The path to the standard include directory.
+    The directories that are searched for inclusion.
 
  * `EGEL_PS0`:
     The prompt given by the interpreter in interactive mode.
