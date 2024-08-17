@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
 
 #include "ffi.h"
 #include "runtime.hpp"
@@ -80,9 +84,20 @@ public:
     icu::UnicodeString get_path() {
         return _path;
     }
+
     void load(const icu::UnicodeString& s) {
         set_path(s);
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
+                                                          
+#ifdef _WIN32
+        _handle = LoadLibrary(pth);
+        if (!_handle) {
+            icu::UnicodeString err = "dynamic load error: ";
+            err += get_windows_error();
+            err += " on open(" + get_path() + ")";
+            throw ErrorIO(err);
+        }
+#else
         _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
@@ -90,11 +105,16 @@ public:
             err += " on open(" + get_path() + ")";
             throw ErrorIO(err);
         }
+#endif
     }
 
     VMObjectPtr function(const icu::UnicodeString& s) {
         auto sym = VM::unicode_to_utf8_chars(s);  // XXX: leaks?
+#ifdef _WIN32
+        auto ptr = GetProcAddress(static_cast<HMODULE>(_handle), sym);
+#else
         auto ptr = dlsym(_handle, sym);
+#endif  
         VMObjectPtrs oo;
         oo.push_back(VMObjectData::create(machine(), c_void_p));
         oo.push_back(
@@ -103,7 +123,15 @@ public:
     }
 
     void unload() {
-        dlclose(_handle);
+#ifdef _WIN32
+        if (_handle) {
+            FreeLibrary(static_cast<HMODULE>(_handle));
+        }
+#else
+        if (_handle) {
+            dlclose(_handle);
+        }
+#endif
     }
 
 private:
@@ -538,7 +566,7 @@ public:
         }
         return machine()->create_array(oo);
     }
-    /*
+    /* Example code below:
     int
          main(int argc, const char **argv)
          {

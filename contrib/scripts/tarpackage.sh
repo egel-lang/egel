@@ -35,9 +35,10 @@ create_tar() {
 echo "extras $extras"
 
 create_dir $tardir
-create_dir $tardir/examples
+file_store $tardir $egeldir/*.md
 file_store $tardir $egeldir/build/egel $egeldir/build/*ego
 file_store $tardir $egeldir/include/*eg
+create_dir $tardir/examples
 file_store $tardir/examples $egeldir/examples/*
 file_store $tardir $extras
 create_tar $tarfile

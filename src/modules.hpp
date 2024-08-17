@@ -1,6 +1,10 @@
 #pragma once
 
-#include <dlfcn.h>  // XXX: I wish I could get rid of this
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 
 #include <memory>
 #include <vector>
@@ -353,14 +357,16 @@ public:
     }
 
     void load() override {
-        char *error;
-
-        dlerror();
 
         // std::cout << "loading: " << get_path() << std::endl; // DEBUG
 
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
+
+#ifdef _WIN32
+        _handle = LoadLibrary(pth);
+#else
         _handle = dlopen(pth, RTLD_LAZY | RTLD_GLOBAL);
+#endif
         if (!_handle) {
             icu::UnicodeString err = "dynamic load error: ";
             err += dlerror();
@@ -368,28 +374,41 @@ public:
             throw ErrorIO(err);
         }
 
-        std::vector<icu::UnicodeString> (*egel_imports)();
-        egel_imports = (std::vector<icu::UnicodeString>(*)())dlsym(
-            _handle, "egel_imports");
-        error = dlerror();
-        if (error != NULL) {
+#ifdef _WIN32
+        auto egel_imports = (std::vector<icu::UnicodeString>(*)())GetProcAddress((HMODULE)_handle, "egel_imports");
+        if (!egel_imports) {
             icu::UnicodeString err = "dynamic load error: ";
-            err += dlerror();
+            err += std::to_string(GetLastError());
             throw ErrorIO(err);
         }
+#else
+        auto egel_imports = (std::vector<icu::UnicodeString>(*)())dlsym(_handle, "egel_imports");
+        const char* error = dlerror();
+        if (error != NULL) {
+            icu::UnicodeString err = "dynamic load error: ";
+            err += error;
+            throw ErrorIO(err);
+        }
+#endif
 
-        std::vector<VMObjectPtr> (*egel_exports)(VM *);
-        egel_exports =
-            (std::vector<VMObjectPtr>(*)(VM *))dlsym(_handle, "egel_exports");
+#ifdef _WIN32
+        auto egel_exports = (std::vector<VMObjectPtr>(*)(VM*))GetProcAddress((HMODULE)_handle, "egel_exports");
+        if (!egel_exports) {
+            icu::UnicodeString err = "dynamic load error: ";
+            err += std::to_string(GetLastError());
+            throw ErrorIO(err);
+        }
+#else
+        auto egel_exports = (std::vector<VMObjectPtr>(*)(VM*))dlsym(_handle, "egel_exports");
         error = dlerror();
         if (error != NULL) {
             icu::UnicodeString err = "dynamic load error: ";
-            err += dlerror();
+            err += error;
             throw ErrorIO(err);
         }
+#endif
 
         auto ss = (*egel_imports)();
-
         QualifiedStrings ii;
         Position p(get_path(), 1, 1);
         for (auto &s : ss) {
