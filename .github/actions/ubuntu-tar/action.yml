@@ -6,12 +6,22 @@ runs:
   using: "composite"
     
   steps:
+  - name: Determine tar package name
+    id: tarname
+    run: |
+      egelversion=`contrib/scripts/version.sh src/egel.cpp`
+      echo "::set-output name=TARNAME::egel-ubuntu-$egelversion"
+    shell: bash
+
   - name: Create tar package
     run: |
-      contrib/scripts/tarpackage.sh
+      tarname=${{ steps.tarname.outputs.TARNAME }}
+      echo "creating: $tarname"
+      contrib/scripts/tarpackage.sh $tarname .
     shell: bash
 
   - name: Upload artefact
-    run: |
-    shell: bash
-
+    uses: actions/upload-artifact@v3
+    with:
+      name: ${{ steps.tarname.outputs.TARNAME }}
+      path: ${{ steps.tarname.outputs.TARNAME }}.tgz

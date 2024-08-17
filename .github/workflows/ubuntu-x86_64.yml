@@ -1,4 +1,4 @@
-name: Build ubuntu-x86_64
+name: Build Ubuntu-x86_64
 
 on:
   workflow_call:
@@ -38,3 +38,7 @@ jobs:
       - name: Test
         working-directory: ${{github.workspace}}/build
         run: ./egel -v
+
+      - name: Create Ubuntu artefact
+        uses: ./.github/actions/ubuntu-tar
+
