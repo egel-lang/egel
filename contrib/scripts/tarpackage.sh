@@ -7,7 +7,7 @@ fi
 
 name="$1"; shift
 egeldir="$1"; shift
-extras=("$@")
+extras=$@
 
 tardir=$name
 tarfile=$name.tgz
@@ -31,6 +31,8 @@ file_store() {
 create_tar() {
     tar -czf $1 $tardir
 }
+
+echo "extras $extras"
 
 create_dir $tardir
 create_dir $tardir/examples
