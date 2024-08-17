@@ -8,7 +8,7 @@ runs:
   steps:
   - name: Install dependencies
     run: |
-      brew update -verbose
+      brew update
       brew uninstall libtool
       brew install gcc make autoconf automake libtool texinfo
     shell: bash
