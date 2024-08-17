@@ -41,7 +41,7 @@ runs:
       prerelease: true
       release_name: ${{ steps.tarname.outputs.TARNAME }}
       tag_name: ${{ github.ref }}
-      body_path: VERSION.md
+      body_path: PREBUILT.md
     env:
       GITHUB_TOKEN: ${{ github.token }}
 
