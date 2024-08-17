@@ -26,6 +26,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ github actions
 + default submodules to latest stable version
 
 ## v0.1.11 - no kink shaming the couch

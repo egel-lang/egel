@@ -33,24 +33,3 @@ runs:
       name: ${{ steps.tarname.outputs.TARNAME }}
       path: ${{ steps.tarname.outputs.TARNAME }}.tgz
 
-  - name: Release
-    uses: actions/create-release@v1
-    id: create_release
-    with:
-      draft: true
-      prerelease: true
-      release_name: ${{ steps.tarname.outputs.TARNAME }}
-      tag_name: ${{ github.ref }}
-      body_path: PREBUILT.md
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-
-  - name: Upload Ubuntu artefact
-    uses: actions/upload-release-asset@v1
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-    with:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      asset_path: ${{ steps.tarname.outputs.TARNAME }}.tgz
-      asset_name: ${{ steps.tarname.outputs.TARNAME }}.tgz
-      asset_content_type: application/gzip
