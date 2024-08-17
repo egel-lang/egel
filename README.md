@@ -79,7 +79,7 @@ to your shell resource file, though the specific syntax may differ.
 
 ```
     export PATH=~/usr/local/bin:$PATH
-    export EGEL_PATH=~/usr/local/lib/egel
+    export EGEL_PATH=.:~/usr/local/lib/egel
 ```
 
 Usage
