@@ -19,6 +19,8 @@ jobs:
           echo
           echo github.workspace: ${{ github.workspace }}
           echo env.BUILD_TYPE: ${{ env.BUILD_TYPE }}
+          echo "MACOS DOESN'T BUILD AT THE MOMENT"
+          exit 1
 
       - name: Make local dir
         run: |

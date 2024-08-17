@@ -17,7 +17,7 @@ runs:
     run: |
       tarname=${{ steps.tarname.outputs.TARNAME }}
       echo "creating: $tarname"
-      contrib/scripts/tarpackage.sh $tarname . /usr/local/lib/liblightning*.so
+      contrib/scripts/tarpackage.sh $tarname . *.md /usr/local/lib/liblightning*.so
     shell: bash
 
   - name: List tar package
@@ -28,7 +28,7 @@ runs:
     shell: bash
 
   - name: Upload artefact
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
       name: ${{ steps.tarname.outputs.TARNAME }}
       path: ${{ steps.tarname.outputs.TARNAME }}.tgz
