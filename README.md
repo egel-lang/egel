@@ -21,6 +21,10 @@ managers provide C++ libraries.
    compiled and dissimated by the operating system distributor. Use your
    package manager to install libicu, libffi, fmt, and GNU lightning.
 
+   Warning: exceptionally, Ubuntu/Debian doesn't ship with GNU Lightning.
+   You are supposed to _compile and install_ that package prior to
+   compiling the interpreter.
+
 2. The vendor based model (MacOS and Windows) where C++ libraries are 
    usually not provided since they are brittle to link against, and where
    one usually compiles these libraries from scratch and statically links

@@ -6,6 +6,9 @@
 #   value
 # * a transaction is a computation which holds on to a lock
 
+# This is just me fooling around with serialization and not
+# intendet to be used.
+
 import "fs.ego"
 import "os.ego"
 
