@@ -16,7 +16,4 @@ lightning).
 ICU4C is a big package and, together with fmt, will
 compile fine.
 
-For GNU Lightning I haven't found a solution except to
-build from an old tarball, so those sources are included.
-
 A bash script, `makeall.sh`, is included for convenience.
