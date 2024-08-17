@@ -5,10 +5,12 @@ if [ $# -lt 2 ]; then
   exit 1
 fi
 
-tarfile="$1"; shift
+name="$1"; shift
 egeldir="$1"; shift
 extras=("$@")
-tardir="egel"
+
+tardir=$name
+tarfile=$name.tgz
 
 create_dir() {
     mkdir $1
