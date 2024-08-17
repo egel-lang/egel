@@ -10,8 +10,6 @@ runs:
     run: |
       brew update
       brew install gcc make autoconf automake libtool texinfo
-      brew uninstall libtool
-      brew install libtool
     shell: bash
 
   - name: Checkout FFI source
