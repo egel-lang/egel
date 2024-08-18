@@ -17,7 +17,7 @@ runs:
     run: |
       tarname=${{ steps.tarname.outputs.TARNAME }}
       echo "creating: $tarname"
-      libs=$(find /vendor/local/lib -not -type l)
+      libs=$(find /vendor/local/lib -not -type l -print0 | xargs -0 echo)
       contrib/scripts/tarpackage.sh $tarname . $libs
     shell: bash
 
