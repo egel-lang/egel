@@ -6,11 +6,6 @@ runs:
   using: "composite"
     
   steps:
-  - name: Install dependencies
-    run: |
-      brew install make
-    shell: bash
-
   - name: Checkout FMT source
     run: |
       git submodule update --init --recursive ./vendor/fmt

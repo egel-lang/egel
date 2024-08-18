@@ -1,0 +1,29 @@
+name: Windows Prepare
+
+description: Window Prepare
+
+runs:
+  using: "composite"
+  steps:
+  - name: Checkout code
+    uses: actions/checkout@v3
+
+  - name: Download Cygwin installer
+    run: curl -LO https://cygwin.com/setup-x86_64.exe
+    shell: pwsh
+
+  - name: Install Cygwin and required packages
+    run: |
+      .\setup-x86_64.exe -q -P gcc-g++,make,cmake,git
+    shell: pwsh
+
+  - name: Add Cygwin to PATH
+    run: |
+      echo "C:\\cygwin64\\bin" >> $env:GITHUB_PATH
+    shell: pwsh
+
+  - name: Report install
+    run: |
+      bash -c "echo Cygwin Installed"
+    shell: bash
+

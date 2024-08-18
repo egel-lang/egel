@@ -6,12 +6,6 @@ runs:
   using: "composite"
     
   steps:
-  - name: Install dependencies
-    run: |
-      brew update
-      brew install gcc make autoconf automake libtool texinfo
-    shell: bash
-
   - name: Checkout FFI source
     run: |
       git submodule update --init --recursive ./vendor/libffi
