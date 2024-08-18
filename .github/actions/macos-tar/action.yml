@@ -1,0 +1,36 @@
+name: MacOS Tar Artefact
+
+description: Create an MacOS Tar Artefact
+
+runs:
+  using: "composite"
+    
+  steps:
+  - name: Determine tar package name
+    id: tarname
+    run: |
+      egelversion=`contrib/scripts/version.sh src/egel.cpp`
+      echo "TARNAME=egel-macos-$egelversion" >> $GITHUB_OUTPUT
+    shell: bash
+
+  - name: Create tar package
+    run: |
+      tarname=${{ steps.tarname.outputs.TARNAME }}
+      echo "creating: $tarname"
+      libs=$(find /vendor/local/lib -not -type l)
+      contrib/scripts/tarpackage.sh $tarname . $libs
+    shell: bash
+
+  - name: List tar package
+    run: |
+      tarname=${{ steps.tarname.outputs.TARNAME }}
+      echo "contents of created $tarname"
+      tar -tf $tarname.tgz
+    shell: bash
+
+  - name: Upload artefact
+    uses: actions/upload-artifact@v4
+    with:
+      name: ${{ steps.tarname.outputs.TARNAME }}
+      path: ${{ steps.tarname.outputs.TARNAME }}.tgz
+

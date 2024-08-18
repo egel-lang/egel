@@ -1,0 +1,30 @@
+name: FFI leech
+
+description: steal FFI from brew
+
+runs:
+  using: "composite"
+    
+  steps:
+  - name: Checkout FFI 
+    run: |
+      echo "WARNING: stealing libffi from brew"
+      echo "This is not recommended, despite brew,"
+      echo "MacOS is _not_ a Linux and build from"
+      echo "sources is preferred."
+      echo "However, libffi fails to compile on MacOS."
+      brew install libffi
+    shell: bash
+
+  - name: Install FFI
+    run: |
+      mkdir -p vendor/local
+      mkdir -p vendor/local/include
+      mkdir -p vendor/local/lib
+      cp /opt/homebrew/opt/libffi/include/* vendor/local/include
+      cp /opt/homebrew/opt/libffi/lib/* vendor/local/lib
+      echo "vendor/local/include"
+      ls -la vendor/local/include
+      echo "vendor/local/lib"
+      ls -la vendor/local/lib
+    shell: bash

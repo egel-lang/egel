@@ -21,6 +21,12 @@ jobs:
           echo env.BUILD_TYPE: ${{ env.BUILD_TYPE }}
         shell: bash
 
+      - name: Fail
+        if: success()
+          echo "We fail when testing other builds"
+          exit 1
+        shell: bash
+
       - name: Checkout code
         uses: ./.github/actions/ubuntu-prepare
 

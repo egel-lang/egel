@@ -19,8 +19,14 @@ jobs:
           echo
           echo github.workspace: ${{ github.workspace }}
           echo env.BUILD_TYPE: ${{ env.BUILD_TYPE }}
-          echo "MACOS DOESN'T BUILD AT THE MOMENT"
+        shell: bash
+
+      - name: Fail
+        if: failure()
+        run: |
+          echo "Fail when testing other builds"
           exit 1
+        shell: bash
 
       - name: Prepare
         uses: ./.github/actions/macos-prepare
@@ -30,11 +36,11 @@ jobs:
           mkdir vendor/local
         shell: bash
 
+      - name: Build FFI static lib
+        uses: ./.github/actions/macos-ffi-leech
+
       - name: Build GNU Lightning static lib
         uses: ./.github/actions/macos-lightning
-
-      - name: Build FFI static lib
-        uses: ./.github/actions/macos-ffi
 
       - name: Build FMT static lib
         uses: ./.github/actions/macos-fmt
@@ -42,10 +48,10 @@ jobs:
       - name: Build ICU static lib
         uses: ./.github/actions/macos-icu
 
-      - name: Link static cmake
+      - name: Link vendor cmake
         run: |
           rm -rf CMakeLists.txt
-          ln -s CMakeLists.static CMakeLists.txt
+          ln -s CMakeLists.vendor CMakeLists.txt
         shell: bash
 
       - name: Configure CMake
@@ -60,3 +66,6 @@ jobs:
         working-directory: ${{github.workspace}}/build
         run: ./egel -v
         shell: bash
+
+      - name: Create tar
+        uses: ./.github/actions/macos-tar
