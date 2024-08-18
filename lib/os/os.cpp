@@ -12,13 +12,27 @@
 #include "../../src/runtime.hpp"
 
 // lets hope all this C stuff can once be gone
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/file.h>  //for flock
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <winsock2.h>
+#include <windows.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/file.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#endif
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <conio.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#endif
 
 using namespace egel;
 // from utils.... XXX
@@ -929,13 +943,6 @@ public:
         }
     }
 };
-
-#if defined(_WIN32) || defined(_WIN64)
-#include <conio.h>
-#elif defined(__unix__) || defined(__unix) || defined(__APPLE__) && defined(__MACH__)
-#include <termios.h>
-#include <unistd.h>
-#endif
 
 char get_key() {
 #if defined(_WIN32) || defined(_WIN64)
