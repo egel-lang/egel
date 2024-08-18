@@ -24,6 +24,7 @@ jobs:
 
       - name: Fail
         if: success()
+        run: |
           echo "We fail when testing other builds"
           exit 1
         shell: bash
