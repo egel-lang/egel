@@ -819,13 +819,13 @@ public:
 };
 
 // ## System::version - version information of this executable
-class Version : public Monadic {
+class Version : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Version, "System", "version");
 
     VMObjectPtr apply() const override {
         if (application_version == "") {
-            throw machine()->bad_args(this);
+            throw machine()->create_text("no version information");
         } else {
             return VMObjectText::create(application_version);
         }
