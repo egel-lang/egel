@@ -18,8 +18,14 @@
 
 namespace egel {
 
+// globals
 extern int application_argc;  // XXX: get rid of this
 extern char **application_argv;
+extern icu::UnicodeString application_version;
+
+int application_argc = 0;
+char **application_argv = nullptr;
+icu::UnicodeString application_version = nullptr;
 
 bool add_overflow(long int a, long int b, long int *c) {
     return __builtin_saddl_overflow(a, b, c);
@@ -45,9 +51,6 @@ bool mul_overflow(long long int a, long long int b, long long int *c) {
     return __builtin_smulll_overflow(a, b, c);
 }
 
-// globals
-int application_argc = 0;
-char **application_argv = nullptr;
 
 /**
  * Egel's system routines.
@@ -815,12 +818,29 @@ public:
     }
 };
 
+// ## System::version - version information of this executable
+class Version : public Monadic {
+public:
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Version, "System", "version");
+
+    VMObjectPtr apply() const override {
+        if (application_version == "") {
+            throw machine()->bad_args(this);
+        } else {
+            return VMObjectText::create(application_version);
+        }
+    }
+};
+
 // ## System::arg n - the n-th application argument, or none
 class Arg : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Arg, "System", "arg");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (application_argv == nullptr) {
+            throw machine()->bad_args(this, arg0);
+        }
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
             if (i < application_argc) {
@@ -1184,6 +1204,7 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(Pack::create(vm));
 
     // system info, override if sandboxed
+    oo.push_back(Version::create(vm));
     oo.push_back(Arg::create(vm));
     oo.push_back(Getenv::create(vm));
 

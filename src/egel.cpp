@@ -22,6 +22,21 @@ using namespace egel;
 #define EGEL_PATH ".:/usr/local/lib/egel:/usr/lib/egel"
 #endif
 
+#if defined(_WIN32) || defined(_WIN64)
+    #define EXECUTABLE_OS "Windows"
+#elif defined(__APPLE__) && defined(__MACH__)
+    #define EXECUTABLE_OS "MacOS"
+#elif defined(__linux__)
+    #define EXECUTABLE_OS "Linux"
+#elif defined(__unix__) || defined(__unix)
+    #define EXECUTABLE_OS "Linux"
+    #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
+        #define EXECUTABLE_OS "BSD"
+    #endif
+#else
+    #error "Unknown operating system"
+#endif
+
 enum arg_t {
     OPTION_NONE,
     OPTION_FILE,
@@ -307,6 +322,7 @@ int main(int argc, char *argv[]) {
     // set the application arguments
     application_argc = argc;
     application_argv = argv;
+    application_version = icu::UnicodeString("egel ") + EXECUTABLE_VERSION + " " + EXECUTABLE_OS;
 
     // load the file
     if (fn != "") {
