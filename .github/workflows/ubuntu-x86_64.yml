@@ -25,7 +25,7 @@ jobs:
       - name: Fail
         run: |
           echo "Fail when testing other builds"
-          #exit 1
+          exit 1
         shell: bash
 
       - name: Checkout code

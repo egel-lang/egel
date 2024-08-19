@@ -574,6 +574,58 @@ public:
     }
 };
 
+// ## String::to_chars s - create a list of chars from a string
+class ToChars : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToChars, "String", "to_chars");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_text(arg0)) {
+            auto str = machine()->get_text(arg0);
+
+            VMObjectPtrs ss;
+            for (int i = 0; i < str.length(); i = str.moveIndex32(i, 1)) {
+                auto c = machine()->create_char(str.char32At(i));
+                ss.push_back(c);
+            }
+            return machine()->to_list(ss);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+// ## String::from_chars s - create a string from a list of chars
+class FromChars : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, FromChars, "String", "from_chars");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        // rewrite to use machine()->is_nil
+        static symbol_t _nil = 0;
+        if (_nil == 0) _nil = machine()->enter_symbol("System", "nil");
+    
+        static symbol_t _cons = 0;
+        if (_cons == 0) _cons = machine()->enter_symbol("System", "cons");
+    
+        icu::UnicodeString ss;
+        auto a = arg0;
+    
+        while ((machine()->is_array(a))) {
+            auto aa = machine()->get_array(a);
+            if (aa.size() != 3) machine()->bad(this, "invalid");
+            if (aa[0]->symbol() != _cons) machine()->bad(this, "invalid");
+            if (aa[1]->tag() != VM_OBJECT_CHAR) machine()->bad(this, "invalid");
+
+            UChar32 c = machine()->get_char(aa[1]);
+            ss += c;
+            a = aa[2];
+        }
+
+        return VMObjectText::create(ss);
+    }
+};
+
 std::vector<VMObjectPtr> builtin_string(VM *vm) {
     std::vector<VMObjectPtr> oo;
 

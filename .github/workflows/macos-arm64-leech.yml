@@ -37,16 +37,16 @@ jobs:
         shell: bash
 
       - name: Build FFI static lib
-        uses: ./.github/actions/macos-ffi
+        uses: ./.github/actions/macos-ffi-leech
 
       - name: Build GNU Lightning static lib
-        uses: ./.github/actions/macos-lightning
+        uses: ./.github/actions/macos-lightning-leech
 
       - name: Build FMT static lib
-        uses: ./.github/actions/macos-fmt
+        uses: ./.github/actions/macos-fmt-leech
 
       - name: Build ICU static lib
-        uses: ./.github/actions/macos-icu
+        uses: ./.github/actions/macos-icu-leech
 
       - name: Link vendor cmake
         run: |

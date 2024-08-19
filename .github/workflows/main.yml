@@ -7,5 +7,5 @@ jobs:
      uses: ./.github/workflows/ubuntu-x86_64.yml
 
   build-macos-arm64:
-     uses: ./.github/workflows/macos-arm64.yml
+     uses: ./.github/workflows/macos-arm64-leech.yml
 

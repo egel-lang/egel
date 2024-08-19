@@ -752,72 +752,6 @@ public:
     }
 };
 
-// ## System::unpack s - create a list of chars from a string
-class Unpack : public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Unpack, "System", "unpack");
-
-    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        if (machine()->is_text(arg0)) {
-            auto str = machine()->get_text(arg0);
-
-            VMObjectPtrs ss;
-            for (int i = 0; i < str.length(); i = str.moveIndex32(i, 1)) {
-                auto c = machine()->create_char(str.char32At(i));
-                ss.push_back(c);
-            }
-            return machine()->to_list(ss);
-        } else {
-            throw machine()->bad_args(this, arg0);
-        }
-    }
-};
-
-// ## System::pack s - create a string from a list of chars
-class Pack : public Monadic {
-public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Pack, "System", "pack");
-
-    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        static symbol_t _nil = 0;
-        if (_nil == 0) _nil = machine()->enter_symbol("System", "nil");
-
-        static symbol_t _cons = 0;
-        if (_cons == 0) _cons = machine()->enter_symbol("System", "cons");
-
-        icu::UnicodeString ss;
-        auto a = arg0;
-
-        while ((machine()->is_array(a))) {
-            auto aa = machine()->get_array(a);
-            if (aa.size() != 3) machine()->bad(this, "invalid");
-            if (aa[0]->symbol() != _cons) machine()->bad(this, "invalid");
-            if (aa[1]->tag() != VM_OBJECT_CHAR) machine()->bad(this, "invalid");
-
-            UChar32 c = machine()->get_char(aa[1]);
-
-            // never touch this code again
-
-            /*
-                if (U_IS_BMP(c)) {
-                  ss += UChar(c);
-                } else {
-                  UChar buffer[U16_MAX_LENGTH];
-                  int32_t length = 0;
-                  U16_APPEND_UNSAFE(buffer, length, c);
-                  ss.append(buffer, length);
-                }
-            */
-
-            ss += c;
-
-            a = aa[2];
-        }
-
-        return VMObjectText::create(ss);
-    }
-};
-
 // ## System::version - version information of this executable
 class Version : public Medadic {
 public:
@@ -1200,8 +1134,8 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(Totext::create(vm));
 
     // move to string?
-    oo.push_back(Unpack::create(vm));
-    oo.push_back(Pack::create(vm));
+    oo.push_back(ToChars::create(vm));
+    oo.push_back(FromChars::create(vm));
 
     // system info, override if sandboxed
     oo.push_back(Version::create(vm));
