@@ -17,6 +17,7 @@ import "prelude.eg"
 import "calculate.eg"
 
 using System
+using String
 using List
 using Calculate
 
@@ -56,7 +57,7 @@ def game_loop =
 
 def play_game =
     [ S ->
-        let CC = unpack S in
+        let CC = to_chars S in
         run (game_loop CC) game_state_start ]
 
 def main = play_game "abcaabcbba"
