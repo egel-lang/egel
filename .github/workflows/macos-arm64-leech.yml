@@ -1,4 +1,4 @@
-name: Build MacOS
+name: Build MacOS by Leeching from Brew
 
 on:
   workflow_call:
