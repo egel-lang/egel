@@ -295,10 +295,10 @@ public:
     }
 };
 
-// ## String::length s - number of chars
+// ## String::count s - number of chars
 class CountChar : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, CountChar, "String", "length");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, CountChar, "String", "count");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
