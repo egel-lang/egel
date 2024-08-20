@@ -1,6 +1,7 @@
 name: Main Workflow
 
-on: [workflow_dispatch]
+on: 
+  workflow_dispatch:
 
 jobs:
   build-ubuntu-x86_64:
