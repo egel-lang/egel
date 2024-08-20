@@ -17,10 +17,14 @@ runs:
     run: |
       tarname=${{ steps.tarname.outputs.TARNAME }}
       echo "creating: $tarname"
-      lib0=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "liblightning.so" -print -quit`
-      lib1=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libfmt.so" -print -quit`
-      lib2=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libffi.so" -print -quit`
-      contrib/scripts/tarpackage.sh $tarname . $lib0 $lib1 $lib2
+      lib0=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "liblightning.so.?" -print -quit`
+      lib1=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libfmt.so.?" -print -quit`
+      lib2=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libffi.so.?" -print -quit`
+      lib3=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicui18n.so.??" -print -quit`
+      lib4=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicuio.so.??" -print -quit`
+      lib5=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicutu.so.??" -print -quit`
+      lib6=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicudata.so.??" -print -quit`
+      contrib/scripts/tarpackage.sh $tarname . $lib0 $lib1 $lib2 $lib3 $lib4 $lib5 $lib6
     shell: bash
 
   - name: List tar package
