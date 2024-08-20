@@ -24,7 +24,8 @@ runs:
       lib4=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicuio.so.??" -print -quit`
       lib5=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicutu.so.??" -print -quit`
       lib6=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicudata.so.??" -print -quit`
-      contrib/scripts/tarpackage.sh $tarname . $lib0 $lib1 $lib2 $lib3 $lib4 $lib5 $lib6
+      lib7=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libicuuc.so.??" -print -quit`
+      contrib/scripts/tarpackage.sh $tarname . $lib0 $lib1 $lib2 $lib3 $lib4 $lib5 $lib6 $lib7
     shell: bash
 
   - name: List tar package
