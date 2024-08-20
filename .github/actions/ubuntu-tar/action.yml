@@ -17,7 +17,10 @@ runs:
     run: |
       tarname=${{ steps.tarname.outputs.TARNAME }}
       echo "creating: $tarname"
-      contrib/scripts/tarpackage.sh $tarname . /usr/local/lib/liblightning.so /usr/lib64/libfmt.so /usr/lib64/libffi.so
+      $lib0=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "liblightning.so" -print -quit
+      $lib1=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libfmt.so" -print -quit
+      $lib2=`find /usr/lib /usr/lib64/ /usr/local/lib /usr/local/lib64 -name "libffi.so" -print -quit
+      contrib/scripts/tarpackage.sh $tarname . $lib0 $lib1 $lib2
     shell: bash
 
   - name: List tar package
