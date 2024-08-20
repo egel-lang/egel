@@ -426,7 +426,7 @@ namespace String (
     using System
 
     def split = 
-        [ N S -> (String::extract 0 N S, String::extract N (String::length S - N) S) ]
+        [ N S -> (String::extract 0 N S, String::extract N (String::count S - N) S) ]
 
 )
 
