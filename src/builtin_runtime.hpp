@@ -74,10 +74,10 @@ public:
     }
 };
 
-// ## System::modules - list all modules in the runtime
+// ## System::query_modules - list all modules in the runtime
 class Modules : public Medadic {
 public:
-    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Modules, "System", "modules");
+    MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Modules, "System", "query_modules");
 
     VMObjectPtr apply() const override {
         return machine()->query_modules();
@@ -87,7 +87,7 @@ public:
 // ## System::is_module m - check we have a module
 class IsModule : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsModule, "System", "is_module");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsModule, "System", "query_is_module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_module(arg0));
@@ -124,7 +124,7 @@ public:
     }
 };
 
-// ## System::query_module_imports m - get the path of the module
+// ## System::query_module_imports m - get the imports of the module
 class QueryModuleImports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleImports, "System",
@@ -139,7 +139,7 @@ public:
     }
 };
 
-// ## System::query_module_exports m - get the path of the module
+// ## System::query_module_exports m - get the exports of the module
 class QueryModuleExports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleExports, "System",
@@ -154,7 +154,7 @@ public:
     }
 };
 
-// ## System::query_module_values m - get the path of the module
+// ## System::query_module_values m - get the values of the module
 class QueryModuleValues : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleValues, "System",
