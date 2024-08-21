@@ -19,7 +19,6 @@
 #include "builtin_runtime.hpp"
 #include "builtin_string.hpp"
 #include "builtin_system.hpp"
-#include "builtin_thread.hpp"
 #include "constants.hpp"
 #include "desugar.hpp"
 #include "emit.hpp"
@@ -806,8 +805,6 @@ public:
             ModuleInternal::create("internal", vm, &builtin_string));
         _loading.push_back(
             ModuleInternal::create("internal", vm, &builtin_runtime));
-        _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_thread));
         _loading.push_back(
             ModuleInternal::create("internal", vm, &builtin_process));
         _loading.push_back(
