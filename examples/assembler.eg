@@ -2,5 +2,9 @@
 
 using System
 
+def f = [X -> X]
+
 def main =
-    asm (dis [ X -> X ]) 0
+    let CODE = dis f in
+    print CODE;
+    asm CODE 0
