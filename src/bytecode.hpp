@@ -813,13 +813,14 @@ public:
         os << "bytecode 01" << std::endl;
 
         // write name
-        os << _name << std::endl;
+        os << "  " << _name << std::endl;
 
         // write code
         //os << std::showbase << std::internal << std::setfill('0');
         reset();
         os << "code" << std::endl;
         while (!is_end()) {
+            os << "  ";
             write_0xi32_filled(os, pc());
             write_space(os);
             switch (look()) {
@@ -894,8 +895,28 @@ public:
         // write data
         os << "data" << std::endl;
         for (unsigned int n = 0; n < _data.size(); n++) {
-            os << std::hex << std::setw(6) << n << std::dec << " ";
-            os << _data[n] << " " << _vm->get_data(_data[n]) << std::endl;
+            os << "  ";
+            auto o = _vm->get_data(_data[n]);
+            switch (o->tag()) {
+                case VM_OBJECT_INTEGER:
+                    os << "i ";
+                    break;
+                case VM_OBJECT_FLOAT:
+                    os << "f ";
+                    break;
+                case VM_OBJECT_CHAR:
+                    os << "c ";
+                    break;
+                case VM_OBJECT_TEXT:
+                    os << "t ";
+                    break;
+                case VM_OBJECT_COMBINATOR:
+                    os << "o ";
+                    break;
+                default:
+                    PANIC("error in data section");
+            }
+            os << n << ' ' << _data[n] << " " << o << std::endl;
         }
         // write end
         os << "end" << std::endl;
@@ -954,7 +975,7 @@ public:
     }
 
     void skip() {
-        std::cerr << "skipped: " << look() << std::endl;
+        // std::cerr << "skipped: " << look() << std::endl;
         _tokenreader->skip();
     }
 
@@ -983,25 +1004,26 @@ public:
         }
     }
 
-    std::vector<icu::UnicodeString> force_combinator() {
+    icu::UnicodeString fetch_combinator() {
         Position p = position();
-        std::vector<icu::UnicodeString> cc;
+        icu::UnicodeString s;
         if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) || (tag() == TOKEN_OPERATOR)) {
-            cc.push_back(look_text());
+            s += look_text();
             skip();
         } else {
             throw ErrorSyntactical(p, "combinator expected");
         }
         while (tag() == TOKEN_DCOLON) {
+            s += "::";
             skip();
             if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) || (tag() == TOKEN_OPERATOR)) {
-                cc.push_back(look_text());
+                s += look_text();
                 skip();
             } else {
                 throw ErrorSyntactical(p, "combinator expected");
             }
         }
-        return cc;
+        return s;
     }
 
 
@@ -1035,13 +1057,35 @@ public:
         return VM::unicode_to_hexint(s);
     }
 
+    vm_int_t fetch_integer() {
+        auto s = look_text();
+        skip();
+        return VM::unicode_to_int(s);
+    }
+
+    vm_float_t fetch_float() {
+        auto s = look_text();
+        skip();
+        return VM::unicode_to_float(s);
+    }
+
+    vm_char_t fetch_char() {
+        auto s = look_text();
+        skip();
+        return VM::unicode_to_char(s);
+    }
+
+    vm_text_t fetch_text() {
+        auto s = look_text();
+        skip();
+        return VM::unicode_to_text(s);
+    }
+
     VMObjectPtr assemble() {
-        std::cerr << "start" << std::endl; // YYY
         force_string("bytecode");
         force_string("01");
         
-        std::cerr << "code" << std::endl; // YYY
-        auto nn = force_combinator();
+        auto name = fetch_combinator();
         force_string("code");
 
         Coder coder(_machine);
@@ -1116,105 +1160,60 @@ public:
                 throw ErrorSyntactical(p, "instruction expected");
             }
         }
+        auto code = coder.code();
 
-        std::cerr << "data" << std::endl; // YYY
         force_string("data");
 
-        while(!is_string("end")) {
-            skip();
-        }
-
-        std::cerr << "end" << std::endl; // YYY
-        force_string("end");
-        /*
-        auto chars = VM::unicode_to_utf8_chars(_source);
-        std::string s(chars);
-        auto in = std::stringstream(s);
-
-        auto version = read_byte(in);
-        if (version != BYTECODEVERSION)
-            throw machine()->create_text("wrong bytecode version");
-
-        auto tag = read_byte(in);
-        if (tag == DATA_TAG) {
-            skip_white(in);
-            auto t = read_combinator(in);
-            return machine()->create_data(t);
-        }
-        // else XXX
-
-        skip_white(in);
-        auto c = read_combinator(in);
-
-        // read in code section
-        skip_white(in);
-        while (!eol(in) && !is_separator(in)) {
-            auto b = read_byte(in);
-            code.push_back(b);
-        }
-
-        // read in data section
         Data data;
-        skip_white(in);
-        vm_int_t z;
-        while (!eol(in) && is_digit(in)) {  // I hate this
-            in >> z;
-            if (data.size() != (unsigned long)z)
-                throw machine()->create_text(
-                    icu::UnicodeString("wrong data entry count ") +
-                    VM::unicode_from_int(z));
-            skip_white(in);
-            switch (look(in)) {
-                case 'i': {
-                    skip(in);
-                    skip(in);
-                    auto n = read_int(in);
-                    auto o = machine()->create_integer(n);
-                    auto d = machine()->define_data(o);
-                    data.push_back(d);
-                } break;
-                case 'f': {
-                    skip(in);
-                    skip(in);
-                    auto f = read_float(in);
-                    auto o = machine()->create_float(f);
-                    auto d = machine()->define_data(o);
-                    data.push_back(d);
-                } break;
-                case 'c': {
-                    skip(in);
-                    skip(in);
-                    auto c = read_char(in);
-                    auto o = machine()->create_char(c);
-                    auto d = machine()->define_data(o);
-                    data.push_back(d);
-                } break;
-                case 't': {
-                    skip(in);
-                    skip(in);
-                    auto t = read_text(in);
-                    auto o = machine()->create_text(t);
-                    auto d = machine()->define_data(o);
-                    data.push_back(d);
-                } break;
-                case 'o': {
-                    skip(in);
-                    skip(in);
-                    auto t = read_combinator(in);
-                    auto o = machine()->get_combinator(t);
-                    auto d = machine()->define_data(o);
-                    data.push_back(d);
-                } break;
-                default: {
-                    throw machine()->create_text("panic: cannot decode data");
-                } break;
+        while(!is_string("end")) {
+            if (is_string("i")) {
+                skip();
+                skip();
+                skip();
+                auto i = fetch_integer();
+                auto o = machine()->create_integer(i);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
+            } else if (is_string("f")) {
+                skip();
+                skip();
+                skip();
+                auto f = fetch_float();
+                auto o = machine()->create_float(f);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
+            } else if (is_string("c")) {
+                skip();
+                skip();
+                skip();
+                auto c = fetch_char();
+                auto o = machine()->create_char(c);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
+            } else if (is_string("t")) {
+                skip();
+                skip();
+                skip();
+                auto t = fetch_text();
+                auto o = machine()->create_text(t);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
+            } else if (is_string("o")) {
+                skip();
+                skip();
+                skip();
+                auto t = fetch_combinator();
+                auto o = machine()->get_combinator(t);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
+            } else {
+                auto p = position();
+                throw ErrorSyntactical(p, "data expected");
             }
-            skip_white(in);
         }
-        free(chars);
-        return VMObjectBytecode::create(_machine, code, data, c);
-        */
-        return _machine->create_none();
+
+        force_string("end");
+        return VMObjectBytecode::create(_machine, code, data, name);
     }
 
 private:
