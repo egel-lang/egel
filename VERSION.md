@@ -20,12 +20,12 @@ A list of all major changes between versions of the interpreter.
 + cleanup internals regarding combinator declarations
 + module rework and compile into local module
 + complex numbers
-* clean up ref (make it serializable)
 + generate C++ from .eg file (module compilation)
 + target MSVC
 
 ## The bleeding, cutting edge
 
++ rewrite assembler
 + github actions
 + default submodules to latest stable version
 

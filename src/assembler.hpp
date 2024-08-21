@@ -13,9 +13,9 @@ const int BYTECODE_TAG = 0x01;
 const int DATA_TAG = 0x02;
 const int SEPARATOR = ' ';
 
-class Disassembler {
+class Disassembler0 {
 public:
-    Disassembler(VM *m, const VMObjectPtr &o)
+    Disassembler0(VM *m, const VMObjectPtr &o)
         : _machine(m), _object(o), _code(Code()), _data(Data()), _pc(0) {
     }
 

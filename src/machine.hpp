@@ -684,7 +684,7 @@ public:
     }
 
     icu::UnicodeString disassemble(const VMObjectPtr &o) override {
-        Disassembler d(this, o);
+        Disassembler d(o);
         return d.disassemble();
     }
 

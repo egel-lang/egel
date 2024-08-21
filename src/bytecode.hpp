@@ -47,280 +47,6 @@ constexpr auto OP_INT_SIZE = (sizeof(uint32_t));
 constexpr auto OP_LABEL_SIZE = (sizeof(label_t));
 constexpr auto OP_INDEX_SIZE = (sizeof(index_t));
 
-struct opcode_text_t {
-    opcode_t op;
-    const char *text;
-};
-
-constexpr auto STRING_OP_NIL = "nil";
-constexpr auto STRING_OP_MOV = "mov";
-constexpr auto STRING_OP_DATA = "data";
-constexpr auto STRING_OP_SET = "set";
-constexpr auto STRING_OP_TAKEX = "takex";
-constexpr auto STRING_OP_SPLIT = "split";
-constexpr auto STRING_OP_ARRAY = "array";
-constexpr auto STRING_OP_CONCATX = "concatx";
-constexpr auto STRING_OP_TEST = "test";
-constexpr auto STRING_OP_TAG = "tag";
-constexpr auto STRING_OP_FAIL = "fail";
-constexpr auto STRING_OP_RETURN = "return";
-
-class CodePrinter {
-public:
-    CodePrinter(const Code &code) : _code(code), _pc(0) {
-    }
-
-    const char *opcode_to_text(const opcode_t op) {
-        static constexpr opcode_text_t opcode_text_table[]{
-            {
-                OP_NIL,
-                STRING_OP_NIL,
-            },
-            {
-                OP_MOV,
-                STRING_OP_MOV,
-            },
-            {
-                OP_DATA,
-                STRING_OP_DATA,
-            },
-            {
-                OP_SET,
-                STRING_OP_SET,
-            },
-            {
-                OP_TAKEX,
-                STRING_OP_TAKEX,
-            },
-            {
-                OP_SPLIT,
-                STRING_OP_SPLIT,
-            },
-            {
-                OP_ARRAY,
-                STRING_OP_ARRAY,
-            },
-            {
-                OP_CONCATX,
-                STRING_OP_CONCATX,
-            },
-            {
-                OP_TEST,
-                STRING_OP_TEST,
-            },
-            {
-                OP_TAG,
-                STRING_OP_TAG,
-            },
-            {
-                OP_FAIL,
-                STRING_OP_FAIL,
-            },
-            {
-                OP_RETURN,
-                STRING_OP_RETURN,
-            },
-        };
-
-        for (int n = 0; n <= OP_RETURN; n++) {
-            if (opcode_text_table[n].op == op) {
-                return opcode_text_table[n].text;
-            }
-        }
-        PANIC("couldn't decode opcode");
-        return nullptr;
-    }
-
-    void reset() {
-        _pc = 0;
-    }
-
-    uint32_t pc() const {
-        return _pc;
-    }
-
-    bool is_end() const {
-        return _pc >= _code.size();
-    }
-
-    opcode_t look() const {
-        return (opcode_t)_code[_pc];
-    }
-
-    uint8_t fetch_i8() {
-        uint8_t n = _code[_pc];
-        _pc += 1;
-        return n;
-    }
-
-    uint16_t fetch_i16() {
-        uint16_t n = ((_code[_pc] << 8) | _code[_pc + 1]);
-        _pc += 2;
-        return n;
-    }
-
-    uint32_t fetch_i32() {  // XXX: depends on size of machine register?
-        uint32_t n = ((_code[_pc] << 24) | (_code[_pc + 1] << 16) |
-                      (_code[_pc + 2] << 8) | _code[_pc + 3]);
-        _pc += 4;
-        return n;
-    }
-
-    opcode_t fetch_op() {
-        return (opcode_t)fetch_i8();
-    }
-
-    reg_t fetch_index() {
-        return fetch_i16();
-    }
-
-    reg_t fetch_register() {
-        return fetch_i32();
-    }
-
-    label_t fetch_label() {
-        return fetch_i32();
-    }
-
-    void write_space(std::ostream &os) {
-        os << ' ';
-    }
-
-    void write_newline(std::ostream &os) {
-        os << std::endl;
-    }
-
-    void write_op(std::ostream &os, const opcode_t op) {
-        os << opcode_to_text(op);
-    }
-
-    void write_i32(std::ostream &os, const uint32_t n) {
-        os << n;
-    }
-
-    void write_0xi32(std::ostream &os, const uint32_t n) {
-        os << std::hex << std::setw(6) << n << std::dec;
-    }
-
-    void write_index(std::ostream &os, const index_t i) {
-        os << 'i' << i;
-    }
-
-    void write_register(std::ostream &os, const reg_t i) {
-        os << 'r' << i;
-    }
-
-    void write_label(std::ostream &os, const label_t l) {
-        write_0xi32(os, (uint32_t)l);
-    }
-
-    void write(std::ostream &os, VM *vm) {
-        std::ios_base::fmtflags old_flags = os.flags();
-        std::streamsize old_prec = os.precision();
-        char old_fill = os.fill();
-
-        os << std::showbase << std::internal << std::setfill('0');
-
-        reset();
-
-        while (!is_end()) {
-            write_0xi32(os, pc());
-            write_space(os);
-            switch (look()) {
-                case OP_NIL:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    break;
-                case OP_MOV:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    break;
-                case OP_DATA:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    {
-                        auto i = fetch_i32();
-                        write_i32(os, i);
-                        // os << "   ; " << get_data(i);
-                    }
-                    break;
-                case OP_SET:
-                case OP_SPLIT:
-                case OP_ARRAY:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    break;
-                case OP_TAKEX:
-                case OP_CONCATX:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    write_index(os, fetch_index());
-                    break;
-                case OP_TEST:
-                case OP_TAG:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    break;
-                case OP_FAIL:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_label(os, fetch_label());
-                    break;
-                case OP_RETURN:
-                    write_op(os, fetch_op());
-                    write_space(os);
-                    write_register(os, fetch_register());
-                    break;
-            }
-            write_newline(os);
-        }
-
-        os.flags(old_flags);
-        os.precision(old_prec);
-        os.fill(old_fill);
-    }
-
-private:
-    Code _code;
-    uint32_t _pc;
-};
-
-class DataPrinter {
-public:
-    DataPrinter(const Data &d) : _data(d) {
-    }
-
-    void write(std::ostream &os, VM *vm) {
-        for (unsigned int n = 0; n < _data.size(); n++) {
-            os << std::hex << std::setw(6) << n << std::dec << " ";
-            os << _data[n] << " " << vm->get_data(_data[n]) << std::endl;
-        }
-    }
-
-private:
-    Data _data;
-};
-
 class Coder {
 public:
     Coder(VM *m)
@@ -613,6 +339,9 @@ private:
     std::map<reg_t, VMObjectPtr> _fallback;
 };
 
+// forward declaration
+inline void write_assembly(std::ostream &os, const VMObjectBytecode& o);
+
 class VMObjectBytecode : public VMObjectCombinator {
 public:
     VMObjectBytecode(VM *m, const Code &c, const Data &d, const symbol_t s)
@@ -650,15 +379,7 @@ public:
     }
 
     void debug(std::ostream &os) const override {
-        os << text() << " (" << tag() << ", " << subtag() << ")" << std::endl
-           << "begin" << std::endl;
-        os << "code" << std::endl;
-        CodePrinter cp(_code);
-        cp.write(os, machine());
-        os << "data" << std::endl;
-        DataPrinter dp(_data);
-        dp.write(os, machine());
-        os << "end" << std::endl;
+        write_assembly(os, *this);
     }
 
     Code code() const {
@@ -907,6 +628,294 @@ public:
 private:
     Code _code;
     Data _data;
+};
+
+struct opcode_text_t {
+    opcode_t op;
+    const char *text;
+};
+
+constexpr auto STRING_OP_NIL = "nil";
+constexpr auto STRING_OP_MOV = "mov";
+constexpr auto STRING_OP_DATA = "data";
+constexpr auto STRING_OP_SET = "set";
+constexpr auto STRING_OP_TAKEX = "takex";
+constexpr auto STRING_OP_SPLIT = "split";
+constexpr auto STRING_OP_ARRAY = "array";
+constexpr auto STRING_OP_CONCATX = "concatx";
+constexpr auto STRING_OP_TEST = "test";
+constexpr auto STRING_OP_TAG = "tag";
+constexpr auto STRING_OP_FAIL = "fail";
+constexpr auto STRING_OP_RETURN = "return";
+
+class Disassembler {
+public:
+    Disassembler(const VMObjectBytecode &o): _name(o.text()), _code(o.code()), _data(o.data()), _vm(o.machine()), _pc(0) {}
+
+    Disassembler(const VMObjectPtr &o): Disassembler(*VMObjectBytecode::cast(o)) {
+    }
+
+    const char *opcode_to_text(const opcode_t op) {
+        static constexpr opcode_text_t opcode_text_table[]{
+            {
+                OP_NIL,
+                STRING_OP_NIL,
+            },
+            {
+                OP_MOV,
+                STRING_OP_MOV,
+            },
+            {
+                OP_DATA,
+                STRING_OP_DATA,
+            },
+            {
+                OP_SET,
+                STRING_OP_SET,
+            },
+            {
+                OP_TAKEX,
+                STRING_OP_TAKEX,
+            },
+            {
+                OP_SPLIT,
+                STRING_OP_SPLIT,
+            },
+            {
+                OP_ARRAY,
+                STRING_OP_ARRAY,
+            },
+            {
+                OP_CONCATX,
+                STRING_OP_CONCATX,
+            },
+            {
+                OP_TEST,
+                STRING_OP_TEST,
+            },
+            {
+                OP_TAG,
+                STRING_OP_TAG,
+            },
+            {
+                OP_FAIL,
+                STRING_OP_FAIL,
+            },
+            {
+                OP_RETURN,
+                STRING_OP_RETURN,
+            },
+        };
+
+        for (int n = 0; n <= OP_RETURN; n++) {
+            if (opcode_text_table[n].op == op) {
+                return opcode_text_table[n].text;
+            }
+        }
+        PANIC("couldn't decode opcode");
+        return nullptr;
+    }
+
+    void reset() {
+        _pc = 0;
+    }
+
+    uint32_t pc() const {
+        return _pc;
+    }
+
+    bool is_end() const {
+        return _pc >= _code.size();
+    }
+
+    opcode_t look() const {
+        return (opcode_t)_code[_pc];
+    }
+
+    uint8_t fetch_i8() {
+        uint8_t n = _code[_pc];
+        _pc += 1;
+        return n;
+    }
+
+    uint16_t fetch_i16() {
+        uint16_t n = ((_code[_pc] << 8) | _code[_pc + 1]);
+        _pc += 2;
+        return n;
+    }
+
+    uint32_t fetch_i32() {  // XXX: depends on size of machine register?
+        uint32_t n = ((_code[_pc] << 24) | (_code[_pc + 1] << 16) |
+                      (_code[_pc + 2] << 8) | _code[_pc + 3]);
+        _pc += 4;
+        return n;
+    }
+
+    opcode_t fetch_op() {
+        return (opcode_t)fetch_i8();
+    }
+
+    reg_t fetch_index() {
+        return fetch_i16();
+    }
+
+    reg_t fetch_register() {
+        return fetch_i32();
+    }
+
+    label_t fetch_label() {
+        return fetch_i32();
+    }
+
+    void write_space(std::ostream &os) {
+        os << ' ';
+    }
+
+    void write_newline(std::ostream &os) {
+        os << std::endl;
+    }
+
+    void write_op(std::ostream &os, const opcode_t op) {
+        os << opcode_to_text(op);
+    }
+
+    void write_i32(std::ostream &os, const uint32_t n) {
+        os << n;
+    }
+
+    void write_0xi32(std::ostream &os, const uint32_t n) {
+        os << std::hex << n << std::dec;
+    }
+
+    void write_0xi32_filled(std::ostream &os, const uint32_t n) {
+        os << std::hex << std::setw(6) << n << std::dec;
+    }
+    void write_index(std::ostream &os, const index_t i) {
+        os << 'i' << i;
+    }
+
+    void write_register(std::ostream &os, const reg_t i) {
+        os << 'r' << i;
+    }
+
+    void write_label(std::ostream &os, const label_t l) {
+        write_0xi32(os, (uint32_t)l);
+    }
+
+    void write(std::ostream &os) {
+        std::ios_base::fmtflags old_flags = os.flags();
+        std::streamsize old_prec = os.precision();
+        char old_fill = os.fill();
+
+        // write header
+        os << "#00 byte code" << std::endl;
+
+        // write name
+        os << _name << std::endl;
+
+        // write code
+        //os << std::showbase << std::internal << std::setfill('0');
+        reset();
+        os << "code" << std::endl;
+        while (!is_end()) {
+            write_0xi32_filled(os, pc());
+            write_space(os);
+            switch (look()) {
+                case OP_NIL:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    break;
+                case OP_MOV:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    break;
+                case OP_DATA:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    {
+                        auto i = fetch_i32();
+                        write_i32(os, i);
+                        // os << "   ; " << get_data(i);
+                    }
+                    break;
+                case OP_SET:
+                case OP_SPLIT:
+                case OP_ARRAY:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    break;
+                case OP_TAKEX:
+                case OP_CONCATX:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    write_index(os, fetch_index());
+                    break;
+                case OP_TEST:
+                case OP_TAG:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    break;
+                case OP_FAIL:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_label(os, fetch_label());
+                    break;
+                case OP_RETURN:
+                    write_op(os, fetch_op());
+                    write_space(os);
+                    write_register(os, fetch_register());
+                    break;
+            }
+            write_newline(os);
+        }
+
+        // write data
+        os << "data" << std::endl;
+        for (unsigned int n = 0; n < _data.size(); n++) {
+            os << std::hex << std::setw(6) << n << std::dec << " ";
+            os << _data[n] << " " << _vm->get_data(_data[n]) << std::endl;
+        }
+        os.flags(old_flags);
+        os.precision(old_prec);
+        os.fill(old_fill);
+    }
+
+    icu::UnicodeString disassemble() {                                                                                                  
+        std::stringstream ss;                                                                                                           
+        write(ss);                                                                                                                
+        return VM::unicode_from_utf8_chars(ss.str().c_str());                                                                           
+    } 
+private:
+    icu::UnicodeString _name;
+    Code _code;
+    Data _data;
+    VM* _vm;
+    uint32_t _pc;
+};
+
+inline void write_assembly(std::ostream &os, const VMObjectBytecode& o) {
+    Disassembler d(o);
+    d.write(os);
 };
 
 }  // namespace egel
