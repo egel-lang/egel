@@ -786,14 +786,14 @@ public:
     }
 
     void write_0xi32(std::ostream &os, const uint32_t n) {
-        os << std::hex << n << std::dec;
+        os << std::hex << "0x" << n << std::dec;
     }
 
     void write_0xi32_filled(std::ostream &os, const uint32_t n) {
-        os << std::hex << std::setw(6) << n << std::dec;
+        os << std::hex << "0x" << n << std::dec;
     }
     void write_index(std::ostream &os, const index_t i) {
-        os << 'i' << i;
+        os << i;
     }
 
     void write_register(std::ostream &os, const reg_t i) {
@@ -954,7 +954,7 @@ public:
     }
 
     void skip() {
-        // std::cout << "skipped: " << look() << std::endl;
+        std::cerr << "skipped: " << look() << std::endl;
         _tokenreader->skip();
     }
 
@@ -1006,23 +1006,33 @@ public:
 
 
     reg_t fetch_register() {
-        skip();
-        return 0;
+        auto s = look_text();
+        if (s.startsWith('r')) {
+            skip();
+            s.removeBetween(0,1);
+            return VM::unicode_to_int(s);
+        } else {
+            Position p = position();
+            throw ErrorSyntactical(p, "register expected");
+        }
     }
 
     uint16_t fetch_i16() {
+        auto s = look_text();
         skip();
-        return 0;
+        return VM::unicode_to_int(s);
     }
 
     uint32_t fetch_i32() {
+        auto s = look_text();
         skip();
-        return 0;
+        return VM::unicode_to_int(s);
     }
 
     label_t fetch_label() {
+        auto s = look_text();
         skip();
-        return 0;
+        return VM::unicode_to_hexint(s);
     }
 
     VMObjectPtr assemble() {
