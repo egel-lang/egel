@@ -941,17 +941,21 @@ public:
         return _tokenreader->look(n);
     }
 
-    void skip() {
-        // std::cout << "skipped: " << look() << std::endl;
-        _tokenreader->skip();
+    token_t tag(int n = 0) {
+        return look(n).tag();
+    }
+
+    icu::UnicodeString look_text(int n = 0) {
+        return look(n).text();
     }
 
     Position position() {
-        return _tokenreader->look().position();
+        return look().position();
     }
 
-    token_t tag(int n = 0) {
-        return _tokenreader->look(n).tag();
+    void skip() {
+        // std::cout << "skipped: " << look() << std::endl;
+        _tokenreader->skip();
     }
 
     void check_token(token_t t) {
@@ -966,7 +970,152 @@ public:
         skip();
     }
  
+    bool is_string(const icu::UnicodeString &s) {
+        return s == look_text();
+    }
+
+    void force_string(const icu::UnicodeString& s) {
+        if (is_string(s)) {
+            skip();
+        } else {
+            Position p = position();
+            throw ErrorSyntactical(p, s + " expected");
+        }
+    }
+
+    std::vector<icu::UnicodeString> force_combinator() {
+        Position p = position();
+        std::vector<icu::UnicodeString> cc;
+        if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) || (tag() == TOKEN_OPERATOR)) {
+            cc.push_back(look_text());
+            skip();
+        } else {
+            throw ErrorSyntactical(p, "combinator expected");
+        }
+        while (tag() == TOKEN_DCOLON) {
+            skip();
+            if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) || (tag() == TOKEN_OPERATOR)) {
+                cc.push_back(look_text());
+                skip();
+            } else {
+                throw ErrorSyntactical(p, "combinator expected");
+            }
+        }
+        return cc;
+    }
+
+
+    reg_t fetch_register() {
+        skip();
+        return 0;
+    }
+
+    uint16_t fetch_i16() {
+        skip();
+        return 0;
+    }
+
+    uint32_t fetch_i32() {
+        skip();
+        return 0;
+    }
+
+    label_t fetch_label() {
+        skip();
+        return 0;
+    }
+
     VMObjectPtr assemble() {
+        std::cerr << "start" << std::endl; // YYY
+        force_string("bytecode");
+        force_string("01");
+        
+        std::cerr << "code" << std::endl; // YYY
+        auto nn = force_combinator();
+        force_string("code");
+
+        Coder coder(_machine);
+        while(!is_string("data")) {
+            skip();
+            Position p = position();
+            if (is_string(STRING_OP_NIL)) {
+                skip();
+                auto r0 = fetch_register();
+                coder.emit_op_nil(r0);
+            } else if (is_string(STRING_OP_MOV)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                coder.emit_op_mov(r0,r1);
+            } else if (is_string(STRING_OP_DATA)) {
+                skip();
+                auto r0 = fetch_register();
+                auto i0 = fetch_i32();
+                coder.emit_op_data(r0,i0);
+            } else if (is_string(STRING_OP_SET)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                auto r2 = fetch_register();
+                coder.emit_op_set(r0,r1,r2);
+            } else if (is_string(STRING_OP_TAKEX)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                auto r2 = fetch_register();
+                auto i0 = fetch_i16();
+                coder.emit_op_takex(r0,r1,r2,i0);
+            } else if (is_string(STRING_OP_SPLIT)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                auto r2 = fetch_register();
+                coder.emit_op_split(r0,r1,r2);
+            } else if (is_string(STRING_OP_ARRAY)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                auto r2 = fetch_register();
+                coder.emit_op_array(r0,r1,r2);
+            } else if (is_string(STRING_OP_CONCATX)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                auto r2 = fetch_register();
+                auto i0 = fetch_i16();
+                coder.emit_op_concatx(r0,r1,r2,i0);
+            } else if (is_string(STRING_OP_TEST)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                coder.emit_op_test(r0,r1);
+            } else if (is_string(STRING_OP_TAG)) {
+                skip();
+                auto r0 = fetch_register();
+                auto r1 = fetch_register();
+                coder.emit_op_tag(r0,r1);
+            } else if (is_string(STRING_OP_FAIL)) {
+                skip();
+                auto l0 = fetch_label();
+                coder.emit_op_fail(l0);
+            } else if (is_string(STRING_OP_RETURN)) {
+                skip();
+                auto r0 = fetch_register();
+                coder.emit_op_return(r0);
+            } else {
+                throw ErrorSyntactical(p, "instruction expected");
+            }
+        }
+
+        std::cerr << "data" << std::endl; // YYY
+        force_string("data");
+
+        while(!is_string("end")) {
+            skip();
+        }
+
+        std::cerr << "end" << std::endl; // YYY
+        force_string("end");
         /*
         auto chars = VM::unicode_to_utf8_chars(_source);
         std::string s(chars);
@@ -988,7 +1137,6 @@ public:
         auto c = read_combinator(in);
 
         // read in code section
-        Code code;
         skip_white(in);
         while (!eol(in) && !is_separator(in)) {
             auto b = read_byte(in);
