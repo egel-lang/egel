@@ -5,12 +5,9 @@ import "prelude.eg"
 using System
 using List
 
-def arglist =
-    [ N -> [ none -> nil | A -> cons A (arglist (N + 1)) ] (arg N) ]
-
 def prompt =
     get_env "EGEL_PS0"
 
 def main =
-    (arglist 0, prompt)
+    (args, prompt)
 
