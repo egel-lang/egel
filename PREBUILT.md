@@ -10,7 +10,7 @@ Prebuilt releases from Github are supplied for your convenience.
 
 ```
     alias egel="LD_LIBRARY_PATH=~/.egel ~/.egel/egel"
-    export EGEL_PATH=.:~/.egel
+    export EGEL_PATH=.:$HOME/.egel
 ```
 
 
