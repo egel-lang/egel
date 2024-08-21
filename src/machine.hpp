@@ -11,7 +11,6 @@
 #include <tuple>
 #include <vector>
 
-#include "assembler.hpp"
 #include "environment.hpp"
 #include "eval.hpp"
 #include "modules.hpp"

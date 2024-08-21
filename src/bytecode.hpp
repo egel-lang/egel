@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "runtime.hpp"
+#include "reader.hpp"
+#include "lexical.hpp"
 
 namespace egel {
 
@@ -808,7 +810,7 @@ public:
         char old_fill = os.fill();
 
         // write header
-        os << "#00 byte code" << std::endl;
+        os << "bytecode 01" << std::endl;
 
         // write name
         os << _name << std::endl;
@@ -895,6 +897,9 @@ public:
             os << std::hex << std::setw(6) << n << std::dec << " ";
             os << _data[n] << " " << _vm->get_data(_data[n]) << std::endl;
         }
+        // write end
+        os << "end" << std::endl;
+
         os.flags(old_flags);
         os.precision(old_prec);
         os.fill(old_fill);
@@ -916,6 +921,148 @@ private:
 inline void write_assembly(std::ostream &os, const VMObjectBytecode& o) {
     Disassembler d(o);
     d.write(os);
+};
+
+class Assembler {
+public:
+    Assembler(VM *vm, const icu::UnicodeString s) : _machine(vm), _source(s) {
+        StringCharReader r = StringCharReader("unknown", _source);
+        _tokenreader = tokenize_from_reader(r);
+    }
+
+    ~Assembler() {
+    }
+
+    VM *machine() {
+        return _machine;
+    }
+
+    Token look(int n = 0) {
+        return _tokenreader->look(n);
+    }
+
+    void skip() {
+        // std::cout << "skipped: " << look() << std::endl;
+        _tokenreader->skip();
+    }
+
+    Position position() {
+        return _tokenreader->look().position();
+    }
+
+    token_t tag(int n = 0) {
+        return _tokenreader->look(n).tag();
+    }
+
+    void check_token(token_t t) {
+        if (tag() != t) {
+            Position p = position();
+            throw ErrorSyntactical(p, token_text(t) + " expected");
+        };
+    }
+
+    void force_token(token_t t) {
+        check_token(t);
+        skip();
+    }
+ 
+    VMObjectPtr assemble() {
+        /*
+        auto chars = VM::unicode_to_utf8_chars(_source);
+        std::string s(chars);
+        auto in = std::stringstream(s);
+
+        auto version = read_byte(in);
+        if (version != BYTECODEVERSION)
+            throw machine()->create_text("wrong bytecode version");
+
+        auto tag = read_byte(in);
+        if (tag == DATA_TAG) {
+            skip_white(in);
+            auto t = read_combinator(in);
+            return machine()->create_data(t);
+        }
+        // else XXX
+
+        skip_white(in);
+        auto c = read_combinator(in);
+
+        // read in code section
+        Code code;
+        skip_white(in);
+        while (!eol(in) && !is_separator(in)) {
+            auto b = read_byte(in);
+            code.push_back(b);
+        }
+
+        // read in data section
+        Data data;
+        skip_white(in);
+        vm_int_t z;
+        while (!eol(in) && is_digit(in)) {  // I hate this
+            in >> z;
+            if (data.size() != (unsigned long)z)
+                throw machine()->create_text(
+                    icu::UnicodeString("wrong data entry count ") +
+                    VM::unicode_from_int(z));
+            skip_white(in);
+            switch (look(in)) {
+                case 'i': {
+                    skip(in);
+                    skip(in);
+                    auto n = read_int(in);
+                    auto o = machine()->create_integer(n);
+                    auto d = machine()->define_data(o);
+                    data.push_back(d);
+                } break;
+                case 'f': {
+                    skip(in);
+                    skip(in);
+                    auto f = read_float(in);
+                    auto o = machine()->create_float(f);
+                    auto d = machine()->define_data(o);
+                    data.push_back(d);
+                } break;
+                case 'c': {
+                    skip(in);
+                    skip(in);
+                    auto c = read_char(in);
+                    auto o = machine()->create_char(c);
+                    auto d = machine()->define_data(o);
+                    data.push_back(d);
+                } break;
+                case 't': {
+                    skip(in);
+                    skip(in);
+                    auto t = read_text(in);
+                    auto o = machine()->create_text(t);
+                    auto d = machine()->define_data(o);
+                    data.push_back(d);
+                } break;
+                case 'o': {
+                    skip(in);
+                    skip(in);
+                    auto t = read_combinator(in);
+                    auto o = machine()->get_combinator(t);
+                    auto d = machine()->define_data(o);
+                    data.push_back(d);
+                } break;
+                default: {
+                    throw machine()->create_text("panic: cannot decode data");
+                } break;
+            }
+            skip_white(in);
+        }
+        free(chars);
+        return VMObjectBytecode::create(_machine, code, data, c);
+        */
+        return _machine->create_none();
+    }
+
+private:
+    VM *_machine;
+    icu::UnicodeString _source;
+    TokenReaderPtr _tokenreader;
 };
 
 }  // namespace egel
