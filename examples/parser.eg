@@ -81,8 +81,7 @@ def parse_expression =
     )
 
 def parse =
-    [ P LL ->
-        search P LL
+    [ P -> search P 
            [ T LL -> T ]
            [ F LL -> throw (format "parse failed with {} at {}" F LL) ]
            [ E LL -> throw (format "parse error {} at {}" E LL) ] ]
