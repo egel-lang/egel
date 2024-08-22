@@ -25,6 +25,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ stratify float printing/lexing
 + drop client/server for netcat
 + blank slate mode
 + rewrite assembler

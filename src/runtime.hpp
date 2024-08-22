@@ -805,7 +805,7 @@ public:
 
     static icu::UnicodeString unicode_from_float(const vm_float_t &f) {
         std::stringstream ss;
-        ss << f;
+        ss << fmt::format("{:#}", f);
         icu::UnicodeString u(ss.str().c_str());
         return u;
     }
