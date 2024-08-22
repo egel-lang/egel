@@ -26,6 +26,7 @@ A list of all major changes between versions of the interpreter.
 ## The bleeding, cutting edge
 
 + fix regression bugs in os
++ blank slate mode
 + rewrite assembler
 + github actions
 + default submodules to latest stable version
