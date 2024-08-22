@@ -25,7 +25,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
-+ fix regression bugs in os
++ drop client/server for netcat
 + blank slate mode
 + rewrite assembler
 + github actions
