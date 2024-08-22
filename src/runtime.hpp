@@ -997,7 +997,7 @@ public:
     }
 
     void render(std::ostream &os) const override {
-        std::string s = fmt::format("{}", value());
+        std::string s = fmt::format("{:#}", value());
         os << s;
     }
 
