@@ -21,9 +21,9 @@ def listener =
 def spawn =
     [ SERVER ->
         let CHAN = accept SERVER in
-        print "spawned a listener\n";
-        let _ = par (spawn SERVER) (listener CHAN) in
-            none ]
+        let F1 = async [_ -> listener CHAN] in
+        let F0 = async [_ -> spawn SERVER] in
+            await F0; await F1 ]
         
 def main =
     let SERVER = server 5000 5 in spawn SERVER

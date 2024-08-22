@@ -16,14 +16,13 @@ terms.
     [(X Y) -> ... ]
 ```
 
-## Forget to include the prelude in interactie mode
+## Forget to open namespace in interactie mode
 
-Egel starts off with a blank slate, i.e., no combinators are defined 
-initially in interactive mode.
+In interactive mode the prelude is loaded and the System and List
+namespaces are opened. For the other namespace use:
 
 ```
-    >> import "prelude.eg"
-    >> using System;; using List;; using String;; using Math
+    >> using String;; using Math
 ```
 
 ## No short-circuited boolean operators

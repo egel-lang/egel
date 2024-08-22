@@ -84,6 +84,12 @@ static option_t options[] = {
         "evaluate command",
     },
     {
+        "-b",
+        "--blank",
+        OPTION_NONE,
+        "blank slate mode",
+    },
+    {
         "-T",
         "--tokens",
         OPTION_NONE,
@@ -260,10 +266,14 @@ int main(int argc, char *argv[]) {
         };
     };
 
+    bool blank_state = false;
     // check for flags
     for (auto &p : pp) {
         if (p.first == ("-")) {
             oo->set_interactive(true);
+        };
+        if (p.first == ("-b")) {
+            blank_state = true;
         };
         if (p.first == ("-T")) {
             oo->set_tokenize(true);
@@ -335,15 +345,17 @@ int main(int argc, char *argv[]) {
     }
 
     // start either interactive or batch mode
+    icu::UnicodeString populate = "import \"prelude.eg\";;using System;;using List";
     if (command) {
         try {
-            m->eval_command(icu::UnicodeString("using System"));
+            if (!blank_state) m->eval_command(icu::UnicodeString(populate));
             m->eval_command(e);
         } catch (Error &e) {
             std::cerr << e << std::endl;
             return (EXIT_FAILURE);
         }
     } else if ((fn == "") || oo->interactive()) {
+        if (!blank_state) m->eval_command(icu::UnicodeString(populate));
         m->eval_interactive();
     } else {
         m->eval_main();

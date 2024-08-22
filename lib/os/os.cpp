@@ -824,10 +824,6 @@ protected:
     int _sockfd = 0;
 };
 
-#define SERVER_OBJECT_TEST(o, sym) \
-    ((machine()->is_opaque(o)) && (VMObjectOpaque::symbol(o) == sym))
-#define SERVER_OBJECT_CAST(o) (std::static_pointer_cast<ServerObject>(o))
-
 // ## OS::accept serverobject - accept connections
 class Accept : public Monadic {
 public:
@@ -856,7 +852,7 @@ public:
             auto in = machine()->get_integer(arg1);
 
             auto so = ServerObject::create(machine());
-            SERVER_OBJECT_CAST(so)->bind(port, in);
+            ServerObject::cast(so)->bind(port, in);
 
             return so;
         } else {
