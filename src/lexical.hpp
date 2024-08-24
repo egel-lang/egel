@@ -138,13 +138,6 @@ public:
         _index = 0;
     }
 
-    /*
-    Tokens(const Tokens &v) {
-        _index = 0;
-        _tokens = v._tokens;
-    }
-    */
-
     Token look(unsigned int n = 0) {
         if (_index + n < _tokens.size()) {
             return _tokens[_index + n];
@@ -169,10 +162,13 @@ public:
         _tokens.push_back(t);
     }
 
-    void map(std::function<void(Token)> f) {
+    void map(std::function<Token(Token)> f) {
+        std::vector<Token> tt;
         for (Token t:_tokens) {
-            f(t);
+            tt.push_back(f(t));
         }
+        _tokens = tt;
+        _index = 0;
     }
 
     void filter(std::function<bool(Token)> p) {
@@ -681,15 +677,6 @@ static reserved_t reserved_table[]{
     },
 };
 
-Token adjust_reserved(Token &&t) {
-    for (auto &tt : reserved_table) {
-        if (t.text() == tt.text) {
-            t.set_tag(tt.tag);
-            return t;
-        }
-    }
-    return t;
-}
 
 icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
     icu::UnicodeString s1;
@@ -959,7 +946,7 @@ Tokens tokenize_from_reader(CharReader &reader) {
                 reader.skip();
                 c = reader.look();
             };
-            token_writer.push(adjust_reserved(Token(TOKEN_OPERATOR, p, str)));
+            token_writer.push((Token(TOKEN_OPERATOR, p, str)));
         } else if (is_uppercase(c)) {
             icu::UnicodeString str = icu::UnicodeString("");
             while (is_letter(c)) {
@@ -967,7 +954,7 @@ Tokens tokenize_from_reader(CharReader &reader) {
                 reader.skip();
                 c = reader.look();
             };
-            token_writer.push(adjust_reserved(Token(TOKEN_UPPERCASE, p, str)));
+            token_writer.push((Token(TOKEN_UPPERCASE, p, str)));
         } else if (is_lowercase(c)) {
             icu::UnicodeString str = icu::UnicodeString("");
             while (is_letter(c)) {
@@ -975,7 +962,7 @@ Tokens tokenize_from_reader(CharReader &reader) {
                 reader.skip();
                 c = reader.look();
             };
-            token_writer.push(adjust_reserved(Token(TOKEN_LOWERCASE, p, str)));
+            token_writer.push((Token(TOKEN_LOWERCASE, p, str)));
         } else if (is_underscore(
                        c)) {  // XXX: push a lowercase for an underscore?
             icu::UnicodeString str = icu::UnicodeString("");
@@ -1263,7 +1250,7 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         c = reader.look();
                     };
                     token_writer.push(
-                        adjust_reserved(Token(TOKEN_OPERATOR, p, str)));
+                        (Token(TOKEN_OPERATOR, p, str)));
                 } else if (is_uppercase(c)) {
                     icu::UnicodeString str = icu::UnicodeString("");
                     while (is_letter(c)) {
@@ -1272,7 +1259,7 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         c = reader.look();
                     };
                     token_writer.push(
-                        adjust_reserved(Token(TOKEN_UPPERCASE, p, str)));
+                        (Token(TOKEN_UPPERCASE, p, str)));
                 } else if (is_lowercase(c)) {
                     icu::UnicodeString str = icu::UnicodeString("");
                     while (is_letter(c)) {
@@ -1281,7 +1268,7 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         c = reader.look();
                     };
                     token_writer.push(
-                        adjust_reserved(Token(TOKEN_LOWERCASE, p, str)));
+                        (Token(TOKEN_LOWERCASE, p, str)));
                 } else if (is_underscore(c)) {  // XXX: push a lowercase for an
                                                 // underscore?
                     icu::UnicodeString str = icu::UnicodeString("");
@@ -1339,17 +1326,19 @@ handle_float_error: {
 }
 }
 
-void sanitize(Tokens tt) {
+void sanitize(Tokens &tt) {
+    tt.filter([](Token t) {
+         return (t.tag() != TOKEN_WHITESPACE) && (t.tag() != TOKEN_COMMENT);
+    });
+
     tt.map([](Token t) {
         for (auto &tt : reserved_table) {
             if (t.text() == tt.text) {
-            t.set_tag(tt.tag);
-            }
+                t.set_tag(tt.tag);
+                break;
+            } 
         }
-    });
-
-    tt.filter([](Token t) {
-         return (t.tag() != TOKEN_WHITESPACE) && (t.tag() != TOKEN_COMMENT);
+        return t;
     });
 }
 
