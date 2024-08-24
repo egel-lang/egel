@@ -949,8 +949,34 @@ public:
         _eval->eval_interactive();
     }
 
+    VMObjectPtr position_to_object(const Position &p) {
+        auto s = p.resource();
+        auto r = p.row();
+        auto c = p.column();
+
+        return create_tuple(create_text(s), create_integer(r), create_integer(c));
+    }
+
+    VMObjectPtr token_to_object(const Token &t) {
+        auto tag = token_text(t.tag());
+        auto pos = t.position();
+        auto txt = t.text();
+
+        return create_tuple(position_to_object(pos), create_text(tag), create_text(txt));
+    }
+
     VMObjectPtr tokenize(const icu::UnicodeString &uri, const icu::UnicodeString &src) {
-        return create_none();
+        StringCharReader r = StringCharReader(uri, src);
+        Tokens tt = tokenize_from_reader(r);
+        std::vector<VMObjectPtr> oo;
+        
+        while (tt.look().tag() != TOKEN_EOF) {
+            auto o = token_to_object(tt.look());
+            oo.push_back(o);
+            tt.skip();
+        };
+
+        return to_list(oo);
     }
 
     bool is_module(const VMObjectPtr &m) override {
