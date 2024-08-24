@@ -1340,6 +1340,17 @@ handle_float_error: {
 }
 
 void sanitize(Tokens tt) {
+    tt.map([](Token t) {
+        for (auto &tt : reserved_table) {
+            if (t.text() == tt.text) {
+            t.set_tag(tt.tag);
+            }
+        }
+    });
+
+    tt.filter([](Token t) {
+         return (t.tag() != TOKEN_WHITESPACE) && (t.tag() != TOKEN_COMMENT);
+    });
 }
 
 }  // namespace egel
