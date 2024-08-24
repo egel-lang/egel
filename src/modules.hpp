@@ -530,6 +530,7 @@ public:
     void syntactical() override {
         StringCharReader r = StringCharReader(get_filename(), _source);
         Tokens tt = tokenize_from_reader(r);
+        sanitize(tt);
 
         if (get_options()->only_tokenize()) {
             while (tt.look().tag() != TOKEN_EOF) {
@@ -681,6 +682,7 @@ public:
     void syntactical() override {
         StringCharReader r = StringCharReader(get_filename(), _source);
         Tokens tt = tokenize_from_egg_reader(r);
+        sanitize(tt);
 
         if (get_options()->only_tokenize()) {
             while (tt.look().tag() != TOKEN_EOF) {

@@ -949,6 +949,7 @@ public:
     Assembler(VM *vm, const icu::UnicodeString s) : _machine(vm), _source(s) {
         StringCharReader r = StringCharReader("unknown", _source);
         _tokenreader = tokenize_from_reader(r);
+        sanitize(_tokenreader);
     }
 
     ~Assembler() {

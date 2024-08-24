@@ -1338,4 +1338,8 @@ handle_float_error: {
     throw ErrorLexical(p, "error in float");
 }
 }
+
+void sanitize(Tokens tt) {
+}
+
 }  // namespace egel
