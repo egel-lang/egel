@@ -959,7 +959,7 @@ public:
     }
 
     Token look(int n = 0) {
-        return _tokenreader->look(n);
+        return _tokenreader.look(n);
     }
 
     token_t tag(int n = 0) {
@@ -976,7 +976,7 @@ public:
 
     void skip() {
         // std::cerr << "skipped: " << look() << std::endl;
-        _tokenreader->skip();
+        _tokenreader.skip();
     }
 
     void check_token(token_t t) {
@@ -1219,7 +1219,7 @@ public:
 private:
     VM *_machine;
     icu::UnicodeString _source;
-    TokenReaderPtr _tokenreader;
+    Tokens _tokenreader;
 };
 
 }  // namespace egel

@@ -12,25 +12,25 @@ namespace egel {
 
 class Parser {
 public:
-    Parser(TokenReaderPtr &r) {
+    Parser(Tokens &r) {
         _tokenreader = r;
     }
 
     Token look(int n = 0) {
-        return _tokenreader->look(n);
+        return _tokenreader.look(n);
     }
 
     void skip() {
         // std::cout << "skipped: " << look() << std::endl;
-        _tokenreader->skip();
+        _tokenreader.skip();
     }
 
     Position position() {
-        return _tokenreader->look().position();
+        return _tokenreader.look().position();
     }
 
     token_t tag(int n = 0) {
-        return _tokenreader->look(n).tag();
+        return _tokenreader.look(n).tag();
     }
 
     void check_token(token_t t) {
@@ -939,12 +939,12 @@ protected:
     }
 
 private:
-    TokenReaderPtr _tokenreader;
+    Tokens _tokenreader;
 };
 
 class LineParser : public Parser {
 public:
-    LineParser(TokenReaderPtr &r) : Parser(r) {
+    LineParser(Tokens &r) : Parser(r) {
     }
 
     ptr<Ast> parse_command() {
@@ -984,9 +984,9 @@ public:
 ptrs<Ast> imports(const ptr<Ast> &a);  // XXX: didn't know where to place this
 ptrs<Ast> values(const ptr<Ast> &a);   // XXX: didn't know where to place this
 
-ptr<Ast> parse(TokenReaderPtr &r);
+ptr<Ast> parse(Tokens &r);
 
-ptr<Ast> parse_line(TokenReaderPtr &r);
+ptr<Ast> parse_line(Tokens &r);
 
 class Imports : public Visit {
 public:
@@ -1058,13 +1058,13 @@ ptrs<Ast> values(const ptr<Ast> &a) {
     return values.values(a);
 }
 
-ptr<Ast> parse(TokenReaderPtr &r) {
+ptr<Ast> parse(Tokens &r) {
     Parser p(r);
     auto a = p.parse();
     return a;
 }
 
-ptr<Ast> parse_line(TokenReaderPtr &r) {
+ptr<Ast> parse_line(Tokens &r) {
     LineParser p(r);
     auto a = p.parse_line();
     return a;

@@ -386,7 +386,7 @@ public:
         // parse the line
         ptr<Ast> aa;
         StringCharReader r = StringCharReader("internal", in);
-        TokenReaderPtr tt = tokenize_from_reader(r);
+        Tokens tt = tokenize_from_reader(r);
         aa = egel::parse_line(tt);
 
         // set up the handlers

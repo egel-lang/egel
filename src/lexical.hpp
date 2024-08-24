@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <functional>
 
 #include "constants.hpp"
 #include "error.hpp"
@@ -131,42 +132,18 @@ private:
     icu::UnicodeString _text;
 };
 
-class TokenReader;
-using TokenReaderPtr = std::shared_ptr<TokenReader>;
-
-class TokenReader {
+class Tokens {
 public:
-    virtual Token look(unsigned int n = 0) = 0;
-    virtual void skip() = 0;
-
-    virtual unsigned int get_cursor() = 0;
-    virtual void set_cursor(unsigned int c) = 0;
-
-    virtual TokenReaderPtr clone_reader() const = 0;
-};
-
-class TokenWriter;
-using TokenWriterPtr = std::shared_ptr<TokenWriter>;
-
-class TokenWriter {
-public:
-    virtual void push(const Token &token) = 0;
-    virtual TokenReaderPtr clone_reader() const = 0;
-};
-
-class TokenVector : public TokenReader, public TokenWriter {
-public:
-    TokenVector() {
+    Tokens() {
         _index = 0;
     }
 
-    TokenVector(const TokenVector &v) {
+    /*
+    Tokens(const Tokens &v) {
         _index = 0;
         _tokens = v._tokens;
     }
-
-    virtual ~TokenVector() {  // keep the compiler happy
-    }
+    */
 
     Token look(unsigned int n = 0) {
         if (_index + n < _tokens.size()) {
@@ -192,12 +169,10 @@ public:
         _tokens.push_back(t);
     }
 
-    TokenReaderPtr clone_reader() const {
-        return TokenReaderPtr(new TokenVector(*this));
+    void map(std::function<void(Token)> f) {
     }
 
-    TokenWriterPtr clone_writer() const {
-        return TokenWriterPtr(new TokenVector(*this));
+    void filter(std::function<bool(Token)> p) {
     }
 
 private:
@@ -205,7 +180,7 @@ private:
     unsigned int _index;
 };
 
-TokenReaderPtr tokenize_from_reader(CharReader &reader);
+Tokens tokenize_from_reader(CharReader &reader);
 
 // XXX: everything below this should be module private
 
@@ -748,8 +723,8 @@ icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
     return s1;
 }
 
-TokenReaderPtr tokenize_from_reader(CharReader &reader) {
-    TokenVector token_writer = TokenVector();
+Tokens tokenize_from_reader(CharReader &reader) {
+    Tokens token_writer = Tokens();
 
     while (!reader.end() && is_whitespace(reader.look())) reader.skip();
 
@@ -1008,7 +983,7 @@ TokenReaderPtr tokenize_from_reader(CharReader &reader) {
         token_writer.push(Token(TOKEN_EOF, p, icu::UnicodeString("EOF")));
     }
 
-    return token_writer.clone_reader();
+    return token_writer;
 
 handle_error: {
     Position p = reader.position();
@@ -1037,8 +1012,8 @@ handle_float_error: {
 }
 }
 
-TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
-    TokenVector token_writer = TokenVector();
+Tokens tokenize_from_egg_reader(CharReader &reader) {
+    Tokens token_writer = Tokens();
 
     bool text = true;
     while (!reader.end()) {
@@ -1324,7 +1299,7 @@ TokenReaderPtr tokenize_from_egg_reader(CharReader &reader) {
         token_writer.push(Token(TOKEN_EOF, p, icu::UnicodeString("EOF")));
     }
 
-    return token_writer.clone_reader();
+    return token_writer;
 
 handle_error: {
     Position p = reader.position();

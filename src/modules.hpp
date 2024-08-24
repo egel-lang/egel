@@ -529,12 +529,12 @@ public:
 
     void syntactical() override {
         StringCharReader r = StringCharReader(get_filename(), _source);
-        TokenReaderPtr tt = tokenize_from_reader(r);
+        Tokens tt = tokenize_from_reader(r);
 
         if (get_options()->only_tokenize()) {
-            while (tt->look().tag() != TOKEN_EOF) {
-                std::cout << tt->look() << " ";
-                tt->skip();
+            while (tt.look().tag() != TOKEN_EOF) {
+                std::cout << tt.look() << " ";
+                tt.skip();
             };
             std::cout << std::endl;
             exit(EXIT_SUCCESS);
@@ -680,12 +680,12 @@ public:
 
     void syntactical() override {
         StringCharReader r = StringCharReader(get_filename(), _source);
-        TokenReaderPtr tt = tokenize_from_egg_reader(r);
+        Tokens tt = tokenize_from_egg_reader(r);
 
         if (get_options()->only_tokenize()) {
-            while (tt->look().tag() != TOKEN_EOF) {
-                std::cout << tt->look() << " ";
-                tt->skip();
+            while (tt.look().tag() != TOKEN_EOF) {
+                std::cout << tt.look() << " ";
+                tt.skip();
             };
             std::cout << std::endl;
             exit(EXIT_SUCCESS);
