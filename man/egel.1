@@ -93,6 +93,21 @@ The interpreter implements a term rewriter though has mutable references\. Cycle
 .IP
 \fBlet X = ref 0 in set_ref X 1; get_ref X\fR
 .IP "" 0
+.SS "Declarations"
+Declarations define combinators\.
+.IP "\(bu" 4
+A \fBdata\fR declaration introduces constants\.
+.IP
+\fBdata leaf, branch\fR
+.IP "\(bu" 4
+A \fBdef\fR declaration introduces a combinator\.
+.IP
+\fBdef fac = [0 \-> 1 | N \-> N * fac (N \- 1)\fR
+.IP "\(bu" 4
+A \fBval\fR declaration introduces a combinator who's body is evaluated prior to it's definition\.
+.IP
+\fBval global = ref 3\.14\fR
+.IP "" 0
 .SS "Modules"
 A module is a series of combinator declarations possibly encapsulated in a namespace\. All combinators are named lowercase, there is some provisional support for unicode\. Modules may import each other\. The \fBmain\fR combinator of the top module drives all computation when present\.
 .P

@@ -108,6 +108,23 @@ Egel code consist of expression which are evaluated eagerly.
 
    `let X = ref 0 in set_ref X 1; get_ref X`
 
+### Declarations
+
+Declarations define combinators.
+
+ * A `data` declaration introduces constants.
+
+   `data leaf, branch`
+
+ * A `def` declaration introduces a combinator.
+
+    `def fac = [0 -> 1 | N -> N * fac (N - 1)`
+
+ * A `val` declaration introduces a combinator who's body is
+   evaluated prior to it's definition.
+
+   `val global = ref 3.14`
+
 ### Modules
 
 A module is a series of combinator declarations possibly encapsulated 

@@ -118,12 +118,12 @@
 </table>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
+<p>Egel is an untyped concurrent functional scripting language based on
+eager combinator rewriting with a concise but remarkably powerful 
+syntax.</p>
 
-<p>Egel is an untyped concurrent functional scripting language based on eager combinator
-rewriting with a concise but remarkably powerful syntax.</p>
-
-<p>Egel's basic functionality can be extended with your own modules written in C++.
-Those modules are dynamically loaded.</p>
+<p>Egel's basic functionality can be extended with your own modules 
+written in C++.  Those modules are dynamically loaded.</p>
 
 <h2 id="OPTIONS">OPTIONS</h2>
 
@@ -152,7 +152,8 @@ Those modules are dynamically loaded.</p>
 
 <h2 id="TUTORIAL">TUTORIAL</h2>
 
-<p>Egel is an expression language and the interpreter a symbolic evaluator.</p>
+<p>Egel is an expression language and the interpreter a symbolic 
+evaluator.</p>
 
 <h3 id="Expressions">Expressions</h3>
 
@@ -160,7 +161,8 @@ Those modules are dynamically loaded.</p>
 
 <ul>
   <li>
-    <p>Basic primitives are integers, floats, unicode characters, and unicode strings.</p>
+    <p>Basic primitives are integers, floats, unicode characters, and 
+unicode strings.</p>
 
     <p><code>0 1 2</code> , <code>0.0 3.14 -1.2</code> , <code>'a'</code> <code>'∀'</code> , or <code>"Hello World!"</code></p>
   </li>
@@ -170,11 +172,13 @@ Those modules are dynamically loaded.</p>
     <p><code>(0 1)</code> is just as legal as <code>(cons 'a' nil)</code></p>
   </li>
   <li>
-    <p>Rewriting is done with the pattern-matching anonymous abstraction, uppercase letters denote variables.</p>
+    <p>Rewriting is done with the pattern-matching anonymous abstraction, 
+uppercase letters denote variables.</p>
 
     <p><code>[ X -&gt; X ]</code> , <code>[ (cons HEAD TAIL) -&gt; HEAD ]</code></p>
 
-    <p>The abstraction consists of a number of matches, it may be variadic without penalty.</p>
+    <p>The abstraction consists of a number of matches, it may be variadic 
+without penalty.</p>
 
     <p><code>[ X Y -&gt; 2 | X -&gt; 1 | -&gt; 0]</code></p>
 
@@ -198,7 +202,8 @@ Those modules are dynamically loaded.</p>
     <p><code>print (1+2); "done"</code></p>
   </li>
   <li>
-    <p>Exception handling is supported, any value may be thrown and caught.</p>
+    <p>Exception handling is supported, any value may be thrown and 
+caught.</p>
 
     <p><code>try 1 + throw "failure" catch [ EXC -&gt; print EXC ]</code></p>
   </li>
@@ -208,30 +213,57 @@ Those modules are dynamically loaded.</p>
     <p><code>(do ((+) 1) |&gt; foldl (*) 1) (from_to 0 4)</code></p>
   </li>
   <li>
-    <p>Parallell programming is achieved  through the <code>async/await</code> combinators.
+    <p>Parallell programming is achieved  through the <code>async/await</code> 
+combinators.
 Asynchronous programs start threads that return future objects.</p>
 
     <p><code>let F = async [ _ -&gt; fib 35 ] in await F</code></p>
   </li>
   <li>
-    <p>Formatting strings is handled with the <code>format</code> combinator, see <a href="https://fmt.dev/" data-bare-link="true">https://fmt.dev/</a>.</p>
+    <p>Formatting strings is handled with the <code>format</code> combinator, see
+<a href="https://fmt.dev/" data-bare-link="true">https://fmt.dev/</a>.</p>
 
     <p><code>print (format "Hello {}" "world")</code></p>
   </li>
   <li>
-    <p>The interpreter implements a term rewriter though has mutable references.
+    <p>The interpreter implements a term rewriter though has mutable 
+references.
 Cycles won't be garbage collected.</p>
 
     <p><code>let X = ref 0 in set_ref X 1; get_ref X</code></p>
   </li>
 </ul>
 
+<h3 id="Declarations">Declarations</h3>
+
+<p>Declarations define combinators.</p>
+
+<ul>
+  <li>
+    <p>A <code>data</code> declaration introduces constants.</p>
+
+    <p><code>data leaf, branch</code></p>
+  </li>
+  <li>
+    <p>A <code>def</code> declaration introduces a combinator.</p>
+
+    <p><code>def fac = [0 -&gt; 1 | N -&gt; N * fac (N - 1)</code></p>
+  </li>
+  <li>
+    <p>A <code>val</code> declaration introduces a combinator who's body is
+evaluated prior to it's definition.</p>
+
+    <p><code>val global = ref 3.14</code></p>
+  </li>
+</ul>
+
 <h3 id="Modules">Modules</h3>
 
-<p>A module is a series of combinator declarations possibly encapsulated in a namespace.
-All combinators are named lowercase, there is some provisional support for unicode.
-Modules may import each other. The <code>main</code> combinator of the top module drives
-all computation when present.</p>
+<p>A module is a series of combinator declarations possibly encapsulated 
+in a namespace.  All combinators are named lowercase, there is some 
+provisional support for unicode.  Modules may import each other. The 
+<code>main</code> combinator of the top module drives all computation when 
+present.</p>
 
 <p>Tying it all together:</p>
 
@@ -255,7 +287,8 @@ def main = Fibonacci::fib (3+2)
 </code></pre>
 <h2 id="EXAMPLES">EXAMPLES</h2>
 
-<p>There are three modes in which the interpreter is used: batch, interactive, or command mode.</p>
+<p>There are three modes in which the interpreter is used: batch, 
+interactive, or command mode.</p>
 
 <p>In batch mode, just supply the top module with a <code>main</code> combinator.</p>
 
@@ -263,7 +296,8 @@ def main = Fibonacci::fib (3+2)
 Hello world!
 </code></pre>
 
-<p>The interpreter will start in interactive mode when invoked without a module argument.</p>
+<p>The interpreter will start in interactive mode when invoked without a 
+module argument.</p>
 
 <pre><code>$ egel
 &gt; using System
@@ -271,7 +305,8 @@ Hello world!
 2
 </code></pre>
 
-<p>Supply a command to use <code>egel -e</code> as a simple calculator. Double semicolons are separators.</p>
+<p>Supply a command to use <code>egel -e</code> as a simple calculator. Double 
+semicolons are separators.</p>
 
 <pre><code>$ egel fib.eg -e "using Fibonacci;; fib 3"
 5
@@ -307,7 +342,8 @@ Hello world!
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>MIT License (c) 2017 M.C.A. (Marco) Devillers <a href="mailto:marco.devillers@gmail.com" data-bare-link="true">marco.devillers@gmail.com</a></p>
+<p>MIT License (c) 2017 M.C.A. (Marco) Devillers
+<a href="mailto:marco.devillers@gmail.com" data-bare-link="true">marco.devillers@gmail.com</a></p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
