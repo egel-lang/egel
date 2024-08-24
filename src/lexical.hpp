@@ -1206,40 +1206,41 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         // handle '.'
                         str += c;
                         reader.skip();
-                        if (reader.end()) goto handle_float_error;
-                        c = reader.look();
-                        // handle digits
-                        if (!is_digit(c)) goto handle_float_error;
-                        while (is_digit(c)) {
-                            str += c;
-                            reader.skip();
-                            c = reader.look();
-                        };
-                        // any 'e' occurence signals a forced floating point
-                        // with an exponent
-                        if (!is_exponent(c)) {
+                        if (reader.end()) {
                             token_writer.push(Token(TOKEN_FLOAT, p, str));
                         } else {
-                            // handle 'e'
-                            str += c;
-                            reader.skip();
-                            if (reader.end()) goto handle_float_error;
                             c = reader.look();
-                            // handle leading '-'
-                            if (is_minus(c)) {
-                                str += c;
-                                reader.skip();
-                                if (reader.end()) goto handle_float_error;
-                                c = reader.look();
-                            }
                             // handle digits
-                            if (!is_digit(c)) goto handle_float_error;
                             while (is_digit(c)) {
                                 str += c;
                                 reader.skip();
                                 c = reader.look();
                             };
-                            token_writer.push(Token(TOKEN_FLOAT, p, str));
+                            // any 'e' occurence signals a forced floating point with an
+                            // exponent
+                            if (!is_exponent(c)) {
+                                token_writer.push(Token(TOKEN_FLOAT, p, str));
+                            } else {
+                                // handle 'e'
+                                str += c;
+                                reader.skip();
+                                if (reader.end()) goto handle_float_error;
+                                c = reader.look();
+                                // handle leading '-'
+                                if (is_minus(c)) {
+                                    str += c;
+                                    reader.skip();
+                                    if (reader.end()) goto handle_float_error;
+                                    c = reader.look();
+                                }
+                                // handle digits
+                                while (is_digit(c)) {
+                                    str += c;
+                                    reader.skip();
+                                    c = reader.look();
+                                };
+                                token_writer.push(Token(TOKEN_FLOAT, p, str));
+                            }
                         }
                     }
                 } else if (is_operator(c)) {
