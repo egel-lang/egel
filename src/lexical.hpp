@@ -19,6 +19,10 @@ enum token_t {
     TOKEN_ERROR,
     TOKEN_EOF,
 
+    //  whitespace and comments
+    TOKEN_WHITESPACE,
+    TOKEN_COMMENT,
+
     //  delimiters
     TOKEN_DOT,
     TOKEN_COMMA,
@@ -367,6 +371,15 @@ static constexpr token_text_t token_text_table[]{
     {
         TOKEN_EOF,
         STRING_EOF,
+    },
+    // whitespace and comments
+    {
+        TOKEN_WHITESPACE,
+        STRING_WHITESPACE,
+    },
+    {
+        TOKEN_COMMENT,
+        STRING_COMMENT,
     },
 
     //  delimiters

@@ -182,6 +182,8 @@ inline constexpr auto STRING_SELECT = "select";
 
 inline constexpr auto STRING_EOF = "end of file";
 inline constexpr auto STRING_ERROR = "error";
+inline constexpr auto STRING_WHITESPACE = "whitespace";
+inline constexpr auto STRING_COMMENT = "comment";
 inline constexpr auto STRING_EQ = "=";
 inline constexpr auto STRING_INTEGER = "integer";
 inline constexpr auto STRING_HEXINTEGER = "hexadecimal integer";
