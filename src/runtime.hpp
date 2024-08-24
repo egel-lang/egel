@@ -620,6 +620,9 @@ public:
     virtual void eval_main() = 0;
     virtual void eval_interactive() = 0;
 
+    // expose the tokenizer
+    virtual VMObjectPtr tokenize(const icu::UnicodeString &uri, const icu::UnicodeString &src) = 0;
+
     // module inspection
     virtual VMObjectPtr query_modules() = 0;
     virtual bool is_module(const VMObjectPtr &m) = 0;

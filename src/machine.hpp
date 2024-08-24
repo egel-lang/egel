@@ -949,6 +949,10 @@ public:
         _eval->eval_interactive();
     }
 
+    VMObjectPtr tokenize(const icu::UnicodeString &uri, const icu::UnicodeString &src) {
+        return create_none();
+    }
+
     bool is_module(const VMObjectPtr &m) override {
         return VMModule::is_module(m);
     }

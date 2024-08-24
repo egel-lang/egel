@@ -293,6 +293,21 @@ public:
     }
 };
 
+class Tokenize: public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, Tokenize, "System", "tokenize");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr& arg1) const override {
+        if (machine()->is_text(arg0) && machine()->is_text(arg1)) {
+            auto s0 = machine()->get_text(arg0);
+            auto s1 = machine()->get_text(arg1);
+            return machine()->tokenize(s0, s1);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 /*
 //## System::symbols - list all symbols in the runtime
 class Symbols: public Medadic {
@@ -361,6 +376,8 @@ std::vector<VMObjectPtr> builtin_runtime(VM *vm) {
 
     oo.push_back(Serialize::create(vm));
     oo.push_back(Deserialize::create(vm));
+
+    oo.push_back(Tokenize::create(vm));
 
     oo.push_back(Modules::create(vm));
     oo.push_back(IsModule::create(vm));
