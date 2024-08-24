@@ -170,9 +170,20 @@ public:
     }
 
     void map(std::function<void(Token)> f) {
+        for (Token t:_tokens) {
+            f(t);
+        }
     }
 
     void filter(std::function<bool(Token)> p) {
+        std::vector<Token> tt;
+        for (Token t:_tokens) {
+            if (p(t)) {
+                tt.push_back(t);
+            }
+        }
+        _tokens = tt;
+        _index = 0;
     }
 
 private:
