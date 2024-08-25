@@ -81,10 +81,18 @@ public:
         return a;
     }
 
+    // parse docstring
+    bool is_at() {
+        return look().text().compare("@") == 0;
+    }
+
     ptr<Ast> parse_docstring() {
-        check_token(TOKEN_TEXT);
-        auto a = AstExprDocstring::create(position(), look().text());
+        Position p = position();
         skip();
+        check_token(TOKEN_TEXT);
+        auto s = look().text();
+        skip();
+        auto a = AstExprDocstring::create(p, s);
         return a;
     }
 
