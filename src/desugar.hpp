@@ -204,71 +204,6 @@ ptr<Ast> pass_let(const ptr<Ast> &a) {
     return let.let(a);
 }
 
-class RewriteObject : public Rewrite {
-public:
-    ptr<Ast> object(const ptr<Ast> &a) {
-        return rewrite(a);
-    }
-
-    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &c,
-                                     const ptr<Ast> &e) override {
-        return AstDeclDefinition::create(p, c, e);  // cut
-    }
-
-    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
-                                   const ptr<Ast> &e) override {
-        return AstDeclOperator::create(p, c, e);  // cut
-    }
-
-    ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
-                                 const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                                 const ptrs<Ast> &ee) override {
-        ptrs<Ast> oo;
-        ptrs<Ast> dd;
-        oo.push_back(
-            AstExprCombinator::create(p, STRING_SYSTEM, STRING_OBJECT));
-        for (auto f : ff) {
-            if (f->tag() == AST_DECL_DATA) {
-                auto [p, dd0] = AstDeclData::split(f);
-                oo.push_back(dd0[0]);
-                oo.push_back(dd0[1]);
-                dd.push_back(dd0[0]);
-            } else if (f->tag() == AST_DECL_DEFINITION) {
-                auto [p, c, e] = AstDeclDefinition::split(f);
-                oo.push_back(c);
-                oo.push_back(e);
-                dd.push_back(c);
-            } else {
-                PANIC("failed to rewrite field");
-            }
-        }
-        auto body = AstExprApplication::create(p, oo);
-        for (auto e : ee) {
-            auto ex =
-                AstExprCombinator::create(p, STRING_SYSTEM, STRING_EXTEND);
-            ptrs<Ast> bb;
-            bb.push_back(ex);
-            bb.push_back(e);
-            bb.push_back(body);
-            body = AstExprApplication::create(p, bb);
-        }
-        if (vv.size() > 0) {
-            auto m = AstExprMatch::create(p, vv, AstEmpty::create(), body);
-            auto l = AstExprBlock::create(p, m);
-            body = l;
-        }
-        ptrs<Ast> decls;
-        decls.push_back(AstDeclData::create(p, dd));
-        decls.push_back(AstDeclDefinition::create(p, c, body));
-        return AstWrapper::create(p, decls);
-    }
-};
-
-ptr<Ast> pass_object(const ptr<Ast> &a) {
-    RewriteObject object;
-    return object.object(a);
-}
-
 class RewriteThrow : public Rewrite {
 public:
     ptr<Ast> dethrow(const ptr<Ast> &a) {
@@ -487,7 +422,6 @@ ptr<Ast> desugar(const ptr<Ast> &a) {
     a0 = pass_statement(a0);
     a0 = pass_let(a0);
     a0 = pass_lambda(a0);
-    a0 = pass_object(a0);
     a0 = pass_throw(a0);
     a0 = pass_try(a0);
     a0 = pass_lazyop(a0);

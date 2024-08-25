@@ -61,7 +61,6 @@ enum ast_tag_t {
     AST_DECL_DATA,
     AST_DECL_DEFINITION,
     AST_DECL_OPERATOR,
-    AST_DECL_OBJECT,  // desugared
     // wrapper
     AST_WRAPPER,
     // set
@@ -1659,6 +1658,10 @@ public:
         return {p, nn};
     }
 
+    ptr<Ast> docstring() {
+        return _docstring;
+    }
+
     ptrs<Ast> names() const {
         return _names;
     }
@@ -1706,6 +1709,7 @@ public:
     }
 
 private:
+    ptr<Ast>  _docstring;
     ptrs<Ast> _names;
 };
 
@@ -1741,6 +1745,10 @@ public:
         return _name;
     }
 
+    ptr<Ast> docstring() {
+        return _docstring;
+    }
+
     ptr<Ast> expression() const {
         return _expression;
     }
@@ -1774,6 +1782,7 @@ public:
 
 private:
     ptr<Ast> _name;
+    ptr<Ast>  _docstring;
     ptr<Ast> _expression;
 };
 
@@ -1809,6 +1818,10 @@ public:
         return _name;
     }
 
+    ptr<Ast> docstring() {
+        return _docstring;
+    }
+
     ptr<Ast> expression() const {
         return _expression;
     }
@@ -1842,6 +1855,7 @@ public:
 
 private:
     ptr<Ast> _name;
+    ptr<Ast>  _docstring;
     ptr<Ast> _expression;
 };
 
@@ -1875,6 +1889,10 @@ public:
 
     ptr<Ast> combinator() const {
         return _combinator;
+    }
+
+    ptr<Ast> docstring() {
+        return _docstring;
     }
 
     ptr<Ast> expression() const {
@@ -1912,103 +1930,8 @@ public:
 
 private:
     ptr<Ast> _combinator;
+    ptr<Ast> _docstring;
     ptr<Ast> _expression;
-};
-
-class AstDeclObject : public Ast {
-public:
-    AstDeclObject(const Position &p, const ptr<Ast> &n, const ptrs<Ast> &vv,
-                  const ptrs<Ast> &ff, const ptrs<Ast> &ee)
-        : Ast(AST_DECL_OBJECT, p),
-          _name(n),
-          _variables(vv),
-          _fields(ff),
-          _extends(ee) {
-    }
-
-    AstDeclObject(const AstDeclObject &a)
-        : AstDeclObject(a.position(), a.name(), a.variables(), a.fields(),
-                        a.extends()) {
-    }
-
-    static ptr<Ast> create(const Position &p, const ptr<Ast> &n,
-                           const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                           const ptrs<Ast> &ee) {
-        return std::make_shared<AstDeclObject>(p, n, vv, ff, ee);
-    }
-
-    static std::shared_ptr<AstDeclObject> cast(const ptr<Ast> &a) {
-        return std::static_pointer_cast<AstDeclObject>(a);
-    }
-
-    static std::tuple<
-        Position, std::shared_ptr<Ast>, std::vector<std::shared_ptr<Ast>>,
-        std::vector<std::shared_ptr<Ast>>, std::vector<std::shared_ptr<Ast>>>
-    split(const ptr<Ast> &a) {
-        auto a0 = AstDeclObject::cast(a);
-        auto p = a0->position();
-        auto n = a0->name();
-        auto vv = a0->variables();
-        auto ff = a0->fields();
-        auto ee = a0->extends();
-        return {p, n, vv, ff, ee};
-    }
-
-    ptr<Ast> name() const {
-        return _name;
-    }
-
-    ptrs<Ast> variables() const {
-        return _variables;
-    }
-
-    ptrs<Ast> fields() const {
-        return _fields;
-    }
-
-    ptrs<Ast> extends() const {
-        return _extends;
-    }
-
-    text_index_t approximate_length(text_index_t indent) const {
-        return indent;
-    }
-
-    void render(std::ostream &os, text_index_t indent) const {
-        skip(os, indent);
-        os << STRING_OBJECT << " " << name() << " ";
-        for (auto v : variables()) {
-            v->render(os, indent);
-            os << " ";
-        }
-        if (extends().size() > 0) {
-            bool first = true;
-            os << " extends ";
-            for (auto e : extends()) {
-                if (first) {
-                    first = false;
-                } else {
-                    os << ", ";
-                }
-                e->render(os, indent);
-            }
-            os << " with ";
-        }
-        os << "(" << std::endl;
-        // skip_line(os, indent+4);
-        for (auto f : fields()) {
-            f->render(os, indent + 4);
-        }
-        skip(os, indent);
-        os << ")";
-        os << std::endl;
-    }
-
-private:
-    ptr<Ast> _name;
-    ptrs<Ast> _variables;
-    ptrs<Ast> _fields;
-    ptrs<Ast> _extends;
 };
 
 class AstDirectImport : public Ast {
@@ -2410,18 +2333,6 @@ int Ast::compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1) {
             auto [p0, c0, e0] = AstDeclOperator::split(a0);
             auto [p1, c1, e1] = AstDeclOperator::split(a1);
             return compare_ast2(c0, c1, e0, e1);
-            break;
-        }
-        case AST_DECL_OBJECT: {
-            auto [p0, c0, vv0, ff0, ee0] = AstDeclObject::split(a0);
-            auto [p1, c1, vv1, ff1, ee1] = AstDeclObject::split(a1);
-            c = Ast::compare(c0, c1);
-            if (c != 0) return c;
-            c = compare_asts(vv0, vv1);
-            if (c != 0) return c;
-            c = compare_asts(ff0, ff1);
-            if (c != 0) return c;
-            return compare_asts(ee0, ee1);
             break;
         }
         case AST_DECL_NAMESPACE: {

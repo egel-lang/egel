@@ -224,18 +224,6 @@ public:
         return AstDeclOperator::create(p, c0, e0);
     }
 
-    virtual ptr<Ast> transform_decl_object(const ptr<Ast> &a, const Position &p,
-                                           const ptr<Ast> &c,
-                                           const ptrs<Ast> &vv,
-                                           const ptrs<Ast> &ff,
-                                           const ptrs<Ast> &ee) {
-        auto c0 = transform(c);
-        auto vv0 = transforms(vv);
-        auto ff0 = transforms(ff);
-        auto ee0 = transforms(ee);
-        return AstDeclObject::create(p, c0, vv0, ff0, ee0);
-    }
-
     virtual ptr<Ast> transform_decl_namespace(const ptr<Ast> &a,
                                               const Position &p,
                                               const UnicodeStrings &nn,
@@ -401,11 +389,6 @@ public:
             case AST_DECL_OPERATOR: {
                 auto [p, c, e] = AstDeclOperator::split(a);
                 return transform_decl_operator(a, p, c, e);
-                break;
-            }
-            case AST_DECL_OBJECT: {
-                auto [p, c, vv, ff, ee] = AstDeclObject::split(a);
-                return transform_decl_object(a, p, c, vv, ff, ee);
                 break;
             }
             case AST_DECL_NAMESPACE: {
@@ -621,17 +604,6 @@ public:
         return AstDeclOperator::create(p, c0, e0);
     }
 
-    virtual ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
-                                         const ptrs<Ast> &vv,
-                                         const ptrs<Ast> &ff,
-                                         const ptrs<Ast> &ee) {
-        auto c0 = rewrite(c);
-        auto vv0 = rewrites(vv);
-        auto ff0 = rewrites(ff);
-        auto ee0 = rewrites(ee);
-        return AstDeclObject::create(p, c0, vv0, ff0, ee0);
-    }
-
     virtual ptr<Ast> rewrite_decl_namespace(const Position &p,
                                             const UnicodeStrings &nn,
                                             const ptrs<Ast> &dd) {
@@ -795,11 +767,6 @@ public:
             case AST_DECL_OPERATOR: {
                 auto [p, c, e] = AstDeclOperator::split(a);
                 return rewrite_decl_operator(p, c, e);
-                break;
-            }
-            case AST_DECL_OBJECT: {
-                auto [p, c, vv, ff, ee] = AstDeclObject::split(a);
-                return rewrite_decl_object(p, c, vv, ff, ee);
                 break;
             }
             case AST_DECL_NAMESPACE: {
@@ -1146,11 +1113,6 @@ public:
             case AST_DECL_OPERATOR: {
                 auto [p, c, e] = AstDeclOperator::split(a);
                 return visit_decl_operator(p, c, e);
-                break;
-            }
-            case AST_DECL_OBJECT: {
-                auto [p, c, vv, ff, ee] = AstDeclObject::split(a);
-                return visit_decl_object(p, c, vv, ff, ee);
                 break;
             }
             case AST_DECL_NAMESPACE: {

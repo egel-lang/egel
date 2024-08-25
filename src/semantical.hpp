@@ -408,25 +408,6 @@ public:
         return a;
     }
 
-    ptr<Ast> rewrite_decl_object(const Position &p, const ptr<Ast> &c,
-                                 const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                                 const ptrs<Ast> &ee) override {
-        set_identify_state(STATE_IDENTIFY_USE);
-        auto c0 = rewrite(c);
-        enter_range();
-        set_identify_state(STATE_IDENTIFY_PATTERN);
-        auto vv0 = rewrites(vv);
-        set_identify_state(STATE_IDENTIFY_USE);
-        auto ee0 = rewrites(ee);
-        set_identify_state(STATE_IDENTIFY_FIELD);
-        auto ff0 = rewrites(ff);
-        leave_range();
-        auto a = AstDeclObject::create(p, c0, vv0, ff0, ee0);
-        push_declaration(a);
-        set_identify_state(STATE_IDENTIFY_USE);
-        return a;
-    }
-
     ptr<Ast> rewrite_decl_namespace(const Position &p, const UnicodeStrings &nn,
                                     const ptrs<Ast> &dd) override {
         auto nn0 = get_namespace();

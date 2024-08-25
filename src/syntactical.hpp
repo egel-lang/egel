@@ -81,6 +81,13 @@ public:
         return a;
     }
 
+    ptr<Ast> parse_docstring() {
+        check_token(TOKEN_TEXT);
+        auto a = AstExprText::create(position(), look().text());
+        skip();
+        return a;
+    }
+
     // parse (qualified) names or operators
 
     bool is_variable() {
@@ -786,33 +793,6 @@ public:
         }
     }
 
-    ptr<Ast> parse_decl_class() {
-        Position p = position();
-        force_token(TOKEN_CLASS);
-        auto c = parse_combinator();
-        ptrs<Ast> vv;
-        while (is_variable()) {
-            auto v = parse_variable();
-            vv.push_back(v);
-        }
-        ptrs<Ast> ee;
-        if (tag() == TOKEN_EXTENDS) {
-            force_token(TOKEN_EXTENDS);
-            auto e = parse_expression();
-            ee.push_back(e);
-            while (tag() == TOKEN_COMMA) {
-                force_token(TOKEN_COMMA);
-                auto e = parse_expression();
-                ee.push_back(e);
-            }
-            force_token(TOKEN_WITH);
-        }
-        force_token(TOKEN_LPAREN);
-        auto ff = parse_fields();
-        force_token(TOKEN_RPAREN);
-        return AstDeclObject::create(p, c, vv, ff, ee);
-    }
-
     ptr<Ast> parse_decl_namespace() {
         Position p = position();
         force_token(TOKEN_NAMESPACE);
@@ -852,9 +832,6 @@ public:
                 break;
             case TOKEN_VAL:
                 return parse_decl_value();
-                break;
-            case TOKEN_CLASS:
-                return parse_decl_class();
                 break;
             case TOKEN_NAMESPACE:
                 return parse_decl_namespace();
