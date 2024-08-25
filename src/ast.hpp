@@ -25,6 +25,8 @@ std::shared_ptr<T> make_ptr(Args &&...args) {
 // AST tags are enumerated as a manner to implement switches conveniently
 enum ast_tag_t {
     AST_EMPTY,
+    // docstrings
+    AST_DOCSTRING,
     // literals
     AST_EXPR_INTEGER,
     AST_EXPR_HEXINTEGER,
@@ -315,6 +317,30 @@ public:
 
     static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprText::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
+    }
+};
+
+class AstExprDocstring : public AstAtom {
+public:
+    AstExprDocstring(const Position &p, const icu::UnicodeString &text)
+        : AstAtom(AST_DOCSTRING, p, text) {};
+
+    AstExprDocstring(const AstExprFloat &l) : AstExprDocstring(l.position(), l.text()) {
+    }
+
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
+        return std::make_shared<AstExprDocstring>(p, text);
+    }
+
+    static std::shared_ptr<AstExprDocstring> cast(const ptr<Ast> &a) {
+        return std::static_pointer_cast<AstExprDocstring>(a);
+    }
+
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
+        auto a0 = AstExprDocstring::cast(a);
         auto p = a0->position();
         auto s = a0->text();
         return {p, s};

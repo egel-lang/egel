@@ -83,7 +83,7 @@ public:
 
     ptr<Ast> parse_docstring() {
         check_token(TOKEN_TEXT);
-        auto a = AstExprText::create(position(), look().text());
+        auto a = AstExprDocstring::create(position(), look().text());
         skip();
         return a;
     }
