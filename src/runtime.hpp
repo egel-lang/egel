@@ -1505,6 +1505,19 @@ public:
         }
     }
 
+    icu::UnicodeString docstring() const {
+        return _docstring;
+    }
+
+    void set_docstring(const icu::UnicodeString& s) {
+        icu::UnicodeString t = "this";
+        icu::UnicodeString ds = s;
+        if (ds.startsWith(t)) {
+             ds.replace(0, t.length(), raw_text());
+        }
+        _docstring = ds;
+    }
+
     void render(std::ostream &os) const override {
         os << text();
     }
@@ -1512,6 +1525,7 @@ public:
 private:
     VM *_machine;
     symbol_t _symbol;
+    icu::UnicodeString _docstring;
 };
 
 class VMObjectData : public VMObjectCombinator {
