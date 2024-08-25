@@ -25,6 +25,8 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ exposed the tokenizer
+
 ## v0.1.12 - in every Lisp lives a confused hedgehog
 
 + stratify float printing/lexing

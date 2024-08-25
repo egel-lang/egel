@@ -1555,9 +1555,11 @@ public:
         return VMObjectData::create(vm, sym);
     }
 
+    /*
     static bool test(const VMObjectPtr &o) {
         return o->tag() == VM_OBJECT_COMBINATOR;
     }
+    */
 
     static std::shared_ptr<VMObjectData> cast(const VMObjectPtr &o) {
         return std::static_pointer_cast<VMObjectData>(o);

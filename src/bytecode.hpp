@@ -944,6 +944,20 @@ inline void write_assembly(std::ostream &os, const VMObjectBytecode& o) {
     d.write(os);
 };
 
+inline icu::UnicodeString disassemble(const VMObjectPtr &o) {
+    if (o->subtag_test(VM_SUB_DATA)) {
+        std::stringstream ss;                                                                                                           
+        ss << "data 01 " << VMObjectData::cast(o)->raw_text() << " end" << std::endl;
+        return VM::unicode_from_utf8_chars(ss.str().c_str());                                                                           
+    } else if (o->subtag_test(VM_SUB_BYTECODE)) {
+        Disassembler d(o);
+        return d.disassemble();
+    } else {
+        PANIC("cannot disassemble");
+        return "";
+    }
+};
+
 class Assembler {
 public:
     Assembler(VM *vm, const icu::UnicodeString s) : _machine(vm), _source(s) {
@@ -1083,6 +1097,14 @@ public:
     }
 
     VMObjectPtr assemble() {
+        if (is_string("data")) {
+            force_string("data");
+            force_string("01");
+            auto name = fetch_combinator();
+            force_string("end");
+            return machine()->create_data(name);
+        }
+
         force_string("bytecode");
         force_string("01");
         
@@ -1221,6 +1243,12 @@ private:
     VM *_machine;
     icu::UnicodeString _source;
     Tokens _tokenreader;
+};
+
+
+inline VMObjectPtr assemble(VM *vm, const icu::UnicodeString &s) {
+    Assembler a(vm, s);
+    return a.assemble();
 };
 
 }  // namespace egel

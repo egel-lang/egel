@@ -683,8 +683,7 @@ public:
     }
 
     icu::UnicodeString disassemble(const VMObjectPtr &o) override {
-        Disassembler d(o);
-        return d.disassemble();
+        return egel::disassemble(o);
     }
 
     VMObjectPtrs get_bytedata(const VMObjectPtr &o) override {
@@ -693,8 +692,7 @@ public:
     }
 
     VMObjectPtr assemble(const icu::UnicodeString &s) override {
-        Assembler a(this, s);
-        return a.assemble();
+        return egel::assemble(this, s);
     }
 
     icu::UnicodeString serialize(const VMObjectPtr &o) override {
