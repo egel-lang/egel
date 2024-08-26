@@ -977,6 +977,16 @@ public:
         return to_list(oo);
     }
 
+    VMObjectPtr docstring(const VMObjectPtr &o) override {
+        if (is_combinator(o)) {
+            return create_text(VMObjectCombinator::cast(o)->docstring());
+        } else if (is_module(o)) {
+            return create_text(VMModule::module_cast(o)->docstring());
+        } else {
+            return create_none();
+        }
+    }
+
     bool is_module(const VMObjectPtr &m) override {
         return VMModule::is_module(m);
     }

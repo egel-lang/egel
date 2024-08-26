@@ -623,6 +623,9 @@ public:
     // expose the tokenizer
     virtual VMObjectPtr tokenize(const icu::UnicodeString &uri, const icu::UnicodeString &src) = 0;
 
+    // docstring
+    virtual VMObjectPtr docstring(const VMObjectPtr& o) = 0;
+
     // module inspection
     virtual VMObjectPtr query_modules() = 0;
     virtual bool is_module(const VMObjectPtr &m) = 0;
@@ -1505,7 +1508,7 @@ public:
         }
     }
 
-    icu::UnicodeString docstring() const {
+    virtual icu::UnicodeString docstring() const {
         return _docstring;
     }
 
@@ -1527,6 +1530,11 @@ private:
     symbol_t _symbol;
     icu::UnicodeString _docstring;
 };
+
+#define VMOBJECT_DOCSTRING(dd) \
+    virtual icu::UnicodeString docstring() const override { \
+        return dd; \
+    }
 
 class VMObjectData : public VMObjectCombinator {
 public:

@@ -74,6 +74,16 @@ public:
     }
 };
 
+// ## System::docstring o - docstring of a module or combinator
+class Docstring : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Docstring, "System", "docstring");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        return machine()->docstring(arg0);
+    }
+};
+
 // ## System::query_modules - list all modules in the runtime
 class Modules : public Medadic {
 public:
@@ -378,6 +388,8 @@ std::vector<VMObjectPtr> builtin_runtime(VM *vm) {
     oo.push_back(Deserialize::create(vm));
 
     oo.push_back(Tokenize::create(vm));
+
+    oo.push_back(Docstring::create(vm));
 
     oo.push_back(Modules::create(vm));
     oo.push_back(IsModule::create(vm));

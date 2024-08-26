@@ -123,6 +123,14 @@ public:
         return _machine;
     }
 
+    icu::UnicodeString docstring() const {
+        return _docstring;
+    }
+
+    void set_docstring(const icu::UnicodeString &doc) {
+        _docstring = doc;
+    }
+
     virtual void load() = 0;
 
     virtual void unload() = 0;
@@ -164,6 +172,7 @@ private:
     OptionsPtr _options;
     icu::UnicodeString _path;
     icu::UnicodeString _filename;
+    icu::UnicodeString _docstring;
     VM *_machine;
 };
 
@@ -180,6 +189,14 @@ public:
     }
 
     ~VMModule() {
+    }
+
+    icu::UnicodeString docstring() const {
+        return _value->docstring();
+    }
+
+    void set_docstring(const icu::UnicodeString &doc) {
+        _value->set_docstring(doc);
     }
 
     static VMObjectPtr create(VM *vm, ModulePtr p) {

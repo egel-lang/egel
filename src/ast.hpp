@@ -2121,6 +2121,7 @@ public:
     void render(std::ostream &os, text_index_t indent) const {
         for (auto e : content()) {
             e->render(os, indent);
+            os << std::endl;
         }
     }
 
