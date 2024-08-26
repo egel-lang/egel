@@ -82,18 +82,16 @@ public:
     }
 
     // parse docstring
-    bool is_at() {
-        return look().text().compare("@") == 0;
-    }
-
-    ptr<Ast> parse_docstring() {
+    ptr<Ast> parse_docstring_option() {
         Position p = position();
-        skip();
-        check_token(TOKEN_TEXT);
-        auto s = look().text();
-        skip();
-        auto a = AstExprDocstring::create(p, s);
-        return a;
+        if ((look().text() == "@") && (look(1).tag() == TOKEN_TEXT)) {
+            skip();
+            auto s = look().text();
+            skip();
+            return AstExprDocstring::create(p, s);
+        } else {
+            return AstExprDocstring::create(p, "");
+        }
     }
 
     // parse (qualified) names or operators
@@ -703,6 +701,7 @@ public:
     ptr<Ast> parse_field_data() {
         Position p = position();
         force_token(TOKEN_DATA);
+        auto doc = parse_docstring_option();
         auto ee = ptrs<Ast>();
         auto n = parse_combinator();
         ee.push_back(n);
@@ -712,53 +711,11 @@ public:
         return AstDeclData::create(p, ee);
     }
 
-    ptr<Ast> parse_field_definition() {
-        Position p = position();
-        force_token(TOKEN_DEF);
-        if (is_combinator()) {
-            auto c = parse_combinator();
-            force_token(TOKEN_EQ);
-            auto e = parse_expression();
-            return AstDeclDefinition::create(p, c, e);
-            /*
-        } else if (is_operator()) {
-            ptr<Ast> c = parse_operator();
-            force_token(TOKEN_EQ);
-            ptr<Ast> e = parse_expression();
-            return AstDeclOperator::create(p, c, e);
-            */
-        } else {
-            throw ErrorSyntactical(p, "combinator expected in field");
-        }
-    }
-
-    ptr<Ast> parse_field() {
-        switch (tag()) {
-            case TOKEN_DATA:
-                return parse_field_data();
-                break;
-            case TOKEN_DEF:
-                return parse_field_definition();
-                break;
-            default:
-                return nullptr;  // XXX;
-                break;
-        }
-    }
-
-    ptrs<Ast> parse_fields() {
-        ptrs<Ast> ff;
-        while (is_field()) {
-            auto f = parse_field();
-            ff.push_back(f);
-        }
-        return ff;
-    }
-
     // declarations
     ptr<Ast> parse_decl_data() {
         Position p = position();
         force_token(TOKEN_DATA);
+        auto doc = parse_docstring_option();
         auto ee = ptrs<Ast>();
         auto e = parse_combinator();
         ee.push_back(e);
@@ -776,11 +733,13 @@ public:
         if (is_combinator()) {
             ptr<Ast> c = parse_combinator();
             force_token(TOKEN_EQ);
+            auto doc = parse_docstring_option();
             ptr<Ast> e = parse_expression();
             return AstDeclDefinition::create(p, c, e);
         } else if (is_operator()) {
             ptr<Ast> c = parse_operator();
             force_token(TOKEN_EQ);
+            auto doc = parse_docstring_option();
             ptr<Ast> e = parse_expression();
             return AstDeclOperator::create(p, c, e);
         } else {
@@ -794,6 +753,7 @@ public:
         if (is_combinator()) {
             auto c = parse_combinator();
             force_token(TOKEN_EQ);
+            auto doc = parse_docstring_option();
             auto e = parse_expression();
             return AstDeclValue::create(p, c, e);
         } else {
@@ -910,6 +870,8 @@ public:
     ptr<Ast> parse() {
         Position p = position();
         auto dd = ptrs<Ast>();
+        auto doc = parse_docstring_option();
+        dd.push_back(doc);
         while (tag() != TOKEN_EOF) {
             auto d = parse_decl_or_directive();
             dd.push_back(d);
