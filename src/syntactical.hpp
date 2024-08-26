@@ -88,9 +88,9 @@ public:
             skip();
             auto s = look().text();
             skip();
-            return AstExprDocstring::create(p, s);
+            return AstDocstring::create(p, s);
         } else {
-            return AstExprDocstring::create(p, "");
+            return AstDocstring::create(p, "");
         }
     }
 
@@ -708,7 +708,7 @@ public:
         force_token(TOKEN_COMMA);
         auto e = parse_expression();
         ee.push_back(e);
-        return AstDeclData::create(p, ee);
+        return AstDeclData::create(p, doc, ee);
     }
 
     // declarations
@@ -724,7 +724,7 @@ public:
             e = parse_combinator();
             ee.push_back(e);
         };
-        return AstDeclData::create(p, ee);
+        return AstDeclData::create(p, doc, ee);
     }
 
     ptr<Ast> parse_decl_definition() {
@@ -735,13 +735,13 @@ public:
             force_token(TOKEN_EQ);
             auto doc = parse_docstring_option();
             ptr<Ast> e = parse_expression();
-            return AstDeclDefinition::create(p, c, e);
+            return AstDeclDefinition::create(p, c, doc, e);
         } else if (is_operator()) {
             ptr<Ast> c = parse_operator();
             force_token(TOKEN_EQ);
             auto doc = parse_docstring_option();
             ptr<Ast> e = parse_expression();
-            return AstDeclOperator::create(p, c, e);
+            return AstDeclOperator::create(p, c, doc, e);
         } else {
             throw ErrorSyntactical(p, "combinator or operator expected");
         }
@@ -755,7 +755,7 @@ public:
             force_token(TOKEN_EQ);
             auto doc = parse_docstring_option();
             auto e = parse_expression();
-            return AstDeclValue::create(p, c, e);
+            return AstDeclValue::create(p, c, doc, e);
         } else {
             throw ErrorSyntactical(p, "combinator expected");
         }
@@ -948,18 +948,18 @@ public:
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
                                const ptr<Ast> &e) override {
     }
 
-    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
                           const ptr<Ast> &e) override {
     }
 
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,const ptr<Ast> &d, 
                              const ptr<Ast> &e) override {
     }
 
@@ -979,20 +979,20 @@ public:
         return _values;
     }
 
-    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+    void visit_decl_value(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
                           const ptr<Ast> &e) override {
-        _values.push_back(AstDeclValue::create(p, n, e));
+        _values.push_back(AstDeclValue::create(p, n, d, e));
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
                                const ptr<Ast> &e) override {
     }
 
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
                              const ptr<Ast> &e) override {
     }
 

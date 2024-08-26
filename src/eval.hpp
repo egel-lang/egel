@@ -241,7 +241,7 @@ public:
         // mode.
         if (d->tag() ==
             AST_DECL_DEFINITION) {  // start off by (re-)declaring the def
-            auto [p0, c0, e0] = AstDeclDefinition::split(d);
+            auto [p0, c0, d0, e0] = AstDeclDefinition::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
                 auto c1 = AstExprCombinator::cast(c0);
@@ -252,7 +252,7 @@ public:
         if (d->tag() ==
             AST_DECL_OPERATOR) {  // or the operator.. (time to get rid
             // of this alternative?)
-            auto [p0, c0, e0] = AstDeclOperator::split(d);
+            auto [p0, c0, d0, e0] = AstDeclOperator::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
                 auto c1 = AstExprCombinator::cast(c0);
@@ -283,7 +283,7 @@ public:
         // bypass standard semantical analysis and declare the data in the
         // context. that manner, data may be overridden in interactive mode.
         if (d->tag() == AST_DECL_DATA) {  // start off by (re-)declaring the def
-            auto [p0, nn] = AstDeclData::split(d);
+            auto [p0, doc, nn] = AstDeclData::split(d);
             for (auto &e : nn) {
                 if (e->tag() == AST_EXPR_COMBINATOR) {
                     auto [p, nn0, n0] = AstExprCombinator::split(e);
@@ -324,7 +324,7 @@ public:
         auto vm = machine();
         auto p = a->position();
         auto n = AstExprCombinator::create(p, fv);
-        auto d = AstDeclDefinition::create(p, n, a);
+        auto d = AstDeclDefinition::create(p, n, AstDocstring::create(p,""), a);
 
         // treat it as a definition Dummy
         handle_definition(d);
@@ -345,8 +345,8 @@ public:
 
         if (d->tag() ==
             AST_DECL_VALUE) {  // start off by treating the val as a def
-            auto [p0, c0, e0] = AstDeclValue::split(d);
-            handle_definition(AstDeclDefinition::create(p, c0, e0));
+            auto [p0, c0, doc, e0] = AstDeclValue::split(d);
+            handle_definition(AstDeclDefinition::create(p, c0, doc, e0));
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto c1 = AstExprCombinator::cast(c0);
                 auto o = vm->get_combinator(c1->to_text());

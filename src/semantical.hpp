@@ -99,7 +99,7 @@ public:
         }
     }
 
-    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
         if (get_declare_state() == STATE_DECLARE_GLOBAL) {
             visits(nn);
         } else {
@@ -107,28 +107,19 @@ public:
         }
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
                                const ptr<Ast> &e) override {
         visit(n);
     }
 
-    void visit_decl_value(const Position &p, const ptr<Ast> &l,
+    void visit_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> &d,
                           const ptr<Ast> &r) override {
         visit(l);
     }
 
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
                              const ptr<Ast> &e) override {
         visit(c);
-    }
-
-    void visit_decl_object(const Position &p, const ptr<Ast> &c,
-                           const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                           const ptrs<Ast> &ee) override {
-        visit(c);
-        set_declare_state(STATE_DECLARE_FIELD);
-        visits(ff);
-        set_declare_state(STATE_DECLARE_GLOBAL);
     }
 
     void visit_decl_namespace(const Position &p, const UnicodeStrings &nn,
@@ -352,58 +343,58 @@ public:
         return AstDirectUsing::create(p, nn);
     }
 
-    ptr<Ast> rewrite_decl_data(const Position &p,
+    ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> & d,
                                const ptrs<Ast> &ee) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
             auto ee0 = rewrites(ee);
-            auto a = AstDeclData::create(p, ee0);
+            auto a = AstDeclData::create(p, d, ee0);
             set_identify_state(STATE_IDENTIFY_FIELD);
             return a;
         } else {
             set_identify_state(STATE_IDENTIFY_USE);
             auto ee0 = rewrites(ee);
-            auto a = AstDeclData::create(p, ee0);
+            auto a = AstDeclData::create(p, d, ee0);
             push_declaration(a);
             return a;
         }
     }
 
-    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n,
+    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> & d,
                                      const ptr<Ast> &e) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
             auto n0 = rewrite(n);
             auto e0 = rewrite(e);
-            auto a = AstDeclDefinition::create(p, n0, e0);
+            auto a = AstDeclDefinition::create(p, n0, d, e0);
             set_identify_state(STATE_IDENTIFY_FIELD);
             return a;
         } else {
             auto n0 = rewrite(n);
             auto e0 = rewrite(e);
-            auto a = AstDeclDefinition::create(p, n0, e0);
+            auto a = AstDeclDefinition::create(p, n0, d, e0);
             push_declaration(a);
             set_identify_state(STATE_IDENTIFY_USE);
             return a;
         }
     }
 
-    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
+    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> & d,
                                 const ptr<Ast> &r) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
-        auto a = AstDeclValue::create(p, l0, r0);
+        auto a = AstDeclValue::create(p, l0, d, r0);
         push_declaration(a);
         return a;
     }
 
-    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> & d,
                                    const ptr<Ast> &e) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);
         auto e0 = rewrite(e);
-        auto a = AstDeclOperator::create(p, c0, e0);
+        auto a = AstDeclOperator::create(p, c0, d, e0);
         push_declaration(a);
         return a;
     }

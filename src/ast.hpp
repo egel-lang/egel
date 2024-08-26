@@ -323,24 +323,24 @@ public:
     }
 };
 
-class AstExprDocstring : public AstAtom {
+class AstDocstring : public AstAtom {
 public:
-    AstExprDocstring(const Position &p, const icu::UnicodeString &text)
+    AstDocstring(const Position &p, const icu::UnicodeString &text)
         : AstAtom(AST_DOCSTRING, p, text) {};
 
-    AstExprDocstring(const AstExprFloat &l) : AstExprDocstring(l.position(), l.text()) {
+    AstDocstring(const AstExprFloat &l) : AstDocstring(l.position(), l.text()) {
     }
 
     static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
-        return std::make_shared<AstExprDocstring>(p, text);
+        return std::make_shared<AstDocstring>(p, text);
     }
 
-    static std::shared_ptr<AstExprDocstring> cast(const ptr<Ast> &a) {
-        return std::static_pointer_cast<AstExprDocstring>(a);
+    static std::shared_ptr<AstDocstring> cast(const ptr<Ast> &a) {
+        return std::static_pointer_cast<AstDocstring>(a);
     }
 
     static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
-        auto a0 = AstExprDocstring::cast(a);
+        auto a0 = AstDocstring::cast(a);
         auto p = a0->position();
         auto s = a0->text();
         return {p, s};
@@ -1661,30 +1661,31 @@ private:
 
 class AstDeclData : public Ast {
 public:
-    AstDeclData(const Position &p, const ptrs<Ast> &nn)
-        : Ast(AST_DECL_DATA, p), _names(nn) {
+    AstDeclData(const Position &p, const ptr<Ast> &doc, const ptrs<Ast> &nn)
+        : Ast(AST_DECL_DATA, p), _docstring(doc), _names(nn) {
     }
 
-    AstDeclData(const AstDeclData &a) : AstDeclData(a.position(), a.names()) {
+    AstDeclData(const AstDeclData &a) : AstDeclData(a.position(), a.docstring(), a.names()) {
     }
 
-    static ptr<Ast> create(const Position &p, const ptrs<Ast> &nn) {
-        return std::make_shared<AstDeclData>(p, nn);
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &doc, const ptrs<Ast> &nn) {
+        return std::make_shared<AstDeclData>(p, doc, nn);
     }
 
     static std::shared_ptr<AstDeclData> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclData>(a);
     }
 
-    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(
+    static std::tuple<Position, ptr<Ast>, std::vector<ptr<Ast>>> split(
         const ptr<Ast> &a) {
         auto a0 = AstDeclData::cast(a);
         auto p = a0->position();
+        auto d = a0->docstring();
         auto nn = a0->names();
-        return {p, nn};
+        return {p, d, nn};
     }
 
-    ptr<Ast> docstring() {
+    ptr<Ast> docstring() const {
         return _docstring;
     }
 
@@ -1707,6 +1708,7 @@ public:
         if (approximate_length(indent) <= line_length) {
             skip(os, indent);
             os << STRING_DATA << " ";
+            os << docstring() << " ";
             bool first = true;
             for (auto n : names()) {
                 if (first) {
@@ -1720,6 +1722,7 @@ public:
         } else {
             skip(os, indent);
             os << STRING_DATA << " ";
+            os << docstring() << " ";
             bool first = true;
             for (auto n : names()) {
                 if (first) {
@@ -1741,37 +1744,38 @@ private:
 
 class AstDeclDefinition : public Ast {
 public:
-    AstDeclDefinition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &e)
-        : Ast(AST_DECL_DEFINITION, p), _name(n), _expression(e) {
+    AstDeclDefinition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &doc, const ptr<Ast> &e)
+        : Ast(AST_DECL_DEFINITION, p), _name(n), _docstring(doc), _expression(e) {
     }
 
     AstDeclDefinition(const AstDeclDefinition &a)
-        : AstDeclDefinition(a.position(), a.name(), a.expression()) {
+        : AstDeclDefinition(a.position(), a.name(), a.docstring(), a.expression()) {
     }
 
-    static ptr<Ast> create(const Position &p, const ptr<Ast> &n,
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &n, const ptr<Ast> &doc,
                            const ptr<Ast> &e) {
-        return std::make_shared<AstDeclDefinition>(p, n, e);
+        return std::make_shared<AstDeclDefinition>(p, n, doc, e);
     }
 
     static std::shared_ptr<AstDeclDefinition> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclDefinition>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>>
+    static std::tuple<Position, ptr<Ast>, ptr<Ast>, ptr<Ast>>
     split(const ptr<Ast> &a) {
         auto a0 = AstDeclDefinition::cast(a);
         auto p = a0->position();
         auto n = a0->name();
+        auto d = a0->docstring();
         auto e = a0->expression();
-        return {p, n, e};
+        return {p, n, d, e};
     }
 
     ptr<Ast> name() const {
         return _name;
     }
 
-    ptr<Ast> docstring() {
+    ptr<Ast> docstring() const {
         return _docstring;
     }
 
@@ -1794,6 +1798,7 @@ public:
             skip(os, indent);
             os << STRING_DEF << " ";
             os << name() << " = ";
+            os << docstring() << " ";
             os << expression();
             os << std::endl;
         } else {
@@ -1814,37 +1819,38 @@ private:
 
 class AstDeclValue : public Ast {
 public:
-    AstDeclValue(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1)
-        : Ast(AST_DECL_VALUE, p), _name(e0), _expression(e1) {
+    AstDeclValue(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &doc, const ptr<Ast> &e1)
+        : Ast(AST_DECL_VALUE, p), _name(e0), _docstring(doc), _expression(e1) {
     }
 
     AstDeclValue(const AstDeclValue &a)
-        : AstDeclValue(a.position(), a.name(), a.expression()) {
+        : AstDeclValue(a.position(), a.name(), a.docstring(), a.expression()) {
     }
 
-    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0,
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &doc,
                            const ptr<Ast> &e1) {
-        return std::make_shared<AstDeclValue>(p, e0, e1);
+        return std::make_shared<AstDeclValue>(p, e0, doc, e1);
     }
 
     static std::shared_ptr<AstDeclValue> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclValue>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>>
+    static std::tuple<Position, ptr<Ast>, ptr<Ast>, ptr<Ast>>
     split(const ptr<Ast> &a) {
         auto a0 = AstDeclValue::cast(a);
         auto p = a0->position();
         auto n = a0->name();
+        auto d = a0->docstring();
         auto e = a0->expression();
-        return {p, n, e};
+        return {p, n, d, e};
     }
 
     ptr<Ast> name() const {
         return _name;
     }
 
-    ptr<Ast> docstring() {
+    ptr<Ast> docstring() const {
         return _docstring;
     }
 
@@ -1887,37 +1893,38 @@ private:
 
 class AstDeclOperator : public Ast {
 public:
-    AstDeclOperator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &e)
-        : Ast(AST_DECL_OPERATOR, p), _combinator(c), _expression(e) {
+    AstDeclOperator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &doc, const ptr<Ast> &e)
+        : Ast(AST_DECL_OPERATOR, p), _combinator(c), _docstring(doc), _expression(e) {
     }
 
     AstDeclOperator(const AstDeclOperator &a)
-        : AstDeclOperator(a.position(), a.combinator(), a.expression()) {
+        : AstDeclOperator(a.position(), a.combinator(), a.docstring(), a.expression()) {
     }
 
-    static ptr<Ast> create(const Position &p, const ptr<Ast> &c,
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &c, const ptr<Ast> &doc,
                            const ptr<Ast> &e) {
-        return std::make_shared<AstDeclOperator>(p, c, e);
+        return std::make_shared<AstDeclOperator>(p, c, doc, e);
     }
 
     static std::shared_ptr<AstDeclOperator> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDeclOperator>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>>
+    static std::tuple<Position, ptr<Ast>, ptr<Ast>, ptr<Ast>>
     split(const ptr<Ast> &a) {
         auto a0 = AstDeclOperator::cast(a);
         auto p = a0->position();
         auto n = a0->combinator();
+        auto d = a0->docstring();
         auto e = a0->expression();
-        return {p, n, e};
+        return {p, n, d, e};
     }
 
     ptr<Ast> combinator() const {
         return _combinator;
     }
 
-    ptr<Ast> docstring() {
+    ptr<Ast> docstring() const {
         return _docstring;
     }
 
@@ -2344,20 +2351,20 @@ int Ast::compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1) {
         }
         // declarations
         case AST_DECL_DATA: {
-            auto [p0, nn0] = AstDeclData::split(a0);
-            auto [p1, nn1] = AstDeclData::split(a1);
+            auto [p0, d0, nn0] = AstDeclData::split(a0);
+            auto [p1, d1, nn1] = AstDeclData::split(a1);
             return compare_asts(nn0, nn1);
             break;
         }
         case AST_DECL_DEFINITION: {
-            auto [p0, n0, e0] = AstDeclDefinition::split(a0);
-            auto [p1, n1, e1] = AstDeclDefinition::split(a1);
+            auto [p0, n0, d0, e0] = AstDeclDefinition::split(a0);
+            auto [p1, n1, d1, e1] = AstDeclDefinition::split(a1);
             return compare_ast2(n0, n1, e0, e1);
             break;
         }
         case AST_DECL_OPERATOR: {
-            auto [p0, c0, e0] = AstDeclOperator::split(a0);
-            auto [p1, c1, e1] = AstDeclOperator::split(a1);
+            auto [p0, c0, d0, e0] = AstDeclOperator::split(a0);
+            auto [p1, c1, d1, e1] = AstDeclOperator::split(a1);
             return compare_ast2(c0, c1, e0, e1);
             break;
         }
@@ -2377,8 +2384,8 @@ int Ast::compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1) {
             break;
         }
         case AST_DECL_VALUE: {
-            auto [p0, l0, r0] = AstDeclValue::split(a0);
-            auto [p1, l1, r1] = AstDeclValue::split(a1);
+            auto [p0, l0, d0, r0] = AstDeclValue::split(a0);
+            auto [p1, l1, d1, r1] = AstDeclValue::split(a1);
             return compare_ast2(l0, l1, r0, r1);
             break;
         }

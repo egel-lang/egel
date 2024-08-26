@@ -516,7 +516,7 @@ public:
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DECL_VALUE) {
-                auto [p, n, f] = AstDeclValue::split(a);
+                auto [p, n, d, f] = AstDeclValue::split(a);
                 ii.push_back(QualifiedString(p, n->to_text()));
             }
         }
@@ -668,7 +668,7 @@ public:
         auto ii = QualifiedStrings();
         for (auto a : aa) {
             if (a->tag() == AST_DECL_VALUE) {
-                auto [p, n, f] = AstDeclValue::split(a);
+                auto [p, n, d, f] = AstDeclValue::split(a);
                 ii.push_back(QualifiedString(p, n->to_text()));
             }
         }

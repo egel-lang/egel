@@ -33,22 +33,23 @@ public:
         _out.push_back(c);
     }
 
-    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+        visit(d);
         visits(nn);
     }
 
     // cut
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
                                const ptr<Ast> &e) override {
     }
 
     // cut
-    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+    void visit_decl_value(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
                           const ptr<Ast> &e) override {
     }
 
     // cut
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
                              const ptr<Ast> &e) override {
     }
 
@@ -669,11 +670,11 @@ public:
         // cut
     }
 
-    void visit_decl_data(const Position &p, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
         // cut
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
                                const ptr<Ast> &e) override {
         auto frame = get_coder()->generate_register();
 
@@ -719,17 +720,17 @@ public:
     }
 
     // treat as a definition
-    void visit_decl_value(const Position &p, const ptr<Ast> &o,
+    void visit_decl_value(const Position &p, const ptr<Ast> &o, const ptr<Ast> &d,
                           const ptr<Ast> &e) override {
-        visit_decl_definition(p, o, e);
+        visit_decl_definition(p, o, d, e);
     }
 
     // treat as a definition
-    void visit_decl_operator(const Position &p, const ptr<Ast> &o,
+    void visit_decl_operator(const Position &p, const ptr<Ast> &o, const ptr<Ast> &d,
                              const ptr<Ast> &e) override {
         auto [p0, ss, s] = AstExprOperator::split(o);
         auto c = AstExprCombinator::create(p0, ss, s);
-        visit_decl_definition(p, c, e);
+        visit_decl_definition(p, c, d, e);
     }
 
 private:

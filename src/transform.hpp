@@ -25,6 +25,12 @@ public:
     virtual void transform_pre(const ptr<Ast> &a) {
     }
 
+    virtual ptr<Ast> transform_docstring(const ptr<Ast> &a,
+                                            const Position &p,
+                                            const icu::UnicodeString &v) {
+        return a;
+    }
+
     virtual ptr<Ast> transform_expr_integer(const ptr<Ast> &a,
                                             const Position &p,
                                             const icu::UnicodeString &v) {
@@ -192,36 +198,43 @@ public:
         return a;
     }
 
-    virtual ptr<Ast> transform_decl_data(const ptr<Ast> &a, const Position &p,
+    virtual ptr<Ast> transform_decl_data(const ptr<Ast> &a, const Position &p, const ptr<Ast> &d,
                                          const ptrs<Ast> &nn) {
+        auto d0 = transform(d);
         auto nn0 = transforms(nn);
-        return AstDeclData::create(p, nn0);
+        return AstDeclData::create(p, d0, nn0);
     }
 
     virtual ptr<Ast> transform_decl_definition(const ptr<Ast> &a,
                                                const Position &p,
                                                const ptr<Ast> &n,
+                                               const ptr<Ast> &d,
                                                const ptr<Ast> &e) {
         auto n0 = transform(n);
+        auto d0 = transform(d);
         auto e0 = transform(e);
-        return AstDeclDefinition::create(p, n0, e0);
+        return AstDeclDefinition::create(p, n0, d0, e0);
     }
 
     virtual ptr<Ast> transform_decl_value(const ptr<Ast> &a, const Position &p,
                                           const ptr<Ast> &l,
+                                          const ptr<Ast> &d,
                                           const ptr<Ast> &r) {
         auto l0 = transform(l);
+        auto d0 = transform(d);
         auto r0 = transform(r);
-        return AstDeclValue::create(p, l0, r0);
+        return AstDeclValue::create(p, l0, d0, r0);
     }
 
     virtual ptr<Ast> transform_decl_operator(const ptr<Ast> &a,
                                              const Position &p,
                                              const ptr<Ast> &c,
+                                             const ptr<Ast> &d,
                                              const ptr<Ast> &e) {
         auto c0 = transform(c);
+        auto d0 = transform(d);
         auto e0 = transform(e);
-        return AstDeclOperator::create(p, c0, e0);
+        return AstDeclOperator::create(p, c0, d0, e0);
     }
 
     virtual ptr<Ast> transform_decl_namespace(const ptr<Ast> &a,
@@ -244,6 +257,11 @@ public:
         switch (a->tag()) {
             case AST_EMPTY: {
                 return a;
+                break;
+            }
+            case AST_DOCSTRING: {
+                auto [p, t] = AstDocstring::split(a);
+                return transform_docstring(a, p, t);
                 break;
             }
             // literals
@@ -373,22 +391,22 @@ public:
             }
             // declarations
             case AST_DECL_DATA: {
-                auto [p, nn] = AstDeclData::split(a);
-                return transform_decl_data(a, p, nn);
+                auto [p, d, nn] = AstDeclData::split(a);
+                return transform_decl_data(a, p, d, nn);
                 break;
             }
             case AST_DECL_DEFINITION: {
-                auto [p, n, e] = AstDeclDefinition::split(a);
-                return transform_decl_definition(a, p, n, e);
+                auto [p, n, d, e] = AstDeclDefinition::split(a);
+                return transform_decl_definition(a, p, n, d, e);
                 break;
             }
             case AST_DECL_VALUE: {
-                auto [p, l, r] = AstDeclValue::split(a);
-                return transform_decl_value(a, p, l, r);
+                auto [p, l, d, r] = AstDeclValue::split(a);
+                return transform_decl_value(a, p, l, d, r);
             }
             case AST_DECL_OPERATOR: {
-                auto [p, c, e] = AstDeclOperator::split(a);
-                return transform_decl_operator(a, p, c, e);
+                auto [p, c, d, e] = AstDeclOperator::split(a);
+                return transform_decl_operator(a, p, c, d, e);
                 break;
             }
             case AST_DECL_NAMESPACE: {
@@ -423,6 +441,11 @@ public:
     }
 
     virtual void rewrite_pre(const ptr<Ast> &a) {
+    }
+
+    virtual ptr<Ast> rewrite_docstring(const Position &p,
+                                          const icu::UnicodeString &v) {
+        return AstDocstring::create(p, v);
     }
 
     // literals
@@ -577,31 +600,36 @@ public:
         return AstDirectUsing::create(p, nn);
     }
 
-    virtual ptr<Ast> rewrite_decl_data(const Position &p, const ptrs<Ast> &nn) {
+    virtual ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) {
+        auto d0 = rewrite(d);
         auto nn0 = rewrites(nn);
-        return AstDeclData::create(p, nn0);
+        return AstDeclData::create(p, d, nn0);
     }
 
     virtual ptr<Ast> rewrite_decl_definition(const Position &p,
                                              const ptr<Ast> &n,
+                                             const ptr<Ast> &d,
                                              const ptr<Ast> &e) {
         auto n0 = rewrite(n);
+        auto d0 = rewrite(d);
         auto e0 = rewrite(e);
-        return AstDeclDefinition::create(p, n0, e0);
+        return AstDeclDefinition::create(p, n0, d0, e0);
     }
 
-    virtual ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
+    virtual ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> &d,
                                         const ptr<Ast> &r) {
         auto l0 = rewrite(l);
+        auto d0 = rewrite(d);
         auto r0 = rewrite(r);
-        return AstDeclValue::create(p, l0, r0);
+        return AstDeclValue::create(p, l0, d0, r0);
     }
 
-    virtual ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+    virtual ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
                                            const ptr<Ast> &e) {
         auto c0 = rewrite(c);
+        auto d0 = rewrite(d);
         auto e0 = rewrite(e);
-        return AstDeclOperator::create(p, c0, e0);
+        return AstDeclOperator::create(p, c0, d0, e0);
     }
 
     virtual ptr<Ast> rewrite_decl_namespace(const Position &p,
@@ -622,6 +650,11 @@ public:
         switch (a->tag()) {
             case AST_EMPTY: {
                 return a;
+                break;
+            }
+            case AST_DOCSTRING: {
+                auto [p, t] = AstDocstring::split(a);
+                return rewrite_docstring(p, t);
                 break;
             }
             // literals
@@ -751,22 +784,23 @@ public:
             }
             // declarations
             case AST_DECL_DATA: {
-                auto [p, nn] = AstDeclData::split(a);
-                return rewrite_decl_data(p, nn);
+                auto [p, d, nn] = AstDeclData::split(a);
+                return rewrite_decl_data(p, d, nn);
                 break;
             }
             case AST_DECL_DEFINITION: {
-                auto [p, n, e] = AstDeclDefinition::split(a);
-                return rewrite_decl_definition(p, n, e);
+                auto [p, n, d, e] = AstDeclDefinition::split(a);
+                return rewrite_decl_definition(p, n, d, e);
                 break;
             }
             case AST_DECL_VALUE: {
-                auto [p, l, r] = AstDeclValue::split(a);
-                return rewrite_decl_value(p, l, r);
+                auto [p, l, d, r] = AstDeclValue::split(a);
+                return rewrite_decl_value(p, l, d, r);
+                break;
             }
             case AST_DECL_OPERATOR: {
-                auto [p, c, e] = AstDeclOperator::split(a);
-                return rewrite_decl_operator(p, c, e);
+                auto [p, c, d, e] = AstDeclOperator::split(a);
+                return rewrite_decl_operator(p, c, d, e);
                 break;
             }
             case AST_DECL_NAMESPACE: {
@@ -798,6 +832,10 @@ public:
         for (auto &d : dd) {
             visit(d);
         }
+    }
+
+    virtual void visit_docstring(const Position &p,
+                                    const icu::UnicodeString &v) {
     }
 
     virtual void visit_expr_integer(const Position &p,
@@ -920,35 +958,30 @@ public:
                                        const UnicodeStrings &nn) {
     }
 
-    virtual void visit_decl_data(const Position &p, const ptrs<Ast> &nn) {
+    virtual void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) {
+        visit(d);
         visits(nn);
     }
 
-    virtual void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+    virtual void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
                                        const ptr<Ast> &e) {
         visit(n);
+        visit(d);
         visit(e);
     }
 
-    virtual void visit_decl_value(const Position &p, const ptr<Ast> &l,
+    virtual void visit_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> &d,
                                   const ptr<Ast> &r) {
         visit(l);
+        visit(d);
         visit(r);
     }
 
-    virtual void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+    virtual void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
                                      const ptr<Ast> &e) {
         visit(c);
+        visit(d);
         visit(e);
-    }
-
-    virtual void visit_decl_object(const Position &p, const ptr<Ast> &c,
-                                   const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                                   const ptrs<Ast> &ee) {
-        visit(c);
-        visits(vv);
-        visits(ff);
-        visits(ee);
     }
 
     virtual void visit_decl_namespace(const Position &p,
@@ -967,6 +1000,11 @@ public:
         switch (a->tag()) {
             case AST_EMPTY: {
                 return;
+                break;
+            }
+            case AST_DOCSTRING: {
+                auto [p, t] = AstDocstring::split(a);
+                return visit_docstring(p, t);
                 break;
             }
             // literals
@@ -1096,23 +1134,23 @@ public:
             }
             // declarations
             case AST_DECL_DATA: {
-                auto [p, nn] = AstDeclData::split(a);
-                return visit_decl_data(p, nn);
+                auto [p, d, nn] = AstDeclData::split(a);
+                return visit_decl_data(p, d, nn);
                 break;
             }
             case AST_DECL_DEFINITION: {
-                auto [p, n, e] = AstDeclDefinition::split(a);
-                return visit_decl_definition(p, n, e);
+                auto [p, n, d, e] = AstDeclDefinition::split(a);
+                return visit_decl_definition(p, n, d, e);
                 break;
             }
             case AST_DECL_VALUE: {
-                auto [p, r, l] = AstDeclValue::split(a);
-                return visit_decl_value(p, r, l);
+                auto [p, r, d, l] = AstDeclValue::split(a);
+                return visit_decl_value(p, r, d, l);
                 break;
             }
             case AST_DECL_OPERATOR: {
-                auto [p, c, e] = AstDeclOperator::split(a);
-                return visit_decl_operator(p, c, e);
+                auto [p, c, d, e] = AstDeclOperator::split(a);
+                return visit_decl_operator(p, c, d, e);
                 break;
             }
             case AST_DECL_NAMESPACE: {
@@ -1271,16 +1309,6 @@ public:
         visit(body);
         set_state(FREEVARS_REMOVE);
         visits(lhs);
-        set_state(FREEVARS_INSERT);
-    }
-
-    void visit_decl_object(const Position &p, const ptr<Ast> &c,
-                           const ptrs<Ast> &vv, const ptrs<Ast> &ff,
-                           const ptrs<Ast> &ee) override {
-        visits(ff);
-        visits(ee);
-        set_state(FREEVARS_REMOVE);
-        visits(vv);
         set_state(FREEVARS_INSERT);
     }
 
