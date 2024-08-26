@@ -10,4 +10,6 @@ import "prelude.eg"
 using System
 using List
 
-def main = foldl (+) 0 (from_to 0 1000000)
+def main = 
+    @"calculate the sum of a million numbers"
+    foldl (+) 0 (from_to 0 1000000)

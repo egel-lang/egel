@@ -172,6 +172,50 @@ public:
     }
 };
 
+class AstDocstring : public Ast{
+public:
+    AstDocstring(const Position &p, const icu::UnicodeString &doc)
+        : Ast(AST_DOCSTRING, p), _docstring(doc) {};
+
+    AstDocstring(const AstDocstring &l) : AstDocstring(l.position(), l.docstring()) {
+    }
+
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &doc) {
+        return std::make_shared<AstDocstring>(p, doc);
+    }
+
+    static std::shared_ptr<AstDocstring> cast(const ptr<Ast> &a) {
+        return std::static_pointer_cast<AstDocstring>(a);
+    }
+
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
+        auto a0 = AstDocstring::cast(a);
+        auto p = a0->position();
+        auto s = a0->docstring();
+        return {p, s};
+    }
+
+    icu::UnicodeString docstring() const {
+        return _docstring;
+    }
+
+    text_index_t approximate_length(text_index_t indent) const override {
+        return indent;
+    }
+
+    void render(std::ostream &os, text_index_t indent) const override {
+        if (docstring() == "") {
+            return;
+        } else {
+            os << "@";
+            os << docstring();
+        }
+    }
+
+private:
+    icu::UnicodeString _docstring;
+};
+
 using AstEmptyPtr = std::shared_ptr<AstEmpty>;
 
 // the atom class is a convenience base class for simple text representations
@@ -317,30 +361,6 @@ public:
 
     static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprText::cast(a);
-        auto p = a0->position();
-        auto s = a0->text();
-        return {p, s};
-    }
-};
-
-class AstDocstring : public AstAtom {
-public:
-    AstDocstring(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_DOCSTRING, p, text) {};
-
-    AstDocstring(const AstExprFloat &l) : AstDocstring(l.position(), l.text()) {
-    }
-
-    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
-        return std::make_shared<AstDocstring>(p, text);
-    }
-
-    static std::shared_ptr<AstDocstring> cast(const ptr<Ast> &a) {
-        return std::static_pointer_cast<AstDocstring>(a);
-    }
-
-    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
-        auto a0 = AstDocstring::cast(a);
         auto p = a0->position();
         auto s = a0->text();
         return {p, s};
