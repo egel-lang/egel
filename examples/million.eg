@@ -5,6 +5,13 @@
 #
 # now 7 seconds on MacOS arm64
 
+@"""
+The million test is my goto microbenchmark for the interpreter's
+performance. The goal is to have this test run in 200ms, but 
+at the moment the interpreter is one order off.
+"""
+
+
 import "prelude.eg"
 
 using System
