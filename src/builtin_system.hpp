@@ -1079,6 +1079,98 @@ vm->array_get(xx,2);
 };
 */
 
+class SystemModule: CModule {
+    icu::UnicodeString name() const override {
+        return "system";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'system' module defines primitive combinators.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        // throw and stall combinators
+        oo.push_back(VMThrow::create(vm));
+        oo.push_back(VMHandle::create(vm));
+        oo.push_back(VMStall::create(vm));
+        oo.push_back(VMNapp::create(vm));
+
+        // K, Id combinators
+        oo.push_back(K::create(vm));
+        oo.push_back(Id::create(vm));
+
+        // basic constants
+        oo.push_back(VMObjectData::create(vm, "System", "int"));
+        oo.push_back(VMObjectData::create(vm, "System", "float"));
+        oo.push_back(VMObjectData::create(vm, "System", "char"));
+        oo.push_back(VMObjectData::create(vm, "System", "text"));
+        oo.push_back(VMObjectData::create(vm, "System", "nil"));
+        oo.push_back(VMObjectData::create(vm, "System", "cons"));
+        oo.push_back(VMObjectData::create(vm, "System", "none"));
+        oo.push_back(VMObjectData::create(vm, "System", "true"));
+        oo.push_back(VMObjectData::create(vm, "System", "false"));
+        oo.push_back(VMObjectData::create(vm, "System", "tuple"));
+        oo.push_back(VMObjectData::create(vm, "System", "object"));
+
+        // operators
+
+        oo.push_back(MinInt::create(vm));
+        oo.push_back(MaxInt::create(vm));
+        oo.push_back(Add::create(vm));
+        oo.push_back(MonMin::create(vm));  // the dreaded operator
+        oo.push_back(Min::create(vm));
+        oo.push_back(Mul::create(vm));
+        oo.push_back(Div::create(vm));
+        oo.push_back(Mod::create(vm));
+
+        oo.push_back(Less::create(vm));
+        oo.push_back(LessEq::create(vm));
+        oo.push_back(Greater::create(vm));
+        oo.push_back(GreaterEq::create(vm));
+        oo.push_back(Eq::create(vm));
+        oo.push_back(NegEq::create(vm));
+
+        oo.push_back(BinAnd::create(vm));
+        oo.push_back(BinOr::create(vm));
+        oo.push_back(BinXOr::create(vm));
+        oo.push_back(BinComplement::create(vm));
+        oo.push_back(BinLeftShift::create(vm));
+        oo.push_back(BinRightShift::create(vm));
+
+        oo.push_back(Toint::create(vm));
+        oo.push_back(Tofloat::create(vm));
+        oo.push_back(Totext::create(vm));
+
+        // move to string?
+        oo.push_back(ToChars::create(vm));
+        oo.push_back(FromChars::create(vm));
+
+        // system info, override if sandboxed
+        oo.push_back(Version::create(vm));
+        oo.push_back(Arg::create(vm));
+        oo.push_back(Getenv::create(vm));
+
+        // munching
+        oo.push_back(ArgsToList::create(vm));
+        oo.push_back(ListToApp::create(vm));
+
+        // the builtin print & getline, override if sandboxed
+        oo.push_back(Print::create(vm));
+        oo.push_back(Getline::create(vm));
+        oo.push_back(Format::create(vm));
+
+        // references
+        oo.push_back(VMObjectStub::create(vm, "System::reference"));  // XXXX
+        oo.push_back(Ref::create(vm));
+        oo.push_back(Setref::create(vm));
+        oo.push_back(Getref::create(vm));
+
+        return oo;
+    }
+};
+
 inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     std::vector<VMObjectPtr> oo;
 

@@ -1066,6 +1066,42 @@ DOCSTRING("Time::date_from_tuple n - date from tuple");
     }
 };
 
+class TimeModule: CModule {
+    icu::UnicodeString name() const override {
+        return "time";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'time' module defines time and date combinators.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        oo.push_back(Duration::create(vm));
+        oo.push_back(TimePoint::create(vm));
+        oo.push_back(TimeClock::create(vm));
+        oo.push_back(Clock::create(vm));
+        oo.push_back(Now::create(vm));
+        oo.push_back(IsSteady::create(vm));
+        oo.push_back(Milliseconds::create(vm));
+        oo.push_back(Seconds::create(vm));
+        oo.push_back(Minutes::create(vm));
+        oo.push_back(Hours::create(vm));
+        oo.push_back(Days::create(vm));
+        oo.push_back(Weeks::create(vm));
+        oo.push_back(Months::create(vm));
+        oo.push_back(Years::create(vm));
+        oo.push_back(Localtime::create(vm));
+        oo.push_back(GMTime::create(vm));
+        oo.push_back(DateToTime::create(vm));
+        oo.push_back(DateToTuple::create(vm));
+        oo.push_back(DateFromTuple::create(vm));
+
+        return oo;
+    }
+};
+
 inline std::vector<VMObjectPtr> builtin_time(VM* vm) {
     std::vector<VMObjectPtr> oo;
 

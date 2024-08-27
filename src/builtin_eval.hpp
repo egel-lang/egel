@@ -45,6 +45,22 @@ DOCSTRING("System::eval text - evaluatate the expression in `text`");
     }
 };
 
+class EvalModule: CModule {                                                                                                                                  
+    icu::UnicodeString name() const override {                                                                                                                
+        return "eval";                                                                                                                                       
+    }                                                                                                                                                         
+                                                                                                                                                              
+    icu::UnicodeString docstring() const override {                                                                                                           
+        return "The 'eval' module defines the eval combinator.";                                                                                         
+    }                                                                                                                                                         
+                                                                                                                                                              
+    std::vector<VMObjectPtr> exports(VM *vm) override {                                                                                                       
+        std::vector<VMObjectPtr> oo;                                                                                                                          
+        oo.push_back(Evaluate::create(vm));
+        return oo;                                                                                                                                            
+    }                                                                                                                                                         
+};         
+
 inline std::vector<VMObjectPtr> builtin_eval(VM *vm) {
     std::vector<VMObjectPtr> oo;
 

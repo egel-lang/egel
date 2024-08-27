@@ -626,6 +626,56 @@ DOCSTRING("String::from_chars s - create a string from a list of chars");
     }
 };
 
+class StringModule: CModule {
+    icu::UnicodeString name() const override {
+        return "string";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'string' module defines string manipulation combinators.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        oo.push_back(StringEq::create(vm));
+        oo.push_back(StringNeq::create(vm));
+        oo.push_back(StringGt::create(vm));
+        oo.push_back(StringLs::create(vm));
+        oo.push_back(StringGe::create(vm));
+        oo.push_back(StringLe::create(vm));
+        oo.push_back(Compare::create(vm));
+        oo.push_back(CompareCodePointOrder::create(vm));
+        oo.push_back(CaseCompare::create(vm));
+        oo.push_back(Extract::create(vm));
+        oo.push_back(StartsWith::create(vm));
+        oo.push_back(EndsWith::create(vm));
+        oo.push_back(IndexOf::create(vm));
+        oo.push_back(LastIndexOf::create(vm));
+        oo.push_back(CharAt::create(vm));
+        oo.push_back(MoveIndex::create(vm));
+        oo.push_back(CountChar::create(vm));
+        oo.push_back(IsEmpty::create(vm));
+        oo.push_back(HashCode::create(vm));
+        oo.push_back(IsBogus::create(vm));
+        oo.push_back(Append::create(vm));
+        oo.push_back(Insert::create(vm));
+        oo.push_back(FindAndReplace::create(vm));
+        oo.push_back(Remove::create(vm));
+        oo.push_back(Retain::create(vm));
+        oo.push_back(Trim::create(vm));
+        oo.push_back(Reverse::create(vm));
+        oo.push_back(ToUpper::create(vm));
+        oo.push_back(ToLower::create(vm));
+        oo.push_back(FoldCase::create(vm));
+        oo.push_back(Ord::create(vm));
+        oo.push_back(Chr::create(vm));
+        oo.push_back(Unescape::create(vm));
+
+        return oo;
+    }
+};
+
 std::vector<VMObjectPtr> builtin_string(VM *vm) {
     std::vector<VMObjectPtr> oo;
 

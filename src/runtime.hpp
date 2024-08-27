@@ -3144,4 +3144,17 @@ void VMObjectArray::render(std::ostream &os) const {
         return std::shared_ptr<c>(new c(m));        \
     }
 
+class CModule {
+public:
+    virtual icu::UnicodeString name() const = 0;
+    virtual icu::UnicodeString path() const {
+        return "";
+    }
+    virtual std::vector<icu::UnicodeString> keywords() const {
+        return std::vector<icu::UnicodeString>();
+    }
+    virtual icu::UnicodeString docstring() const = 0;
+    virtual std::vector<VMObjectPtr> exports(VM* m) = 0;
+};
+
 };  // namespace egel

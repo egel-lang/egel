@@ -242,6 +242,28 @@ DOCSTRING("System::halt proc - halt process proc");
     }
 };
 
+class ProcessModule: CModule {
+    icu::UnicodeString name() const override {
+        return "process";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'process' module defines a process abstraction.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        oo.push_back(Process::create(vm));
+        oo.push_back(Proc::create(vm));
+        oo.push_back(Send::create(vm));
+        oo.push_back(Recv::create(vm));
+        oo.push_back(Halt::create(vm));
+
+        return oo;
+    }
+};         
+
 inline std::vector<VMObjectPtr> builtin_process(VM *vm) {
     std::vector<VMObjectPtr> oo;
 
