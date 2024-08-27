@@ -45,7 +45,8 @@ DOCSTRING("System::eval text - evaluatate the expression in `text`");
     }
 };
 
-class EvalModule: CModule {                                                                                                                                  
+class EvalModule: public CModule {                                                                                                                                  
+public:
     icu::UnicodeString name() const override {                                                                                                                
         return "eval";                                                                                                                                       
     }                                                                                                                                                         

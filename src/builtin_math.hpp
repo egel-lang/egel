@@ -646,7 +646,8 @@ DOCSTRING("Math::trunc x - the integral part of a number");
     }
 };
 
-class MathModule: CModule {
+class MathModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "math";
     }

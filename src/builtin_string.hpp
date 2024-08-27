@@ -626,7 +626,8 @@ DOCSTRING("String::from_chars s - create a string from a list of chars");
     }
 };
 
-class StringModule: CModule {
+class StringModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "string";
     }

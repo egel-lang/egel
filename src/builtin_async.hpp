@@ -140,7 +140,8 @@ DOCSTRING("System::sleep n - sleep for a number of milliseconds");
     }
 };
 
-class AsyncModule: CModule {
+class AsyncModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "async";
     }

@@ -815,6 +815,52 @@ DOCSTRING("OS::get_key - key press from console");
     }
 };
 
+class OSModule: public CModule {
+public:
+    icu::UnicodeString name() const override {
+        return "os";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'os' module defines basic input/output combinators.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+    //    oo.push_back::create(VMObjectData(vm, "OS", "channel"));
+
+    // oo.push_back(ChannelValue::create(vm));
+    oo.push_back(VMObjectStub::create(vm, "<OS::channel>"));
+    oo.push_back(Stdin::create(vm));
+    oo.push_back(Stdout::create(vm));
+    oo.push_back(Stderr::create(vm));
+    oo.push_back(OpenIn::create(vm));
+    oo.push_back(OpenOut::create(vm));
+    oo.push_back(Close::create(vm));
+    oo.push_back(Read::create(vm));
+    oo.push_back(ReadByte::create(vm));
+    oo.push_back(ReadLine::create(vm));
+    oo.push_back(ReadAll::create(vm));
+    oo.push_back(Write::create(vm));
+    oo.push_back(WriteByte::create(vm));
+    oo.push_back(WriteLine::create(vm));
+    oo.push_back(Flush::create(vm));
+    oo.push_back(Eof::create(vm));
+    oo.push_back(Flock::create(vm));
+    oo.push_back(Exit::create(vm));
+    oo.push_back(Exec::create(vm));
+    oo.push_back(GetKey::create(vm));
+
+
+        return oo;
+    }
+};
+
+extern "C" CModule* egel_module() {
+    CModule* m = new OSModule();
+    return m;
+}
+
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
 }

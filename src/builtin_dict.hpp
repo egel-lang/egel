@@ -164,7 +164,8 @@ DOCSTRING("Dict::keys d - dictionary keys as list");
     }
 };
 
-class DictModule: CModule {
+class DictModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "dict";
     }

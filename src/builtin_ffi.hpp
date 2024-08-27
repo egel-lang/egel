@@ -999,7 +999,8 @@ DOCSTRING("FFI::from_utf8 s - get text from pointer");
     }
 };
 
-class FFIModule: CModule {
+class FFIModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "ffi";
     }

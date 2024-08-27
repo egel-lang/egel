@@ -1066,7 +1066,8 @@ DOCSTRING("Time::date_from_tuple n - date from tuple");
     }
 };
 
-class TimeModule: CModule {
+class TimeModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "time";
     }

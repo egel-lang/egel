@@ -242,7 +242,8 @@ DOCSTRING("System::halt proc - halt process proc");
     }
 };
 
-class ProcessModule: CModule {
+class ProcessModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "process";
     }

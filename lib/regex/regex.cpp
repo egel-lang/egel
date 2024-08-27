@@ -382,6 +382,38 @@ DOCSTRING("Regex::group pat s0 - the matched groups in a string");
     }
 };
 
+class RegexModule: public CModule {
+public:
+    icu::UnicodeString name() const override {
+        return "regex";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'regex' module defines operations on regular expressions.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        oo.push_back(Compile::create(vm));
+        oo.push_back(Match::create(vm));
+        oo.push_back(LookAt::create(vm));
+        oo.push_back(LookMatch::create(vm));
+        oo.push_back(Split::create(vm));
+        oo.push_back(Matches::create(vm));
+        oo.push_back(Replace::create(vm));
+        oo.push_back(ReplaceAll::create(vm));
+        oo.push_back(Group::create(vm));
+
+        return oo;
+    }
+};
+
+extern "C" CModule* egel_module() {
+    CModule* m = new RegexModule();
+    return m;
+}
+
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
 }

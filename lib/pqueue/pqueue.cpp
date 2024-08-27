@@ -156,6 +156,34 @@ DOCSTRING("System::pqueue_set d k v - set a value by key");
     }
 };
 
+class PQueueModule: public CModule {
+public:
+    icu::UnicodeString name() const override {
+        return "pqueue";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'pqueue' module defines a priority queue abstraction.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+    oo.push_back(APQueue::create(vm));
+    oo.push_back(PQueueEmpty::create(vm));
+    oo.push_back(PQueueTop::create(vm));
+    oo.push_back(PQueuePop::create(vm));
+    oo.push_back(PQueuePush::create(vm));
+
+        return oo;
+    }
+};
+
+extern "C" CModule* egel_module() {
+    CModule* m = new PQueueModule();
+    return m;
+}
+
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
 }

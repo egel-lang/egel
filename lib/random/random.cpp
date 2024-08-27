@@ -54,6 +54,30 @@ public:
     }
 };
 
+class RandomModule: public CModule {
+public:
+    icu::UnicodeString name() const override {
+        return "random";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'random' module defines randomization combinators. (Work in progress)";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        oo.push_back(Random::create(vm));
+
+        return oo;
+    }
+};
+
+extern "C" CModule* egel_module() {
+    CModule* m = new RandomModule();
+    return m;
+}
+
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();
 }

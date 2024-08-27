@@ -378,7 +378,9 @@ override { if (machine()->is_text(arg0)) { auto s = machine()->get_text(arg0);
 };
 */
 
-class RuntimeModule: CModule {
+class RuntimeModule: public CModule {
+
+public:
     icu::UnicodeString name() const override {
         return "runtime";
     }

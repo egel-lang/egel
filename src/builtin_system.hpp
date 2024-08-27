@@ -1079,7 +1079,8 @@ vm->array_get(xx,2);
 };
 */
 
-class SystemModule: CModule {
+class SystemModule: public CModule {
+public:
     icu::UnicodeString name() const override {
         return "system";
     }
