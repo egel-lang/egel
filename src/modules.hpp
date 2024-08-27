@@ -82,18 +82,11 @@ private:
 
 using QualifiedStrings = std::vector<QualifiedString>;
 
-enum module_tag_t {
-    MODULE_SOURCE,
-    MODULE_INTERNAL,
-    MODULE_DYNAMIC,
-    MODULE_EGG,
-};
-
 class Module {
 public:
-    Module(const module_tag_t t, const icu::UnicodeString &p,
+    Module(const icu::UnicodeString &p,
            const icu::UnicodeString &fn, VM *m)
-        : _tag(t), _path(p), _filename(fn), _machine(m) {
+        : _path(p), _filename(fn), _machine(m) {
     }
 
     virtual ~Module() {  // keep the compiler happy
@@ -111,12 +104,16 @@ public:
         return _path;
     }
 
+    void set_path(const icu::UnicodeString &p) {
+        _path = p;
+    }
+
     icu::UnicodeString get_filename() const {
         return _filename;
     }
 
-    module_tag_t tag() const {
-        return _tag;
+    void set_filename(const icu::UnicodeString &fn) {
+        _filename = fn;
     }
 
     VM *machine() const {
@@ -168,7 +165,6 @@ public:
     virtual void jit(VM *m) {};
 
 private:
-    module_tag_t _tag;
     OptionsPtr _options;
     icu::UnicodeString _path;
     icu::UnicodeString _filename;
@@ -277,26 +273,26 @@ using exports_t = std::vector<VMObjectPtr> (*)(VM *);
 
 class ModuleInternal : public Module {
 public:
-    ModuleInternal(const icu::UnicodeString &fn, VM *m, const exports_t handle)
-        : Module(MODULE_INTERNAL, fn, fn, m), _handle(handle) {
+    ModuleInternal(VM *m, std::shared_ptr<CModule> &cm)
+        : Module("", "", m), _module(cm) {
     }
 
     ModuleInternal(const ModuleInternal &m)
-        : Module(MODULE_INTERNAL, m.get_path(), m.get_filename(), m.machine()),
-          _handle(m._handle),
-          _imports(m._imports),
+        : Module(m.get_path(), m.get_filename(), m.machine()),
+          _module(m._module),
           _exports(m._exports) {
     }
 
-    static ModulePtr create(const icu::UnicodeString &fn, VM *m,
-                            const exports_t handle) {
-        return std::make_shared<ModuleInternal>(fn, m, handle);
+    static ModulePtr create(VM *m, std::shared_ptr<CModule> cm) {
+        return std::make_shared<ModuleInternal>(m, cm);
     }
 
     void load() override {
+        set_filename(_module->name());
+        set_path(_module->path());
         _imports = QualifiedStrings();
         _values = QualifiedStrings();
-        _exports = (*_handle)(machine());
+        _exports = _module->exports(machine()); //note: this also declares
     }
 
     void unload() override {
@@ -335,15 +331,15 @@ public:
     }
 
     void render(std::ostream &os) const override {
-        os << "dynamic module: " << get_filename();
+        os << "internal module: " << get_filename();
     }
 
     static bool filetype(const icu::UnicodeString &fn) {
-        return fn.endsWith(".ego");
+        return false;
     }
 
 private:
-    exports_t _handle;
+    std::shared_ptr<CModule> _module;
     QualifiedStrings _imports;
     QualifiedStrings _values;
     VMObjectPtrs _exports;
@@ -353,14 +349,14 @@ class ModuleDynamic : public Module {
 public:
     ModuleDynamic(const icu::UnicodeString &p, const icu::UnicodeString &fn,
                   VM *m)
-        : Module(MODULE_DYNAMIC, p, fn, m),
+        : Module(p, fn, m),
           _handle(0),
           _imports(0),
           _exports(0) {
     }
 
     ModuleDynamic(const ModuleDynamic &m)
-        : Module(MODULE_DYNAMIC, m.get_path(), m.get_filename(), m.machine()),
+        : Module(m.get_path(), m.get_filename(), m.machine()),
           _handle(m._handle),
           _imports(m._imports),
           _exports(m._exports) {
@@ -490,11 +486,11 @@ class ModuleSource : public Module {
 public:
     ModuleSource(const icu::UnicodeString &path, const icu::UnicodeString &fn,
                  VM *m)
-        : Module(MODULE_SOURCE, path, fn, m), _source(""), _ast(0) {
+        : Module(path, fn, m), _source(""), _ast(0) {
     }
 
     ModuleSource(const ModuleSource &m)
-        : Module(MODULE_SOURCE, m.get_path(), m.get_filename(), m.machine()),
+        : Module(m.get_path(), m.get_filename(), m.machine()),
           _source(m._source),
           _ast(m._ast) {
         set_options(m.get_options());
@@ -642,11 +638,11 @@ class ModuleEgg : public Module {
 public:
     ModuleEgg(const icu::UnicodeString &path, const icu::UnicodeString &fn,
               VM *m)
-        : Module(MODULE_EGG, path, fn, m), _source(""), _ast(0) {
+        : Module(path, fn, m), _source(""), _ast(0) {
     }
 
     ModuleEgg(const ModuleEgg &m)
-        : Module(MODULE_EGG, m.get_path(), m.get_filename(), m.machine()),
+        : Module(m.get_path(), m.get_filename(), m.machine()),
           _source(m._source),
           _ast(m._ast) {
         set_options(m.get_options());
@@ -815,25 +811,25 @@ public:
         set_machine(vm);
         set_environment(env);
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_time));
+            ModuleInternal::create(vm, std::make_shared<TimeModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_system));
+            ModuleInternal::create(vm, std::make_shared<SystemModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_math));
+            ModuleInternal::create(vm, std::make_shared<MathModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_string));
+            ModuleInternal::create(vm, std::make_shared<StringModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_runtime));
+            ModuleInternal::create(vm, std::make_shared<RuntimeModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_process));
+            ModuleInternal::create(vm, std::make_shared<ProcessModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_eval));
+            ModuleInternal::create(vm, std::make_shared<EvalModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_async));
+            ModuleInternal::create(vm, std::make_shared<AsyncModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_dict));
+            ModuleInternal::create(vm, std::make_shared<DictModule>()));
         _loading.push_back(
-            ModuleInternal::create("internal", vm, &builtin_ffi));
+            ModuleInternal::create(vm, std::make_shared<FFIModule>()));
         for (const auto &m : _loading) {
             m->load();
         }
