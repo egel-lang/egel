@@ -1531,7 +1531,7 @@ private:
     icu::UnicodeString _docstring;
 };
 
-#define VMOBJECT_DOCSTRING(dd) \
+#define DOCSTRING(dd) \
     virtual icu::UnicodeString docstring() const override { \
         return dd; \
     }
@@ -1987,6 +1987,10 @@ public:
 
     Opaque(const vm_subtag_t t, VM *m, const symbol_t s)
         : VMObjectOpaque(t, m, s) {
+    }
+
+    virtual icu::UnicodeString docstring() const {
+        return "";
     }
 };
 

@@ -58,52 +58,52 @@ bool mul_overflow(long long int a, long long int b, long long int *c) {
  * Basic operators, conversions, and some other.
  **/
 
-// ## System::k x y - k combinator
 class K : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, K, "System", "k");
 
+DOCSTRING("System::k x y - k combinator");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         return arg0;
     }
 };
 
-// ## System::id x - identity combinator
 class Id : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Id, "System", "id");
 
+DOCSTRING("System::id x - identity combinator");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return arg0;
     }
 };
 
-// ## System:min_int - maximum for integers
 class MinInt : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MinInt, "System", "min_int");
 
+DOCSTRING("System:min_int - maximum for integers");
     VMObjectPtr apply() const override {
         return machine()->create_integer(std::numeric_limits<vm_int_t>::min());
     }
 };
 
-// ## System::max_int - maximum for integers
 class MaxInt : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MaxInt, "System", "max_int");
 
+DOCSTRING("System::max_int - maximum for integers");
     VMObjectPtr apply() const override {
         return machine()->create_integer(std::numeric_limits<vm_int_t>::max());
     }
 };
 
-// ## System::!- x - monadic minus
 class MonMin : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, MonMin, "System", "!-");
 
+DOCSTRING("System::!- x - monadic minus");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
@@ -122,11 +122,11 @@ public:
     }
 };
 
-// ## System::+ x y - addition
 class Add : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Add, "System", "+");
 
+DOCSTRING("System::+ x y - addition");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -160,11 +160,11 @@ public:
     }
 };
 
-// ## System::+ x y - substraction
 class Min : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Min, "System", "-");
 
+DOCSTRING("System::+ x y - substraction");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -194,11 +194,11 @@ public:
     }
 };
 
-// ## System::* x y - multiplication
 class Mul : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mul, "System", "*");
 
+DOCSTRING("System::* x y - multiplication");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -228,11 +228,11 @@ public:
     }
 };
 
-// ## System::/ x y - division
 class Div : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Div, "System", "/");
 
+DOCSTRING("System::/ x y - division");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -263,11 +263,11 @@ public:
     }
 };
 
-// ## System::% x y - modulo
 class Mod : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mod, "System", "%");
 
+DOCSTRING("System::% x y - modulo");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -283,11 +283,11 @@ public:
     }
 };
 
-// ## System::& x y - bitwise and
 class BinAnd : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinAnd, "System", "&");
 
+DOCSTRING("System::& x y - bitwise and");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -300,11 +300,11 @@ public:
     }
 };
 
-// ## System::$ x y - bitwise or
 class BinOr : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinOr, "System", "$");
 
+DOCSTRING("System::$ x y - bitwise or");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -317,11 +317,11 @@ public:
     }
 };
 
-// ## System::^ x y - bitwise xor
 class BinXOr : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinXOr, "System", "^");
 
+DOCSTRING("System::^ x y - bitwise xor");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -334,11 +334,11 @@ public:
     }
 };
 
-// ## System::!~ x - bitwise complement
 class BinComplement : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, BinComplement, "System", "!~");
 
+DOCSTRING("System::!~ x - bitwise complement");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if ((machine()->is_integer(arg0))) {
             auto i0 = machine()->get_integer(arg0);
@@ -349,11 +349,11 @@ public:
     }
 };
 
-// ## System::<< x y - bitwise left shift
 class BinLeftShift : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinLeftShift, "System", "<<");
 
+DOCSTRING("System::<< x y - bitwise left shift");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -366,11 +366,11 @@ public:
     }
 };
 
-// ## System::>> x y - bitwise right shift
 class BinRightShift : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinRightShift, "System", ">>");
 
+DOCSTRING("System::>> x y - bitwise right shift");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -383,11 +383,11 @@ public:
     }
 };
 
-// ## System::< x y - builtin less
 class Less : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Less, "System", "<");
 
+DOCSTRING("System::< x y - builtin less");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -399,11 +399,11 @@ public:
     }
 };
 
-// ## System::<= x y - builtin less or equals
 class LessEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, LessEq, "System", "<=");
 
+DOCSTRING("System::<= x y - builtin less or equals");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -415,11 +415,11 @@ public:
     }
 };
 
-// ## System::> x y - builtin greater
 class Greater : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Greater, "System", ">");
 
+DOCSTRING("System::> x y - builtin greater");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -431,11 +431,11 @@ public:
     }
 };
 
-// ## System::>= x y - builtin greater or equals
 class GreaterEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, GreaterEq, "System", ">=");
 
+DOCSTRING("System::>= x y - builtin greater or equals");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -446,11 +446,12 @@ public:
         }
     }
 };
-// ## System::== x y - builtin equality
+
 class Eq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Eq, "System", "==");
 
+DOCSTRING("System::== x y - builtin equality");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -462,11 +463,11 @@ public:
     }
 };
 
-// ## System::/= x y - builtin inequality
 class NegEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, NegEq, "System", "/=");
 
+DOCSTRING("System::/= x y - builtin inequality");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -600,11 +601,11 @@ public:
 };
 */
 
-// ## System::to_int x - Try and convert an object to int
 class Toint : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Toint, "System", "to_int");
 
+DOCSTRING("System::to_int x - Try and convert an object to int");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             return arg0;
@@ -625,11 +626,11 @@ public:
     }
 };
 
-// ## System::to_float x - try and convert an object to float
 class Tofloat : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tofloat, "System", "to_float");
 
+DOCSTRING("System::to_float x - try and convert an object to float");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
@@ -646,11 +647,11 @@ public:
     }
 };
 
-// ## System::to_text x - try and convert an object to text
 class Totext : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Totext, "System", "to_text");
 
+DOCSTRING("System::to_text x - try and convert an object to text");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
@@ -673,11 +674,11 @@ public:
     }
 };
 
-// ## System::reference - an opaque reference object
 class Reference : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Reference, "System", "reference");
 
+DOCSTRING("System::reference - an opaque reference object");
     Reference(VM *vm, const VMObjectPtr &r)
         : Opaque(VM_SUB_BUILTIN, vm, "System", "reference") {
         _ref = r;
@@ -708,11 +709,11 @@ protected:
     VMObjectPtr _ref = nullptr;
 };
 
-// ## System::ref x - create a reference object
 class Ref : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ref, "System", "ref");
 
+DOCSTRING("System::ref x - create a reference object");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto vm = machine();
         auto r = Reference::create(vm, arg0);
@@ -720,11 +721,11 @@ public:
     }
 };
 
-// ## System::get_ref ref - dereference
 class Getref : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Getref, "System", "get_ref");
 
+DOCSTRING("System::get_ref ref - dereference");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (Reference::is_type(arg0)) {
             auto r = Reference::cast(arg0);
@@ -735,11 +736,11 @@ public:
     }
 };
 
-// ## System::set_ref ref x - set reference objec
 class Setref : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Setref, "System", "set_ref");
 
+DOCSTRING("System::set_ref ref x - set reference objec");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if (Reference::is_type(arg0)) {
@@ -752,11 +753,11 @@ public:
     }
 };
 
-// ## System::version - version information of this executable
 class Version : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Version, "System", "version");
 
+DOCSTRING("System::version - version information of this executable");
     VMObjectPtr apply() const override {
         if (application_version == "") {
             throw machine()->create_text("no version information");
@@ -766,11 +767,11 @@ public:
     }
 };
 
-// ## System::arg n - the n-th application argument, or none
 class Arg : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Arg, "System", "arg");
 
+DOCSTRING("System::arg n - the n-th application argument, or none");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (application_argv == nullptr) {
             throw machine()->bad_args(this, arg0);
@@ -789,11 +790,11 @@ public:
     }
 };
 
-// ## System::get_env s - the value of environment variable, or none
 class Getenv : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Getenv, "System", "get_env");
 
+DOCSTRING("System::get_env s - the value of environment variable, or none");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto t = machine()->get_text(arg0);
@@ -860,21 +861,21 @@ public:
 };
 */
 
-// ## System::munch o0 .. on - terms to list
-class Munch : public Variadic {
+class ArgsToList : public Variadic {
 public:
-    VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Munch, "System", "munch");
+    VARIADIC_PREAMBLE(VM_SUB_BUILTIN, ArgsToList, "System", "args_to_list");
 
+DOCSTRING("System::args_to_list o0 .. on - arguments to list");
     VMObjectPtr apply(const VMObjectPtrs &args) const override {
         return machine()->to_list(args);
     }
 };
 
-// ## System::unmunch {o0 .. on} - list to terms
-class Unmunch : public Unary {
+class ListToApp : public Unary {
 public:
-    UNARY_PREAMBLE(VM_SUB_BUILTIN, Unmunch, "System", "unmunch");
+    UNARY_PREAMBLE(VM_SUB_BUILTIN, ListToApp, "System", "list_to_app");
 
+DOCSTRING("System::list_to_app {o0 .. on} - list to application");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_list(arg0)) {
             auto oo = machine()->from_list(arg0);
@@ -885,11 +886,11 @@ public:
     }
 };
 
-// ## System::print o0 .. on - print terms
 class Print : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Print, "System", "print");
 
+DOCSTRING("System::print o0 .. on - print terms");
     VMObjectPtr apply(const VMObjectPtrs &args) const override {
         icu::UnicodeString s;
         for (auto &arg : args) {
@@ -911,11 +912,11 @@ public:
     }
 };
 
-// ## System::get_line - read a line from standard input
 class Getline : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Getline, "System", "get_line");
 
+DOCSTRING("System::get_line - read a line from standard input");
     VMObjectPtr apply() const override {
         std::string line;
         std::getline(std::cin, line);
@@ -924,11 +925,11 @@ public:
     }
 };
 
-// ## System::format fmt x0 ...  - create a formatted strin
 class Format : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Format, "System", "format");
 
+DOCSTRING("System::format fmt x0 ...  - create a formatted strin");
     VMObjectPtr apply(const VMObjectPtrs &args) const override {
         if (args.size() < 1) {
             return nullptr;
@@ -1143,8 +1144,8 @@ inline std::vector<VMObjectPtr> builtin_system(VM *vm) {
     oo.push_back(Getenv::create(vm));
 
     // munching
-    oo.push_back(Munch::create(vm));
-    oo.push_back(Unmunch::create(vm));
+    oo.push_back(ArgsToList::create(vm));
+    oo.push_back(ListToApp::create(vm));
 
     // the builtin print & getline, override if sandboxed
     oo.push_back(Print::create(vm));
