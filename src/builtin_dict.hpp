@@ -188,15 +188,3 @@ public:
     }
 };
 
-inline std::vector<VMObjectPtr> builtin_dict(VM* vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(Dict::create(vm));
-    oo.push_back(DictHas::create(vm));
-    oo.push_back(DictGet::create(vm));
-    oo.push_back(DictSet::create(vm));
-    oo.push_back(DictErase::create(vm));
-    oo.push_back(DictKeys::create(vm));
-
-    return oo;
-}

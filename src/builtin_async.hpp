@@ -166,20 +166,4 @@ public:
     }
 };
 
-inline std::vector<VMObjectPtr> builtin_async(VM *vm) {
-    std::vector<VMObjectPtr> oo;
-
-    // oo.push_back(Future::create(vm)); // XXX: I always forget whether this
-    //  is needed
-    oo.push_back(VMObjectStub::create(
-        vm, "System::future"));  // XXX: I always forget whether this is needed
-    oo.push_back(Async::create(vm));
-    oo.push_back(Await::create(vm));
-    oo.push_back(WaitFor::create(vm));
-    oo.push_back(IsValid::create(vm));
-    oo.push_back(Sleep::create(vm));
-
-    return oo;
-}
-
 }  // namespace egel

@@ -1052,46 +1052,5 @@ public:
     }
 };
 
-inline std::vector<VMObjectPtr> builtin_ffi(VM* vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(VMObjectData::create(vm, c_void));
-    oo.push_back(VMObjectData::create(vm, c_bool));
-    oo.push_back(VMObjectData::create(vm, c_char));
-    oo.push_back(VMObjectData::create(vm, c_wchar));
-    oo.push_back(VMObjectData::create(vm, c_byte));
-    oo.push_back(VMObjectData::create(vm, c_ubyte));
-    oo.push_back(VMObjectData::create(vm, c_short));
-    oo.push_back(VMObjectData::create(vm, c_ushort));
-    oo.push_back(VMObjectData::create(vm, c_int));
-    oo.push_back(VMObjectData::create(vm, c_uint));
-    oo.push_back(VMObjectData::create(vm, c_long));
-    oo.push_back(VMObjectData::create(vm, c_ulong));
-    oo.push_back(VMObjectData::create(vm, c_longlong));
-    oo.push_back(VMObjectData::create(vm, c_ulonglong));
-    oo.push_back(VMObjectData::create(vm, c_size_t));
-    oo.push_back(VMObjectData::create(vm, c_ssize_t));
-    oo.push_back(VMObjectData::create(vm, c_time_t));
-    oo.push_back(VMObjectData::create(vm, c_float));
-    oo.push_back(VMObjectData::create(vm, c_double));
-    oo.push_back(VMObjectData::create(vm, c_longdouble));
-    oo.push_back(VMObjectData::create(vm, c_char_p));
-    oo.push_back(VMObjectData::create(vm, c_wchar_p));
-    oo.push_back(VMObjectData::create(vm, c_void_p));
-
-    oo.push_back(LoadLibrary::create(vm));
-    oo.push_back(Function::create(vm));
-    oo.push_back(Call::create(vm));
-
-    oo.push_back(Malloc::create(vm));
-    oo.push_back(Free::create(vm));
-    oo.push_back(Peek::create(vm));
-    oo.push_back(Poke::create(vm));
-
-    oo.push_back(ToUTF8::create(vm));
-    oo.push_back(FromUTF8::create(vm));
-
-    return oo;
-}
 
 }  // namespace egel

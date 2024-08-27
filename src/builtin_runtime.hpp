@@ -428,41 +428,4 @@ public:
     }
 };
 
-std::vector<VMObjectPtr> builtin_runtime(VM *vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(Dis::create(vm));
-    oo.push_back(Asm::create(vm));
-
-    oo.push_back(Serialize::create(vm));
-    oo.push_back(Deserialize::create(vm));
-
-    oo.push_back(Tokenize::create(vm));
-
-    oo.push_back(Docstring::create(vm));
-
-    oo.push_back(Modules::create(vm));
-    oo.push_back(IsModule::create(vm));
-    oo.push_back(QueryModuleName::create(vm));
-    oo.push_back(QueryModulePath::create(vm));
-    oo.push_back(QueryModuleImports::create(vm));
-    oo.push_back(QueryModuleExports::create(vm));
-    oo.push_back(QueryModuleValues::create(vm));
-
-    oo.push_back(IsInteger::create(vm));
-    oo.push_back(IsFloat::create(vm));
-    oo.push_back(IsCharacter::create(vm));
-    oo.push_back(IsText::create(vm));
-    oo.push_back(IsCombinator::create(vm));
-    oo.push_back(IsOpaque::create(vm));
-    oo.push_back(IsArray::create(vm));
-    oo.push_back(IsBytecode::create(vm));
-
-    oo.push_back(GetArray::create(vm));
-    oo.push_back(GetBytecode::create(vm));
-    oo.push_back(GetBytedata::create(vm));
-    oo.push_back(Dependencies::create(vm));
-    return oo;
-}
-
 }  // namespace egel

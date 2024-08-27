@@ -62,12 +62,5 @@ public:
     }                                                                                                                                                         
 };         
 
-inline std::vector<VMObjectPtr> builtin_eval(VM *vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(Evaluate::create(vm));
-
-    return oo;
-};
 
 }  // namespace egel
