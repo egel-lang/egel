@@ -31,10 +31,10 @@ enum class clock_type : int {
  Date/time classes revolve about four abstractions: clocks, time points,
  durations, and calendar times.
 */
-// ## Time::duration - a duration
 class Duration : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Duration, STRING_TIME, "duration");
+DOCSTRING("Time::duration - a duration");
 
     Duration(const Duration& d)
         : Opaque(VM_SUB_BUILTIN, d.machine(), d.symbol()) {
@@ -78,10 +78,10 @@ private:
     std::chrono::duration<int, std::milli> _duration;
 };
 
-// ## Time::time_point - a time point
 class TimePoint : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, TimePoint, STRING_TIME, "time_point");
+DOCSTRING("Time::time_point - a time point");
 
     TimePoint(const TimePoint& tp)
         : Opaque(VM_SUB_BUILTIN, tp.machine(), tp.symbol()) {
@@ -501,10 +501,10 @@ VMObjectPtr Duration::op_add(const VMObjectPtr& o) {
     }
 }
 
-// ## Time::time_clock - opaque values that represent clocks
 class TimeClock : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, TimeClock, STRING_TIME, "time_clock");
+DOCSTRING("Time::time_clock - opaque values that represent clocks");
 
     TimeClock(const TimeClock& clock)
         : Opaque(VM_SUB_BUILTIN, clock.machine(), clock.symbol()) {
@@ -631,10 +631,10 @@ protected:
     enum clock_type _clock_type;
 };
 
-// ## Time::date - a date
 class Date : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Date, STRING_TIME, "date");
+DOCSTRING("Time::date - a date");
 
     Date(const Date& d) : Opaque(VM_SUB_BUILTIN, d.machine(), d.symbol()) {
         _date = d.date();
@@ -718,10 +718,10 @@ private:
     std::tm _date;
 };
 
-// ## Time::clock s - create a clock object
 class Clock : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Clock, STRING_TIME, "clock");
+DOCSTRING("Time::clock s - create a clock object");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_none(arg0)) {
@@ -766,10 +766,10 @@ public:
     }
 };
 
-// ## Time::now c - current time according to a clock
 class Now : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Now, STRING_TIME, "now");
+DOCSTRING("Time::now c - current time according to a clock");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimeClock::is_time_clock(arg0)) {
@@ -781,10 +781,10 @@ public:
     }
 };
 
-// ## Time::is_steady c - is a steady clock
 class IsSteady : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsSteady, STRING_TIME, "is_steady");
+DOCSTRING("Time::is_steady c - is a steady clock");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimeClock::is_time_clock(arg0)) {
@@ -812,10 +812,10 @@ public:
 };
 */
 
-// ## Time::milliseconds n - a number of milliseconds
 class Milliseconds : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Milliseconds, STRING_TIME, "milliseconds");
+DOCSTRING("Time::milliseconds n - a number of milliseconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -828,10 +828,10 @@ public:
     }
 };
 
-// ## Time::seconds n - a number of seconds
 class Seconds : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Seconds, STRING_TIME, "seconds");
+DOCSTRING("Time::seconds n - a number of seconds");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -843,10 +843,10 @@ public:
     }
 };
 
-// ## Time::minutes n - a number of minutes
 class Minutes : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Minutes, STRING_TIME, "minutes");
+DOCSTRING("Time::minutes n - a number of minutes");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -858,10 +858,10 @@ public:
     }
 };
 
-// ## Time::hours n - a number of hours
 class Hours : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Hours, STRING_TIME, "hours");
+DOCSTRING("Time::hours n - a number of hours");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -873,10 +873,10 @@ public:
     }
 };
 
-// ## Time::days n - a number of days
 class Days : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Days, STRING_TIME, "days");
+DOCSTRING("Time::days n - a number of days");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -888,10 +888,10 @@ public:
     }
 };
 
-// ## Time::weeks n - a number of weeks
 class Weeks : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Weeks, STRING_TIME, "weeks");
+DOCSTRING("Time::weeks n - a number of weeks");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -903,10 +903,10 @@ public:
     }
 };
 
-// ## Time::months n - a number of months
 class Months : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Months, STRING_TIME, "months");
+DOCSTRING("Time::months n - a number of months");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -918,10 +918,10 @@ public:
     }
 };
 
-// ## Time::years n - a number of years
 class Years : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Years, STRING_TIME, "years");
+DOCSTRING("Time::years n - a number of years");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -933,10 +933,10 @@ public:
     }
 };
 
-// ## Time::local_time n - time point to local date
 class Localtime : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Localtime, STRING_TIME, "local_time");
+DOCSTRING("Time::local_time n - time point to local date");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimePoint::is_time_point(arg0)) {
@@ -959,10 +959,10 @@ public:
     }
 };
 
-// ## Time::gm_time n - time point to gm date
 class GMTime : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GMTime, STRING_TIME, "gm_time");
+DOCSTRING("Time::gm_time n - time point to gm date");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (TimePoint::is_time_point(arg0)) {
@@ -1019,10 +1019,10 @@ std::chrono::local_time<std::chrono::seconds>(local_time).time_since_epoch().cou
 };
 */
 
-// ## Time::date_to_time n - date to time point
 class DateToTime : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, DateToTime, STRING_TIME, "date_to_time");
+DOCSTRING("Time::date_to_time n - date to time point");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (Date::is_date(arg0)) {
@@ -1037,10 +1037,10 @@ public:
     }
 };
 
-// ## Time::date_to_tuple n - date to tuple
 class DateToTuple : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, DateToTuple, STRING_TIME, "date_to_tuple");
+DOCSTRING("Time::date_to_tuple n - date to tuple");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (Date::is_date(arg0)) {
@@ -1051,11 +1051,11 @@ public:
     }
 };
 
-// ## Time::date_from_tuple n - date from tuple
 class DateFromTuple : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, DateFromTuple, STRING_TIME,
                      "date_from_tuple");
+DOCSTRING("Time::date_from_tuple n - date from tuple");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (Date::is_tuple(machine(), arg0)) {

@@ -15,11 +15,11 @@ typedef std::map<VMObjectPtr, VMObjectPtr, LessVMObjectPtr> dict_t;
 
 const icu::UnicodeString STRING_DICT = "Dict";
 
-// ## Dict::dictionary - a dictionary
 class Dictionary : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, Dictionary, STRING_DICT, "dictionary");
 
+DOCSTRING("Dict::dictionary - a dictionary");
     Dictionary(VM* m, const dict_t& d) : Dictionary(m) {
         _value = d;
     }
@@ -71,21 +71,21 @@ protected:
     dict_t _value;
 };
 
-// ## Dict::dict - create a dict object
 class Dict : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Dict, STRING_DICT, "dict");
 
+DOCSTRING("Dict::dict - create a dict object");
     VMObjectPtr apply() const override {
         return Dictionary::create(machine(), dict_t());
     }
 };
 
-// ## Dict::has d k - check for key
 class DictHas : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, DictHas, STRING_DICT, "has");
 
+DOCSTRING("Dict::has d k - check for key");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         auto m = machine();
@@ -98,11 +98,11 @@ public:
     }
 };
 
-// ## Dict::get d k - get a value by key
 class DictGet : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_EGO, DictGet, STRING_DICT, "get");
 
+DOCSTRING("Dict::get d k - get a value by key");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         if (Dictionary::is_type(arg0)) {
@@ -114,11 +114,11 @@ public:
     }
 };
 
-// ## Dict::set d k v - set a value by key
 class DictSet : public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_EGO, DictSet, STRING_DICT, "set");
 
+DOCSTRING("Dict::set d k v - set a value by key");
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
         if (Dictionary::is_type(arg0)) {
@@ -131,11 +131,11 @@ public:
     }
 };
 
-// ## Dict::erase d k - erase a value by key
 class DictErase : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, DictErase, STRING_DICT, "erase");
 
+DOCSTRING("Dict::erase d k - erase a value by key");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         if (Dictionary::is_type(arg0)) {
@@ -148,11 +148,11 @@ public:
     }
 };
 
-// ## Dict::keys d - dictionary keys as list
 class DictKeys : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, DictKeys, STRING_DICT, "keys");
 
+DOCSTRING("Dict::keys d - dictionary keys as list");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);

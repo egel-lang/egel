@@ -15,12 +15,12 @@ namespace egel {
  * Almost all of these combinators work only on floats.
  **/
 
-// ## namespace Math - builtin mathematical operators
+//DOCSTRING("namespace Math - builtin mathematical operators");
 
-// ## Math::is_finite x - test whether this float is finite
 class IsFinite : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsFinite, "Math", "is_finite");
+DOCSTRING("Math::is_finite x - test whether this float is finite");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -32,10 +32,10 @@ public:
     }
 };
 
-// ## Math::is_infinite x - test whether this float is infinite
 class IsInfinite : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsInfinite, "Math", "is_infinite");
+DOCSTRING("Math::is_infinite x - test whether this float is infinite");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -47,10 +47,10 @@ public:
     }
 };
 
-// ## Math::is_nan x - test whether this float is Not a Number
 class IsNan : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsNan, "Math", "is_nan");
+DOCSTRING("Math::is_nan x - test whether this float is Not a Number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -62,10 +62,10 @@ public:
     }
 };
 
-// ## Math::is_normal x - test whether this float is normal
 class IsNormal : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsNormal, "Math", "is_normal");
+DOCSTRING("Math::is_normal x - test whether this float is normal");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -77,93 +77,93 @@ public:
     }
 };
 
-// ## Math::e - Euler's constant and the base of natural logarithms,
 //  approximately 2.718
 class Euler : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Euler, "Math", "e");
+DOCSTRING("Math::e - Euler's constant and the base of natural logarithms,");
 
     VMObjectPtr apply() const override {
         return machine()->create_float(M_E);
     }
 };
 
-// ## Math::ln2 - Natural logarithm of 2, approximately 0.693
 class Ln2 : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Ln2, "Math", "ln2");
+DOCSTRING("Math::ln2 - Natural logarithm of 2, approximately 0.693");
 
     VMObjectPtr apply() const override {
         return machine()->create_float(M_LN2);
     }
 };
 
-// ## Math::ln10 - natural logarithm of 10, approximately 2.303
 class Ln10 : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Ln10, "Math", "ln10");
 
+DOCSTRING("Math::ln10 - natural logarithm of 10, approximately 2.303");
     VMObjectPtr apply() const override {
         return machine()->create_float(M_LN10);
     }
 };
 
-// ## Math::log2e - base 2 logarithm of E, approximately 1.443
 class Log2e : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Log2e, "Math", "log2e");
 
+DOCSTRING("Math::log2e - base 2 logarithm of E, approximately 1.443");
     VMObjectPtr apply() const override {
         return machine()->create_float(M_LOG2E);
     }
 };
 
-// ## Math::log10e - base 10 logarithm of E, approximately 0.434
 class Log10e : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Log10e, "Math", "log10e");
+DOCSTRING("Math::log10e - base 10 logarithm of E, approximately 0.434");
 
     VMObjectPtr apply() const override {
         return machine()->create_float(M_LOG10E);
     }
 };
 
-// ## Math::pi - ratio of the circumference of a circle to its diameter,
 //  approximately 3.14159
 class Pi : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Pi, "Math", "pi");
+DOCSTRING("Math::pi - ratio of the circumference of a circle to its diameter,");
 
     VMObjectPtr apply() const override {
         return machine()->create_float(M_PI);
     }
 };
 
-// ## Math::sqrt1_2 - square root of 1/2; equivalently, 1 over the square root
 //  of 2, approximately 0.707
 class Sqrt1_2 : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Sqrt1_2, "Math", "sqrt1_2");
+DOCSTRING("Math::sqrt1_2 - square root of 1/2; equivalently, 1 over the square root");
 
     VMObjectPtr apply() const override {
         return machine()->create_float(M_SQRT1_2);
     }
 };
 
-// ## Math::sqrt2 - square root of 2, approximately 1.414
 class Sqrt2 : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Sqrt2, "Math", "sqrt2");
+DOCSTRING("Math::sqrt2 - square root of 2, approximately 1.414");
 
     VMObjectPtr apply() const override {
         return machine()->create_float(M_SQRT2);
     }
 };
 
-// ## Math::abs x - the absolute value of a number
 class Abs : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Abs, "Math", "abs");
+DOCSTRING("Math::abs x - the absolute value of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -175,10 +175,10 @@ public:
     }
 };
 
-// ## Math::acos x - the arccosine of a number
 class Acos : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Acos, "Math", "acos");
+DOCSTRING("Math::acos x - the arccosine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -190,10 +190,10 @@ public:
     }
 };
 
-// ## Math::acosh x - the hyperbolic arccosine of a number
 class Acosh : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Acosh, "Math", "acosh");
+DOCSTRING("Math::acosh x - the hyperbolic arccosine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -205,10 +205,10 @@ public:
     }
 };
 
-// ## Math::asin x - the arcsine of a number
 class Asin : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Asin, "Math", "asin");
+DOCSTRING("Math::asin x - the arcsine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -220,10 +220,10 @@ public:
     }
 };
 
-// ## Math::asinh x - the hyperbolic arcsine of a number
 class Asinh : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Asinh, "Math", "asinh");
+DOCSTRING("Math::asinh x - the hyperbolic arcsine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -235,10 +235,10 @@ public:
     }
 };
 
-// ## Math::atan x - the arctangent of a number
 class Atan : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Atan, "Math", "atan");
+DOCSTRING("Math::atan x - the arctangent of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -250,10 +250,10 @@ public:
     }
 };
 
-// ## Math::atanh x - the hyperbolic arctangent of a number
 class Atanh : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Atanh, "Math", "atanh");
+DOCSTRING("Math::atanh x - the hyperbolic arctangent of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -265,10 +265,10 @@ public:
     }
 };
 
-// ## Math::atan2 y x - the arctangent of the quotient of its arguments
 class Atan2 : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Atan2, "Math", "atan2");
+DOCSTRING("Math::atan2 y x - the arctangent of the quotient of its arguments");
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
@@ -282,10 +282,10 @@ public:
     }
 };
 
-// ## Math::cbrt x - the cube root of a number
 class Cbrt : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Cbrt, "Math", "cbrt");
+DOCSTRING("Math::cbrt x - the cube root of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -297,10 +297,10 @@ public:
     }
 };
 
-// ## Math::ceil x - the ceiling of a number
 class Ceil : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ceil, "Math", "ceil");
+DOCSTRING("Math::ceil x - the ceiling of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -312,10 +312,10 @@ public:
     }
 };
 
-// ## Math::cos x - the cosine of a number
 class Cos : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Cos, "Math", "cos");
+DOCSTRING("Math::cos x - the cosine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -327,10 +327,10 @@ public:
     }
 };
 
-// ## Math::cosh x - the hyperbolic cosine of a number
 class Cosh : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Cosh, "Math", "cosh");
+DOCSTRING("Math::cosh x - the hyperbolic cosine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -342,10 +342,10 @@ public:
     }
 };
 
-// ## Math::exp x - the exp of a number
 class Exp : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Exp, "Math", "exp");
+DOCSTRING("Math::exp x - the exp of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -357,10 +357,10 @@ public:
     }
 };
 
-// ## Math::expm1 x - subtracting 1 from exp
 class Expm1 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Expm1, "Math", "expm1");
+DOCSTRING("Math::expm1 x - subtracting 1 from exp");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -372,10 +372,10 @@ public:
     }
 };
 
-// ## Math::floor x - the largest integer less than or equal to a number
 class Floor : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Floor, "Math", "floor");
+DOCSTRING("Math::floor x - the largest integer less than or equal to a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -403,10 +403,10 @@ of a number class Fround: public Monadic { public:
 };
 */
 
-// ## Math::log x - the natural logarithm (loge, also ln) of a number
 class Log : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log, "Math", "log");
+DOCSTRING("Math::log x - the natural logarithm (loge, also ln) of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -418,10 +418,10 @@ public:
     }
 };
 
-// ## Math::log1p x - the natural logarithm of the next number
 class Log1p : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log1p, "Math", "log1p");
+DOCSTRING("Math::log1p x - the natural logarithm of the next number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -433,10 +433,10 @@ public:
     }
 };
 
-// ## Math::log10 x - the base 10 logarithm of a number
 class Log10 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log10, "Math", "log10");
+DOCSTRING("Math::log10 x - the base 10 logarithm of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -448,10 +448,10 @@ public:
     }
 };
 
-// ## Math::log2 x - the base 2 logarithm of a number
 class Log2 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Log2, "Math", "log2");
+DOCSTRING("Math::log2 x - the base 2 logarithm of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -463,10 +463,10 @@ public:
     }
 };
 
-// ## Math::max x y - the largest of two numbers
 class Max : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Max, "Math", "max");
+DOCSTRING("Math::max x y - the largest of two numbers");
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
@@ -480,10 +480,10 @@ public:
     }
 };
 
-// ## Math::min x y - the smallest of two numbers
 class MMin : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, MMin, "Math", "min");
+DOCSTRING("Math::min x y - the smallest of two numbers");
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
@@ -497,10 +497,10 @@ public:
     }
 };
 
-// ## Math::pow x y - base to the exponent power, that is, baseexponent
 class Pow : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Pow, "Math", "pow");
+DOCSTRING("Math::pow x y - base to the exponent power, that is, baseexponent");
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
@@ -514,21 +514,21 @@ public:
     }
 };
 
-// ## Math::random - a pseudo-random number between 0 and 1
 class Random : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Random, "Math", "random");
+DOCSTRING("Math::random - a pseudo-random number between 0 and 1");
 
     VMObjectPtr apply() const override {
         return machine()->create_float(random());
     }
 };
 
-// ## Math::round x - the value of a number rounded to the nearest
 //  integer
 class Round : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Round, "Math", "round");
+DOCSTRING("Math::round x - the value of a number rounded to the nearest");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -540,10 +540,10 @@ public:
     }
 };
 
-// ## Math::sign x - the sign of the a number
 class Sign : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sign, "Math", "sign");
+DOCSTRING("Math::sign x - the sign of the a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -556,10 +556,10 @@ public:
     }
 };
 
-// ## Math::sin x - the sine of a number
 class Sin : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sin, "Math", "sin");
+DOCSTRING("Math::sin x - the sine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -571,10 +571,10 @@ public:
     }
 };
 
-// ## Math::sinh x - the hyperbolic sine of a number
 class Sinh : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sinh, "Math", "sinh");
+DOCSTRING("Math::sinh x - the hyperbolic sine of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -586,10 +586,10 @@ public:
     }
 };
 
-// ## Math::sqrt x - the positive square root of a number
 class Sqrt : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sqrt, "Math", "sqrt");
+DOCSTRING("Math::sqrt x - the positive square root of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -601,10 +601,10 @@ public:
     }
 };
 
-// ## Math::tan x - the tangent of a number
 class Tan : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tan, "Math", "tan");
+DOCSTRING("Math::tan x - the tangent of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -616,10 +616,10 @@ public:
     }
 };
 
-// ## Math::tanh x - the hyperbolic tangent of a number
 class Tanh : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tanh, "Math", "tanh");
+DOCSTRING("Math::tanh x - the hyperbolic tangent of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {
@@ -631,10 +631,10 @@ public:
     }
 };
 
-// ## Math::trunc x - the integral part of a number
 class Trunc : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Trunc, "Math", "trunc");
+DOCSTRING("Math::trunc x - the integral part of a number");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_float(arg0)) {

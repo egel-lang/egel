@@ -12,10 +12,10 @@
 
 namespace egel {
 
-// ## System::dis o - disassemble a combinator object
 class Dis : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dis, "System", "dis");
+DOCSTRING("System::dis o - disassemble a combinator object");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
@@ -30,10 +30,10 @@ public:
     }
 };
 
-// ## System::asm s - assemble bytecode into a combinator
 class Asm : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Asm, "System", "asm");
+DOCSTRING("System::asm s - assemble bytecode into a combinator");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -45,10 +45,10 @@ public:
     }
 };
 
-// ## System::serialize t - serialize a term to a text
 class Serialize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Serialize, "System", "serialize");
+DOCSTRING("System::serialize t - serialize a term to a text");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto m = machine();
@@ -57,10 +57,10 @@ public:
     }
 };
 
-// ## System::deserialize t - serialize a text to a term
 class Deserialize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Deserialize, "System", "deserialize");
+DOCSTRING("System::deserialize t - serialize a text to a term");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto m = machine();
@@ -74,41 +74,41 @@ public:
     }
 };
 
-// ## System::docstring o - docstring of a module or combinator
 class Docstring : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Docstring, "System", "docstring");
+DOCSTRING("System::docstring o - docstring of a module or combinator");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->docstring(arg0);
     }
 };
 
-// ## System::query_modules - list all modules in the runtime
 class Modules : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Modules, "System", "query_modules");
+DOCSTRING("System::query_modules - list all modules in the runtime");
 
     VMObjectPtr apply() const override {
         return machine()->query_modules();
     }
 };
 
-// ## System::is_module m - check we have a module
 class IsModule : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsModule, "System", "query_is_module");
+DOCSTRING("System::is_module m - check we have a module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_module(arg0));
     }
 };
 
-// ## System::query_module_name m - get the name of the module
 class QueryModuleName : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleName, "System",
                      "query_module_name");
+DOCSTRING("System::query_module_name m - get the name of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -119,11 +119,11 @@ public:
     }
 };
 
-// ## System::query_module_path m - get the path of the module
 class QueryModulePath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModulePath, "System",
                      "query_module_path");
+DOCSTRING("System::query_module_path m - get the path of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -134,11 +134,11 @@ public:
     }
 };
 
-// ## System::query_module_imports m - get the imports of the module
 class QueryModuleImports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleImports, "System",
                      "query_module_imports");
+DOCSTRING("System::query_module_imports m - get the imports of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -149,11 +149,11 @@ public:
     }
 };
 
-// ## System::query_module_exports m - get the exports of the module
 class QueryModuleExports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleExports, "System",
                      "query_module_exports");
+DOCSTRING("System::query_module_exports m - get the exports of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -164,11 +164,11 @@ public:
     }
 };
 
-// ## System::query_module_values m - get the values of the module
 class QueryModuleValues : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleValues, "System",
                      "query_module_values");
+DOCSTRING("System::query_module_values m - get the values of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {

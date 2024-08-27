@@ -15,13 +15,13 @@
 
 namespace egel {
 
-// ## namespace System - process support
+// DOCSTRING("namespace System - process support");
 
-// ## System::process - opaque process object
 class Process : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Process, "System", "process");
 
+DOCSTRING("System::process - opaque process object");
     Process(VM *vm, const VMObjectPtr &f)
         : Opaque(VM_SUB_BUILTIN, vm, "System", "process") {
         _program = f;
@@ -166,10 +166,10 @@ void run_process(const VMObjectPtr &o) {
     process->run();
 }
 
-// ## System::proc f - create a process object from f
 class Proc : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Proc, "System", "proc");
+DOCSTRING("System::proc f - create a process object from f");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto vm = machine();
@@ -184,10 +184,10 @@ public:
     }
 };
 
-// ## System::send proc msg - send message msg to proc
 class Send : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Send, "System", "send");
+DOCSTRING("System::send proc msg - send message msg to proc");
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
@@ -203,10 +203,10 @@ public:
     }
 };
 
-// ## System::recv proc - receive a message from process proc
 class Recv : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Recv, "System", "recv");
+DOCSTRING("System::recv proc - receive a message from process proc");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
@@ -224,10 +224,10 @@ public:
     }
 };
 
-// ## System::halt proc - halt process proc
 class Halt : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Halt, "System", "halt");
+DOCSTRING("System::halt proc - halt process proc");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");

@@ -6,13 +6,11 @@
 
 namespace egel {
 
-// ## namespace System - the `eval` combinator
-
-// ## System::eval text - evaluatate the expression in `text`
 class Evaluate : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Evaluate, "System", "eval");
 
+DOCSTRING("System::eval text - evaluatate the expression in `text`");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);

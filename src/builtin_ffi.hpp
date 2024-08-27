@@ -68,11 +68,11 @@ const auto c_char_p = FFI + "::" + "c_char_p";
 const auto c_wchar_p = FFI + "::" + "c_wchar_p";
 const auto c_void_p = FFI + "::" + "c_void_p";
 
-// ## FFI::library - opaque library object
 class Library : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Library, FFI, "library");
 
+DOCSTRING("FFI::library - opaque library object");
     int compare(const VMObjectPtr& o) {
         return -1;  // XXX
     }
@@ -139,11 +139,11 @@ private:
     void* _handle;
 };
 
-// ## FFI::find_library s - find a library
 class FindLibrary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, FindLibrary, FFI, "find_library");
 
+DOCSTRING("FFI::find_library s - find a library");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
@@ -154,11 +154,11 @@ public:
     }
 };
 
-// ## FFI::load_library s - load a library
 class LoadLibrary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, LoadLibrary, FFI, "load_library");
 
+DOCSTRING("FFI::load_library s - load a library");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
@@ -171,11 +171,11 @@ public:
     }
 };
 
-// ## FFI::function l s - find a function
 class Function : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Function, FFI, "function");
 
+DOCSTRING("FFI::function l s - find a function");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         if (Library::is_type(arg0) &&
@@ -189,11 +189,11 @@ public:
     }
 };
 
-// ## FFI::call f r x - call a function
 class Call : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Call, FFI, "call");
 
+DOCSTRING("FFI::call f r x - call a function");
     bool is_function_ptr(const VMObjectPtr& o) const {
         return machine()->is_array(o) && (machine()->array_size(o) == 2) &&
                machine()->is_data_text(machine()->array_get(o, 0), c_void_p) &&
@@ -692,11 +692,11 @@ public:
     }
 };
 
-// ## FFI::malloc n - allocate a number of bytes
 class Malloc : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Malloc, FFI, "malloc");
 
+DOCSTRING("FFI::malloc n - allocate a number of bytes");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto n = machine()->get_integer(arg0);
@@ -712,11 +712,11 @@ public:
     }
 };
 
-// ## FFI::free p - free memory
 class Free : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Free, FFI, "free");
 
+DOCSTRING("FFI::free p - free memory");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
             machine()->is_data_text(machine()->array_get(arg0, 0), c_void_p) &&
@@ -730,11 +730,11 @@ public:
     }
 };
 
-// ## FFI::peek p n t - peek a number of bytes beyond for value of type
 class Peek : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Peek, FFI, "peek");
 
+DOCSTRING("FFI::peek p n t - peek a number of bytes beyond for value of type");
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
@@ -851,11 +851,11 @@ public:
     }
 };
 
-// ## FFI::poke p n v - poke a value a number of bytes beyond pointer
 class Poke : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Poke, FFI, "poke");
 
+DOCSTRING("FFI::poke p n v - poke a value a number of bytes beyond pointer");
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
@@ -961,11 +961,11 @@ public:
     }
 };
 
-// ## FFI::to_utf8 s - get pointer from text
 class ToUTF8 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUTF8, FFI, "to_utf8");
 
+DOCSTRING("FFI::to_utf8 s - get pointer from text");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
@@ -981,11 +981,11 @@ public:
     }
 };
 
-// ## FFI::from_utf8 s - get text from pointer
 class FromUTF8 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, FromUTF8, FFI, "from_utf8");
 
+DOCSTRING("FFI::from_utf8 s - get text from pointer");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
             machine()->is_data_text(machine()->array_get(arg0, 0), c_void_p) &&
