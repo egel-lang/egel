@@ -26,7 +26,6 @@ VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
     return vm->to_list(oo);
 }
 
-// ## Regex::pattern - an opaque object holding a pattern
 class Regex;
 typedef std::shared_ptr<Regex> RegexPtr;
 
@@ -43,6 +42,7 @@ public:
         // XXX: leak for now
         // delete _pattern;
     }
+DOCSTRING("Regex::pattern - an opaque object holding a pattern");
 
     static VMObjectPtr create(VM* vm, icu::RegexPattern* p) {
         return VMObjectPtr(new Regex(vm, p));
@@ -107,10 +107,10 @@ private:
     icu::RegexPattern* _pattern;
 };
 
-// ## Regex::compile s0 - compile text to a pattern
 class Compile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Compile, REGEX_STRING, "compile");
+DOCSTRING("Regex::compile s0 - compile text to a pattern");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -131,10 +131,10 @@ public:
     }
 };
 
-// ## Regex::match pat s0 - true if the pattern matches the entire string
 class Match : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Match, REGEX_STRING, "match");
+DOCSTRING("Regex::match pat s0 - true if the pattern matches the entire string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -156,10 +156,10 @@ public:
     }
 };
 
-// ## Regex::look_at pat s0 - true if the pattern matches the start of string
 class LookAt : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookAt, REGEX_STRING, "look_at");
+DOCSTRING("Regex::look_at pat s0 - true if the pattern matches the start of string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -181,10 +181,10 @@ public:
     }
 };
 
-// ## Regex::look_match pat s0 - the initial matched part of the string
 class LookMatch : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
+DOCSTRING("Regex::look_match pat s0 - the initial matched part of the string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -211,10 +211,10 @@ public:
     }
 };
 
-// ## Regex::split pat s0 - split a text according to a pattern
 class Split : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Split, REGEX_STRING, "split");
+DOCSTRING("Regex::split pat s0 - split a text according to a pattern");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -252,10 +252,10 @@ public:
     }
 };
 
-// ## Regex::matches pat s0 - a list of pattern matches in a string
 class Matches : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Matches, REGEX_STRING, "matches");
+DOCSTRING("Regex::matches pat s0 - a list of pattern matches in a string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -285,10 +285,10 @@ public:
     }
 };
 
-// ## Regex::replace pat s0 s1 - replace the first occurence of a pattern
 class Replace : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
+DOCSTRING("Regex::replace pat s0 s1 - replace the first occurence of a pattern");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
@@ -316,10 +316,10 @@ public:
     }
 };
 
-// ## Regex::replace_all pat s0 s1 - replace all occurences of a pattern 
 class ReplaceAll : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
+DOCSTRING("Regex::replace_all pat s0 s1 - replace all occurences of a pattern ");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
@@ -347,10 +347,10 @@ public:
     }
 };
 
-// ## Regex::group pat s0 - the matched groups in a string
 class Group : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Group, REGEX_STRING, "group");
+DOCSTRING("Regex::group pat s0 - the matched groups in a string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {

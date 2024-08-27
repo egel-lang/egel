@@ -36,10 +36,10 @@ private:
     std::mt19937 _generator;
 };
 
-// ## Math::between min max - a random number between min and max
 class Random : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Random, "Math", "between");
+    DOCSTRING("Math::between min max - a random number between min and max");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {

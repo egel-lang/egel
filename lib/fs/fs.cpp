@@ -46,10 +46,10 @@ VMObjectPtr error_to_object(const fs::filesystem_error& e) {
     return VMObjectText::create(s);
 }
 
-// ## OS::concat p0 p1 - concatenates two paths
 class Concat : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Concat, OS_STRING, "concat");
+DOCSTRING("OS::concat p0 p1 - concatenates two paths");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -70,10 +70,10 @@ public:
     }
 };
 
-// ## OS::concat_with p0 p1 - concatenates two paths with a directory separator
 class ConcatWith : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ConcatWith, OS_STRING, "concat_with");
+DOCSTRING("OS::concat_with p0 p1 - concatenates two paths with a directory separator");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -94,10 +94,10 @@ public:
     }
 };
 
-// ## OS::empty p - checks whether the path is empty
 class Empty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Empty, OS_STRING, "empty");
+DOCSTRING("OS::empty p - checks whether the path is empty");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -115,10 +115,10 @@ public:
     }
 };
 
-// ## OS::has_root_path p - checks whether the path has a root path
 class HasRootPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootPath, OS_STRING, "has_root_path");
+DOCSTRING("OS::has_root_path p - checks whether the path has a root path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -136,10 +136,10 @@ public:
     }
 };
 
-// ## OS::has_root_name p - checks whether path has a root name
 class HasRootName : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootName, OS_STRING, "has_root_name");
+DOCSTRING("OS::has_root_name p - checks whether path has a root name");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -157,11 +157,11 @@ public:
     }
 };
 
-// ## OS::has_root_directory p - checks whether the path has a root directory
 class HasRootDirectory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRootDirectory, OS_STRING,
                      "has_root_directory");
+DOCSTRING("OS::has_root_directory p - checks whether the path has a root directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -179,11 +179,11 @@ public:
     }
 };
 
-// ## OS::has_relative_path p - checks whether the path has a relative path
 class HasRelativePath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasRelativePath, OS_STRING,
                      "has_relative_path");
+DOCSTRING("OS::has_relative_path p - checks whether the path has a relative path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -201,10 +201,10 @@ public:
     }
 };
 
-// ## OS::has_parent_path p - checks whether the path has a parent path
 class HasParentPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasParentPath, OS_STRING, "has_parent_path");
+DOCSTRING("OS::has_parent_path p - checks whether the path has a parent path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -222,10 +222,10 @@ public:
     }
 };
 
-// ## OS::has_filename p - checks whether the path has a filename
 class HasFilename : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasFilename, OS_STRING, "has_filename");
+DOCSTRING("OS::has_filename p - checks whether the path has a filename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -243,10 +243,10 @@ public:
     }
 };
 
-// ## OS::has_stem p - checks whether the path has a stem
 class HasStem : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasStem, OS_STRING, "has_stem");
+DOCSTRING("OS::has_stem p - checks whether the path has a stem");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -264,10 +264,10 @@ public:
     }
 };
 
-// ## OS::has_extension p - checks whether the path has an extension
 class HasExtension : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HasExtension, OS_STRING, "has_extension");
+DOCSTRING("OS::has_extension p - checks whether the path has an extension");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -285,10 +285,10 @@ public:
     }
 };
 
-// ## OS::is_absolute p - checks whether the path is absolute
 class IsAbsolute : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsAbsolute, OS_STRING, "is_absolute");
+DOCSTRING("OS::is_absolute p - checks whether the path is absolute");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -306,10 +306,10 @@ public:
     }
 };
 
-// ## OS::is_relative p - checks whether the path is relative
 class IsRelative : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRelative, OS_STRING, "is_relative");
+DOCSTRING("OS::is_relative p - checks whether the path is relative");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -327,10 +327,10 @@ public:
     }
 };
 
-// ## OS::root_name p - returns the root-name of the path, if present
 class RootName : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootName, OS_STRING, "root_name");
+DOCSTRING("OS::root_name p - returns the root-name of the path, if present");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -348,10 +348,10 @@ public:
     }
 };
 
-// ## OS::root_directory p - returns the root directory of the path, if present
 class RootDirectory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootDirectory, OS_STRING, "root_directory");
+DOCSTRING("OS::root_directory p - returns the root directory of the path, if present");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -369,10 +369,10 @@ public:
     }
 };
 
-// ## OS::root_path p - returns the root path of the path, if present
 class RootPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RootPath, OS_STRING, "root_path");
+DOCSTRING("OS::root_path p - returns the root path of the path, if present");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -390,10 +390,10 @@ public:
     }
 };
 
-// ## OS::relative_path p - returns path relative to the root path
 class RelativePath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RelativePath, OS_STRING, "relative_path");
+DOCSTRING("OS::relative_path p - returns path relative to the root path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -411,10 +411,10 @@ public:
     }
 };
 
-// ## OS::parent_path p - returns the path of the parent path
 class ParentPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ParentPath, OS_STRING, "parent_path");
+DOCSTRING("OS::parent_path p - returns the path of the parent path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -432,10 +432,10 @@ public:
     }
 };
 
-// ## OS::filename p - returns the filename path component
 class Filename : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Filename, OS_STRING, "filename");
+DOCSTRING("OS::filename p - returns the filename path component");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -453,10 +453,10 @@ public:
     }
 };
 
-// ## OS::stem p - returns the stem path component
 class Stem : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Stem, OS_STRING, "stem");
+DOCSTRING("OS::stem p - returns the stem path component");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -474,10 +474,10 @@ public:
     }
 };
 
-// ## OS::extension p - returns the file extension path component
 class Extension : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Extension, OS_STRING, "extension");
+DOCSTRING("OS::extension p - returns the file extension path component");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -495,10 +495,10 @@ public:
     }
 };
 
-// ## OS::absolute p - composes an absolute path
 class Absolute : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Absolute, OS_STRING, "absolute");
+DOCSTRING("OS::absolute p - composes an absolute path");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -611,10 +611,10 @@ override { if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) { try {
 };
 */
 
-// ## OS::copy src dst - copies files or directories
 class Copy : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Copy, OS_STRING, "copy");
+DOCSTRING("OS::copy src dst - copies files or directories");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -635,10 +635,10 @@ public:
     }
 };
 
-// ## OS::copy_file src dst - copies file contents
 class CopyFile : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CopyFile, OS_STRING, "copy_file");
+DOCSTRING("OS::copy_file src dst - copies file contents");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -659,10 +659,10 @@ public:
     }
 };
 
-// ## OS::copy_symlink src trg - copies a symbolic link
 class CopySymlink : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CopySymlink, OS_STRING, "copy_symlink");
+DOCSTRING("OS::copy_symlink src trg - copies a symbolic link");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -683,11 +683,11 @@ public:
     }
 };
 
-// ## OS::create_directory p - creates new directory
 class CreateDirectory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectory, OS_STRING,
                      "create_directory");
+DOCSTRING("OS::create_directory p - creates new directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -706,11 +706,11 @@ public:
     }
 };
 
-// ## OS::create_directories p - creates new directories
 class CreateDirectories : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, CreateDirectories, OS_STRING,
                      "create_directories");
+DOCSTRING("OS::create_directories p - creates new directories");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -729,10 +729,10 @@ public:
     }
 };
 
-// ## OS::create_hard_link p0 p1 - creates a hard link
 class CreateHardLink : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateHardLink, OS_STRING, "create_hard_link");
+DOCSTRING("OS::create_hard_link p0 p1 - creates a hard link");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -753,10 +753,10 @@ public:
     }
 };
 
-// ## OS::create_symlink p0 p1 - creates a symbolic link
 class CreateSymlink : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateSymlink, OS_STRING, "create_symlink");
+DOCSTRING("OS::create_symlink p0 p1 - creates a symbolic link");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -777,11 +777,11 @@ public:
     }
 };
 
-// ## OS::create_directory_symlink p0 p1 - creates a symbolic link
 class CreateDirectorySymlink : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, CreateDirectorySymlink, OS_STRING,
                     "create_directory_symlink");
+DOCSTRING("OS::create_directory_symlink p0 p1 - creates a symbolic link");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -802,10 +802,10 @@ public:
     }
 };
 
-// ## OS::current_path - returns the current working directory
 class CurrentPath : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, CurrentPath, OS_STRING, "current_path");
+DOCSTRING("OS::current_path - returns the current working directory");
 
     VMObjectPtr apply() const override {
         try {
@@ -818,10 +818,10 @@ public:
     }
 };
 
-// ## OS::set_current_path p - sets the current working directory
 class SetCurrentPath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SetCurrentPath, OS_STRING, "set_current_path");
+DOCSTRING("OS::set_current_path p - sets the current working directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -840,10 +840,10 @@ public:
     }
 };
 
-// ## OS::exists p - checks whether path refers to existing file system object
 class Exists : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exists, OS_STRING, "exists");
+DOCSTRING("OS::exists p - checks whether path refers to existing file system object");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -862,11 +862,11 @@ public:
     }
 };
 
-// ## OS::equivalent p0 p1 - checks whether two paths refer to the same file
 //  system object
 class Equivalent : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Equivalent, OS_STRING, "equivalent");
+DOCSTRING("OS::equivalent p0 p1 - checks whether two paths refer to the same file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -887,10 +887,10 @@ public:
     }
 };
 
-// ## OS::file_size p - returns the size of a file
 class FileSize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, FileSize, OS_STRING, "file_size");
+DOCSTRING("OS::file_size p - returns the size of a file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -909,10 +909,10 @@ public:
     }
 };
 
-// ## OS::hard_link_count p - returns the number of hard links 
 class HardLinkCount : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, HardLinkCount, OS_STRING, "hard_link_count");
+DOCSTRING("OS::hard_link_count p - returns the number of hard links ");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -934,10 +934,10 @@ public:
 // # OS::last_write_time - gets or sets the time of the last data modification
 //  XXX
 
-// ## OS::permissions p - get file access permissions
 class Permissions : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Permissions, OS_STRING, "permissions");
+DOCSTRING("OS::permissions p - get file access permissions");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -956,11 +956,11 @@ public:
     }
 };
 
-// ## OS::replace_permissions p n - set file access permissions
 class ReplacePermissions : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ReplacePermissions, OS_STRING,
                     "replace_permissions");
+DOCSTRING("OS::replace_permissions p n - set file access permissions");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -1032,10 +1032,10 @@ override { if ((machine()->is_text(arg0)) && (machine()->is_integer(arg1))) {
 };
 */
 
-// ## OS::read_symlink p - obtains the target of a symbolic link
 class ReadSymlink : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadSymlink, OS_STRING, "read_symlink");
+DOCSTRING("OS::read_symlink p - obtains the target of a symbolic link");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1054,10 +1054,10 @@ public:
     }
 };
 
-// ## OS::remove p - removes a file or empty directory
 class Remove : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Remove, OS_STRING, "remove");
+DOCSTRING("OS::remove p - removes a file or empty directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1076,10 +1076,10 @@ public:
     }
 };
 
-// ## OS::remove_all p - removes a file or directory and all its contents
 class RemoveAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RemoveAll, OS_STRING, "remove_all");
+DOCSTRING("OS::remove_all p - removes a file or directory and all its contents");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1098,10 +1098,10 @@ public:
     }
 };
 
-// ## OS::rename p0 p1 - moves or renames a file or directory
 class Rename : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Rename, OS_STRING, "rename");
+DOCSTRING("OS::rename p0 p1 - moves or renames a file or directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -1122,10 +1122,10 @@ public:
     }
 };
 
-// ## OS::resize_file p n - changes the size of a regular file 
 class ResizeFile : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, ResizeFile, OS_STRING, "resize_file");
+DOCSTRING("OS::resize_file p n - changes the size of a regular file ");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -1146,10 +1146,10 @@ public:
     }
 };
 
-// ## OS::space_free p - determines free space on the file system
 class SpaceFree : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceFree, OS_STRING, "space_free");
+DOCSTRING("OS::space_free p - determines free space on the file system");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1168,10 +1168,10 @@ public:
     }
 };
 
-// ## OS::space_capacity p - determines capacity space on the file system
 class SpaceCapacity : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceCapacity, OS_STRING, "space_capacity");
+DOCSTRING("OS::space_capacity p - determines capacity space on the file system");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1190,10 +1190,10 @@ public:
     }
 };
 
-// ## OS::space_available p - determines available space on the file system
 class SpaceAvailable : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, SpaceAvailable, OS_STRING, "space_available");
+DOCSTRING("OS::space_available p - determines available space on the file system");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1217,11 +1217,11 @@ public:
 // target
 //  XXX
 
-// ## OS::temp_directory_path - returns a directory suitable for temporary files
 class TempDirectoryPath : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, TempDirectoryPath, OS_STRING,
                      "temp_directory_path");
+DOCSTRING("OS::temp_directory_path - returns a directory suitable for temporary files");
 
     VMObjectPtr apply() const override {
         try {
@@ -1234,10 +1234,10 @@ public:
     }
 };
 
-// ## OS::is_block_file p - checks whether the given path refers to block device
 class IsBlockFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsBlockFile, OS_STRING, "is_block_file");
+DOCSTRING("OS::is_block_file p - checks whether the given path refers to block device");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1256,11 +1256,11 @@ public:
     }
 };
 
-// ## OS::is_character_file p - the given path refers to a character device
 class IsCharacterFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsCharacterFile, OS_STRING,
                      "is_character_file");
+DOCSTRING("OS::is_character_file p - the given path refers to a character device");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1279,10 +1279,10 @@ public:
     }
 };
 
-// ## OS::is_directory p - checks whether the given path refers to a directory
 class IsDirectory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsDirectory, OS_STRING, "is_directory");
+DOCSTRING("OS::is_directory p - checks whether the given path refers to a directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1301,11 +1301,11 @@ public:
     }
 };
 
-// ## OS::is_empty p - checks whether the given path refers to an empty file or
 //  directory
 class IsEmpty : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsEmpty, OS_STRING, "is_empty");
+DOCSTRING("OS::is_empty p - checks whether the given path refers to an empty file or");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1324,10 +1324,10 @@ public:
     }
 };
 
-// ## OS::is_fifo p - checks whether the given path refers to a named pipe
 class IsFifo : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsFifo, OS_STRING, "is_fifo");
+DOCSTRING("OS::is_fifo p - checks whether the given path refers to a named pipe");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1346,10 +1346,10 @@ public:
     }
 };
 
-// ## OS::is_other p - checks whether the argument refers to an other file
 class IsOther : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsOther, OS_STRING, "is_other");
+DOCSTRING("OS::is_other p - checks whether the argument refers to an other file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1368,10 +1368,10 @@ public:
     }
 };
 
-// ## OS::is_regular_file p - the argument refers to a regular file
 class IsRegularFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsRegularFile, OS_STRING, "is_regular_file");
+DOCSTRING("OS::is_regular_file p - the argument refers to a regular file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1390,10 +1390,10 @@ public:
     }
 };
 
-// ## OS::is_socket p - checks whether the argument refers to a named IPC socket
 class IsSocket : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsSocket, OS_STRING, "is_socket");
+DOCSTRING("OS::is_socket p - checks whether the argument refers to a named IPC socket");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1412,10 +1412,10 @@ public:
     }
 };
 
-// ## OS::is_symlink p - checks whether the argument refers to a symbolic link
 class IsSymlink : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, IsSymlink, OS_STRING, "is_symlink");
+DOCSTRING("OS::is_symlink p - checks whether the argument refers to a symbolic link");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1434,10 +1434,10 @@ public:
     }
 };
 
-// ## OS::directory p - lists the content of a directory
 class Directory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Directory, OS_STRING, "directory");
+DOCSTRING("OS::directory p - lists the content of a directory");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1459,7 +1459,7 @@ public:
     }
 };
 
-// ## OS::status_known - checks whether file status is known XXX
+// DOCSTRING("OS::status_known - checks whether file status is known XXX");
 
 extern "C" std::vector<icu::UnicodeString> egel_imports() {
     return std::vector<icu::UnicodeString>();

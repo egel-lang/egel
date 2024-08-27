@@ -407,10 +407,10 @@ protected:
  * according to spec.
  **/
 
-// ## OS::channel - opaque values which are input/output channels
 class ChannelValue : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ChannelValue, "OS", "channel");
+DOCSTRING("OS::channel - opaque values which are input/output channels");
 
     ChannelValue(VM* m, const ChannelPtr& chan) : ChannelValue(m) {
         _value = chan;
@@ -447,10 +447,10 @@ protected:
     ChannelPtr _value;
 };
 
-// ## OS::cin - standard input channel
 class Stdin : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdin, "OS", "stdin");
+DOCSTRING("OS::cin - standard input channel");
 
     VMObjectPtr apply() const override {
         auto cin = ChannelStreamIn::create();
@@ -459,10 +459,10 @@ public:
     }
 };
 
-// ## OS::stdout - standard output channel
 class Stdout : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdout, "OS", "stdout");
+DOCSTRING("OS::stdout - standard output channel");
 
     VMObjectPtr apply() const override {
         auto cout = ChannelStreamOut::create();
@@ -471,10 +471,10 @@ public:
     }
 };
 
-// ## OS::stderr - standard error channel
 class Stderr : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stderr, "OS", "stderr");
+DOCSTRING("OS::stderr - standard error channel");
 
     VMObjectPtr apply() const override {
         auto cerr = ChannelStreamErr::create();
@@ -485,10 +485,10 @@ public:
 
 /* File channel creation and destruction */
 
-// ## OS::open_in fn - create a channel from filename
 class OpenIn : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenIn, "OS", "open_in");
+DOCSTRING("OS::open_in fn - create a channel from filename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -514,10 +514,10 @@ public:
     }
 };
 
-// ## OS::open_out fn - create a channel from filename
 class OpenOut : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenOut, "OS", "open_out");
+DOCSTRING("OS::open_out fn - create a channel from filename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -531,10 +531,10 @@ public:
     }
 };
 
-// ## OS::close c - close a channel
 class Close : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Close, "OS", "close");
+DOCSTRING("OS::close c - close a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -547,10 +547,10 @@ public:
     }
 };
 
-// ## OS::read c - read a string from a channel
 class Read : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Read, "OS", "read");
+DOCSTRING("OS::read c - read a string from a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -563,10 +563,10 @@ public:
     }
 };
 
-// ## OS::read_byte c - read a byte from a channel
 class ReadByte : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadByte, "OS", "read_byte");
+DOCSTRING("OS::read_byte c - read a byte from a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -579,10 +579,10 @@ public:
     }
 };
 
-// ## OS::read_line c - read a line from a channel
 class ReadLine : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadLine, "OS", "read_line");
+DOCSTRING("OS::read_line c - read a line from a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -595,10 +595,10 @@ public:
     }
 };
 
-// ## OS::read_all c - read entire channel content
 class ReadAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadAll, "OS", "read_all");
+DOCSTRING("OS::read_all c - read entire channel content");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -611,10 +611,10 @@ public:
     }
 };
 
-// ## OS::write c s - write a string to a channel
 class Write : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Write, "OS", "write");
+DOCSTRING("OS::write c s - write a string to a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -633,10 +633,10 @@ public:
     }
 };
 
-// ## OS::write_byte c b - write a byte to a channel
 class WriteByte : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, WriteByte, "OS", "write_byte");
+DOCSTRING("OS::write_byte c b - write a byte to a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -655,10 +655,10 @@ public:
     }
 };
 
-// ## OS::write_line c s - write a string s to a channel
 class WriteLine : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, WriteLine, "OS", "write_line");
+DOCSTRING("OS::write_line c s - write a string s to a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -677,10 +677,10 @@ public:
     }
 };
 
-// ## OS::flush c - flush a channel
 class Flush : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flush, "OS", "flush");
+DOCSTRING("OS::flush c - flush a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -693,10 +693,10 @@ public:
     }
 };
 
-// ## OS::eof c - tests if there is no more input
 class Eof : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Eof, "OS", "eof");
+DOCSTRING("OS::eof c - tests if there is no more input");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -708,10 +708,10 @@ public:
     }
 };
 
-// ## OS::flock f n - create a filesystem lock file (not process safe)
 class Flock : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flock, "OS", "flock");
+DOCSTRING("OS::flock f n - create a filesystem lock file (not process safe)");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -734,11 +734,11 @@ public:
     }
 };
 
-// ## OS::exit n - flush all channels and terminate process with exit code n
 //  (0 to indicate no errors, a small positive integer for failure.)
 class Exit : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exit, "OS", "exit");
+DOCSTRING("OS::exit n - flush all channels and terminate process with exit code n");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -753,10 +753,10 @@ public:
     }
 };
 
-// ## OS::exec c - system exec command
 class Exec : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exec, "OS", "exec");
+DOCSTRING("OS::exec c - system exec command");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -804,10 +804,10 @@ char get_key() {
 #endif
 };
 
-// ## OS::get_key - key press from console
 class GetKey : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, GetKey, "OS", "get_key");
+DOCSTRING("OS::get_key - key press from console");
 
     VMObjectPtr apply() const override {
         auto ch = (vm_char_t) get_key();
