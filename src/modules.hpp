@@ -545,6 +545,9 @@ public:
             exit(EXIT_SUCCESS);
         };
 
+        auto doc = egel::visit_docstring(a);
+        auto [p,d] = AstDocstring::split(doc);
+        set_docstring(d);
         _source = "";
         _ast = a;
     }
@@ -697,6 +700,9 @@ public:
             exit(EXIT_SUCCESS);
         };
 
+        auto doc = egel::visit_docstring(a);
+        auto [p,d] = AstDocstring::split(doc);
+        set_docstring(d);
         _source = "";
         _ast = a;
     }

@@ -1,3 +1,7 @@
+@"""
+The 'prelude' defines often used combinators.
+"""
+
 namespace System (
 
     ## System::or p q - boolean or

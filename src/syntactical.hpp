@@ -1005,13 +1005,51 @@ ptrs<Ast> values(const ptr<Ast> &a) {
     return values.values(a);
 }
 
-ptr<Ast> parse(Tokens &r) {
+class VisitDocstring : public Visit {
+public:
+    ptr<Ast> docstring(const ptr<Ast> &a) {
+        visit(a);
+        return _docstring;
+    }
+
+    void visit_docstring(const Position &p,
+                                const icu::UnicodeString &doc) override {
+        _docstring = AstDocstring::create(p, doc);
+    }
+
+    // cuts
+    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+    }
+
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
+                               const ptr<Ast> &e) override {
+    }
+
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
+                          const ptr<Ast> &e) override {
+    }
+
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,const ptr<Ast> &d, 
+                             const ptr<Ast> &e) override {
+    }
+
+private:
+    ptr<Ast> _docstring;
+};
+
+inline ptr<Ast> visit_docstring(const ptr<Ast> &a) {
+    VisitDocstring docstring;
+    return docstring.docstring(a);
+}
+
+
+inline ptr<Ast> parse(Tokens &r) {
     Parser p(r);
     auto a = p.parse();
     return a;
 }
 
-ptr<Ast> parse_line(Tokens &r) {
+inline ptr<Ast> parse_line(Tokens &r) {
     LineParser p(r);
     auto a = p.parse_line();
     return a;
