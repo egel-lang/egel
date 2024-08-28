@@ -16,6 +16,7 @@
 #include "builtin_ffi.hpp"
 #include "builtin_math.hpp"
 #include "builtin_process.hpp"
+#include "builtin_regex.hpp"
 #include "builtin_runtime.hpp"
 #include "builtin_string.hpp"
 #include "builtin_system.hpp"
@@ -818,6 +819,8 @@ public:
             ModuleInternal::create(vm, std::make_shared<AsyncModule>()));
         _loading.push_back(
             ModuleInternal::create(vm, std::make_shared<DictModule>()));
+        _loading.push_back(
+            ModuleInternal::create(vm, std::make_shared<RegexModule>()));
         _loading.push_back(
             ModuleInternal::create(vm, std::make_shared<FFIModule>()));
         for (const auto &m : _loading) {

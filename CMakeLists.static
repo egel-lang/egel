@@ -179,12 +179,6 @@ add_library(fs MODULE ${FS_LIST})
 target_link_libraries(fs PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
 set_target_properties(fs PROPERTIES PREFIX "" SUFFIX ".ego")
 
-# regex.ego
-file(GLOB REGEX_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/regex/*.cpp")
-add_library(regex MODULE ${REGEX_LIST})
-target_link_libraries(regex PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
-set_target_properties(regex PROPERTIES PREFIX "" SUFFIX ".ego")
-
 # random.ego
 file(GLOB RANDOM_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/random/*.cpp")
 add_library(random MODULE ${RANDOM_LIST})
@@ -217,7 +211,7 @@ install(FILES ${INCLUDE_LIST}
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 
-install(TARGETS os fs regex random pqueue
+install(TARGETS os fs random pqueue
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 

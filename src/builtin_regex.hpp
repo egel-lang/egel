@@ -1,10 +1,8 @@
-#include "unicode/regex.h"
+#pragma once
 
 #include <stdlib.h>
-
-#include "../../src/runtime.hpp"
-
-using namespace egel;
+#include "unicode/regex.h"
+#include "runtime.hpp"
 
 /**
  * Start of a simplistic Regex library lifting most of libicu.
@@ -12,7 +10,7 @@ using namespace egel;
 
 #define REGEX_STRING "Regex"
 
-typedef std::vector<icu::UnicodeString> UnicodeStrings;
+namespace egel {
 
 // convenience function
 VMObjectPtr strings_to_list(VM* vm, UnicodeStrings ss) {
@@ -408,9 +406,4 @@ public:
         return oo;
     }
 };
-
-extern "C" CModule* egel_module() {
-    CModule* m = new RegexModule();
-    return m;
 }
-
