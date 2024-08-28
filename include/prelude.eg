@@ -159,11 +159,13 @@ namespace List (
 
     def head =
         @"List::head l - head of a list"
-        [ (cons X XX) -> X ]
+        [ (cons X XX) -> X
+        | X -> throw "head of " + (to_text X) ]
 
     def tail =
         @"List::tail l - tail of a list"
-        [ (cons X XX) -> XX ]
+        [ (cons X XX) -> XX
+        | X -> throw "tail of " + (to_text X) ]
 
     def last =
         @"List::last l - last of a list"
