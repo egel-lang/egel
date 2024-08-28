@@ -290,6 +290,7 @@ public:
     void load() override {
         set_filename(_module->name());
         set_path(_module->path());
+        set_docstring(_module->docstring());
         _imports = QualifiedStrings();
         _values = QualifiedStrings();
         _exports = _module->exports(machine()); //note: this also declares
@@ -400,6 +401,7 @@ public:
         _module = fp();
 
         set_filename(_module->name());
+        set_docstring(_module->docstring());
 
         auto ss = _module->imports();
         QualifiedStrings ii;

@@ -856,3 +856,6 @@ public:
     }
 };
 
+extern "C" CModule* egel_module() {
+    return new OSModule();
+};
