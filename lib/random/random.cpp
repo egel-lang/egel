@@ -78,14 +78,3 @@ extern "C" CModule* egel_module() {
     return m;
 }
 
-extern "C" std::vector<icu::UnicodeString> egel_imports() {
-    return std::vector<icu::UnicodeString>();
-}
-
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(Random::create(vm));
-
-    return oo;
-}

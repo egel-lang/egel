@@ -414,22 +414,3 @@ extern "C" CModule* egel_module() {
     return m;
 }
 
-extern "C" std::vector<icu::UnicodeString> egel_imports() {
-    return std::vector<icu::UnicodeString>();
-}
-
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(Compile::create(vm));
-    oo.push_back(Match::create(vm));
-    oo.push_back(LookAt::create(vm));
-    oo.push_back(LookMatch::create(vm));
-    oo.push_back(Split::create(vm));
-    oo.push_back(Matches::create(vm));
-    oo.push_back(Replace::create(vm));
-    oo.push_back(ReplaceAll::create(vm));
-    oo.push_back(Group::create(vm));
-
-    return oo;
-}

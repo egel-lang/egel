@@ -184,18 +184,3 @@ extern "C" CModule* egel_module() {
     return m;
 }
 
-extern "C" std::vector<icu::UnicodeString> egel_imports() {
-    return std::vector<icu::UnicodeString>();
-}
-
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(APQueue::create(vm));
-    oo.push_back(PQueueEmpty::create(vm));
-    oo.push_back(PQueueTop::create(vm));
-    oo.push_back(PQueuePop::create(vm));
-    oo.push_back(PQueuePush::create(vm));
-
-    return oo;
-}

@@ -349,17 +349,12 @@ class ModuleDynamic : public Module {
 public:
     ModuleDynamic(const icu::UnicodeString &p, const icu::UnicodeString &fn,
                   VM *m)
-        : Module(p, fn, m),
-          _handle(0),
-          _imports(0),
-          _exports(0) {
+        : Module(p, fn, m), _module(nullptr) {
     }
 
     ModuleDynamic(const ModuleDynamic &m)
         : Module(m.get_path(), m.get_filename(), m.machine()),
-          _handle(m._handle),
-          _imports(m._imports),
-          _exports(m._exports) {
+          _module(m._module) {
         set_options(m.get_options());
     }
 
@@ -387,14 +382,14 @@ public:
         }
 
 #ifdef _WIN32
-        auto egel_imports = (std::vector<icu::UnicodeString>(*)())GetProcAddress((HMODULE)_handle, "egel_imports");
-        if (!egel_imports) {
+        auto fp = (CModule*(*)())GetProcAddress((HMODULE)_handle, "egel_module");
+        if (!egel_module) {
             icu::UnicodeString err = "dynamic load error: ";
             err += std::to_string(GetLastError());
             throw ErrorIO(err);
         }
 #else
-        auto egel_imports = (std::vector<icu::UnicodeString>(*)())dlsym(_handle, "egel_imports");
+        auto fp = (CModule*(*)())dlsym(_handle, "egel_module");
         const char* error = dlerror();
         if (error != NULL) {
             icu::UnicodeString err = "dynamic load error: ";
@@ -402,25 +397,11 @@ public:
             throw ErrorIO(err);
         }
 #endif
+        _module = fp();
 
-#ifdef _WIN32
-        auto egel_exports = (std::vector<VMObjectPtr>(*)(VM*))GetProcAddress((HMODULE)_handle, "egel_exports");
-        if (!egel_exports) {
-            icu::UnicodeString err = "dynamic load error: ";
-            err += std::to_string(GetLastError());
-            throw ErrorIO(err);
-        }
-#else
-        auto egel_exports = (std::vector<VMObjectPtr>(*)(VM*))dlsym(_handle, "egel_exports");
-        error = dlerror();
-        if (error != NULL) {
-            icu::UnicodeString err = "dynamic load error: ";
-            err += error;
-            throw ErrorIO(err);
-        }
-#endif
+        set_filename(_module->name());
 
-        auto ss = (*egel_imports)();
+        auto ss = _module->imports();
         QualifiedStrings ii;
         Position p(get_path(), 1, 1);
         for (auto &s : ss) {
@@ -428,7 +409,7 @@ public:
         }
 
         _imports = ii;
-        _exports = (*egel_exports)(machine());
+        _exports = _module->exports(machine());
     }
 
     void unload() override {
@@ -477,6 +458,7 @@ public:
 
 private:
     void *_handle;
+    CModule *_module;
     QualifiedStrings _imports;
     QualifiedStrings _values;
     VMObjectPtrs _exports;

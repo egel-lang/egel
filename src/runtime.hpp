@@ -3154,6 +3154,9 @@ public:
         return std::vector<icu::UnicodeString>();
     }
     virtual icu::UnicodeString docstring() const = 0;
+    virtual std::vector<icu::UnicodeString> imports() const {
+        return std::vector<icu::UnicodeString>();
+    }
     virtual std::vector<VMObjectPtr> exports(VM* m) = 0;
 };
 
