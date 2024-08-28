@@ -489,7 +489,7 @@ namespace System (
         [S -> filter [M -> query_module_name M == S] query_modules |> 
             [{} -> filter [C -> to_text C == S] (concat_map query_module_exports query_modules)
                    |> map docstring
-            |XX -> head XX |> [M -> {docstring M|map to_text (query_module_exports M)}]] ]
+            |XX -> head XX |> [M -> {docstring M,map to_text (query_module_exports M) |> reduce [X Y -> X + ", " + Y]}]] ]
 
     def help_msg = """
 help            - print this message
