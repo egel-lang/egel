@@ -1,4 +1,4 @@
-# generators
+@"Generators model infinite list structures."
 
 import "prelude.eg"
 
@@ -6,175 +6,175 @@ namespace Gen (
 
     using System
 
-    ## Gen::to_list g - generator to list
     def to_list =
+        @"Gen::to_list g - generator to list"
         [ nil -> nil
         | (cons X XX) -> cons X (to_list (XX none)) ]
 
-    ## Gen::from_list l - list to generator
     def from_list =
+        @"Gen::from_list l - list to generator"
         [ nil -> nil
         | (cons X XX) -> cons X [ _ -> from_list XX ] ]
 
-    ## Gen::length l - length of a list
     def length =
+        @"Gen::length l - length of a list"
         [ nil -> 0
         | (cons X XX) -> 1 + (length (XX none)) ]
 
-    ## Gen::foldl f z l - left fold on a list
     def foldl =
+        @"Gen::foldl f z l - left fold on a list"
         [ F Z nil -> Z
         | F Z (cons X XX) -> foldl F (F Z X) (XX none) ]
 
-    ## Gen::foldr f z l - right fold on a list
     def foldr =
+        @"Gen::foldr f z l - right fold on a list"
         [ F Z nil -> Z
         | F Z (cons X XX) -> F X (foldr F Z (XX none)) ]
 
-    ## Gen::head l - head of a list
     def head =
+        @"Gen::head l - head of a list"
         [ (cons X XX) -> X ]
 
-    ## Gen::tail l - tail of a list
     def tail =
+        @"Gen::tail l - tail of a list"
         [ (cons X XX) -> (XX none) ]
 
-    ## Gen::++ l0 l1 - concatenation of two lists
     def ++ =
+        @"Gen::++ l0 l1 - concatenation of two lists"
         [ nil YY -> YY
         | (cons X XX) YY -> cons X [ _ -> (XX none) ++ YY ] ]
 
-    ## Gen::map f l - map a function over a list
     def map =
+        @"Gen::map f l - map a function over a list"
         [ F nil -> nil
         | F (cons X XX) -> let Y = F X in cons Y  [_ -> (map F (XX none))] ]
 
-    ## Gen::reverse l - reverse a list
     def reverse = 
+        @"Gen::reverse l - reverse a list"
        foldl (flip cons) nil
 
-    ## Gen::block n - list of number from lower to upper exclusive
     def block =
+        @"Gen::block n - list of number from lower to upper exclusive"
         [ 0 -> nil
         | N -> cons (N - 1)  [ _ -> (block (N - 1)) ] ]
 
-    ## Gen::nth n l - nth element of a list
     def nth =
+        @"Gen::nth n l - nth element of a list"
         [ 0 (cons X XX) -> X
         | N (cons X XX) -> nth (N - 1) (XX none) ]
 
-    ## Gen::insert n x l - insert an element at given position
     def insert =
+        @"Gen::insert n x l - insert an element at given position"
         [ 0 X (cons Y YY) -> cons X YY
         | I X (cons Y YY) -> cons Y [_ -> (insert (I - 1) X (YY none)) ] ]
 
-    ## Gen::take n l - take the first elements of a list
     def take =
+        @"Gen::take n l - take the first elements of a list"
         [ 0 XX -> nil
         | N (cons X XX) -> cons X [_ -> (take (N - 1) (XX none)) ] ]
 
-    ## Gen::drop n l - drop the first elements of a list
     def drop =
+        @"Gen::drop n l - drop the first elements of a list"
         [ 0 XX -> XX
         | N (cons X XX) -> drop (N - 1) (XX none) ]
 
-    ## Gen::repeat n - infinite list of elements
     def repeat =
+        @"Gen::repeat n - infinite list of elements"
         [ N -> cons N [ _ -> repeat N ] ]
 
-    ## Gen::cycle l - infinite list of cycling list
     def cycle =
+        @"Gen::cycle l - infinite list of cycling list"
         [ nil -> nil
         | LL  -> [ (cons X XX) -> cons X [_ -> (XX none) Gen::++ (cycle LL)] ] LL ]
 
 
-    ## Gen::from min - list of numbers from min 
     def from =
+        @"Gen::from min - list of numbers from min "
         [ N -> cons N [ _ -> from (N+1) ] ]
 
-    ## Gen::from_to min max - list of numbers for min to max (exclusive)
     def from_to =
+        @"Gen::from_to min max - list of numbers for min to max (exclusive)"
         [ X Y -> 
             if X <= Y then cons X [ _ -> (from_to (X+1) Y) ]
             else nil ]
 
-    ## Gen::filter p l - filter all members from a list which satisfy a predicate
     def filter =
+        @"Gen::filter p l - filter all members from a list which satisfy a predicate"
         [ P nil -> nil
         | P (cons X XX) -> if P X then cons X [ _ -> (filter P (XX none)) ] 
                                  else filter P (XX none) ]
 
-    ## Gen::flatten ll - flatten a list of lists to a list
     def flatten =
+        @"Gen::flatten ll - flatten a list of lists to a list"
         [ nil                   -> nil
         | (cons nil YY)         -> flatten (YY none)
         | (cons (cons X XX) YY) -> cons X [ _ -> flatten (cons (XX none) YY) ] ]
 
-    ## Gen::zip l0 l1 - zip to lists to a list of pairs
     def zip =
+        @"Gen::zip l0 l1 - zip to lists to a list of pairs"
         [ (cons X XX) (cons Y YY)  -> cons (X,Y) [ _ -> zip (XX none) (YY none) ]
         | XX YY                    -> nil ]
 
-    ## Gen::zip_with f l0 l1 - apply a function pairwise to members of two lists
     def zip_with =
+        @"Gen::zip_with f l0 l1 - apply a function pairwise to members of two lists"
         [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) [ _ -> zip_with Z (XX none) (YY none)]
         | Z XX YY               -> nil ]
 
-    ## Gen::any p l - checks whether any element of a list satisfies a predicate
     def any =
+        @"Gen::any p l - checks whether any element of a list satisfies a predicate"
         [ P nil          -> false
         | P (cons B BB)  -> if P B then true else any P (BB none) ]
 
-    ## Gen::all p l - checks whether all elements of a list  satisfies a predicate
     def all =
+        @"Gen::all p l - checks whether all elements of a list  satisfies a predicate"
         [ P nil          -> true
         | P (cons B BB)  -> if P B then all P (BB none) else false ]
 
-    ## Gen::elem x l - membership test
     def elem =
+        @"Gen::elem x l - membership test"
         [ X -> any ((==) X) ]
 
-    ## Gen::not_elem x l - inverse membership test
     def not_elem =
+        @"Gen::not_elem x l - inverse membership test"
         [ X -> all ((/=) X) ]
 
-    ## Gen::from_lists l - convert a list of lists to generator of generators
     def from_lists =
+        @"Gen::from_lists l - convert a list of lists to generator of generators"
         Gen::from_list . (List::map Gen::from_list)
 
-    ## Gen::to_lists c - convert generator of generators to list of lists
     def to_lists =
+        @"Gen::to_lists c - convert generator of generators to list of lists"
         (List::map Gen::to_list) . Gen::to_list
 
-    ## Gen::space - space, the final frontier
     def space =
+        @"Gen::space - space, the final frontier"
         Gen::map [X -> Gen::map [ Y -> (X,Y) ] (Gen::from 0)] (Gen::from 0)
 
-    ## Gen::map_2d - map on a space
     def map_2d =
+        @"Gen::map_2d - map on a space"
         [ F -> Gen::map [XX -> Gen::map F XX] ]
 
-    ## Gen::take_2d - take a block 
     def take_2d =
+        @"Gen::take_2d - take a block "
         [ X Y B -> Gen::take X (Gen::map [L -> Gen::take Y L] B) ]
 
-    ## Gen::zip_2d
     def zip_2d =
+        @"Gen::zip_2d"
         [ nil nil         -> nil
         | (cons X XX) nil -> nil
         | nil (cons Y YY) -> nil
         | (cons X XX) (cons Y YY) -> cons (Gen::zip X Y) [_ -> Gen::zip_2d (XX none) (YY none)] ]
 
-    ## Gen::range l f - iterate over elements (reverse map
     def range = 
+        @"Gen::range l f - iterate over elements (reverse map"
         [ XX F -> Gen::map F XX ]
 
-    ## Gen::range2 l0 l1 f - iterate over elements of two lists
     def range2 =
+        @"Gen::range2 l0 l1 f - iterate over elements of two lists"
         [ XG YG F -> Gen::flatten (Gen::range XG [X -> Gen::range YG [Y -> F X Y]]) ]
 
-    ## Gen::range3 l0 l1 l2 f - iterate over elements of three lists
     def range3 =
+        @"Gen::range3 l0 l1 l2 f - iterate over elements of three lists"
         [ XG YG ZG F -> Gen::flatten (Gen::range XG [X -> range2 YG ZG [Y Z  -> F X Y Z]]) ]
 
 

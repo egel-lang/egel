@@ -1,3 +1,4 @@
+@"Searching is calculation over a state, minimalist theory."
 import "prelude.eg"
 import "calculate.eg"
 
@@ -7,100 +8,105 @@ namespace Search (
     using Calculate
     using List
 
-    # searching is calculation over a state, minimalist theory
 
     data top, bot, cut
 
-    ## Search::success a - succeed with value a
     def success =
+        @"Search::success a - succeed with value a"
         [ S -> return (top S) ]
 
-    ## Search::fail - fail an alternative
     def fail =
+        @"Search::fail - fail an alternative"
         return (bot none)
 
-    ## Search::raise - fail all alternatives
     def raise =
+        @"Search::raise - fail all alternatives"
         return (cut none)
 
-    ## Search::message m - fail or raise with message
     def message =
+        @"Search::message m - fail or raise with message"
         [ P M -> P <*
             [ (bot _) -> return (bot M)
             | (cut _) -> return (cut M)
             | X       -> return X ] ]
 
-    ## Search::parallel p q - try both alternatives
     def parallel =
+        @"Search::parallel p q - try both alternatives"
         [ P0 P1 S0 ->
             [ (bot R1, S1) -> P1 S0
             | L            -> L ] (P0 S0) ]
 
-    ## Search::sequential - try alternatives sequentially
     def sequential =
+        @"Search::sequential - try alternatives sequentially"
         [ P0 P1 -> P0 <* 
             [ (top X)  -> P1 X
             | X        -> return X ] ]
 
-    ## Search::serial p q - try alternative, then force the next
     def serial =
+        @"Search::serial p q - try alternative, then force the next"
         [ P0 P1 -> P0 <* 
             [ (top X)  -> P1 X <* [ (bot X) -> return (cut X) | X -> return X]
             | X        -> return X ] ]
 
-    ## Search::apply p f - apply to the argument being calculated
     def apply =
+        @"Search::apply p f - apply to the argument being calculated"
         [ P F -> P <* 
             [ (top X) -> return (top (F X))
             | (bot M) -> return (bot M)
             | (cut M) -> return (cut M) ] ]
 
-    ## Search::opt p v - optionally succeed with a value
     def opt =
+        @"Search::opt p v - optionally succeed with a value"
         [ P R0 S0 ->
             [ (bot R1, S1) -> (top R0, S0)
             | L            -> L          ] (P R0 S0) ]
 
-    ## Search::serial_opt p q - optionally succeed with value
     def serial_opt =
+        @"Search::serial_opt p q - optionally succeed with value"
         [ P0 P1 -> P0 <*  
             [ (top M) -> opt P1 M
             | L       -> return L ] ]
 
-    ## Search::<+> p q - try both alternatives  
-    def <+> = parallel
+    def <+> = 
+        @"Search::<+> p q - try both alternatives  "
+        parallel
 
-    ## Search::<-> p q - try composition of alternatives
-    def <-> = sequential
+    def <-> = 
+        @"Search::<-> p q - try composition of alternatives"
+        sequential
 
-    ## Search::<*> p q - try alternative then force
-    def <*> = serial
+    def <*> = 
+        @"Search::<*> p q - try alternative then force"
+        serial
 
-    ## Search::</> p q - try alternative then optionally
-    def </> = serial_opt
+    def </> = 
+        @"Search::</> p q - try alternative then optionally"
+        serial_opt
 
-    ## Search::<@> p f - apply function to the result
-    def <@>  = apply
+    def <@>  = 
+        @"Search::<@> p f - apply function to the result"
+        apply
 
-    ## Search::<!> p m - set the failure message
-    def <!> = message
+    def <!> = 
+        @"Search::<!> p m - set the failure message"
+        message
 
-    ## Search::one p - one time and return a singleton result
     def one =
+        @"Search::one p - one time and return a singleton result"
         [ P -> P <@> [A -> {A} ] ]
 
-    ## Search::plus p - one or more and return a list result
     def plus =
+        @"Search::plus p - one or more and return a list result"
         [ P ->
             (one P) </> \L0 ->
             (plus P) <@> \L1 -> L0 ++ L1 ]
 
-    ## Search::star p - zero or more and return a list result
     def star =
+        @"Search::star p - zero or more and return a list result"
         [ P -> plus P <+> success nil ]
 
-    ## Search::plus_sep p s - one or more with separator
     def plus_sep = 
+        @"Search::plus_sep p s - one or more with separator"
         [ P Q ->
             one P </> \L0 -> 
             Q <-> \U ->
@@ -108,12 +114,12 @@ namespace Search (
             L0 ++ L1 
         ]
 
-    ## Search::star_sep p s - zero or more with separator
     def star_sep = 
+        @"Search::star_sep p s - zero or more with separator"
         [ P Q -> plus_sep P Q <+> success nil ]
 
-    ## Search::search p f t e s - search on state with three handlers
     def search = 
+        @"Search::search p f t e s - search on state with three handlers"
         [ P F T E S ->
             let (A,B) = P S in
             [ (top X)  -> F X B

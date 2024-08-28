@@ -1,4 +1,4 @@
-# combinators to make dict more useful
+@"Combinators to make dict more useful."
 
 import "prelude.eg"
 import "generator.eg"

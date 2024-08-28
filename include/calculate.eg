@@ -1,45 +1,50 @@
-# Calculations are small abstractions where some computation is done
-# modulo some state.
-#
-# All calculations are chained actions. An action is a function which 
-# gets as an arguments a state and returns a tuple of a result and a
-# state.
+@"""
+Calculations are small abstractions where some computation is done
+modulo some state.
+
+All calculations are chained actions. An action is a function which 
+gets as an arguments a state and returns a tuple of a result and a
+state.
+"""
 
 namespace Calculate (
 
     using System
 
-    ## Calculate::return a - calculate further with value
     def return =
+        @"Calculate::return a - calculate further with value"
         [ A S -> (A, S) ]
 
-    ## Calculate::chain f g - chain two calculations
     def chain =
+        @"Calculate::chain f g - chain two calculations"
         [ F G S0 -> [(A, S1) -> G A S1] (F S0) ]
 
-    ## Calculate::run f s - run calculation on state
     def run =
+        @"Calculate::run f s - run calculation on state"
         [ F S -> [(A, S) -> A] (F S) ]
 
-    ## Calculate::<* f g - chain
-    def <* = chain
+    def <* = 
+        @"Calculate::<* f g - chain"
+        chain
 
-    ## Calculate::skip - return a none
     def skip =
+        @"Calculate::skip - return a none"
         return none
 
-    ## Calculate::apply f g - apply a function to a calculation
     def apply =
+        @"Calculate::apply f g - apply a function to a calculation"
         [ F G -> chain F [A S -> (G A, S)] ]
 
-    ## Calculate::modify f g - modify state
     def modify =
+        @"Calculate::modify f g - modify state"
         [ F G -> chain F [A S -> (A, G S)] ]
 
-    ## Calculate::<@ f g - apply
-    def <@ = apply
+    def <@ = 
+        @"Calculate::<@ f g - apply"
+        apply
 
-    ## Calculate::<+ f g - modify
-    def <+ = modify
+    def <+ = 
+        @"Calculate::<+ f g - modify"
+        modify
 
 )
