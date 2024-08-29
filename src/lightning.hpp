@@ -909,6 +909,7 @@ public:
     VMObjectLightning(const VMObjectLightning& l)
         : VMObjectLightning(l.machine(), l.code(), l.data(), l.symbol(),
                             l.proc()) {
+        set_docstring(l.docstring());
     }
 
     void* proc() const {
@@ -956,6 +957,7 @@ inline VMObjectPtr try_compile(VM* m, const VMObjectPtr& o) {
         auto l =
             VMObjectLightning::create(m, b->code(), b->data(), b->symbol(), p);
 
+        VMObjectLightning::cast(l)->set_docstring(b->docstring());
         TRACE_JIT(std::cerr << "l->sub(" << l->subtag() << ")" << std::endl);
         m->overwrite(l);
         return l;

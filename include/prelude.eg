@@ -485,7 +485,7 @@ namespace System (
     using List
 
     def help_exact_matches =
-        @"System::exact_matches s - return a list of exact docstring matches"
+        @"System::help_exact_matches s - return a list of exact docstring matches"
         [S -> filter [M -> query_module_name M == S] query_modules |> 
             [{} -> filter [C -> to_text C == S] (concat_map query_module_exports query_modules)
                    |> map docstring
@@ -497,10 +497,18 @@ help "modules"  - list all modules
 help "text"     - print exact or else inexact matches againt a query
 """
 
+    def help_inexact_matches =
+        @"System::help_inexact_matches s - return a list of inexact docstring matches"
+        [ S ->
+            let DD = map docstring query_modules ++ map docstring (concat_map query_module_exports query_modules) in
+            let DD = filter [T:text -> true|_ -> false] DD in
+            let R = Regex::compile S in
+                filter [D -> Regex::matches R D /= {}] DD ]
+
     def help =
         @"System::help - search for information"
         napp [{"modules"} -> map query_module_name query_modules 
-             |{S:text} -> help_exact_matches S 
+             |{S:text} -> help_exact_matches S |> [{} -> help_inexact_matches S|M -> M]
              | _ -> print help_msg] [X -> args_to_list X]
 )
 
