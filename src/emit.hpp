@@ -713,6 +713,10 @@ public:
 
         auto [p0, ss, s] = AstExprCombinator::split(n);
         auto b = VMObjectBytecode::create(machine(), code, data, ss, s);
+
+        auto [p1, doc] = AstDocstring::split(d);
+        VMObjectBytecode::cast(b)->set_docstring(VM::unicode_unescape(doc));
+
         machine()->define_data(b);
         _out.push_back(b);
 

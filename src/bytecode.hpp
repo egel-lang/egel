@@ -405,7 +405,7 @@ public:
     }
 
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
-        // debug(std::cout);
+        std::cerr << "WARNING: unjitted combinator" << std::endl;
         Registers reg;
         uint32_t pc = 0;
         reg.set(0, thunk);

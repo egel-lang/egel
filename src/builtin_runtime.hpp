@@ -293,6 +293,20 @@ public:
     }
 };
 
+class DebugPtr : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, DebugPtr, "System", "debug_ptr");
+
+    DOCSTRING("print the pointer");
+
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        std::stringstream ss;
+        ss << arg0.get();
+        icu::UnicodeString u(ss.str().c_str());
+        return machine()->create_text(u);
+    }
+};
+
 class Dependencies : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dependencies, "System", "dependencies");
@@ -423,6 +437,8 @@ public:
         oo.push_back(GetBytecode::create(vm));
         oo.push_back(GetBytedata::create(vm));
         oo.push_back(Dependencies::create(vm));
+
+        oo.push_back(DebugPtr::create(vm));
 
         return oo;
     }
