@@ -605,7 +605,7 @@ public:
     }
 
     void jit(VM *vm) override {
-        emit_jit(vm, _combinators);
+        _combinators = emit_jit(vm, _combinators);
     }
 
     void render(std::ostream &os) const override {
@@ -760,7 +760,7 @@ public:
     }
 
     void jit(VM *vm) override {
-        emit_jit(vm, _combinators);
+        _combinators = emit_jit(vm, _combinators);
     }
 
     void render(std::ostream &os) const override {

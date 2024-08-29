@@ -945,7 +945,7 @@ private:
     void* _proc;
 };
 
-inline void try_compile(VM* m, const VMObjectPtr& o) {
+inline VMObjectPtr try_compile(VM* m, const VMObjectPtr& o) {
     if (m->is_bytecode(o)) {
         TRACE_JIT(std::cerr << "compiling " << o->to_text() << std::endl);
 
@@ -958,13 +958,19 @@ inline void try_compile(VM* m, const VMObjectPtr& o) {
 
         TRACE_JIT(std::cerr << "l->sub(" << l->subtag() << ")" << std::endl);
         m->overwrite(l);
+        return l;
+    } else {
+        return o;
     }
 };
 
-inline void emit_jit(VM* m, std::vector<VMObjectPtr> oo) {
+inline std::vector<VMObjectPtr> emit_jit(VM* m, std::vector<VMObjectPtr> oo) {
+    std::vector<VMObjectPtr> oo0;
     for (auto& o : oo) {
-        try_compile(m, o);
+        auto o0 = try_compile(m, o);
+        oo0.push_back(o0);
     }
+    return oo0;
 };
 
 }  // namespace egel
