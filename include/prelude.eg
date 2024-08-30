@@ -296,6 +296,12 @@ namespace List (
             [(XX0, XX1) -> if P X then (cons X XX0, XX1) else (XX0, cons X XX1) ]
                 (split P XX) ]
 
+    def span =
+        @"List::span p l - split a list where the first segment satisfies a predicate"
+        [ P nil -> (nil, nil)
+        | P (cons X XX) ->
+            if P X then [(YY,ZZ) -> (cons X YY,ZZ)] (span P XX) else (nil, cons X XX) ]
+
     def break =
         @"List::break p l - split a list in two parts"
         [ P nil -> (nil, nil)
