@@ -1051,6 +1051,7 @@ public:
     }
 
     void load_cmodule(const std::shared_ptr<CModule> &mod) override {
+        _manager->load_cmodule(mod);
     }
     /*
         VMObjectPtr query_data() override {

@@ -797,6 +797,14 @@ public:
     static ModuleManagerPtr create() {
         return std::make_shared<ModuleManager>();
     }
+    
+    void load_cmodule(const std::shared_ptr<CModule> &m) {
+        auto mod = ModuleInternal::create(machine(),m);
+        _loading.push_back(mod);
+        mod->load();
+        process();
+        flush();
+    }
 
     void init(const OptionsPtr &oo, VM *vm) {
         NamespacePtr env = Namespace::create();
