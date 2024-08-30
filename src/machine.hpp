@@ -1050,6 +1050,8 @@ public:
         return to_list(oo);
     }
 
+    void load_cmodule(const std::shared_ptr<CModule> &mod) override {
+    }
     /*
         VMObjectPtr query_data() override {
             VMObjectPtrs oo;

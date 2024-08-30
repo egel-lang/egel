@@ -83,7 +83,7 @@ class MinInt : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MinInt, "System", "min_int");
 
-DOCSTRING("System:min_int - maximum for integers");
+DOCSTRING("System:min_int - minimum for integers");
     VMObjectPtr apply() const override {
         return machine()->create_integer(std::numeric_limits<vm_int_t>::min());
     }

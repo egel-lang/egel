@@ -410,6 +410,7 @@ struct VMReduceResult {
 enum reducer_state_t { RUNNING, SLEEPING, HALTED };
 
 class VM;
+class CModule;
 using VMPtr = std::shared_ptr<VM>;
 
 using callback_t = std::function<void(VM *vm, const VMObjectPtr &)>;
@@ -634,6 +635,8 @@ public:
     virtual VMObjectPtr query_module_imports(const VMObjectPtr &m) = 0;
     virtual VMObjectPtr query_module_exports(const VMObjectPtr &m) = 0;
     virtual VMObjectPtr query_module_values(const VMObjectPtr &m) = 0;
+
+    virtual void load_cmodule(const std::shared_ptr<CModule> &mod) = 0;
 
     // machine state
     virtual VMObjectPtr query_symbols() = 0;
