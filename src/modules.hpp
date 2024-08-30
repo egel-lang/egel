@@ -811,37 +811,19 @@ public:
         set_options(oo);
         set_machine(vm);
         set_environment(env);
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<TimeModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<SystemModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<MathModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<StringModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<RuntimeModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<ProcessModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<EvalModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<AsyncModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<DictModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<RegexModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<OSModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<FSModule>()));
-        _loading.push_back(
-            ModuleInternal::create(vm, std::make_shared<FFIModule>()));
-        for (const auto &m : _loading) {
-            m->load();
-        }
-        process();
-        flush();
+        load_cmodule(std::make_shared<TimeModule>());
+        load_cmodule(std::make_shared<SystemModule>());
+        load_cmodule(std::make_shared<MathModule>());
+        load_cmodule(std::make_shared<StringModule>());
+        load_cmodule(std::make_shared<RuntimeModule>());
+        load_cmodule(std::make_shared<ProcessModule>());
+        load_cmodule(std::make_shared<EvalModule>());
+        load_cmodule(std::make_shared<AsyncModule>());
+        load_cmodule(std::make_shared<DictModule>());
+        load_cmodule(std::make_shared<RegexModule>());
+        load_cmodule(std::make_shared<OSModule>());
+        load_cmodule(std::make_shared<FSModule>());
+        load_cmodule(std::make_shared<FFIModule>());
     }
 
     void set_options(const OptionsPtr &oo) {
