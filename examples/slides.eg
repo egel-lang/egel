@@ -1,5 +1,4 @@
 import "prelude.eg"
-import "os.ego"
 
 namespace Slides (
     using List

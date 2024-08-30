@@ -1,7 +1,6 @@
 # A small hexdump thing to show byte input
 #
 import "prelude.eg"
-import "os.ego"
 
 using System
 using OS

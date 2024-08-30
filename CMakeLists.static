@@ -167,18 +167,6 @@ target_link_libraries(egellib_static PRIVATE Threads::Threads ${FFI} ${ICUUC} ${
 #
 # the dynamic .ego Egel libraries
 
-# os.ego
-file(GLOB OS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/os/*.cpp")
-add_library(os MODULE ${OS_LIST})
-target_link_libraries(os PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
-set_target_properties(os PROPERTIES PREFIX "" SUFFIX ".ego")
-
-# fs.ego
-file(GLOB FS_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/fs/*.cpp")
-add_library(fs MODULE ${FS_LIST})
-target_link_libraries(fs PRIVATE Threads::Threads ${ICUUC} ${ICUI18N} ${ICUIO} ${ICUDATA} ${ICUTU} ${FMT} ${LIGHTNING})
-set_target_properties(fs PROPERTIES PREFIX "" SUFFIX ".ego")
-
 # random.ego
 file(GLOB RANDOM_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/lib/random/*.cpp")
 add_library(random MODULE ${RANDOM_LIST})
@@ -211,7 +199,7 @@ install(FILES ${INCLUDE_LIST}
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 
-install(TARGETS os fs random pqueue
+install(TARGETS random pqueue
 	DESTINATION  "${CMAKE_INSTALL_LIBDIR}/egel"
 )
 

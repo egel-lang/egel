@@ -20,6 +20,8 @@
 #include "builtin_runtime.hpp"
 #include "builtin_string.hpp"
 #include "builtin_system.hpp"
+#include "builtin_os.hpp"
+#include "builtin_fs.hpp"
 #include "constants.hpp"
 #include "desugar.hpp"
 #include "emit.hpp"
@@ -821,6 +823,10 @@ public:
             ModuleInternal::create(vm, std::make_shared<DictModule>()));
         _loading.push_back(
             ModuleInternal::create(vm, std::make_shared<RegexModule>()));
+        _loading.push_back(
+            ModuleInternal::create(vm, std::make_shared<OSModule>()));
+        _loading.push_back(
+            ModuleInternal::create(vm, std::make_shared<FSModule>()));
         _loading.push_back(
             ModuleInternal::create(vm, std::make_shared<FFIModule>()));
         for (const auto &m : _loading) {

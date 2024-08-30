@@ -9,9 +9,6 @@
 # This is just me fooling around with serialization and not
 # intendet to be used.
 
-import "fs.ego"
-import "os.ego"
-
 import "prelude.eg"
 
 namespace Tiny (
