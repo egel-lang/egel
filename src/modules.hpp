@@ -548,7 +548,7 @@ public:
 
         auto doc = egel::visit_docstring(a);
         auto [p,d] = AstDocstring::split(doc);
-        set_docstring(d);
+        set_docstring(VM::unicode_to_text(d));
         _source = "";
         _ast = a;
     }
@@ -703,7 +703,7 @@ public:
 
         auto doc = egel::visit_docstring(a);
         auto [p,d] = AstDocstring::split(doc);
-        set_docstring(d);
+        set_docstring(VM::unicode_to_text(d));
         _source = "";
         _ast = a;
     }

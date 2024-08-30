@@ -25,6 +25,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ docstrings and help
 + exposed the tokenizer
 
 ## v0.1.12 - in every Lisp lives a confused hedgehog
