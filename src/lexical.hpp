@@ -724,14 +724,26 @@ icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
 Tokens tokenize_from_reader(CharReader &reader) {
     Tokens token_writer = Tokens();
 
-    while (!reader.end() && is_whitespace(reader.look())) reader.skip();
-
     while (!reader.end()) {
         Position p = reader.position();
         UChar32 c = reader.look();
 
-        if (is_hash(c)) {
-            while (!reader.end() && !is_eol(reader.look())) reader.skip();
+        if (is_whitespace(c)) {
+            icu::UnicodeString str; 
+            while (!reader.end() && is_whitespace(reader.look())) {
+                str += reader.look();
+                reader.skip();
+            } 
+            token_writer.push(Token(TOKEN_WHITESPACE, p, str));
+        } else if (is_hash(c)) {
+            icu::UnicodeString str; 
+            str += reader.look();
+            reader.skip();
+            while (!reader.end() && !is_eol(reader.look())) {
+                str += reader.look();
+                reader.skip();
+            }
+            token_writer.push(Token(TOKEN_COMMENT, p, str));
         } else if (is_comma(c)) {
             token_writer.push(Token(TOKEN_COMMA, p, c));
             reader.skip();
@@ -972,8 +984,6 @@ Tokens tokenize_from_reader(CharReader &reader) {
         } else {
             goto handle_error;
         }
-
-        while (!reader.end() && is_whitespace(reader.look())) reader.skip();
     }
 
     {
@@ -1025,17 +1035,28 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                 if (reader.eol()) reader.skip();
             }
         } else {
-            while (!reader.end() && is_whitespace(reader.look())) reader.skip();
-
             while (!reader.end() &&
                    !(reader.look(0) == '`' && reader.look(1) == '`' &&
                      reader.look(2) == '`')) {
                 Position p = reader.position();
                 UChar32 c = reader.look();
 
-                if (is_hash(c)) {
-                    while (!reader.end() && !is_eol(reader.look()))
+                if (is_whitespace(c)) {
+                    icu::UnicodeString str; 
+                    while (!reader.end() && is_whitespace(reader.look())) {
+                        str += reader.look();
                         reader.skip();
+                    } 
+                    token_writer.push(Token(TOKEN_WHITESPACE, p, str));
+                } else if (is_hash(c)) {
+                    icu::UnicodeString str; 
+                    str += reader.look();
+                    reader.skip();
+                    while (!reader.end() && !is_eol(reader.look())) {
+                        str += reader.look();
+                        reader.skip();
+                    }
+                    token_writer.push(Token(TOKEN_COMMENT, p, str));
                 } else if (is_comma(c)) {
                     token_writer.push(Token(TOKEN_COMMA, p, c));
                     reader.skip();
@@ -1279,9 +1300,6 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                 } else {
                     goto handle_error;
                 }
-
-                while (!reader.end() && is_whitespace(reader.look()))
-                    reader.skip();
             }
 
             if (reader.look(0) == '`' && reader.look(1) == '`' &&
