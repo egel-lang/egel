@@ -185,8 +185,8 @@ The following files should be in the `EGEL_PATH` directory.
  * `prelude.eg` `calculate.eg` `search.eg`:
    The standard Egel prelude and additional scripts.
 
- * `os.ego` `fs.ego` `regex.ego`:
-   input/output, filesystem, regexes dynamic libraries.
+ * `random.ego`, etc. :
+   Dynamically loaded libraries.
 
 ## ENVIRONMENT
 
