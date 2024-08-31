@@ -331,6 +331,8 @@ class RpcServer : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RpcServer, STRING_SYSTEM, "rpc_server");
 
+    DOCSTRING("System::rpc_server text - create a server connection");
+
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = unicode_to_string(machine()->get_text(arg0));
@@ -348,6 +350,8 @@ class RpcClient: public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, RpcClient, STRING_SYSTEM, "rpc_client");
 
+    DOCSTRING("System::rpc_client text - create a client connection");
+
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = unicode_to_string(machine()->get_text(arg0));
@@ -361,6 +365,8 @@ public:
 class RpcCall: public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_EGO, RpcCall, STRING_SYSTEM, "rpc_call");
+
+    DOCSTRING("System::rpc_call connection term - ask the server to execute a term");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();
@@ -377,6 +383,8 @@ class RpcImport: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, RpcImport, STRING_SYSTEM, "rpc_import");
 
+    DOCSTRING("System::rpc_import connection text - ask the server to import a local module");
+
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1) const override {
         auto m = machine();
         if (m->is_opaque(arg0) && m->symbol(arg0) == "System::rpc_connection" && m->is_text(arg1)) {
@@ -388,17 +396,30 @@ public:
     }
 };
 
-extern "C" std::vector<icu::UnicodeString> egel_imports() {
-    return std::vector<icu::UnicodeString>();
+class ERPCModule: public CModule {
+public:
+    icu::UnicodeString name() const override {
+        return "erpc";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'erpc' module defines mobile combinators. (Work in progress)";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        oo.push_back(RpcServer::create(vm));
+        oo.push_back(RpcClient::create(vm));
+        oo.push_back(RpcCall::create(vm));
+        oo.push_back(RpcImport::create(vm));
+
+        return oo;
+    }
 };
 
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
-    std::vector<VMObjectPtr> oo;
+extern "C" CModule* egel_module() {
+    CModule* m = new ERPCModule();
+    return m;
+}
 
-    oo.push_back(RpcServer::create(vm));
-    oo.push_back(RpcClient::create(vm));
-    oo.push_back(RpcCall::create(vm));
-    oo.push_back(RpcImport::create(vm));
-
-    return oo;
-};
