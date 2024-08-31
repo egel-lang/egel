@@ -19,6 +19,7 @@
 #include <egel/runtime.hpp> // compile against an installed egel
 
 #define DEBUG(s)    { std::cerr << "debug: " << s << std::endl; };
+#define DEBUG(s)
 
 using namespace egel;
 
@@ -159,29 +160,57 @@ public:
         channel_args.SetInt(GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH);
         channel_args.SetInt(GRPC_ARG_MAX_SEND_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH);
 
+        DEBUG("create channel");
         auto channel = grpc::CreateCustomChannel(server_address, grpc::InsecureChannelCredentials(), channel_args);
-        _stub = EgelRpc::NewStub(channel);
+        grpc_connectivity_state state = channel->GetState(false);
+
+        DEBUG("check channel state");
+        if (state != GRPC_CHANNEL_READY) {
+            DEBUG("try connect for 10 seconds");
+            bool success = channel->WaitForConnected(gpr_time_add(gpr_now(GPR_CLOCK_REALTIME), gpr_time_from_seconds(10, GPR_TIMESPAN)));
+            DEBUG("done waiting");
+            if (!success) {
+                std::cerr << "Failed to connect to the server within the timeout period." << std::endl;
+            } else {
+                DEBUG("create stub");
+                _stub = EgelRpc::NewStub(channel);
+            }
+        } else {
+            DEBUG("create stub");
+            _stub = EgelRpc::NewStub(channel);
+        }
+        DEBUG("connection created");
     }
 
     EgelRpcReturn EgelCall(const std::string& data) {
         EgelText in;
         EgelResult out;
 
+        DEBUG("egel call");
         in.set_text(data);
         ClientContext context;
 
-        Status status = _stub->EgelCall(&context, in, &out);
-
-        if (status.ok()) {
-            EgelRpcReturn r;
-            r.okay = true;
-            r.exception = out.exception();
-            r.text = out.text();
-            return r;
+        if (_stub == nullptr) {
+            DEBUG("stub: nullptr");
+            exit(1);
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
         } else {
-            EgelRpcReturn r;
-            r.okay = false;;
-            return r;
+            DEBUG("egel make call");
+            Status status = _stub->EgelCall(&context, in, &out);
+            DEBUG("check return status");
+            if (status.ok()) {
+                EgelRpcReturn r;
+                r.okay = true;
+                r.exception = out.exception();
+                r.text = out.text();
+                return r;
+            } else {
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
+            }
         }
     }
 
@@ -195,18 +224,25 @@ public:
 
         ClientContext context;
 
-        Status status = _stub->EgelDependencies(&context, in, &out);
-
-        if (status.ok()) {
-            EgelRpcReturn r;
-            r.okay = true;
-            r.exception = false;
-            r.text = out.text();
-            return r;
+        if (_stub == nullptr) {
+            DEBUG("stub: nullptr");
+            exit(1);
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
         } else {
-            EgelRpcReturn r;
-            r.okay = false;;
-            return r;
+            Status status = _stub->EgelDependencies(&context, in, &out);
+            if (status.ok()) {
+                EgelRpcReturn r;
+                r.okay = true;
+                r.exception = false;
+                r.text = out.text();
+                return r;
+            } else {
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
+            }
         }
     }
 
@@ -217,19 +253,27 @@ public:
         in.set_text(data);
         ClientContext context;
 
-        Status status = _stub->EgelImport(&context, in, &out);
-
-        if (status.ok()) {
-            EgelRpcReturn r;
-            r.okay = true;
-            r.exception = false;
-            r.text = out.text();
-            return r;
+        if (_stub == nullptr) {
+            DEBUG("stub: nullptr");
+            exit(1);
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
         } else {
-            EgelRpcReturn r;
-            r.okay = false;;
-            return r;
+            Status status = _stub->EgelImport(&context, in, &out);
+            if (status.ok()) {
+                EgelRpcReturn r;
+                r.okay = true;
+                r.exception = false;
+                r.text = out.text();
+                return r;
+            } else {
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
+            }
         }
+
     }
 
     EgelRpcReturn EgelInfo(const std::string& s) {
@@ -239,19 +283,27 @@ public:
         in.set_text(s);
         ClientContext context;
 
-        Status status = _stub->EgelNodeInfo(&context, in, &out);
-
-        if (status.ok()) {
-            EgelRpcReturn r;
-            r.okay = true;
-            r.exception = false;
-            r.text = out.text();
-            return r;
+        if (_stub == nullptr) {
+            DEBUG("stub: nullptr");
+            exit(1);
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
         } else {
-            EgelRpcReturn r;
-            r.okay = false;;
-            return r;
+            Status status = _stub->EgelNodeInfo(&context, in, &out);
+            if (status.ok()) {
+                EgelRpcReturn r;
+                r.okay = true;
+                r.exception = false;
+                r.text = out.text();
+                return r;
+            } else {
+                EgelRpcReturn r;
+                r.okay = false;;
+                return r;
+            }
         }
+
     }
 
 private:
@@ -284,11 +336,13 @@ public:
 
     VMObjectPtr call(const VMObjectPtr& o) {
 
+        DEBUG("sending dependencies");
         // send the dependencies
         auto oo = machine()->dependencies(o);
         std::vector<std::string> ss;
         for (auto &o : oo) {
             auto s = machine()->disassemble(o);
+            DEBUG("sending object: " + s);
             ss.push_back(unicode_to_string(s));
         }
         auto r = _connection->EgelDependencies(ss);
