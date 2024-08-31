@@ -18,6 +18,8 @@
 
 #include <egel/runtime.hpp> // compile against an installed egel
 
+#define DEBUG(s)    { std::cerr << "debug: " << s << std::endl; };
+
 using namespace egel;
 
 using grpc::Server;
@@ -76,7 +78,7 @@ public:
 
     virtual Status EgelCall(ServerContext* context, const EgelText* in, EgelResult* out) override {
         auto s = unicode_from_string(in->text());
-//std::cout << "call received: " << s << "\n";
+        DEBUG("call received" + s);
         auto o = machine()->deserialize(s);
         auto n = machine()->create_none();
         VMObjectPtrs thunk;
@@ -91,7 +93,7 @@ public:
             out->set_exception(false);
         }
         auto t = machine()->serialize(r.result);
-//std::cout << "call send: " << t << "\n";
+        DEBUG("call send:" + t);
         out->set_text(unicode_to_string(t));
         return Status::OK;
     }
@@ -99,7 +101,7 @@ public:
     virtual Status EgelDependencies(ServerContext* context, const EgelTexts* in, EgelText* out) override {
         auto texts = in->texts();
         for (auto &t : texts) {
-//std::cout << "received: " << t << "\n";
+            DEBUG("received dependencies " + t);
             auto s = unicode_from_string(t);
             auto o = machine()->assemble(s);
             machine()->overwrite(o);
@@ -117,10 +119,8 @@ public:
 
     virtual Status EgelImport(ServerContext* context, const EgelText* in, EgelText* out) override {
         auto m = unicode_from_string(in->text());
-// std::cout << "import : " << m << "\n";
+        DEBUG("import: " + m);
         machine()->eval_module(m);
-// std::cout << "machine state: \n";
-// machine()->render(std::cout);
         out->set_text("none");
         return Status::OK;
     }
@@ -133,7 +133,7 @@ public:
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(this);
         std::unique_ptr<Server> server(builder.BuildAndStart());
-//        std::cout << "Server listening on " << server_address << std::endl;
+        DEBUG("server listening on: " + server_address);
         server->Wait();
     };
 private:
@@ -283,6 +283,7 @@ public:
     }
 
     VMObjectPtr call(const VMObjectPtr& o) {
+
         // send the dependencies
         auto oo = machine()->dependencies(o);
         std::vector<std::string> ss;
@@ -293,7 +294,7 @@ public:
         auto r = _connection->EgelDependencies(ss);
 
         if (!r.okay) {
-            throw machine()->create_text("call failed");
+            throw machine()->create_text("call failed on sending dependencies");
         }
 
         // do the call
@@ -301,7 +302,7 @@ public:
         r = _connection->EgelCall(unicode_to_string(s));
 
         if (!r.okay) {
-            throw machine()->create_text("call failed");
+            throw machine()->create_text("call failed on sending serialized object");
         }
 
         auto q = machine()->deserialize(unicode_from_string(r.text));
