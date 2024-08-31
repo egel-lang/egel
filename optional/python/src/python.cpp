@@ -205,10 +205,10 @@ static VMObjectPtr python_to_egel(VM* machine, const CPythonObject& object) {
  * A Python machine.
  **/
 
-//## Python::machine - create a python machine
 class PythonMachine : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonMachine, "Python", "machine");
+    DOCSTRING("Python::machine - create a python machine");
 
     ~PythonMachine() {
         if (_value) delete _value;
@@ -250,10 +250,10 @@ protected:
 class PythonObject;
 typedef std::shared_ptr<PythonObject> PythonObjectPtr;
 
-//## Python::object - opaque Python object values
 class PythonObject : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_PYTHON_OBJECT, PythonObject, "Python", "object");
+    DOCSTRING("Python::object - opaque Python object values");
 
     PythonObject(const PythonObject& o)
         : Opaque(o.subtag(), o.machine(), o.symbol()), _value(o.value()) {
@@ -304,10 +304,10 @@ protected:
 #define PYTHON_OBJECT_TEST(o) PythonObject::test(o)
 #define PYTHON_OBJECT_VALUE(o) PythonObject::value(o)
 
-//## Python::run none - create a Python machine
 class PythonRun : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonRun, "Python", "run");
+    DOCSTRING("Python::run none - create a Python machine");
 
     // XXX: TODO: add extra initialization options once
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
@@ -321,11 +321,11 @@ public:
     }
 };
 
-//## Python::to_object - convert a primitive Egel object to a Python object
 class PythonToObject : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToObject, "Python",
                      "to_object");
+    DOCSTRING("Python::to_object - convert a primitive Egel object to a Python object");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         try {
@@ -337,11 +337,11 @@ public:
     }
 };
 
-//## Python::from_object - convert a primitive Python object to an Egel object
 class PythonFromObject : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromObject, "Python",
                      "from_object");
+    DOCSTRING("Python::from_object - convert a primitive Python object to an Egel object");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         try {
@@ -358,11 +358,11 @@ public:
     }
 };
 
-//## Python::is_none - check for none
 class PythonIsNone : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsNone, "Python",
                      "is_none");
+    DOCSTRING("Python::is_none - check for none");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -374,11 +374,11 @@ public:
     }
 };
 
-//## Python::is_false - check for false
 class PythonIsFalse : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsFalse, "Python",
                      "is_false");
+    DOCSTRING("Python::is_false - check for false");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -390,11 +390,11 @@ public:
     }
 };
 
-//## Python::is_true - check for true
 class PythonIsTrue : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsTrue, "Python",
                      "is_true");
+    DOCSTRING("Python::is_true - check for true");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -406,11 +406,11 @@ public:
     }
 };
 
-//## Python::is_integer - check for integer
 class PythonIsInteger : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsInteger, "Python",
                      "is_integer");
+    DOCSTRING("Python::is_integer - check for integer");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -422,11 +422,11 @@ public:
     }
 };
 
-//## Python::is_float - check for float
 class PythonIsFloat : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsFloat, "Python",
                      "is_float");
+    DOCSTRING("Python::is_float - check for float");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -438,11 +438,11 @@ public:
     }
 };
 
-//## Python::is_text - check for text
 class PythonIsText : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsText, "Python",
                      "is_text");
+    DOCSTRING("Python::is_text - check for text");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -454,11 +454,11 @@ public:
     }
 };
 
-//## Python::from_integer - convert from integer
 class PythonFromInteger : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromInteger, "Python",
                      "from_integer");
+    DOCSTRING("Python::from_integer - convert from integer");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -472,11 +472,11 @@ public:
     }
 };
 
-//## Python::from_float - convert from float
 class PythonFromFloat : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromFloat, "Python",
                      "from_float");
+    DOCSTRING("Python::from_float - convert from float");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -490,11 +490,11 @@ public:
     }
 };
 
-//## Python::from_text - convert from text
 class PythonFromText : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromText, "Python",
                      "from_text");
+    DOCSTRING("Python::from_text - convert from text");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
@@ -509,11 +509,11 @@ public:
     }
 };
 
-//## Python::get_attribute o n - retrieve attribute from object by name
 class PythonGetAttribute : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonGetAttribute, "Python",
                     "get_attribute");
+    DOCSTRING("Python::get_attribute o n - retrieve attribute from object by name");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -535,11 +535,11 @@ public:
     }
 };
 
-//## Python::set_attribute mod n a - set attribute from object by name
 class PythonSetAttribute : public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonSetAttribute, "Python",
                      "set_attribute");
+    DOCSTRING("Python::set_attribute mod n a - set attribute from object by name");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
@@ -559,11 +559,11 @@ public:
     }
 };
 
-//## Python::get_item o n - retrieve item from object
 class PythonGetItem : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonGetItem, "Python",
                     "get_item");
+    DOCSTRING("Python::get_item o n - retrieve item from object");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -580,11 +580,11 @@ public:
     }
 };
 
-//## Python::set_item o key a - set item from object by item
 class PythonSetItem : public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonSetItem, "Python",
                      "set_item");
+    DOCSTRING("Python::set_item o key a - set item from object by item");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
@@ -611,11 +611,11 @@ public:
  * Dict       | list of pairs
  */
 
-//## Python::is_tuple l - tuple check
 class PythonIsTuple : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsTuple, "Python",
                      "is_tuple");
+    DOCSTRING("Python::is_tuple l - tuple check");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -628,11 +628,11 @@ public:
     }
 };
 
-//## Python::to_tuple l - from egel tuple to a python tuple
 class PythonToTuple : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToTuple, "Python",
                      "to_tuple");
+    DOCSTRING("Python::to_tuple l - from egel tuple to a python tuple");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -665,11 +665,11 @@ public:
     }
 };
 
-//## Python::from_tuple l - from python tuple to egel tuple
 class PythonFromTuple : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromTuple, "Python",
                      "from_tuple");
+    DOCSTRING("Python::from_tuple l - from python tuple to egel tuple");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -697,11 +697,11 @@ public:
     }
 };
 
-//## Python::is_list l - check list
 class PythonIsList : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsList, "Python",
                      "is_list");
+    DOCSTRING("Python::is_list l - check list");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -714,11 +714,11 @@ public:
     }
 };
 
-//## Python::to_list l - from egel list to a python list
 class PythonToList : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToList, "Python",
                      "to_list");
+    DOCSTRING("Python::to_list l - from egel list to a python list");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -746,11 +746,11 @@ public:
     }
 };
 
-//## Python::from_list l - from python list to egel list
 class PythonFromList : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromList, "Python",
                      "from_list");
+    DOCSTRING("Python::from_list l - from python list to egel list");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -776,10 +776,10 @@ public:
     }
 };
 
-//## Python::is_set l - python set check
 class PythonIsSet : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsSet, "Python", "is_set");
+    DOCSTRING("Python::is_set l - python set check");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -792,10 +792,10 @@ public:
     }
 };
 
-//## Python::to_set l - from egel list to python set
 class PythonToSet : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToSet, "Python", "to_set");
+    DOCSTRING("Python::to_set l - from egel list to python set");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -823,11 +823,11 @@ public:
     }
 };
 
-//## Python::from_set l - from python set to egel list
 class PythonFromSet : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromSet, "Python",
                      "from_set");
+    DOCSTRING("Python::from_set l - from python set to egel list");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -850,11 +850,11 @@ public:
     }
 };
 
-//## Python::is_dictionary l - from egel list of tuples to a python dictionary
 class PythonIsDictionary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsDictionary, "Python",
                      "is_dictionary");
+    DOCSTRING("Python::is_dictionary l - from egel list of tuples to a python dictionary");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -867,11 +867,11 @@ public:
     }
 };
 
-//## Python::to_dictionary l - from egel list of tuples to a python dictionary
 class PythonToDictionary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonToDictionary, "Python",
                      "to_dictionary");
+    DOCSTRING("Python::to_dictionary l - from egel list of tuples to a python dictionary");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -903,11 +903,11 @@ public:
     }
 };
 
-//## Python::from_dictionary l - from python dictionary to egel list of tuples
 class PythonFromDictionary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFromDictionary, "Python",
                      "from_dictionary");
+    DOCSTRING("Python::from_dictionary l - from python dictionary to egel list of tuples");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -938,11 +938,11 @@ public:
     }
 };
 
-//## Python::directory o - get the object list
 class PythonDirectory : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonDirectory, "Python",
                      "directory");
+    DOCSTRING("Python::directory o - get the object list");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -961,11 +961,11 @@ public:
     }
 };
 
-//## Python::is_callable f - callable test
 class PythonIsCallable : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonIsCallable, "Python",
                      "is_callable");
+    DOCSTRING("Python::is_callable f - callable test");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -978,10 +978,10 @@ public:
     }
 };
 
-//## Python::apply f (x0, ..) - call a python function with a tuple of arguments
 class PythonApply : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonApply, "Python", "apply");
+    DOCSTRING("Python::apply f (x0, ..) - call a python function with a tuple of arguments");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -1011,11 +1011,10 @@ public:
     }
 };
 
-//## Python::call f (x0, ..) d - call a python function with a tuple and a
-//dictionary
 class PythonCall : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonCall, "Python", "call");
+    DOCSTRING("Python::call f (x0, ..) d - call a python function with a tuple and a dictionary");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
@@ -1048,10 +1047,10 @@ public:
     }
 };
 
-//## Python::eval s - evaluate a Python code string
 class PythonEval : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonEval, "Python", "eval");
+    DOCSTRING("Python::eval s - evaluate a Python code string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1072,11 +1071,11 @@ public:
     }
 };
 
-//## Python::eval_file s - evaluate a Python file
 class PythonEvalFile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonEvalFile, "Python",
                      "eval_file");
+    DOCSTRING("Python::eval_file s - evaluate a Python file");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1103,11 +1102,11 @@ public:
     }
 };
 
-//## Python::module_add s - fetch a loaded module
 class PythonModuleAdd : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleAdd, "Python",
                      "module_add");
+    DOCSTRING("Python::module_add s - fetch a loaded module");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1132,11 +1131,11 @@ public:
     }
 };
 
-//## Python::module_import fn - load a module
 class PythonModuleImport : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonModuleImport, "Python",
                      "module_import");
+    DOCSTRING("Python::module_import fn - load a module");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -1164,11 +1163,11 @@ public:
 };
 // implement: PyModule_GetDict
 
-//## Python::get_function mod f - retrieve function from module
 class PythonFunction : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_PYTHON_COMBINATOR, PythonFunction, "Python",
                     "get_function");
+    DOCSTRING("Python::get_function mod f - retrieve function from module");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -1190,58 +1189,72 @@ public:
     }
 };
 
-extern "C" std::vector<icu::UnicodeString> egel_imports() {
-    return std::vector<icu::UnicodeString>();
+class PythonModule: public CModule {
+public:
+    icu::UnicodeString name() const override {
+        return "python";
+    }
+
+    icu::UnicodeString docstring() const override {
+        return "The 'python' module defines python bindings. (Work in progress)";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+
+        oo.push_back(VMObjectStub::create(vm, "Python::machine"));
+        oo.push_back(PythonRun::create(vm));
+
+        oo.push_back(VMObjectStub::create(vm, "Python::object"));
+        oo.push_back(PythonToObject::create(vm));
+        oo.push_back(PythonFromObject::create(vm));
+
+        oo.push_back(PythonIsNone::create(vm));
+        oo.push_back(PythonIsFalse::create(vm));
+        oo.push_back(PythonIsTrue::create(vm));
+        oo.push_back(PythonIsInteger::create(vm));
+        oo.push_back(PythonIsFloat::create(vm));
+        oo.push_back(PythonIsText::create(vm));
+        oo.push_back(PythonFromInteger::create(vm));
+        oo.push_back(PythonFromFloat::create(vm));
+        oo.push_back(PythonFromText::create(vm));
+
+        oo.push_back(PythonIsTuple::create(vm));
+        oo.push_back(PythonToTuple::create(vm));
+        oo.push_back(PythonFromTuple::create(vm));
+        oo.push_back(PythonIsList::create(vm));
+        oo.push_back(PythonToList::create(vm));
+        oo.push_back(PythonFromList::create(vm));
+        oo.push_back(PythonIsSet::create(vm));
+        oo.push_back(PythonToSet::create(vm));
+        oo.push_back(PythonFromSet::create(vm));
+        oo.push_back(PythonIsDictionary::create(vm));
+        oo.push_back(PythonToDictionary::create(vm));
+        oo.push_back(PythonFromDictionary::create(vm));
+
+        oo.push_back(PythonDirectory::create(vm));
+        oo.push_back(PythonGetAttribute::create(vm));
+        oo.push_back(PythonSetAttribute::create(vm));
+        oo.push_back(PythonGetItem::create(vm));
+        oo.push_back(PythonSetItem::create(vm));
+
+        oo.push_back(PythonEval::create(vm));
+        oo.push_back(PythonEvalFile::create(vm));
+
+        oo.push_back(PythonIsCallable::create(vm));
+        oo.push_back(PythonApply::create(vm));
+        oo.push_back(PythonCall::create(vm));
+        oo.push_back(PythonFunction::create(vm));
+        oo.push_back(PythonModuleAdd::create(vm));
+        oo.push_back(PythonModuleImport::create(vm));
+
+
+        return oo;
+    }
+};
+
+extern "C" CModule* egel_module() {
+    CModule* m = new PythonModule();
+    return m;
 }
 
-extern "C" std::vector<VMObjectPtr> egel_exports(VM* vm) {
-    std::vector<VMObjectPtr> oo;
-
-    oo.push_back(VMObjectStub::create(vm, "Python::machine"));
-    oo.push_back(PythonRun::create(vm));
-
-    oo.push_back(VMObjectStub::create(vm, "Python::object"));
-    oo.push_back(PythonToObject::create(vm));
-    oo.push_back(PythonFromObject::create(vm));
-
-    oo.push_back(PythonIsNone::create(vm));
-    oo.push_back(PythonIsFalse::create(vm));
-    oo.push_back(PythonIsTrue::create(vm));
-    oo.push_back(PythonIsInteger::create(vm));
-    oo.push_back(PythonIsFloat::create(vm));
-    oo.push_back(PythonIsText::create(vm));
-    oo.push_back(PythonFromInteger::create(vm));
-    oo.push_back(PythonFromFloat::create(vm));
-    oo.push_back(PythonFromText::create(vm));
-
-    oo.push_back(PythonIsTuple::create(vm));
-    oo.push_back(PythonToTuple::create(vm));
-    oo.push_back(PythonFromTuple::create(vm));
-    oo.push_back(PythonIsList::create(vm));
-    oo.push_back(PythonToList::create(vm));
-    oo.push_back(PythonFromList::create(vm));
-    oo.push_back(PythonIsSet::create(vm));
-    oo.push_back(PythonToSet::create(vm));
-    oo.push_back(PythonFromSet::create(vm));
-    oo.push_back(PythonIsDictionary::create(vm));
-    oo.push_back(PythonToDictionary::create(vm));
-    oo.push_back(PythonFromDictionary::create(vm));
-
-    oo.push_back(PythonDirectory::create(vm));
-    oo.push_back(PythonGetAttribute::create(vm));
-    oo.push_back(PythonSetAttribute::create(vm));
-    oo.push_back(PythonGetItem::create(vm));
-    oo.push_back(PythonSetItem::create(vm));
-
-    oo.push_back(PythonEval::create(vm));
-    oo.push_back(PythonEvalFile::create(vm));
-
-    oo.push_back(PythonIsCallable::create(vm));
-    oo.push_back(PythonApply::create(vm));
-    oo.push_back(PythonCall::create(vm));
-    oo.push_back(PythonFunction::create(vm));
-    oo.push_back(PythonModuleAdd::create(vm));
-    oo.push_back(PythonModuleImport::create(vm));
-
-    return oo;
-}
