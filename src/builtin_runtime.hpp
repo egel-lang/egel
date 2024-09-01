@@ -182,6 +182,7 @@ DOCSTRING("System::query_module_values m - get the values of the module");
 class IsInteger : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsInteger, "System", "is_integer");
+DOCSTRING("System::is_integer o - test for integer");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_integer(arg0));
@@ -191,6 +192,7 @@ public:
 class IsFloat : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsFloat, "System", "is_float");
+DOCSTRING("System::is_float o - test for float");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_float(arg0));
@@ -200,6 +202,7 @@ public:
 class IsCharacter : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsCharacter, "System", "is_character");
+DOCSTRING("System::is_character o - test for character");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_char(arg0));
@@ -209,6 +212,7 @@ public:
 class IsText : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsText, "System", "is_text");
+DOCSTRING("System::is_text o - test for text");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_text(arg0));
@@ -218,6 +222,7 @@ public:
 class IsCombinator : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsCombinator, "System", "is_combinator");
+DOCSTRING("System::is_combinator o - test for combinator");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_combinator(arg0));
@@ -227,6 +232,7 @@ public:
 class IsOpaque : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsOpaque, "System", "is_opaque");
+DOCSTRING("System::is_opaque o - test for opaque value");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_opaque(arg0));
@@ -236,6 +242,8 @@ public:
 class IsArray : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsArray, "System", "is_array");
+DOCSTRING("System::is_array o - test for array value");
+
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_array(arg0));
@@ -245,6 +253,7 @@ public:
 class IsBytecode : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsBytecode, "System", "is_bytecode");
+DOCSTRING("System::is_bytecode o - test for bytecode value");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_bytecode(arg0));
@@ -254,6 +263,7 @@ public:
 class GetArray : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetArray, "System", "get_array");
+DOCSTRING("System::get_array o - array to list");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_array(arg0)) {
@@ -268,6 +278,7 @@ public:
 class GetBytecode : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetBytecode, "System", "get_bytecode");
+DOCSTRING("System::get_bytecode o - get_bytecode");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
@@ -282,6 +293,7 @@ public:
 class GetBytedata : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetBytedata, "System", "get_bytedata");
+DOCSTRING("System::get_bytedata o - get_bytedata");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
@@ -297,7 +309,7 @@ class DebugPtr : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, DebugPtr, "System", "debug_ptr");
 
-    DOCSTRING("print the pointer");
+    DOCSTRING("System::debug_ptr o - raw pointer to object");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         std::stringstream ss;
@@ -310,6 +322,7 @@ public:
 class Dependencies : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dependencies, "System", "dependencies");
+DOCSTRING("System::dependencies o - dependencies of term");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto oo = machine()->dependencies(arg0);
@@ -320,6 +333,7 @@ public:
 class Tokenize: public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Tokenize, "System", "tokenize");
+DOCSTRING("System::tokenize uri s - use builtin tokenize");
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr& arg1) const override {
         if (machine()->is_text(arg0) && machine()->is_text(arg1)) {

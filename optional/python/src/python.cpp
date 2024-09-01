@@ -185,7 +185,7 @@ static VMObjectPtr python_to_egel(VM* machine, const CPythonObject& object) {
         PyArg_Parse(o, "l", &n0);
         auto n1 = machine->create_integer(n0);
         return n1;
-    } else if (PYTHON_HAS_TYPE(o, PyFloat_Type)) {
+    } else if (PyFloat_Check(o)) {
         vm_float_t f0;
         PyArg_Parse(o, "d", &f0);
         auto f1 = machine->create_float(f0);
@@ -431,7 +431,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
             auto o = PYTHON_OBJECT_VALUE(arg0);
-            return machine()->create_bool(PYTHON_HAS_TYPE(o, PyFloat_Type));
+            return machine()->create_bool(PyFloat_Check(o));
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -447,7 +447,7 @@ public:
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (PYTHON_OBJECT_TEST(arg0)) {
             auto o = PYTHON_OBJECT_VALUE(arg0);
-            return machine()->create_bool(PYTHON_HAS_TYPE(o, PyUnicode_Type));
+            return machine()->create_bool(PyUnicode_Check(o));
         } else {
             throw machine()->bad_args(this, arg0);
         }

@@ -192,6 +192,9 @@ def test6 =
     catch [ PE -> throw (from_object PE) ];
     none
 
+def test_regression =
+    printf "{}\n" (from_float (to_object 3.14));
+    printf "{}\n" (is_float (to_object 3.14))
 def main =
     test0;
     test1;
@@ -200,4 +203,5 @@ def main =
     test4;
     test5;
     #test6;
+    test_regression
     none
