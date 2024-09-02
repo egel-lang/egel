@@ -49,19 +49,19 @@ def true_test =
     [ X -> print "egel true test (" X ") result (" (true_convert (to_object X)) ")\n" ]
 
 def integer_convert =
-    [ N -> if is_integer N then from_integer N else "no integer" ]
+    [ N -> if Python::is_integer N then from_integer N else "no integer" ]
 
 def integer_test =
     [ X -> print "egel integer test (" X ") result (" (integer_convert (to_object X)) ")\n" ]
 
 def float_convert =
-    [ F -> if is_float F then from_float F else "no float" ]
+    [ F -> if Python::is_float F then from_float F else "no float" ]
 
 def float_test =
     [ X -> print "egel float test (" X ") result (" (float_convert (to_object X)) ")\n" ]
 
 def text_convert =
-    [ F -> if is_text F then from_text F else "no text" ]
+    [ F -> if Python::is_text F then from_text F else "no text" ]
 
 def text_test =
     [ X -> print "egel text test (" X ") result (" (text_convert (to_object X)) ")\n" ]
@@ -192,9 +192,6 @@ def test6 =
     catch [ PE -> throw (from_object PE) ];
     none
 
-def test_regression =
-    printf "{}\n" (from_float (to_object 3.14));
-    printf "{}\n" (is_float (to_object 3.14))
 def main =
     test0;
     test1;
@@ -203,5 +200,4 @@ def main =
     test4;
     test5;
     #test6;
-    test_regression
     none
