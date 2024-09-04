@@ -164,6 +164,22 @@ DOCSTRING("Dict::keys d - dictionary keys as list");
     }
 };
 
+class DictSize : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, DictSize, STRING_DICT, "size");
+
+DOCSTRING("Dict::size d - size of the dictionary");
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        if (Dictionary::is_type(arg0)) {
+            auto d = Dictionary::cast(arg0);
+            auto sz = d->size();
+            return machine()->create_integer(sz);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 class DictModule: public CModule {
 public:
     icu::UnicodeString name() const override {
@@ -183,6 +199,7 @@ public:
         oo.push_back(DictSet::create(vm));
         oo.push_back(DictErase::create(vm));
         oo.push_back(DictKeys::create(vm));
+        oo.push_back(DictSize::create(vm));
 
         return oo;
     }
