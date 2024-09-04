@@ -464,7 +464,7 @@ namespace System (
 namespace System (
     def memo =
         @"String::memo d f x - memoize with a dictionary"
-        [D F X -> if Dict::has D X then Dict::get D X else [Y -> Dict::set D X Y; Y] (F X) ]
+        [D F X -> if Dict::has D X then Dict::get D X else [Y -> Dict::set D X Y; Y] (F D X) ]
 )
 
 namespace String (
