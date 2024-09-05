@@ -47,12 +47,12 @@ DOCSTRING("System::eval text - evaluatate the expression in `text`");
 
 class EvalModule: public CModule {                                                                                                                                  
 public:
-    icu::UnicodeString name() const override {                                                                                                                
-        return "eval";                                                                                                                                       
+    icu::UnicodeString name() const override {                                                                       
+        return "eval";                                                                                                             
     }                                                                                                                                                         
                                                                                                                                                               
-    icu::UnicodeString docstring() const override {                                                                                                           
-        return "The 'eval' module defines the eval combinator.";                                                                                         
+    icu::UnicodeString docstring() const override {                                                                                 
+        return "The 'eval' module defines the eval combinator.";                                                                       
     }                                                                                                                                                         
                                                                                                                                                               
     std::vector<VMObjectPtr> exports(VM *vm) override {                                                                                                       

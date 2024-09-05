@@ -64,12 +64,6 @@ public:
         : _position(p), _string(s) {
     }
 
-    /*
-        QualifiedString(const QualifiedString& i):
-            _position(i._position), _string(i._string) {
-        }
-    */
-
     Position position() const {
         return _position;
     }
@@ -985,6 +979,12 @@ protected:
         }
         for (auto &m : _loading) {
             m->jit(_machine);
+        }
+        for (auto &m : _loading) {
+            auto vals = m->values();
+            for (auto &v: vals) {
+                _machine->eval_value(v.string());
+            }
         }
     }
 

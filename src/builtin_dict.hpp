@@ -19,16 +19,17 @@ class Dictionary : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, Dictionary, STRING_DICT, "dictionary");
 
-DOCSTRING("Dict::dictionary - a dictionary");
+    DOCSTRING("Dict::dictionary - a dictionary");
     Dictionary(VM* m, const dict_t& d) : Dictionary(m) {
         _value = d;
     }
 
     Dictionary(const Dictionary& d) : Dictionary(d.machine(), d.value()) {
+        std::cerr << "Dictionary copy" << std::endl;
     }
 
     static VMObjectPtr create(VM* m, const dict_t& d) {
-        return VMObjectPtr(new Dictionary(m, d));
+        return std::make_shared<Dictionary>(m, d);
     }
 
     int compare(const VMObjectPtr& o) override {

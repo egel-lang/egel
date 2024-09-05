@@ -620,6 +620,7 @@ public:
     virtual void eval_command(const icu::UnicodeString &l) = 0;
     virtual void eval_main() = 0;
     virtual void eval_interactive() = 0;
+    virtual void eval_value(const icu::UnicodeString &v) = 0;
 
     // expose the tokenizer
     virtual VMObjectPtr tokenize(const icu::UnicodeString &uri, const icu::UnicodeString &src) = 0;

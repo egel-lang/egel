@@ -932,7 +932,6 @@ public:
 
     void eval_module(const icu::UnicodeString &fn) override {
         _eval->eval_load(fn);
-        _eval->eval_values();
     }
 
     void eval_command(const icu::UnicodeString &l) override {
@@ -945,6 +944,10 @@ public:
 
     void eval_interactive() override {
         _eval->eval_interactive();
+    }
+
+    void eval_value(const icu::UnicodeString &val) override {
+        _eval->eval_value(val);
     }
 
     VMObjectPtr position_to_object(const Position &p) {

@@ -164,18 +164,14 @@ public:
     }
 
     // XXX: handle exceptions properly once
-    void eval_values() {
+    void eval_value(const icu::UnicodeString &val) {
+        // std::cerr << "evaluating: " << v.string() << std::endl;
         auto vm = machine();
-        auto mm = get_manager();
-        auto vv = mm->values();
-        for (auto &v : vv) {
-            // std::cerr << "evaluating: " << v.string() << std::endl;
-            auto c = vm->get_combinator(v.string());
-            auto sym = c->symbol();
-            auto r = vm->reduce(c);
-            auto d = VarCombinator::create(vm, sym, r);
-            vm->define_data(d);
-        }
+        auto c = vm->get_combinator(val);
+        auto sym = c->symbol();
+        auto r = vm->reduce(c);
+        auto d = VarCombinator::create(vm, sym, r);
+        vm->define_data(d);
     }
 
     /*
