@@ -296,11 +296,11 @@ DOCSTRING("Regex::replace pat s0 s1 - replace the first occurence of a pattern")
             auto s0 = machine()->get_text(arg1);
             auto s1 = machine()->get_text(arg2);
 
-            auto r = pat->matcher(s0);
+            auto r = pat->matcher(s1);
             if (r == nullptr) throw machine()->bad_args(this, arg0, arg1, arg2);
 
             UErrorCode error_code = U_ZERO_ERROR;
-            auto s2 = r->replaceFirst(s1, error_code);
+            auto s2 = r->replaceFirst(s0, error_code);
             delete r;
 
             if (U_FAILURE(error_code)) {
@@ -327,11 +327,11 @@ DOCSTRING("Regex::replace_all pat s0 s1 - replace all occurences of a pattern ")
             auto s0 = machine()->get_text(arg2);
             auto s1 = machine()->get_text(arg1);
 
-            auto r = pat->matcher(s0);
+            auto r = pat->matcher(s1);
             if (r == nullptr) throw machine()->bad_args(this, arg0, arg1, arg2);
 
             UErrorCode error_code = U_ZERO_ERROR;
-            auto s2 = r->replaceAll(s1, error_code);
+            auto s2 = r->replaceAll(s0, error_code);
             delete r;
 
             if (U_FAILURE(error_code)) {

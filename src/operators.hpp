@@ -37,6 +37,8 @@ struct operator_t {
 static operator_t operators[] = {
     {'=', "eq", NONE_ASSOC | INFIX},
     {'!', "ex", NONE_ASSOC | PREFIX},
+    {'&', "am", LEFT_ASSOC | INFIX},
+    {'|', "br", LEFT_ASSOC | INFIX},
     {'<', "lt", RIGHT_ASSOC | INFIX},
     {'>', "gt", RIGHT_ASSOC | INFIX},
     {'+', "pl", LEFT_ASSOC | PREFIX | INFIX},
@@ -47,9 +49,7 @@ static operator_t operators[] = {
     {'#', "hs", RIGHT_ASSOC | INFIX},
     {'%', "ct", RIGHT_ASSOC | INFIX},
     {'~', "tl", NONE_ASSOC | PREFIX | INFIX},
-    {'&', "am", LEFT_ASSOC | INFIX},
     {'$', "or", LEFT_ASSOC | INFIX},
-    {'|', "br", LEFT_ASSOC | INFIX},
     {'@', "at", RIGHT_ASSOC | INFIX},
     {'.', "dt", LEFT_ASSOC | INFIX},
 };
