@@ -176,7 +176,11 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const VMObjectPtr &a) {
-        a->render(os);
+        if (a == nullptr) {
+            os << '.';
+        } else {
+            a->render(os);
+        }
         return os;
     }
 
@@ -3030,7 +3034,9 @@ bool VMObjectArray::is_well_formed_tuple(VMObjectPtr &ee) const {
             return false;
         } else {
             auto head = v[0];
-            if (head->tag() == VM_OBJECT_COMBINATOR) {
+            if (head == nullptr) {
+                return false;
+            } else if (head->tag() == VM_OBJECT_COMBINATOR) {
                 auto h = VMObjectCombinator::cast(head);
                 return h->symbol() == SYMBOL_TUPLE;
             } else {
@@ -3043,7 +3049,9 @@ bool VMObjectArray::is_well_formed_tuple(VMObjectPtr &ee) const {
 };
 
 bool VMObjectArray::is_well_formed_nil(VMObjectPtr &ee) const {
-    if (ee->tag() == VM_OBJECT_COMBINATOR) {
+    if (ee == nullptr) {
+        return false;
+    } else if (ee->tag() == VM_OBJECT_COMBINATOR) {
         auto sym = VMObjectCombinator::symbol(ee);
         return sym == SYMBOL_NIL;
     } else {
@@ -3060,7 +3068,9 @@ bool VMObjectArray::is_well_formed_cons(VMObjectPtr &ee) const {
             return false;
         } else {
             auto head = v[0];
-            if (head->tag() == VM_OBJECT_COMBINATOR) {
+            if (head == nullptr) {
+                return false;
+            } else if (head->tag() == VM_OBJECT_COMBINATOR) {
                 auto h = VMObjectCombinator::cast(head);
                 return h->symbol() == SYMBOL_CONS;
             } else {

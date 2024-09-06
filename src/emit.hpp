@@ -195,7 +195,7 @@ public:
     /*
         The emit scheme revolves primarily about setting up thunks for redexes.
 
-        *  Every combinator definitions is a pattern matching abstraction, so
+        *  Every combinator definition is a pattern matching abstraction, so
            the thunk is destructed on inspection.
         *  Every root node might receive spurious arguments from the thunks so
            root nodes need to be handled as a separate case.
