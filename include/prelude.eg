@@ -87,10 +87,7 @@ namespace System (
 
     def proj =
         @"System::proj n (x, .., y) - projection on tuple"
-        [ N (A, B)          -> List::nth N {A,B}
-        | N (A, B, C)       -> List::nth N {A,B,C}
-        | N (A, B, C, D)    -> List::nth N {A,B,C,D}
-        | N (A, B, C, D, E) -> List::nth N {A,B,C,D,E} ]
+        [ N T -> tuple_to_list T |> List::nth N ]
 
     def fst = 
         @"System::fst (x, y) - proj1 on tuple"
@@ -524,6 +521,6 @@ help "text"     - print exact or else inexact matches againt a query
         @"System::help - search for information"
         napp [{"modules"} -> map query_module_name query_modules 
              |{S:text} -> help_exact_matches S |> [{} -> help_inexact_matches S|M -> M]
-             | _ -> print help_msg] [X -> args_to_list X]
+             | _ -> print help_msg] [X -> app_to_list X]
 )
 

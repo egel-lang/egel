@@ -861,11 +861,11 @@ public:
 };
 */
 
-class ArgsToList : public Variadic {
+class AppToList : public Variadic {
 public:
-    VARIADIC_PREAMBLE(VM_SUB_BUILTIN, ArgsToList, "System", "args_to_list");
+    VARIADIC_PREAMBLE(VM_SUB_BUILTIN, AppToList, "System", "app_to_list");
 
-DOCSTRING("System::args_to_list o0 .. on - arguments to list");
+DOCSTRING("System::app_to_list o0 .. on - arguments to list");
     VMObjectPtr apply(const VMObjectPtrs &args) const override {
         return machine()->to_list(args);
     }
@@ -880,6 +880,36 @@ DOCSTRING("System::list_to_app {o0 .. on} - list to application");
         if (machine()->is_list(arg0)) {
             auto oo = machine()->from_list(arg0);
             return machine()->create_array(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+class TupleToList : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, TupleToList, "System", "tuple_to_list");
+
+DOCSTRING("System::tuple_to_list (o0, .., on) - tuple to list");
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_array(arg0) && machine()->is_tuple(machine()->array_get(arg0,0))) {
+            auto oo = machine()->from_tuple(arg0);
+            return machine()->to_list(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+class ListToTuple : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, ListToTuple, "System", "list_to_tuple");
+
+DOCSTRING("System::list_to_tuple {o0, .., on} - list to tuple");
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_list(arg0)) {
+            auto oo = machine()->from_list(arg0);
+            return machine()->to_tuple(oo);
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -1154,8 +1184,10 @@ public:
         oo.push_back(Getenv::create(vm));
 
         // munching
-        oo.push_back(ArgsToList::create(vm));
+        oo.push_back(AppToList::create(vm));
         oo.push_back(ListToApp::create(vm));
+        oo.push_back(TupleToList::create(vm));
+        oo.push_back(ListToTuple::create(vm));
 
         // the builtin print & getline, override if sandboxed
         oo.push_back(Print::create(vm));
