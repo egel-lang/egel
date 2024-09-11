@@ -48,6 +48,11 @@ public:
         return a;
     }
 
+    virtual ptr<Ast> transform_expr_complex(const ptr<Ast> &a, const Position &p,
+                                          const icu::UnicodeString &v) {
+        return a;
+    }
+
     virtual ptr<Ast> transform_expr_character(const ptr<Ast> &a,
                                               const Position &p,
                                               const icu::UnicodeString &v) {
@@ -280,6 +285,11 @@ public:
                 return transform_expr_float(a, p, t);
                 break;
             }
+            case AST_EXPR_COMPLEX: {
+                auto [p, t] = AstExprComplex::split(a);
+                return transform_expr_complex(a, p, t);
+                break;
+            }
             case AST_EXPR_CHARACTER: {
                 auto [p, t] = AstExprCharacter::split(a);
                 return transform_expr_character(a, p, t);
@@ -462,6 +472,11 @@ public:
     virtual ptr<Ast> rewrite_expr_float(const Position &p,
                                         const icu::UnicodeString &v) {
         return AstExprFloat::create(p, v);
+    }
+
+    virtual ptr<Ast> rewrite_expr_complex(const Position &p,
+                                        const icu::UnicodeString &v) {
+        return AstExprComplex::create(p, v);
     }
 
     virtual ptr<Ast> rewrite_expr_character(const Position &p,
@@ -673,6 +688,11 @@ public:
                 return rewrite_expr_float(p, t);
                 break;
             }
+            case AST_EXPR_COMPLEX: {
+                auto [p, t] = AstExprComplex::split(a);
+                return rewrite_expr_complex(p, t);
+                break;
+            }
             case AST_EXPR_CHARACTER: {
                 auto [p, t] = AstExprCharacter::split(a);
                 return rewrite_expr_character(p, t);
@@ -850,6 +870,10 @@ public:
                                   const icu::UnicodeString &v) {
     }
 
+    virtual void visit_expr_complex(const Position &p,
+                                  const icu::UnicodeString &v) {
+    }
+
     virtual void visit_expr_character(const Position &p,
                                       const icu::UnicodeString &v) {
     }
@@ -1021,6 +1045,11 @@ public:
             case AST_EXPR_FLOAT: {
                 auto [p, t] = AstExprFloat::split(a);
                 return visit_expr_float(p, t);
+                break;
+            }
+            case AST_EXPR_COMPLEX: {
+                auto [p, t] = AstExprComplex::split(a);
+                return visit_expr_complex(p, t);
                 break;
             }
             case AST_EXPR_CHARACTER: {
