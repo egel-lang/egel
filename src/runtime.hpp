@@ -805,6 +805,21 @@ public:
         return f;
     }
 
+    static vm_complex_t unicode_to_complex(const icu::UnicodeString &s) {
+        char *buf = unicode_to_utf8_chars(s);
+        std::istringstream ss(buf);
+        delete[] buf;
+
+        double real = 0.0, imag = 0.0;
+        char j; 
+
+        if (ss >> real >> imag >> j && (j == 'j' || j == 'i')) {
+            return std::complex<double>(real, imag);
+        } else {
+            return std::complex<double>(real, 0.0); 
+        }
+    }
+
     static vm_char_t unicode_to_char(const icu::UnicodeString &s) {
         auto s0 = unicode_strip_quotes(s);
         auto s1 = unicode_unescape(s0);
@@ -834,9 +849,9 @@ public:
     static icu::UnicodeString unicode_from_complex(const vm_complex_t &z) {
         std::stringstream ss;
         if (z.imag() < 0.0) {
-            ss << fmt::format("{:#}-{:#}", z.real(), -z.imag());
+            ss << fmt::format("{:#}-{:#}i", z.real(), -z.imag());
         } else {
-            ss << fmt::format("{:#}+{:#}", z.real(), z.imag());
+            ss << fmt::format("{:#}+{:#}i", z.real(), z.imag());
         }
         icu::UnicodeString u(ss.str().c_str());
         return u;
@@ -1072,10 +1087,10 @@ public:
     void render(std::ostream &os) const override {
         vm_complex_t v = value();
         if (v.imag() < 0.0) {
-            std::string s = fmt::format("{:#}-{:#}", v.real(), -v.imag());
+            std::string s = fmt::format("{:#}-{:#}i", v.real(), -v.imag());
             os << s;
         } else {
-            std::string s = fmt::format("{:#}+{:#}", v.real(), v.imag());
+            std::string s = fmt::format("{:#}+{:#}i", v.real(), v.imag());
             os << s;
         }
     }

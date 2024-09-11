@@ -60,11 +60,30 @@ public:
         return a;
     }
 
-    ptr<Ast> parse_float() {
-        check_token(TOKEN_FLOAT);
-        auto a = AstExprFloat::create(position(), look().text());
-        skip();
-        return a;
+    ptr<Ast> parse_float_or_complex() {
+        if (look(0).tag() == TOKEN_FLOAT && look(1).text().trim() == "+" && look(2).tag()==TOKEN_IMAGINARY) {
+            auto a = AstExprComplex::create(position(), look(0).text() + "+" + look(2).text());
+            skip();
+            skip();
+            skip();
+            return a;
+        } else if (look(0).tag() == TOKEN_FLOAT && look(1).text().trim() == "-" && look(2).tag()==TOKEN_IMAGINARY) {
+            auto a = AstExprComplex::create(position(), look(0).text() + "-" + look(2).text());
+            skip();
+            skip();
+            skip();
+            return a;
+        } else if (look(0).tag() == TOKEN_FLOAT && look(1).tag()==TOKEN_IMAGINARY) {
+            auto a = AstExprComplex::create(position(), look(0).text() + look(2).text());
+            skip();
+            skip();
+            return a;
+        } else {
+            check_token(TOKEN_FLOAT);
+            auto a = AstExprFloat::create(position(), look().text());
+            skip();
+            return a;
+        }
     }
 
     ptr<Ast> parse_character() {
@@ -265,7 +284,10 @@ public:
                 return parse_hexinteger();
                 break;
             case TOKEN_FLOAT:
-                return parse_float();
+                return parse_float_or_complex();
+                break;
+            case TOKEN_IMAGINARY:
+                return parse_float_or_complex();
                 break;
             case TOKEN_CHAR:
                 return parse_character();
@@ -558,7 +580,10 @@ public:
                 return parse_hexinteger();
                 break;
             case TOKEN_FLOAT:
-                return parse_float();
+                return parse_float_or_complex();
+                break;
+            case TOKEN_IMAGINARY:
+                return parse_float_or_complex();
                 break;
             case TOKEN_CHAR:
                 return parse_character();

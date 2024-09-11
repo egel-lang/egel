@@ -242,6 +242,12 @@ public:
                 auto o = machine()->create_float(f);
                 visit_pattern_constant(o);
             } break;
+            case AST_EXPR_COMPLEX: {
+                auto [p, v] = AstExprFloat::split(e);
+                auto z = VM::unicode_to_complex(v);
+                auto o = machine()->create_complex(z);
+                visit_pattern_constant(o);
+            } break;
             case AST_EXPR_CHARACTER: {
                 auto [p, v] = AstExprCharacter::split(e);
                 auto c = VM::unicode_to_char(v);
@@ -339,6 +345,12 @@ public:
                 auto [p, v] = AstExprFloat::split(e);
                 auto f = VM::unicode_to_float(v);
                 auto o = machine()->create_float(f);
+                return visit_tree_constant(o);
+            } break;
+            case AST_EXPR_COMPLEX: {
+                auto [p, v] = AstExprComplex::split(e);
+                auto z = VM::unicode_to_complex(v);
+                auto o = machine()->create_complex(z);
                 return visit_tree_constant(o);
             } break;
             case AST_EXPR_CHARACTER: {
@@ -528,7 +540,7 @@ public:
     bool is_redex(const ptr<Ast> o) {
         auto t = o->tag();
         if ((t == AST_EXPR_INTEGER) || (t == AST_EXPR_HEXINTEGER) ||
-            (t == AST_EXPR_FLOAT) || (t == AST_EXPR_CHARACTER) ||
+            (t == AST_EXPR_FLOAT) || (t == AST_EXPR_COMPLEX) || (t == AST_EXPR_CHARACTER) ||
             (t == AST_EXPR_TEXT)) {
             return false;
         } else if (t == AST_EXPR_VARIABLE) {
@@ -569,6 +581,7 @@ public:
         switch (e->tag()) {
             case AST_EXPR_INTEGER:
             case AST_EXPR_FLOAT:
+            case AST_EXPR_COMPLEX:
             case AST_EXPR_CHARACTER:
             case AST_EXPR_TEXT: {
                 visit_root_tree(e);

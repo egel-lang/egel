@@ -322,7 +322,7 @@ public:
 class AstExprComplex : public AstAtom {
 public:
     AstExprComplex(const Position &p, const icu::UnicodeString &text)
-        : AstAtom(AST_EXPR_FLOAT, p, text) {};
+        : AstAtom(AST_EXPR_COMPLEX, p, text) {};
 
     AstExprComplex(const AstExprComplex &l) : AstExprComplex(l.position(), l.text()) {
     }

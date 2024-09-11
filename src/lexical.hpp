@@ -305,7 +305,7 @@ bool is_exponent(UChar32 c) {
 }
 
 bool is_imaginary(UChar32 c) {
-    return ((c == (UChar32)'j') || (c == (UChar32)'J'));
+    return ((c == (UChar32)'i') || (c == (UChar32)'j'));
 }
 
 bool is_escaped(UChar32 c) {
