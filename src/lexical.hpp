@@ -1026,12 +1026,22 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
     bool text = true;
     while (!reader.end()) {
         if (text) {
+            Position p = reader.position();
+            icu::UnicodeString str; 
             if (reader.look(0) == '`' && reader.look(1) == '`' &&
                 reader.look(2) == '`') {
-                while (!reader.end() && !is_eol(reader.look())) reader.skip();
+                while (!reader.end() && !reader.eol()) {
+                    str += reader.look();
+                    reader.skip();
+                } 
+                token_writer.push(Token(TOKEN_COMMENT, p, str));
                 text = !text;
             } else {
-                while (!reader.end() && !reader.eol()) reader.skip();
+                while (!reader.end() && !reader.eol()) {
+                    str += reader.look();
+                    reader.skip();
+                } 
+                token_writer.push(Token(TOKEN_COMMENT, p, str));
                 if (reader.eol()) reader.skip();
             }
         } else {
@@ -1304,8 +1314,13 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
 
             if (reader.look(0) == '`' && reader.look(1) == '`' &&
                 reader.look(2) == '`') {
-                while (!reader.end() && !is_eol(reader.look())) reader.skip();
-                if (is_eol(reader.look())) reader.skip();
+                Position p = reader.position();
+                icu::UnicodeString str; 
+                while (!reader.end() && !reader.eol()) {
+                    str += reader.look();
+                    reader.skip();
+                } 
+                token_writer.push(Token(TOKEN_COMMENT, p, str));
                 text = !text;
             }
         }
