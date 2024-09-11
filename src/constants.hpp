@@ -115,10 +115,12 @@ inline constexpr auto STRING_FALSE = "false";
 
 inline constexpr auto STRING_INT = "int";
 inline constexpr auto STRING_FLOAT = "float";
+inline constexpr auto STRING_COMPLEX = "complex";
 inline constexpr auto STRING_LONG = "long";
 inline constexpr auto STRING_CHAR = "char";
 inline constexpr auto STRING_STRING = "string";
 inline constexpr auto STRING_DOUBLE = "double";
+inline constexpr auto STRING_IMAGINARY = "imaginary";
 inline constexpr auto STRING_PTR = "ptr";
 
 inline constexpr auto STRING_TEXT = "text";

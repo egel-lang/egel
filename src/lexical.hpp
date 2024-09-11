@@ -52,6 +52,7 @@ enum token_t {
     TOKEN_INTEGER,
     TOKEN_HEXINTEGER,
     TOKEN_FLOAT,
+    TOKEN_IMAGINARY,
     TOKEN_CHAR,
     TOKEN_TEXT,
 
@@ -303,6 +304,10 @@ bool is_exponent(UChar32 c) {
     return ((c == (UChar32)'e') || (c == (UChar32)'E'));
 }
 
+bool is_imaginary(UChar32 c) {
+    return ((c == (UChar32)'j') || (c == (UChar32)'J'));
+}
+
 bool is_escaped(UChar32 c) {
     return ((c == (UChar32)'\\') || (c == (UChar32)'t') ||
             (c == (UChar32)'\'') || (c == (UChar32)'"') ||
@@ -460,6 +465,10 @@ static constexpr token_text_t token_text_table[]{
     {
         TOKEN_FLOAT,
         STRING_FLOAT,
+    },
+    {
+        TOKEN_IMAGINARY,
+        STRING_IMAGINARY,
     },
     {
         TOKEN_CHAR,
@@ -924,11 +933,16 @@ Tokens tokenize_from_reader(CharReader &reader) {
                         reader.skip();
                         c = reader.look();
                     };
-                    // any 'e' occurence signals a forced floating point with an
-                    // exponent
-                    if (!is_exponent(c)) {
+                    if (is_imaginary(c)) {
+                        str += c;
+                        reader.skip();
+                        c = reader.look();
+                        token_writer.push(Token(TOKEN_IMAGINARY, p, str));
+                    } else if (!is_exponent(c)) {
                         token_writer.push(Token(TOKEN_FLOAT, p, str));
                     } else {
+                        // any 'e' occurence signals a forced floating point with an
+                        // exponent
                         // handle 'e'
                         str += c;
                         reader.skip();
@@ -947,7 +961,14 @@ Tokens tokenize_from_reader(CharReader &reader) {
                             reader.skip();
                             c = reader.look();
                         };
-                        token_writer.push(Token(TOKEN_FLOAT, p, str));
+                        if (is_imaginary(c)) {
+                            str += c;
+                            reader.skip();
+                            c = reader.look();
+                            token_writer.push(Token(TOKEN_IMAGINARY, p, str));
+                        } else {
+                            token_writer.push(Token(TOKEN_FLOAT, p, str));
+                        }
                     }
                 }
             }
@@ -1247,11 +1268,16 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                                 reader.skip();
                                 c = reader.look();
                             };
-                            // any 'e' occurence signals a forced floating point with an
-                            // exponent
-                            if (!is_exponent(c)) {
+                            if (is_imaginary(c)) {
+                                str += c;
+                                reader.skip();
+                                c = reader.look();
+                                token_writer.push(Token(TOKEN_IMAGINARY, p, str));
+                            } else if (!is_exponent(c)) {
                                 token_writer.push(Token(TOKEN_FLOAT, p, str));
                             } else {
+                            // any 'e' occurence signals a forced floating point with an
+                            // exponent
                                 // handle 'e'
                                 str += c;
                                 reader.skip();
@@ -1270,7 +1296,14 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                                     reader.skip();
                                     c = reader.look();
                                 };
-                                token_writer.push(Token(TOKEN_FLOAT, p, str));
+                                if (is_imaginary(c)) {
+                                    str += c;
+                                    reader.skip();
+                                    c = reader.look();
+                                    token_writer.push(Token(TOKEN_IMAGINARY, p, str));
+                                } else {
+                                    token_writer.push(Token(TOKEN_FLOAT, p, str));
+                                }
                             }
                         }
                     }
