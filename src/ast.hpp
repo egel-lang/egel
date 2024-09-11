@@ -31,6 +31,7 @@ enum ast_tag_t {
     AST_EXPR_INTEGER,
     AST_EXPR_HEXINTEGER,
     AST_EXPR_FLOAT,
+    AST_EXPR_COMPLEX,
     AST_EXPR_CHARACTER,
     AST_EXPR_TEXT,
     // variables and constants
@@ -312,6 +313,30 @@ public:
 
     static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
         auto a0 = AstExprFloat::cast(a);
+        auto p = a0->position();
+        auto s = a0->text();
+        return {p, s};
+    }
+};
+
+class AstExprComplex : public AstAtom {
+public:
+    AstExprComplex(const Position &p, const icu::UnicodeString &text)
+        : AstAtom(AST_EXPR_FLOAT, p, text) {};
+
+    AstExprComplex(const AstExprComplex &l) : AstExprComplex(l.position(), l.text()) {
+    }
+
+    static ptr<Ast> create(const Position &p, const icu::UnicodeString &text) {
+        return std::make_shared<AstExprComplex>(p, text);
+    }
+
+    static std::shared_ptr<AstExprComplex> cast(const ptr<Ast> &a) {
+        return std::static_pointer_cast<AstExprComplex>(a);
+    }
+
+    static std::tuple<Position, icu::UnicodeString> split(const ptr<Ast> &a) {
+        auto a0 = AstExprComplex::cast(a);
         auto p = a0->position();
         auto s = a0->text();
         return {p, s};

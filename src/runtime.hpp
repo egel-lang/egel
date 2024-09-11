@@ -5,6 +5,7 @@
 
 #include <atomic>
 #include <cstring>
+#include <complex>
 #include <filesystem>
 #include <functional>
 #include <iostream>
@@ -79,6 +80,7 @@ constexpr unsigned int EGEL_FLOAT_PRECISION =
 enum vm_tag_t {
     VM_OBJECT_INTEGER,
     VM_OBJECT_FLOAT,
+    VM_OBJECT_COMPLEX,
     VM_OBJECT_CHAR,
     VM_OBJECT_TEXT,
     VM_OBJECT_OPAQUE,
@@ -92,18 +94,19 @@ using data_t = uint32_t;
 
 const int SYMBOL_INT = 0;
 const int SYMBOL_FLOAT = 1;
-const int SYMBOL_CHAR = 2;
-const int SYMBOL_TEXT = 3;
+const int SYMBOL_COMPLEX = 2;
+const int SYMBOL_CHAR = 3;
+const int SYMBOL_TEXT = 4;
 
-const int SYMBOL_ARRAY = 4;
+const int SYMBOL_ARRAY = 5;
 
-const int SYMBOL_NONE = 5;
-const int SYMBOL_TRUE = 6;
-const int SYMBOL_FALSE = 7;
+const int SYMBOL_NONE = 6;
+const int SYMBOL_TRUE = 7;
+const int SYMBOL_FALSE = 8;
 
-const int SYMBOL_TUPLE = 8;
-const int SYMBOL_NIL = 9;
-const int SYMBOL_CONS = 10;
+const int SYMBOL_TUPLE = 9;
+const int SYMBOL_NIL = 10;
+const int SYMBOL_CONS = 11;
 
 /**
  * VM objects can have subtypes which are _unique_ 'magic' numbers.
@@ -126,6 +129,7 @@ const vm_subtag_t VM_SUB_PYTHON_COMBINATOR = 0xff;  // Python combinators
 using vm_bool_t = bool;
 using vm_int_t = int64_t;
 using vm_float_t = double;
+using vm_complex_t = std::complex<double>;
 using vm_char_t = UChar32;
 using vm_text_t = icu::UnicodeString;
 
@@ -496,17 +500,20 @@ public:
     // creation
     virtual VMObjectPtr create_integer(const vm_int_t b) = 0;
     virtual VMObjectPtr create_float(const vm_float_t b) = 0;
+    virtual VMObjectPtr create_complex(const vm_complex_t b) = 0;
     virtual VMObjectPtr create_char(const vm_char_t b) = 0;
     virtual VMObjectPtr create_text(const vm_text_t b) = 0;
 
     virtual bool is_integer(const VMObjectPtr &o) = 0;
     virtual bool is_float(const VMObjectPtr &o) = 0;
+    virtual bool is_complex(const VMObjectPtr &o) = 0;
     virtual bool is_char(const VMObjectPtr &o) = 0;
     virtual bool is_text(const VMObjectPtr &o) = 0;
     virtual bool is_type(const std::type_info &t, const VMObjectPtr &o) = 0;
 
     virtual vm_int_t get_integer(const VMObjectPtr &o) = 0;
     virtual vm_float_t get_float(const VMObjectPtr &o) = 0;
+    virtual vm_complex_t get_complex(const VMObjectPtr &o) = 0;
     virtual vm_char_t get_char(const VMObjectPtr &o) = 0;
     virtual vm_text_t get_text(const VMObjectPtr &o) = 0;
 
@@ -824,6 +831,17 @@ public:
         return u;
     }
 
+    static icu::UnicodeString unicode_from_complex(const vm_complex_t &z) {
+        std::stringstream ss;
+        if (z.imag() < 0.0) {
+            ss << fmt::format("{:#}-{:#}", z.real(), -z.imag());
+        } else {
+            ss << fmt::format("{:#}+{:#}", z.real(), z.imag());
+        }
+        icu::UnicodeString u(ss.str().c_str());
+        return u;
+    }
+
     static icu::UnicodeString unicode_from_char(const vm_char_t &c) {
         std::stringstream ss;
         ss << c;
@@ -1021,6 +1039,53 @@ public:
 
 private:
     vm_float_t _value;
+};
+
+class VMObjectComplex : public VMObjectLiteral {
+public:
+    VMObjectComplex(const vm_complex_t &v)
+        : VMObjectLiteral(VM_OBJECT_COMPLEX), _value(v) {};
+
+    VMObjectComplex(const VMObjectComplex &l) : VMObjectComplex(l.value()) {
+    }
+
+    static VMObjectPtr create(const vm_complex_t f) {
+        return std::make_shared<VMObjectComplex>(f);
+    }
+
+    static bool test(const VMObjectPtr &o) {
+        return o->tag() == VM_OBJECT_COMPLEX;
+    }
+
+    static std::shared_ptr<VMObjectComplex> cast(const VMObjectPtr &o) {
+        return std::static_pointer_cast<VMObjectComplex>(o);
+    }
+
+    static vm_complex_t value(const VMObjectPtr &o) {
+        return cast(o)->value();
+    }
+
+    symbol_t symbol() const override {
+        return SYMBOL_COMPLEX;
+    }
+
+    void render(std::ostream &os) const override {
+        vm_complex_t v = value();
+        if (v.imag() < 0.0) {
+            std::string s = fmt::format("{:#}-{:#}", v.real(), -v.imag());
+            os << s;
+        } else {
+            std::string s = fmt::format("{:#}+{:#}", v.real(), v.imag());
+            os << s;
+        }
+    }
+
+    vm_complex_t value() const {
+        return _value;
+    }
+
+private:
+    vm_complex_t _value;
 };
 
 class VMObjectChar : public VMObjectLiteral {
@@ -1648,6 +1713,20 @@ struct CompareVMObjectPtr {
                     if (v0 < v1)
                         return -1;
                     else if (v1 < v0)
+                        return 1;
+                    else
+                        return 0;
+                } break;
+                case VM_OBJECT_COMPLEX: {
+                    auto z0 = VMObjectComplex::value(a0);
+                    auto z1 = VMObjectComplex::value(a1);
+                    if (z0.real() < z1.real())
+                        return -1;
+                    else if (z1.real() < z0.real())
+                        return 1;
+                    else if (z0.imag() < z1.imag())
+                        return -1;
+                    else if (z1.imag() < z0.imag())
                         return 1;
                     else
                         return 0;

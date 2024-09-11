@@ -213,11 +213,13 @@ public:
         // symbol and data table initialization
         auto i = _symbols.enter(STRING_SYSTEM, STRING_INT);
         auto f = _symbols.enter(STRING_SYSTEM, STRING_FLOAT);
+        auto z = _symbols.enter(STRING_SYSTEM, STRING_COMPLEX);
         auto c = _symbols.enter(STRING_SYSTEM, STRING_CHAR);
         auto t = _symbols.enter(STRING_SYSTEM, STRING_TEXT);
         auto a = _symbols.enter(STRING_SYSTEM, STRING_ARRAY);
         ASSERT(i == SYMBOL_INT);
         ASSERT(f == SYMBOL_FLOAT);
+        ASSERT(z == SYMBOL_COMPLEX);
         ASSERT(c == SYMBOL_CHAR);
         ASSERT(t == SYMBOL_TEXT);
         ASSERT(a == SYMBOL_ARRAY);
@@ -225,11 +227,13 @@ public:
         // necessary 'type' definitions
         _int = VMObjectData::create(this, i);
         _float = VMObjectData::create(this, f);
+        _complex = VMObjectData::create(this, z);
         _char = VMObjectData::create(this, c);
         _text = VMObjectData::create(this, t);
         auto array = VMObjectData::create(this, a);
         _data.enter(_int);
         _data.enter(_float);
+        _data.enter(_complex);
         _data.enter(_char);
         _data.enter(_text);
         _data.enter(array);
@@ -507,12 +511,20 @@ public:
         return VMObjectFloat::create(f);
     }
 
+    VMObjectPtr create_complex(const vm_complex_t z) override {
+        return VMObjectComplex::create(z);
+    }
+
     bool is_integer(const VMObjectPtr &o) override {
         return o->tag() == VM_OBJECT_INTEGER;
     }
 
     bool is_float(const VMObjectPtr &o) override {
         return o->tag() == VM_OBJECT_FLOAT;
+    }
+
+    bool is_complex(const VMObjectPtr &o) override {
+        return o->tag() == VM_OBJECT_COMPLEX;
     }
 
     bool is_char(const VMObjectPtr &o) override {
@@ -534,6 +546,10 @@ public:
 
     vm_float_t get_float(const VMObjectPtr &o) override {
         return VMObjectFloat::value(o);
+    }
+
+    vm_complex_t get_complex(const VMObjectPtr &o) override {
+        return VMObjectComplex::value(o);
     }
 
     vm_char_t get_char(const VMObjectPtr &o) override {
@@ -1080,6 +1096,7 @@ private:
 
     VMObjectPtr _int;
     VMObjectPtr _float;
+    VMObjectPtr _complex;
     VMObjectPtr _char;
     VMObjectPtr _text;
 
