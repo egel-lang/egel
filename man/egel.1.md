@@ -47,10 +47,10 @@ evaluator.
 
 Egel code consist of expression which are evaluated eagerly.
 
- * Basic primitives are integers, floats, unicode characters, and 
+ * Basic primitives are integers, floats, complex, unicode characters, and 
    unicode strings.
 
-   `0 1 2` , `0.0 3.14 -1.2` , `'a'` `'∀'` , or `"Hello World!"`
+   `0 1 2` , `0.0 3.14 -1.2+3.4j` , `'a'` `'∀'` , or `"Hello World!"`
 
  * All constants compose.
 
