@@ -74,7 +74,7 @@ public:
             skip();
             return a;
         } else if (look(0).tag() == TOKEN_FLOAT && look(1).tag()==TOKEN_IMAGINARY) {
-            auto a = AstExprComplex::create(position(), look(0).text() + look(2).text());
+            auto a = AstExprComplex::create(position(), look(0).text() + look(1).text());
             skip();
             skip();
             return a;

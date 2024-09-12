@@ -496,6 +496,11 @@ inline VMObjectPtr from_dag(VM *m, const SerialObjectPtrs &dag) {
                 auto o = m->create_float(f);
                 map[d->get_id()] = o;
             } break;
+            case VM_OBJECT_COMPLEX: {
+                auto z = SerialObject::get_complex(d);
+                auto o = m->create_complex(z);
+                map[d->get_id()] = o;
+            } break;
             case VM_OBJECT_CHAR: {
                 auto c = SerialObject::get_char(d);
                 auto o = m->create_char(c);
@@ -541,7 +546,7 @@ inline void dag_serialize(VM *m, const SerialObjectPtrs &dag,
             } break;
             case VM_OBJECT_COMPLEX: {
                 auto z = SerialObject::get_complex(s);
-                os << s->get_id() << ": z " << z << std::endl;
+                os << s->get_id() << ": z " << z.real() << " " << z.imag() << std::endl;
             } break;
             case VM_OBJECT_CHAR: {
                 auto c = SerialObject::get_char(s);
@@ -727,6 +732,13 @@ inline SerialObjectPtrs dag_deserialize(VM *m, std::istream &is) {
                 vm_float_t f;
                 is >> f;
                 auto s = SerialObject::create_float(o, f);
+                ss.push_back(s);
+            } break;
+            case 'z': {
+                double f0;
+                double f1;
+                is >> f0 >> f1;
+                auto s = SerialObject::create_complex(o, vm_complex_t(f0,f1));
                 ss.push_back(s);
             } break;
             case 'c': {

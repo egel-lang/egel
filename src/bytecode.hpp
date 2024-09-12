@@ -904,6 +904,9 @@ public:
                 case VM_OBJECT_FLOAT:
                     os << "f ";
                     break;
+                case VM_OBJECT_COMPLEX:
+                    os << "z ";
+                    break;
                 case VM_OBJECT_CHAR:
                     os << "c ";
                     break;
@@ -1084,6 +1087,18 @@ public:
         return VM::unicode_to_float(s);
     }
 
+    vm_complex_t fetch_complex() {
+        auto s0 = look_text();
+        skip();
+        auto s1 = look_text();
+        skip();
+        if (s1.trim() == "+") {
+            s1 = "+" + look_text();
+            skip();
+        }
+        return VM::unicode_to_complex(s0+s1);
+    }
+
     vm_char_t fetch_char() {
         auto s = look_text();
         skip();
@@ -1203,6 +1218,14 @@ public:
                 skip();
                 auto f = fetch_float();
                 auto o = machine()->create_float(f);
+                auto d = machine()->define_data(o);
+                data.push_back(d);
+            } else if (is_string("z")) {
+                skip();
+                skip();
+                skip();
+                auto z = fetch_complex();
+                auto o = machine()->create_complex(z);
                 auto d = machine()->define_data(o);
                 data.push_back(d);
             } else if (is_string("c")) {
