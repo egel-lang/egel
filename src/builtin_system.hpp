@@ -116,6 +116,9 @@ DOCSTRING("System::!- x - monadic minus");
         } else if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
             return machine()->create_float(-f);
+        } else if (machine()->is_complex(arg0)) {
+            auto f = machine()->get_complex(arg0);
+            return machine()->create_complex(-f);
         } else {
             throw machine()->bad_args(this, arg0);
         }
@@ -142,6 +145,10 @@ DOCSTRING("System::+ x y - addition");
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 + f1);
+        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+            auto f0 = machine()->get_complex(arg0);
+            auto f1 = machine()->get_complex(arg1);
+            return machine()->create_complex(f0 + f1);
         } else if ((machine()->is_text(arg0)) && (machine()->is_text(arg1))) {
             auto f0 = machine()->get_text(arg0);
             auto f1 = machine()->get_text(arg1);
@@ -180,6 +187,10 @@ DOCSTRING("System::+ x y - substraction");
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 - f1);
+        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+            auto f0 = machine()->get_complex(arg0);
+            auto f1 = machine()->get_complex(arg1);
+            return machine()->create_complex(f0 - f1);
         } else if (machine()->is_opaque(arg0)) {
             auto o = VMObjectOpaque::cast(arg0);
             auto r = o->op_minus(arg1);
@@ -214,6 +225,10 @@ DOCSTRING("System::* x y - multiplication");
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 * f1);
+        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+            auto f0 = machine()->get_complex(arg0);
+            auto f1 = machine()->get_complex(arg1);
+            return machine()->create_complex(f0 * f1);
         } else if (machine()->is_opaque(arg0)) {
             auto o = VMObjectOpaque::cast(arg0);
             auto r = o->op_multiply(arg1);
@@ -249,6 +264,13 @@ DOCSTRING("System::/ x y - division");
                 throw machine()->bad(this, "divide by zero");
             }
             return machine()->create_float(f0 / f1);
+        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+            auto f0 = machine()->get_complex(arg0);
+            auto f1 = machine()->get_complex(arg1);
+            if (f1.real() == 0.0 && f1.imag() == 0.0) {
+                throw machine()->bad(this, "divide by zero");
+            }
+            return machine()->create_complex(f0 / f1);
         } else if (machine()->is_opaque(arg0)) {
             auto o = VMObjectOpaque::cast(arg0);
             auto r = o->op_divide(arg1);
@@ -647,6 +669,55 @@ DOCSTRING("System::to_float x - try and convert an object to float");
     }
 };
 
+class Tocomplex : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tocomplex, "System", "to_complex");
+
+DOCSTRING("System::to_complex x - try and convert an object to complex");
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_integer(arg0)) {
+            auto i = machine()->get_integer(arg0);
+            return machine()->create_complex(vm_complex_t(i,0));
+        } else if (machine()->is_float(arg0)) {
+            auto f = machine()->get_float(arg0);
+            return machine()->create_complex(vm_complex_t(f,0));
+        } else if (machine()->is_text(arg0)) {
+            auto s = machine()->get_text(arg0);
+            auto f = VM::unicode_to_complex(s);
+            return machine()->create_complex(f);
+        } else if (machine()->is_array(arg0) && machine()->is_tuple(machine()->array_get(arg0,0))) {
+            auto oo = machine()->from_tuple(arg0);
+            if (machine()->is_float(oo[0]) && machine()->is_float(oo[1])) {
+                auto f0 = machine()->get_float(oo[0]);
+                auto f1 = machine()->get_float(oo[1]);
+                return machine()->create_complex(vm_complex_t(f0,f1));
+            } else {
+                throw machine()->bad_args(this, arg0);
+            }
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
+class Fromcomplex : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Fromcomplex, "System", "from_complex");
+
+DOCSTRING("System::from_complex z - convert complex to tuple");
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        if (machine()->is_complex(arg0)) {
+            auto z = machine()->get_complex(arg0);
+            VMObjectPtrs oo;
+            oo.push_back(machine()->create_float(z.real()));
+            oo.push_back(machine()->create_float(z.imag()));
+            return machine()->to_tuple(oo);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
+    }
+};
+
 class Totext : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Totext, "System", "to_text");
@@ -660,6 +731,10 @@ DOCSTRING("System::to_text x - try and convert an object to text");
         } else if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
             auto s = VM::unicode_from_float(f);
+            return machine()->create_text(s);
+        } else if (machine()->is_complex(arg0)) {
+            auto f = machine()->get_complex(arg0);
+            auto s = VM::unicode_from_complex(f);
             return machine()->create_text(s);
         } else if (machine()->is_char(arg0)) {
             auto c = machine()->get_char(arg0);
@@ -928,6 +1003,8 @@ DOCSTRING("System::print o0 .. on - print terms");
                 s += arg->to_text();
             } else if (machine()->is_float(arg)) {
                 s += arg->to_text();
+            } else if (machine()->is_complex(arg)) {
+                s += arg->to_text();
             } else if (arg->tag() == VM_OBJECT_CHAR) {
                 s += machine()->get_char(arg);
             } else if (machine()->is_text(arg)) {
@@ -979,6 +1056,11 @@ DOCSTRING("System::format fmt x0 ...  - create a formatted strin");
                     } else if (machine()->is_float(arg)) {
                         auto f = machine()->get_float(arg);
                         store.push_back(f);
+                    } else if (machine()->is_complex(arg)) { // XXX: fmtlib doesn't support complex
+                        auto s0 = arg->to_text();
+                        auto s1 = VM::unicode_to_utf8_chars(s0);
+                        store.push_back(s1);
+                        delete s1;
                     } else if (machine()->is_char(arg)) {
                         auto c = machine()->get_char(arg);
                         auto s0 = icu::UnicodeString(c);  // XXX: wut?
@@ -1135,6 +1217,7 @@ public:
         // basic constants
         oo.push_back(VMObjectData::create(vm, "System", "int"));
         oo.push_back(VMObjectData::create(vm, "System", "float"));
+        oo.push_back(VMObjectData::create(vm, "System", "complex"));
         oo.push_back(VMObjectData::create(vm, "System", "char"));
         oo.push_back(VMObjectData::create(vm, "System", "text"));
         oo.push_back(VMObjectData::create(vm, "System", "nil"));
@@ -1172,7 +1255,10 @@ public:
 
         oo.push_back(Toint::create(vm));
         oo.push_back(Tofloat::create(vm));
+        oo.push_back(Tocomplex::create(vm));
         oo.push_back(Totext::create(vm));
+
+        oo.push_back(Fromcomplex::create(vm));
 
         // move to string?
         oo.push_back(ToChars::create(vm));
