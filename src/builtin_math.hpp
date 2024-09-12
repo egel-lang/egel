@@ -716,9 +716,9 @@ DOCSTRING("Math::conj z - complex conjugate");
     }
 };
 
-class Proj : public Monadic {
+class Project : public Monadic {
 public:
-    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Proj, "Math", "proj");
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, Project, "Math", "project");
 DOCSTRING("Math::proj z - projection on Riemann sphere");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
@@ -786,7 +786,7 @@ public:
     oo.push_back(Trunc::create(vm));
 
     oo.push_back(Conj::create(vm));
-    oo.push_back(Proj::create(vm));
+    oo.push_back(Project::create(vm));
 
         return oo;
     }
