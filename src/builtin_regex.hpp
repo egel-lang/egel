@@ -1,8 +1,9 @@
 #pragma once
 
 #include <stdlib.h>
-#include "unicode/regex.h"
+
 #include "runtime.hpp"
+#include "unicode/regex.h"
 
 /**
  * Start of a simplistic Regex library lifting most of libicu.
@@ -40,7 +41,7 @@ public:
         // XXX: leak for now
         // delete _pattern;
     }
-DOCSTRING("Regex::pattern - an opaque object holding a pattern");
+    DOCSTRING("Regex::pattern - an opaque object holding a pattern");
 
     static VMObjectPtr create(VM* vm, icu::RegexPattern* p) {
         return VMObjectPtr(new Regex(vm, p));
@@ -108,7 +109,7 @@ private:
 class Compile : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Compile, REGEX_STRING, "compile");
-DOCSTRING("Regex::compile s0 - compile text to a pattern");
+    DOCSTRING("Regex::compile s0 - compile text to a pattern");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -132,7 +133,8 @@ DOCSTRING("Regex::compile s0 - compile text to a pattern");
 class Match : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Match, REGEX_STRING, "match");
-DOCSTRING("Regex::match pat s0 - true if the pattern matches the entire string");
+    DOCSTRING(
+        "Regex::match pat s0 - true if the pattern matches the entire string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -157,7 +159,9 @@ DOCSTRING("Regex::match pat s0 - true if the pattern matches the entire string")
 class LookAt : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookAt, REGEX_STRING, "look_at");
-DOCSTRING("Regex::look_at pat s0 - true if the pattern matches the start of string");
+    DOCSTRING(
+        "Regex::look_at pat s0 - true if the pattern matches the start of "
+        "string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -182,7 +186,8 @@ DOCSTRING("Regex::look_at pat s0 - true if the pattern matches the start of stri
 class LookMatch : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, LookMatch, REGEX_STRING, "look_match");
-DOCSTRING("Regex::look_match pat s0 - the initial matched part of the string");
+    DOCSTRING(
+        "Regex::look_match pat s0 - the initial matched part of the string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -212,7 +217,7 @@ DOCSTRING("Regex::look_match pat s0 - the initial matched part of the string");
 class Split : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Split, REGEX_STRING, "split");
-DOCSTRING("Regex::split pat s0 - split a text according to a pattern");
+    DOCSTRING("Regex::split pat s0 - split a text according to a pattern");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -253,7 +258,7 @@ DOCSTRING("Regex::split pat s0 - split a text according to a pattern");
 class Matches : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Matches, REGEX_STRING, "matches");
-DOCSTRING("Regex::matches pat s0 - a list of pattern matches in a string");
+    DOCSTRING("Regex::matches pat s0 - a list of pattern matches in a string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -286,7 +291,8 @@ DOCSTRING("Regex::matches pat s0 - a list of pattern matches in a string");
 class Replace : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, Replace, REGEX_STRING, "replace");
-DOCSTRING("Regex::replace pat s0 s1 - replace the first occurence of a pattern");
+    DOCSTRING(
+        "Regex::replace pat s0 s1 - replace the first occurence of a pattern");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
@@ -317,7 +323,8 @@ DOCSTRING("Regex::replace pat s0 s1 - replace the first occurence of a pattern")
 class ReplaceAll : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_EGO, ReplaceAll, REGEX_STRING, "replace_all");
-DOCSTRING("Regex::replace_all pat s0 s1 - replace all occurences of a pattern ");
+    DOCSTRING(
+        "Regex::replace_all pat s0 s1 - replace all occurences of a pattern ");
 
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
@@ -348,7 +355,7 @@ DOCSTRING("Regex::replace_all pat s0 s1 - replace all occurences of a pattern ")
 class Group : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Group, REGEX_STRING, "group");
-DOCSTRING("Regex::group pat s0 - the matched groups in a string");
+    DOCSTRING("Regex::group pat s0 - the matched groups in a string");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -380,7 +387,7 @@ DOCSTRING("Regex::group pat s0 - the matched groups in a string");
     }
 };
 
-class RegexModule: public CModule {
+class RegexModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "regex";
@@ -390,7 +397,7 @@ public:
         return "The 'regex' module defines operations on regular expressions.";
     }
 
-    std::vector<VMObjectPtr> exports(VM *vm) override {
+    std::vector<VMObjectPtr> exports(VM* vm) override {
         std::vector<VMObjectPtr> oo;
 
         oo.push_back(Compile::create(vm));
@@ -406,4 +413,4 @@ public:
         return oo;
     }
 };
-}
+}  // namespace egel

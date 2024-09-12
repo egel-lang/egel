@@ -51,7 +51,6 @@ bool mul_overflow(long long int a, long long int b, long long int *c) {
     return __builtin_smulll_overflow(a, b, c);
 }
 
-
 /**
  * Egel's system routines.
  *
@@ -62,7 +61,7 @@ class K : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_BUILTIN, K, "System", "k");
 
-DOCSTRING("System::k x y - k combinator");
+    DOCSTRING("System::k x y - k combinator");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         return arg0;
@@ -73,7 +72,7 @@ class Id : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Id, "System", "id");
 
-DOCSTRING("System::id x - identity combinator");
+    DOCSTRING("System::id x - identity combinator");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return arg0;
     }
@@ -83,7 +82,7 @@ class MinInt : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MinInt, "System", "min_int");
 
-DOCSTRING("System:min_int - minimum for integers");
+    DOCSTRING("System:min_int - minimum for integers");
     VMObjectPtr apply() const override {
         return machine()->create_integer(std::numeric_limits<vm_int_t>::min());
     }
@@ -93,7 +92,7 @@ class MaxInt : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, MaxInt, "System", "max_int");
 
-DOCSTRING("System::max_int - maximum for integers");
+    DOCSTRING("System::max_int - maximum for integers");
     VMObjectPtr apply() const override {
         return machine()->create_integer(std::numeric_limits<vm_int_t>::max());
     }
@@ -103,7 +102,7 @@ class MonMin : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, MonMin, "System", "!-");
 
-DOCSTRING("System::!- x - monadic minus");
+    DOCSTRING("System::!- x - monadic minus");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
@@ -129,7 +128,7 @@ class Add : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Add, "System", "+");
 
-DOCSTRING("System::+ x y - addition");
+    DOCSTRING("System::+ x y - addition");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -145,7 +144,8 @@ DOCSTRING("System::+ x y - addition");
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 + f1);
-        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+        } else if ((machine()->is_complex(arg0)) &&
+                   (machine()->is_complex(arg1))) {
             auto f0 = machine()->get_complex(arg0);
             auto f1 = machine()->get_complex(arg1);
             return machine()->create_complex(f0 + f1);
@@ -171,7 +171,7 @@ class Min : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Min, "System", "-");
 
-DOCSTRING("System::+ x y - substraction");
+    DOCSTRING("System::+ x y - substraction");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -187,7 +187,8 @@ DOCSTRING("System::+ x y - substraction");
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 - f1);
-        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+        } else if ((machine()->is_complex(arg0)) &&
+                   (machine()->is_complex(arg1))) {
             auto f0 = machine()->get_complex(arg0);
             auto f1 = machine()->get_complex(arg1);
             return machine()->create_complex(f0 - f1);
@@ -209,7 +210,7 @@ class Mul : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mul, "System", "*");
 
-DOCSTRING("System::* x y - multiplication");
+    DOCSTRING("System::* x y - multiplication");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -225,7 +226,8 @@ DOCSTRING("System::* x y - multiplication");
             auto f0 = machine()->get_float(arg0);
             auto f1 = machine()->get_float(arg1);
             return machine()->create_float(f0 * f1);
-        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+        } else if ((machine()->is_complex(arg0)) &&
+                   (machine()->is_complex(arg1))) {
             auto f0 = machine()->get_complex(arg0);
             auto f1 = machine()->get_complex(arg1);
             return machine()->create_complex(f0 * f1);
@@ -247,7 +249,7 @@ class Div : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Div, "System", "/");
 
-DOCSTRING("System::/ x y - division");
+    DOCSTRING("System::/ x y - division");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -264,7 +266,8 @@ DOCSTRING("System::/ x y - division");
                 throw machine()->bad(this, "divide by zero");
             }
             return machine()->create_float(f0 / f1);
-        } else if ((machine()->is_complex(arg0)) && (machine()->is_complex(arg1))) {
+        } else if ((machine()->is_complex(arg0)) &&
+                   (machine()->is_complex(arg1))) {
             auto f0 = machine()->get_complex(arg0);
             auto f1 = machine()->get_complex(arg1);
             if (f1.real() == 0.0 && f1.imag() == 0.0) {
@@ -289,7 +292,7 @@ class Mod : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Mod, "System", "%");
 
-DOCSTRING("System::% x y - modulo");
+    DOCSTRING("System::% x y - modulo");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -309,7 +312,7 @@ class BinAnd : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinAnd, "System", "&");
 
-DOCSTRING("System::& x y - bitwise and");
+    DOCSTRING("System::& x y - bitwise and");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -326,7 +329,7 @@ class BinOr : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinOr, "System", "$");
 
-DOCSTRING("System::$ x y - bitwise or");
+    DOCSTRING("System::$ x y - bitwise or");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -343,7 +346,7 @@ class BinXOr : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinXOr, "System", "^");
 
-DOCSTRING("System::^ x y - bitwise xor");
+    DOCSTRING("System::^ x y - bitwise xor");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -360,7 +363,7 @@ class BinComplement : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, BinComplement, "System", "!~");
 
-DOCSTRING("System::!~ x - bitwise complement");
+    DOCSTRING("System::!~ x - bitwise complement");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if ((machine()->is_integer(arg0))) {
             auto i0 = machine()->get_integer(arg0);
@@ -375,7 +378,7 @@ class BinLeftShift : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinLeftShift, "System", "<<");
 
-DOCSTRING("System::<< x y - bitwise left shift");
+    DOCSTRING("System::<< x y - bitwise left shift");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -392,7 +395,7 @@ class BinRightShift : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, BinRightShift, "System", ">>");
 
-DOCSTRING("System::>> x y - bitwise right shift");
+    DOCSTRING("System::>> x y - bitwise right shift");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
@@ -409,7 +412,7 @@ class Less : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Less, "System", "<");
 
-DOCSTRING("System::< x y - builtin less");
+    DOCSTRING("System::< x y - builtin less");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -425,7 +428,7 @@ class LessEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, LessEq, "System", "<=");
 
-DOCSTRING("System::<= x y - builtin less or equals");
+    DOCSTRING("System::<= x y - builtin less or equals");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -441,7 +444,7 @@ class Greater : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Greater, "System", ">");
 
-DOCSTRING("System::> x y - builtin greater");
+    DOCSTRING("System::> x y - builtin greater");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -457,7 +460,7 @@ class GreaterEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, GreaterEq, "System", ">=");
 
-DOCSTRING("System::>= x y - builtin greater or equals");
+    DOCSTRING("System::>= x y - builtin greater or equals");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -473,7 +476,7 @@ class Eq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Eq, "System", "==");
 
-DOCSTRING("System::== x y - builtin equality");
+    DOCSTRING("System::== x y - builtin equality");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -489,7 +492,7 @@ class NegEq : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, NegEq, "System", "/=");
 
-DOCSTRING("System::/= x y - builtin inequality");
+    DOCSTRING("System::/= x y - builtin inequality");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         CompareVMObjectPtr compare;
@@ -627,7 +630,7 @@ class Toint : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Toint, "System", "to_int");
 
-DOCSTRING("System::to_int x - Try and convert an object to int");
+    DOCSTRING("System::to_int x - Try and convert an object to int");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             return arg0;
@@ -652,7 +655,7 @@ class Tofloat : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tofloat, "System", "to_float");
 
-DOCSTRING("System::to_float x - try and convert an object to float");
+    DOCSTRING("System::to_float x - try and convert an object to float");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
@@ -673,24 +676,25 @@ class Tocomplex : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Tocomplex, "System", "to_complex");
 
-DOCSTRING("System::to_complex x - try and convert an object to complex");
+    DOCSTRING("System::to_complex x - try and convert an object to complex");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
-            return machine()->create_complex(vm_complex_t(i,0));
+            return machine()->create_complex(vm_complex_t(i, 0));
         } else if (machine()->is_float(arg0)) {
             auto f = machine()->get_float(arg0);
-            return machine()->create_complex(vm_complex_t(f,0));
+            return machine()->create_complex(vm_complex_t(f, 0));
         } else if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
             auto f = VM::unicode_to_complex(s);
             return machine()->create_complex(f);
-        } else if (machine()->is_array(arg0) && machine()->is_tuple(machine()->array_get(arg0,0))) {
+        } else if (machine()->is_array(arg0) &&
+                   machine()->is_tuple(machine()->array_get(arg0, 0))) {
             auto oo = machine()->from_tuple(arg0);
             if (machine()->is_float(oo[0]) && machine()->is_float(oo[1])) {
                 auto f0 = machine()->get_float(oo[0]);
                 auto f1 = machine()->get_float(oo[1]);
-                return machine()->create_complex(vm_complex_t(f0,f1));
+                return machine()->create_complex(vm_complex_t(f0, f1));
             } else {
                 throw machine()->bad_args(this, arg0);
             }
@@ -704,7 +708,7 @@ class Fromcomplex : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Fromcomplex, "System", "from_complex");
 
-DOCSTRING("System::from_complex z - convert complex to tuple");
+    DOCSTRING("System::from_complex z - convert complex to tuple");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_complex(arg0)) {
             auto z = machine()->get_complex(arg0);
@@ -722,7 +726,7 @@ class Totext : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Totext, "System", "to_text");
 
-DOCSTRING("System::to_text x - try and convert an object to text");
+    DOCSTRING("System::to_text x - try and convert an object to text");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto i = machine()->get_integer(arg0);
@@ -753,7 +757,7 @@ class Reference : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Reference, "System", "reference");
 
-DOCSTRING("System::reference - an opaque reference object");
+    DOCSTRING("System::reference - an opaque reference object");
     Reference(VM *vm, const VMObjectPtr &r)
         : Opaque(VM_SUB_BUILTIN, vm, "System", "reference") {
         _ref = r;
@@ -788,7 +792,7 @@ class Ref : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Ref, "System", "ref");
 
-DOCSTRING("System::ref x - create a reference object");
+    DOCSTRING("System::ref x - create a reference object");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto vm = machine();
         auto r = Reference::create(vm, arg0);
@@ -800,7 +804,7 @@ class Getref : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Getref, "System", "get_ref");
 
-DOCSTRING("System::get_ref ref - dereference");
+    DOCSTRING("System::get_ref ref - dereference");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (Reference::is_type(arg0)) {
             auto r = Reference::cast(arg0);
@@ -815,7 +819,7 @@ class Setref : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Setref, "System", "set_ref");
 
-DOCSTRING("System::set_ref ref x - set reference objec");
+    DOCSTRING("System::set_ref ref x - set reference objec");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
         if (Reference::is_type(arg0)) {
@@ -832,7 +836,7 @@ class Version : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Version, "System", "version");
 
-DOCSTRING("System::version - version information of this executable");
+    DOCSTRING("System::version - version information of this executable");
     VMObjectPtr apply() const override {
         if (application_version == "") {
             throw machine()->create_text("no version information");
@@ -846,7 +850,7 @@ class Arg : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Arg, "System", "arg");
 
-DOCSTRING("System::arg n - the n-th application argument, or none");
+    DOCSTRING("System::arg n - the n-th application argument, or none");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (application_argv == nullptr) {
             throw machine()->bad_args(this, arg0);
@@ -869,7 +873,7 @@ class Getenv : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Getenv, "System", "get_env");
 
-DOCSTRING("System::get_env s - the value of environment variable, or none");
+    DOCSTRING("System::get_env s - the value of environment variable, or none");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto t = machine()->get_text(arg0);
@@ -940,7 +944,7 @@ class AppToList : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, AppToList, "System", "app_to_list");
 
-DOCSTRING("System::app_to_list o0 .. on - arguments to list");
+    DOCSTRING("System::app_to_list o0 .. on - arguments to list");
     VMObjectPtr apply(const VMObjectPtrs &args) const override {
         return machine()->to_list(args);
     }
@@ -950,7 +954,7 @@ class ListToApp : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, ListToApp, "System", "list_to_app");
 
-DOCSTRING("System::list_to_app {o0 .. on} - list to application");
+    DOCSTRING("System::list_to_app {o0 .. on} - list to application");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_list(arg0)) {
             auto oo = machine()->from_list(arg0);
@@ -965,9 +969,10 @@ class TupleToList : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, TupleToList, "System", "tuple_to_list");
 
-DOCSTRING("System::tuple_to_list (o0, .., on) - tuple to list");
+    DOCSTRING("System::tuple_to_list (o0, .., on) - tuple to list");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
-        if (machine()->is_array(arg0) && machine()->is_tuple(machine()->array_get(arg0,0))) {
+        if (machine()->is_array(arg0) &&
+            machine()->is_tuple(machine()->array_get(arg0, 0))) {
             auto oo = machine()->from_tuple(arg0);
             return machine()->to_list(oo);
         } else {
@@ -980,7 +985,7 @@ class ListToTuple : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, ListToTuple, "System", "list_to_tuple");
 
-DOCSTRING("System::list_to_tuple {o0, .., on} - list to tuple");
+    DOCSTRING("System::list_to_tuple {o0, .., on} - list to tuple");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_list(arg0)) {
             auto oo = machine()->from_list(arg0);
@@ -995,7 +1000,7 @@ class Print : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Print, "System", "print");
 
-DOCSTRING("System::print o0 .. on - print terms");
+    DOCSTRING("System::print o0 .. on - print terms");
     VMObjectPtr apply(const VMObjectPtrs &args) const override {
         icu::UnicodeString s;
         for (auto &arg : args) {
@@ -1023,7 +1028,7 @@ class Getline : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Getline, "System", "get_line");
 
-DOCSTRING("System::get_line - read a line from standard input");
+    DOCSTRING("System::get_line - read a line from standard input");
     VMObjectPtr apply() const override {
         std::string line;
         std::getline(std::cin, line);
@@ -1036,7 +1041,7 @@ class Format : public Variadic {
 public:
     VARIADIC_PREAMBLE(VM_SUB_BUILTIN, Format, "System", "format");
 
-DOCSTRING("System::format fmt x0 ...  - create a formatted strin");
+    DOCSTRING("System::format fmt x0 ...  - create a formatted strin");
     VMObjectPtr apply(const VMObjectPtrs &args) const override {
         if (args.size() < 1) {
             return nullptr;
@@ -1056,7 +1061,9 @@ DOCSTRING("System::format fmt x0 ...  - create a formatted strin");
                     } else if (machine()->is_float(arg)) {
                         auto f = machine()->get_float(arg);
                         store.push_back(f);
-                    } else if (machine()->is_complex(arg)) { // XXX: fmtlib doesn't support complex
+                    } else if (machine()->is_complex(
+                                   arg)) {  // XXX: fmtlib doesn't support
+                                            // complex
                         auto s0 = arg->to_text();
                         auto s1 = VM::unicode_to_utf8_chars(s0);
                         store.push_back(s1);
@@ -1191,7 +1198,7 @@ vm->array_get(xx,2);
 };
 */
 
-class SystemModule: public CModule {
+class SystemModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "system";
@@ -1289,6 +1296,5 @@ public:
         return oo;
     }
 };
-
 
 }  // namespace egel

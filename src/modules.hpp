@@ -14,14 +14,14 @@
 #include "builtin_dict.hpp"
 #include "builtin_eval.hpp"
 #include "builtin_ffi.hpp"
+#include "builtin_fs.hpp"
 #include "builtin_math.hpp"
+#include "builtin_os.hpp"
 #include "builtin_process.hpp"
 #include "builtin_regex.hpp"
 #include "builtin_runtime.hpp"
 #include "builtin_string.hpp"
 #include "builtin_system.hpp"
-#include "builtin_os.hpp"
-#include "builtin_fs.hpp"
 #include "constants.hpp"
 #include "desugar.hpp"
 #include "emit.hpp"
@@ -81,8 +81,7 @@ using QualifiedStrings = std::vector<QualifiedString>;
 
 class Module {
 public:
-    Module(const icu::UnicodeString &p,
-           const icu::UnicodeString &fn, VM *m)
+    Module(const icu::UnicodeString &p, const icu::UnicodeString &fn, VM *m)
         : _path(p), _filename(fn), _machine(m) {
     }
 
@@ -290,7 +289,7 @@ public:
         set_docstring(_module->docstring());
         _imports = QualifiedStrings();
         _values = QualifiedStrings();
-        _exports = _module->exports(machine()); //note: this also declares
+        _exports = _module->exports(machine());  // note: this also declares
     }
 
     void unload() override {
@@ -362,7 +361,6 @@ public:
     }
 
     void load() override {
-
         // std::cout << "loading: " << get_path() << std::endl; // DEBUG
 
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
@@ -380,15 +378,16 @@ public:
         }
 
 #ifdef _WIN32
-        auto fp = (CModule*(*)())GetProcAddress((HMODULE)_handle, "egel_module");
+        auto fp =
+            (CModule * (*)()) GetProcAddress((HMODULE)_handle, "egel_module");
         if (!egel_module) {
             icu::UnicodeString err = "dynamic load error: ";
             err += std::to_string(GetLastError());
             throw ErrorIO(err);
         }
 #else
-        auto fp = (CModule*(*)())dlsym(_handle, "egel_module");
-        const char* error = dlerror();
+        auto fp = (CModule * (*)()) dlsym(_handle, "egel_module");
+        const char *error = dlerror();
         if (error != NULL) {
             icu::UnicodeString err = "dynamic load error: ";
             err += error;
@@ -543,7 +542,7 @@ public:
         };
 
         auto doc = egel::visit_docstring(a);
-        auto [p,d] = AstDocstring::split(doc);
+        auto [p, d] = AstDocstring::split(doc);
         set_docstring(VM::unicode_to_text(d));
         _source = "";
         _ast = a;
@@ -698,7 +697,7 @@ public:
         };
 
         auto doc = egel::visit_docstring(a);
-        auto [p,d] = AstDocstring::split(doc);
+        auto [p, d] = AstDocstring::split(doc);
         set_docstring(VM::unicode_to_text(d));
         _source = "";
         _ast = a;
@@ -791,9 +790,9 @@ public:
     static ModuleManagerPtr create() {
         return std::make_shared<ModuleManager>();
     }
-    
+
     void load_cmodule(const std::shared_ptr<CModule> &m) {
-        auto mod = ModuleInternal::create(machine(),m);
+        auto mod = ModuleInternal::create(machine(), m);
         _loading.push_back(mod);
         mod->load();
         process();
@@ -982,7 +981,7 @@ protected:
         }
         for (auto &m : _loading) {
             auto vals = m->values();
-            for (auto &v: vals) {
+            for (auto &v : vals) {
                 _machine->eval_value(v.string());
             }
         }

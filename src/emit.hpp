@@ -33,24 +33,25 @@ public:
         _out.push_back(c);
     }
 
-    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d,
+                         const ptrs<Ast> &nn) override {
         visit(d);
         visits(nn);
     }
 
     // cut
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
-                               const ptr<Ast> &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
     // cut
-    void visit_decl_value(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
-                          const ptr<Ast> &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+                          const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
     // cut
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
-                             const ptr<Ast> &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
 private:
@@ -540,8 +541,8 @@ public:
     bool is_redex(const ptr<Ast> o) {
         auto t = o->tag();
         if ((t == AST_EXPR_INTEGER) || (t == AST_EXPR_HEXINTEGER) ||
-            (t == AST_EXPR_FLOAT) || (t == AST_EXPR_COMPLEX) || (t == AST_EXPR_CHARACTER) ||
-            (t == AST_EXPR_TEXT)) {
+            (t == AST_EXPR_FLOAT) || (t == AST_EXPR_COMPLEX) ||
+            (t == AST_EXPR_CHARACTER) || (t == AST_EXPR_TEXT)) {
             return false;
         } else if (t == AST_EXPR_VARIABLE) {
             return true;
@@ -683,12 +684,13 @@ public:
         // cut
     }
 
-    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d,
+                         const ptrs<Ast> &nn) override {
         // cut
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
-                               const ptr<Ast> &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &d, const ptr<Ast> &e) override {
         auto frame = get_coder()->generate_register();
 
         auto l = get_coder()->generate_label();
@@ -737,14 +739,14 @@ public:
     }
 
     // treat as a definition
-    void visit_decl_value(const Position &p, const ptr<Ast> &o, const ptr<Ast> &d,
-                          const ptr<Ast> &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &o,
+                          const ptr<Ast> &d, const ptr<Ast> &e) override {
         visit_decl_definition(p, o, d, e);
     }
 
     // treat as a definition
-    void visit_decl_operator(const Position &p, const ptr<Ast> &o, const ptr<Ast> &d,
-                             const ptr<Ast> &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &o,
+                             const ptr<Ast> &d, const ptr<Ast> &e) override {
         auto [p0, ss, s] = AstExprOperator::split(o);
         auto c = AstExprCombinator::create(p0, ss, s);
         visit_decl_definition(p, c, d, e);

@@ -21,7 +21,7 @@ class Process : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Process, "System", "process");
 
-DOCSTRING("System::process - opaque process object");
+    DOCSTRING("System::process - opaque process object");
     Process(VM *vm, const VMObjectPtr &f)
         : Opaque(VM_SUB_BUILTIN, vm, "System", "process") {
         _program = f;
@@ -169,7 +169,7 @@ void run_process(const VMObjectPtr &o) {
 class Proc : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Proc, "System", "proc");
-DOCSTRING("System::proc f - create a process object from f");
+    DOCSTRING("System::proc f - create a process object from f");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto vm = machine();
@@ -187,7 +187,7 @@ DOCSTRING("System::proc f - create a process object from f");
 class Send : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Send, "System", "send");
-DOCSTRING("System::send proc msg - send message msg to proc");
+    DOCSTRING("System::send proc msg - send message msg to proc");
 
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
@@ -206,7 +206,7 @@ DOCSTRING("System::send proc msg - send message msg to proc");
 class Recv : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Recv, "System", "recv");
-DOCSTRING("System::recv proc - receive a message from process proc");
+    DOCSTRING("System::recv proc - receive a message from process proc");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
@@ -227,7 +227,7 @@ DOCSTRING("System::recv proc - receive a message from process proc");
 class Halt : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Halt, "System", "halt");
-DOCSTRING("System::halt proc - halt process proc");
+    DOCSTRING("System::halt proc - halt process proc");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         symbol_t pr = machine()->enter_symbol("System", "process");
@@ -242,7 +242,7 @@ DOCSTRING("System::halt proc - halt process proc");
     }
 };
 
-class ProcessModule: public CModule {
+class ProcessModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "process";
@@ -263,6 +263,6 @@ public:
 
         return oo;
     }
-};         
+};
 
 }  // namespace egel

@@ -61,20 +61,27 @@ public:
     }
 
     ptr<Ast> parse_float_or_complex() {
-        if (look(0).tag() == TOKEN_FLOAT && look(1).text().trim() == "+" && look(2).tag()==TOKEN_IMAGINARY) {
-            auto a = AstExprComplex::create(position(), look(0).text() + "+" + look(2).text());
+        if (look(0).tag() == TOKEN_FLOAT && look(1).text().trim() == "+" &&
+            look(2).tag() == TOKEN_IMAGINARY) {
+            auto a = AstExprComplex::create(
+                position(), look(0).text() + "+" + look(2).text());
             skip();
             skip();
             skip();
             return a;
-        } else if (look(0).tag() == TOKEN_FLOAT && look(1).text().trim() == "-" && look(2).tag()==TOKEN_IMAGINARY) {
-            auto a = AstExprComplex::create(position(), look(0).text() + "-" + look(2).text());
+        } else if (look(0).tag() == TOKEN_FLOAT &&
+                   look(1).text().trim() == "-" &&
+                   look(2).tag() == TOKEN_IMAGINARY) {
+            auto a = AstExprComplex::create(
+                position(), look(0).text() + "-" + look(2).text());
             skip();
             skip();
             skip();
             return a;
-        } else if (look(0).tag() == TOKEN_FLOAT && look(1).tag()==TOKEN_IMAGINARY) {
-            auto a = AstExprComplex::create(position(), look(0).text() + look(1).text());
+        } else if (look(0).tag() == TOKEN_FLOAT &&
+                   look(1).tag() == TOKEN_IMAGINARY) {
+            auto a = AstExprComplex::create(position(),
+                                            look(0).text() + look(1).text());
             skip();
             skip();
             return a;
@@ -973,19 +980,20 @@ public:
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d,
+                         const ptrs<Ast> &nn) override {
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
-                               const ptr<Ast> &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
-    void visit_decl_value(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
-                          const ptr<Ast> &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+                          const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c,const ptr<Ast> &d, 
-                             const ptr<Ast> &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
 private:
@@ -1004,21 +1012,22 @@ public:
         return _values;
     }
 
-    void visit_decl_value(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
-                          const ptr<Ast> &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+                          const ptr<Ast> &d, const ptr<Ast> &e) override {
         _values.push_back(AstDeclValue::create(p, n, d, e));
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d,
+                         const ptrs<Ast> &nn) override {
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
-                               const ptr<Ast> &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
-                             const ptr<Ast> &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
 private:
@@ -1038,24 +1047,25 @@ public:
     }
 
     void visit_docstring(const Position &p,
-                                const icu::UnicodeString &doc) override {
+                         const icu::UnicodeString &doc) override {
         _docstring = AstDocstring::create(p, doc);
     }
 
     // cuts
-    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d,
+                         const ptrs<Ast> &nn) override {
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
-                               const ptr<Ast> &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
-    void visit_decl_value(const Position &p, const ptr<Ast> &n,const ptr<Ast> &d, 
-                          const ptr<Ast> &e) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &n,
+                          const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c,const ptr<Ast> &d, 
-                             const ptr<Ast> &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
 
 private:
@@ -1066,7 +1076,6 @@ inline ptr<Ast> visit_docstring(const ptr<Ast> &a) {
     VisitDocstring docstring;
     return docstring.docstring(a);
 }
-
 
 inline ptr<Ast> parse(Tokens &r) {
     Parser p(r);

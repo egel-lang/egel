@@ -10,7 +10,7 @@ class Evaluate : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Evaluate, "System", "eval");
 
-DOCSTRING("System::eval text - evaluatate the expression in `text`");
+    DOCSTRING("System::eval text - evaluatate the expression in `text`");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
@@ -45,22 +45,21 @@ DOCSTRING("System::eval text - evaluatate the expression in `text`");
     }
 };
 
-class EvalModule: public CModule {                                                                                                                                  
+class EvalModule : public CModule {
 public:
-    icu::UnicodeString name() const override {                                                                       
-        return "eval";                                                                                                             
-    }                                                                                                                                                         
-                                                                                                                                                              
-    icu::UnicodeString docstring() const override {                                                                                 
-        return "The 'eval' module defines the eval combinator.";                                                                       
-    }                                                                                                                                                         
-                                                                                                                                                              
-    std::vector<VMObjectPtr> exports(VM *vm) override {                                                                                                       
-        std::vector<VMObjectPtr> oo;                                                                                                                          
-        oo.push_back(Evaluate::create(vm));
-        return oo;                                                                                                                                            
-    }                                                                                                                                                         
-};         
+    icu::UnicodeString name() const override {
+        return "eval";
+    }
 
+    icu::UnicodeString docstring() const override {
+        return "The 'eval' module defines the eval combinator.";
+    }
+
+    std::vector<VMObjectPtr> exports(VM *vm) override {
+        std::vector<VMObjectPtr> oo;
+        oo.push_back(Evaluate::create(vm));
+        return oo;
+    }
+};
 
 }  // namespace egel

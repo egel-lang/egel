@@ -15,7 +15,7 @@ namespace egel {
 class Dis : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dis, "System", "dis");
-DOCSTRING("System::dis o - disassemble a combinator object");
+    DOCSTRING("System::dis o - disassemble a combinator object");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
@@ -33,7 +33,7 @@ DOCSTRING("System::dis o - disassemble a combinator object");
 class Asm : public Unary {
 public:
     UNARY_PREAMBLE(VM_SUB_BUILTIN, Asm, "System", "asm");
-DOCSTRING("System::asm s - assemble bytecode into a combinator");
+    DOCSTRING("System::asm s - assemble bytecode into a combinator");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -48,7 +48,7 @@ DOCSTRING("System::asm s - assemble bytecode into a combinator");
 class Serialize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Serialize, "System", "serialize");
-DOCSTRING("System::serialize t - serialize a term to a text");
+    DOCSTRING("System::serialize t - serialize a term to a text");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto m = machine();
@@ -60,7 +60,7 @@ DOCSTRING("System::serialize t - serialize a term to a text");
 class Deserialize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Deserialize, "System", "deserialize");
-DOCSTRING("System::deserialize t - serialize a text to a term");
+    DOCSTRING("System::deserialize t - serialize a text to a term");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto m = machine();
@@ -77,7 +77,7 @@ DOCSTRING("System::deserialize t - serialize a text to a term");
 class Docstring : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Docstring, "System", "docstring");
-DOCSTRING("System::docstring o - docstring of a module or combinator");
+    DOCSTRING("System::docstring o - docstring of a module or combinator");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->docstring(arg0);
@@ -87,7 +87,7 @@ DOCSTRING("System::docstring o - docstring of a module or combinator");
 class Modules : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_BUILTIN, Modules, "System", "query_modules");
-DOCSTRING("System::query_modules - list all modules in the runtime");
+    DOCSTRING("System::query_modules - list all modules in the runtime");
 
     VMObjectPtr apply() const override {
         return machine()->query_modules();
@@ -97,7 +97,7 @@ DOCSTRING("System::query_modules - list all modules in the runtime");
 class IsModule : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsModule, "System", "query_is_module");
-DOCSTRING("System::is_module m - check we have a module");
+    DOCSTRING("System::is_module m - check we have a module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_module(arg0));
@@ -108,7 +108,7 @@ class QueryModuleName : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleName, "System",
                      "query_module_name");
-DOCSTRING("System::query_module_name m - get the name of the module");
+    DOCSTRING("System::query_module_name m - get the name of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -123,7 +123,7 @@ class QueryModulePath : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModulePath, "System",
                      "query_module_path");
-DOCSTRING("System::query_module_path m - get the path of the module");
+    DOCSTRING("System::query_module_path m - get the path of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -138,7 +138,7 @@ class QueryModuleImports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleImports, "System",
                      "query_module_imports");
-DOCSTRING("System::query_module_imports m - get the imports of the module");
+    DOCSTRING("System::query_module_imports m - get the imports of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -153,7 +153,7 @@ class QueryModuleExports : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleExports, "System",
                      "query_module_exports");
-DOCSTRING("System::query_module_exports m - get the exports of the module");
+    DOCSTRING("System::query_module_exports m - get the exports of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -168,7 +168,7 @@ class QueryModuleValues : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, QueryModuleValues, "System",
                      "query_module_values");
-DOCSTRING("System::query_module_values m - get the values of the module");
+    DOCSTRING("System::query_module_values m - get the values of the module");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_module(arg0)) {
@@ -182,7 +182,7 @@ DOCSTRING("System::query_module_values m - get the values of the module");
 class IsInteger : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsInteger, "System", "is_integer");
-DOCSTRING("System::is_integer o - test for integer");
+    DOCSTRING("System::is_integer o - test for integer");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_integer(arg0));
@@ -192,7 +192,7 @@ DOCSTRING("System::is_integer o - test for integer");
 class IsFloat : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsFloat, "System", "is_float");
-DOCSTRING("System::is_float o - test for float");
+    DOCSTRING("System::is_float o - test for float");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_float(arg0));
@@ -202,7 +202,7 @@ DOCSTRING("System::is_float o - test for float");
 class IsCharacter : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsCharacter, "System", "is_character");
-DOCSTRING("System::is_character o - test for character");
+    DOCSTRING("System::is_character o - test for character");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_char(arg0));
@@ -212,7 +212,7 @@ DOCSTRING("System::is_character o - test for character");
 class IsText : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsText, "System", "is_text");
-DOCSTRING("System::is_text o - test for text");
+    DOCSTRING("System::is_text o - test for text");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_text(arg0));
@@ -222,7 +222,7 @@ DOCSTRING("System::is_text o - test for text");
 class IsCombinator : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsCombinator, "System", "is_combinator");
-DOCSTRING("System::is_combinator o - test for combinator");
+    DOCSTRING("System::is_combinator o - test for combinator");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_combinator(arg0));
@@ -232,7 +232,7 @@ DOCSTRING("System::is_combinator o - test for combinator");
 class IsOpaque : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsOpaque, "System", "is_opaque");
-DOCSTRING("System::is_opaque o - test for opaque value");
+    DOCSTRING("System::is_opaque o - test for opaque value");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_opaque(arg0));
@@ -242,8 +242,7 @@ DOCSTRING("System::is_opaque o - test for opaque value");
 class IsArray : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsArray, "System", "is_array");
-DOCSTRING("System::is_array o - test for array value");
-
+    DOCSTRING("System::is_array o - test for array value");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_array(arg0));
@@ -253,7 +252,7 @@ DOCSTRING("System::is_array o - test for array value");
 class IsBytecode : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsBytecode, "System", "is_bytecode");
-DOCSTRING("System::is_bytecode o - test for bytecode value");
+    DOCSTRING("System::is_bytecode o - test for bytecode value");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         return machine()->create_bool(machine()->is_bytecode(arg0));
@@ -263,7 +262,7 @@ DOCSTRING("System::is_bytecode o - test for bytecode value");
 class GetArray : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetArray, "System", "get_array");
-DOCSTRING("System::get_array o - array to list");
+    DOCSTRING("System::get_array o - array to list");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_array(arg0)) {
@@ -278,7 +277,7 @@ DOCSTRING("System::get_array o - array to list");
 class GetBytecode : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetBytecode, "System", "get_bytecode");
-DOCSTRING("System::get_bytecode o - get_bytecode");
+    DOCSTRING("System::get_bytecode o - get_bytecode");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
@@ -293,7 +292,7 @@ DOCSTRING("System::get_bytecode o - get_bytecode");
 class GetBytedata : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, GetBytedata, "System", "get_bytedata");
-DOCSTRING("System::get_bytedata o - get_bytedata");
+    DOCSTRING("System::get_bytedata o - get_bytedata");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_bytecode(arg0)) {
@@ -322,7 +321,7 @@ public:
 class Dependencies : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Dependencies, "System", "dependencies");
-DOCSTRING("System::dependencies o - dependencies of term");
+    DOCSTRING("System::dependencies o - dependencies of term");
 
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto oo = machine()->dependencies(arg0);
@@ -330,12 +329,13 @@ DOCSTRING("System::dependencies o - dependencies of term");
     }
 };
 
-class Tokenize: public Dyadic {
+class Tokenize : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Tokenize, "System", "tokenize");
-DOCSTRING("System::tokenize uri s - use builtin tokenize");
+    DOCSTRING("System::tokenize uri s - use builtin tokenize");
 
-    VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr& arg1) const override {
+    VMObjectPtr apply(const VMObjectPtr &arg0,
+                      const VMObjectPtr &arg1) const override {
         if (machine()->is_text(arg0) && machine()->is_text(arg1)) {
             auto s0 = machine()->get_text(arg0);
             auto s1 = machine()->get_text(arg1);
@@ -406,8 +406,7 @@ override { if (machine()->is_text(arg0)) { auto s = machine()->get_text(arg0);
 };
 */
 
-class RuntimeModule: public CModule {
-
+class RuntimeModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "runtime";

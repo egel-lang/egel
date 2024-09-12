@@ -76,7 +76,7 @@ class Dict : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Dict, STRING_DICT, "dict");
 
-DOCSTRING("Dict::dict - create a dict object");
+    DOCSTRING("Dict::dict - create a dict object");
     VMObjectPtr apply() const override {
         return Dictionary::create(machine(), dict_t());
     }
@@ -86,7 +86,7 @@ class DictHas : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, DictHas, STRING_DICT, "has");
 
-DOCSTRING("Dict::has d k - check for key");
+    DOCSTRING("Dict::has d k - check for key");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         auto m = machine();
@@ -103,7 +103,7 @@ class DictGet : public Binary {
 public:
     BINARY_PREAMBLE(VM_SUB_EGO, DictGet, STRING_DICT, "get");
 
-DOCSTRING("Dict::get d k - get a value by key");
+    DOCSTRING("Dict::get d k - get a value by key");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         if (Dictionary::is_type(arg0)) {
@@ -119,7 +119,7 @@ class DictSet : public Ternary {
 public:
     TERNARY_PREAMBLE(VM_SUB_EGO, DictSet, STRING_DICT, "set");
 
-DOCSTRING("Dict::set d k v - set a value by key");
+    DOCSTRING("Dict::set d k v - set a value by key");
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
         if (Dictionary::is_type(arg0)) {
@@ -136,7 +136,7 @@ class DictErase : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, DictErase, STRING_DICT, "erase");
 
-DOCSTRING("Dict::erase d k - erase a value by key");
+    DOCSTRING("Dict::erase d k - erase a value by key");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
         if (Dictionary::is_type(arg0)) {
@@ -153,7 +153,7 @@ class DictKeys : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, DictKeys, STRING_DICT, "keys");
 
-DOCSTRING("Dict::keys d - dictionary keys as list");
+    DOCSTRING("Dict::keys d - dictionary keys as list");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);
@@ -169,7 +169,7 @@ class DictSize : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, DictSize, STRING_DICT, "size");
 
-DOCSTRING("Dict::size d - size of the dictionary");
+    DOCSTRING("Dict::size d - size of the dictionary");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (Dictionary::is_type(arg0)) {
             auto d = Dictionary::cast(arg0);
@@ -181,7 +181,7 @@ DOCSTRING("Dict::size d - size of the dictionary");
     }
 };
 
-class DictModule: public CModule {
+class DictModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "dict";
@@ -191,7 +191,7 @@ public:
         return "The 'dict' module defines mutable dictionaries.";
     }
 
-    std::vector<VMObjectPtr> exports(VM *vm) override {
+    std::vector<VMObjectPtr> exports(VM* vm) override {
         std::vector<VMObjectPtr> oo;
 
         oo.push_back(Dict::create(vm));
@@ -205,4 +205,3 @@ public:
         return oo;
     }
 };
-

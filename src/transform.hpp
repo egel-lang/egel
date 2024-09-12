@@ -25,9 +25,8 @@ public:
     virtual void transform_pre(const ptr<Ast> &a) {
     }
 
-    virtual ptr<Ast> transform_docstring(const ptr<Ast> &a,
-                                            const Position &p,
-                                            const icu::UnicodeString &v) {
+    virtual ptr<Ast> transform_docstring(const ptr<Ast> &a, const Position &p,
+                                         const icu::UnicodeString &v) {
         return a;
     }
 
@@ -48,8 +47,9 @@ public:
         return a;
     }
 
-    virtual ptr<Ast> transform_expr_complex(const ptr<Ast> &a, const Position &p,
-                                          const icu::UnicodeString &v) {
+    virtual ptr<Ast> transform_expr_complex(const ptr<Ast> &a,
+                                            const Position &p,
+                                            const icu::UnicodeString &v) {
         return a;
     }
 
@@ -203,7 +203,8 @@ public:
         return a;
     }
 
-    virtual ptr<Ast> transform_decl_data(const ptr<Ast> &a, const Position &p, const ptr<Ast> &d,
+    virtual ptr<Ast> transform_decl_data(const ptr<Ast> &a, const Position &p,
+                                         const ptr<Ast> &d,
                                          const ptrs<Ast> &nn) {
         auto d0 = transform(d);
         auto nn0 = transforms(nn);
@@ -222,8 +223,7 @@ public:
     }
 
     virtual ptr<Ast> transform_decl_value(const ptr<Ast> &a, const Position &p,
-                                          const ptr<Ast> &l,
-                                          const ptr<Ast> &d,
+                                          const ptr<Ast> &l, const ptr<Ast> &d,
                                           const ptr<Ast> &r) {
         auto l0 = transform(l);
         auto d0 = transform(d);
@@ -454,7 +454,7 @@ public:
     }
 
     virtual ptr<Ast> rewrite_docstring(const Position &p,
-                                          const icu::UnicodeString &v) {
+                                       const icu::UnicodeString &v) {
         return AstDocstring::create(p, v);
     }
 
@@ -475,7 +475,7 @@ public:
     }
 
     virtual ptr<Ast> rewrite_expr_complex(const Position &p,
-                                        const icu::UnicodeString &v) {
+                                          const icu::UnicodeString &v) {
         return AstExprComplex::create(p, v);
     }
 
@@ -615,7 +615,8 @@ public:
         return AstDirectUsing::create(p, nn);
     }
 
-    virtual ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) {
+    virtual ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d,
+                                       const ptrs<Ast> &nn) {
         auto d0 = rewrite(d);
         auto nn0 = rewrites(nn);
         return AstDeclData::create(p, d, nn0);
@@ -631,15 +632,16 @@ public:
         return AstDeclDefinition::create(p, n0, d0, e0);
     }
 
-    virtual ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> &d,
-                                        const ptr<Ast> &r) {
+    virtual ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
+                                        const ptr<Ast> &d, const ptr<Ast> &r) {
         auto l0 = rewrite(l);
         auto d0 = rewrite(d);
         auto r0 = rewrite(r);
         return AstDeclValue::create(p, l0, d0, r0);
     }
 
-    virtual ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
+    virtual ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+                                           const ptr<Ast> &d,
                                            const ptr<Ast> &e) {
         auto c0 = rewrite(c);
         auto d0 = rewrite(d);
@@ -855,7 +857,7 @@ public:
     }
 
     virtual void visit_docstring(const Position &p,
-                                    const icu::UnicodeString &v) {
+                                 const icu::UnicodeString &v) {
     }
 
     virtual void visit_expr_integer(const Position &p,
@@ -871,7 +873,7 @@ public:
     }
 
     virtual void visit_expr_complex(const Position &p,
-                                  const icu::UnicodeString &v) {
+                                    const icu::UnicodeString &v) {
     }
 
     virtual void visit_expr_character(const Position &p,
@@ -982,27 +984,28 @@ public:
                                        const UnicodeStrings &nn) {
     }
 
-    virtual void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) {
+    virtual void visit_decl_data(const Position &p, const ptr<Ast> &d,
+                                 const ptrs<Ast> &nn) {
         visit(d);
         visits(nn);
     }
 
-    virtual void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
-                                       const ptr<Ast> &e) {
+    virtual void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                                       const ptr<Ast> &d, const ptr<Ast> &e) {
         visit(n);
         visit(d);
         visit(e);
     }
 
-    virtual void visit_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> &d,
-                                  const ptr<Ast> &r) {
+    virtual void visit_decl_value(const Position &p, const ptr<Ast> &l,
+                                  const ptr<Ast> &d, const ptr<Ast> &r) {
         visit(l);
         visit(d);
         visit(r);
     }
 
-    virtual void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
-                                     const ptr<Ast> &e) {
+    virtual void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                                     const ptr<Ast> &d, const ptr<Ast> &e) {
         visit(c);
         visit(d);
         visit(e);

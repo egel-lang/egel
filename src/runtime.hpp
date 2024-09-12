@@ -3,9 +3,11 @@
 // #include <mimalloc.h>
 // #include <mimalloc-new-delete.h>
 
+#include <fmt/core.h>
+
 #include <atomic>
-#include <cstring>
 #include <complex>
+#include <cstring>
 #include <filesystem>
 #include <functional>
 #include <iostream>
@@ -16,8 +18,6 @@
 #include <sstream>
 #include <stack>
 #include <vector>
-
-#include <fmt/core.h>
 
 #include "unicode/uchar.h"
 #include "unicode/unistr.h"
@@ -268,8 +268,7 @@ public:
           _desugar_flag(d),
           _lift_flag(l),
           _bytecode_flag(b),
-          _include_path(ii)
-          {
+          _include_path(ii) {
     }
 
     Options(const Options &o)
@@ -280,8 +279,7 @@ public:
           _desugar_flag(o._desugar_flag),
           _lift_flag(o._lift_flag),
           _bytecode_flag(o._bytecode_flag),
-          _include_path(o._include_path)
-          {
+          _include_path(o._include_path) {
     }
 
     static OptionsPtr create() {
@@ -296,7 +294,8 @@ public:
         return _include_path;
     }
 
-    std::vector<icu::UnicodeString> split_on_colon(const icu::UnicodeString& s) {
+    std::vector<icu::UnicodeString> split_on_colon(
+        const icu::UnicodeString &s) {
         std::vector<icu::UnicodeString> parts;
         int32_t start = 0;
         int32_t end = 0;
@@ -313,7 +312,7 @@ public:
 
     void set_include_path(const icu::UnicodeString &p) {
         auto pp = split_on_colon(p);
-        
+
         for (auto &p : pp) {
             _include_path.push_back(p);
         }
@@ -634,10 +633,11 @@ public:
     virtual void eval_value(const icu::UnicodeString &v) = 0;
 
     // expose the tokenizer
-    virtual VMObjectPtr tokenize(const icu::UnicodeString &uri, const icu::UnicodeString &src) = 0;
+    virtual VMObjectPtr tokenize(const icu::UnicodeString &uri,
+                                 const icu::UnicodeString &src) = 0;
 
     // docstring
-    virtual VMObjectPtr docstring(const VMObjectPtr& o) = 0;
+    virtual VMObjectPtr docstring(const VMObjectPtr &o) = 0;
 
     // module inspection
     virtual VMObjectPtr query_modules() = 0;
@@ -811,12 +811,12 @@ public:
         delete[] buf;
 
         double real = 0.0, imag = 0.0;
-        char j; 
+        char j;
 
         if (ss >> real >> imag >> j && (j == 'j' || j == 'i')) {
             return std::complex<double>(real, imag);
         } else {
-            return std::complex<double>(real, 0.0); 
+            return std::complex<double>(real, 0.0);
         }
     }
 
@@ -1225,7 +1225,7 @@ public:
 inline thread_local std::stack<VMObjectPtr> defer;
 inline thread_local bool deferring = false;
 #endif
- 
+
 class VMObjectArray : public VMObject {
 public:
     VMObjectArray() : VMObject(VM_OBJECT_ARRAY) {
@@ -1255,8 +1255,7 @@ public:
         _array = new VMObjectPtr[size];
     }
 
-
-   ~VMObjectArray() {
+    ~VMObjectArray() {
 #ifdef GC_STOPGAP
         if (deferring) {
             for (int i = 0; i < _size; i++) {
@@ -1600,11 +1599,11 @@ public:
         return _docstring;
     }
 
-    void set_docstring(const icu::UnicodeString& s) {
+    void set_docstring(const icu::UnicodeString &s) {
         icu::UnicodeString t = "this";
         icu::UnicodeString ds = s;
         if (ds.startsWith(t)) {
-             ds.replace(0, t.length(), raw_text());
+            ds.replace(0, t.length(), raw_text());
         }
         _docstring = ds;
     }
@@ -1619,9 +1618,9 @@ private:
     icu::UnicodeString _docstring;
 };
 
-#define DOCSTRING(dd) \
+#define DOCSTRING(dd)                                       \
     virtual icu::UnicodeString docstring() const override { \
-        return dd; \
+        return dd;                                          \
     }
 
 class VMObjectData : public VMObjectCombinator {
@@ -2032,24 +2031,23 @@ public:
     VMObjectPtr reduce(const VMObjectPtr &thunk) const override {
         auto tt = VMObjectArray::value(thunk);
         if (tt.size() > 6) {
-
             // set up f thunk
             VMObjectPtrs ff;
-            ff.push_back(tt[0]); // rt
-            ff.push_back(tt[1]); // rti
-            ff.push_back(tt[2]); // k
-            ff.push_back(tt[3]); // exc
-            ff.push_back(tt[5]); // f
-            ff.push_back(nullptr); // .
+            ff.push_back(tt[0]);    // rt
+            ff.push_back(tt[1]);    // rti
+            ff.push_back(tt[2]);    // k
+            ff.push_back(tt[3]);    // exc
+            ff.push_back(tt[5]);    // f
+            ff.push_back(nullptr);  // .
             auto f_thunk = VMObjectArray::create(ff);
 
             // set up g thunk
             VMObjectPtrs gg;
-            gg.push_back(f_thunk); // rt
-            gg.push_back(machine()->create_integer(5)); // rti
-            gg.push_back(f_thunk); // k
-            gg.push_back(tt[3]); // exc
-            gg.push_back(tt[6]); // g
+            gg.push_back(f_thunk);                       // rt
+            gg.push_back(machine()->create_integer(5));  // rti
+            gg.push_back(f_thunk);                       // k
+            gg.push_back(tt[3]);                         // exc
+            gg.push_back(tt[6]);                         // g
             for (unsigned int i = 7; i < tt.size(); i++) {
                 gg.push_back(tt[i]);
             }
@@ -2074,7 +2072,7 @@ public:
 
             return k;
         }
-   }
+    }
 };
 
 // convenience classes for defining built-in combinators
@@ -2096,20 +2094,20 @@ public:
     }
 };
 
-#define OPAQUE_PREAMBLE(t, c, n0, n1)              \
-    c(VM *m) : Opaque(t, m, n0, n1) {              \
-    }                                              \
-    c(VM *m, const symbol_t s) : Opaque(t, m, s) { \
-    }                                              \
-    static VMObjectPtr create(VM *m) {             \
-        return std::shared_ptr<c>(new c(m));       \
-    } \
-    static bool is_type(const VMObjectPtr& o) { \
-        auto& r = *o.get(); \
-        return typeid(r) == typeid(c); \
-    } \
-    static std::shared_ptr<c> cast(const VMObjectPtr& o) { \
-        return std::static_pointer_cast<c>(o); \
+#define OPAQUE_PREAMBLE(t, c, n0, n1)                      \
+    c(VM *m) : Opaque(t, m, n0, n1) {                      \
+    }                                                      \
+    c(VM *m, const symbol_t s) : Opaque(t, m, s) {         \
+    }                                                      \
+    static VMObjectPtr create(VM *m) {                     \
+        return std::shared_ptr<c>(new c(m));               \
+    }                                                      \
+    static bool is_type(const VMObjectPtr &o) {            \
+        auto &r = *o.get();                                \
+        return typeid(r) == typeid(c);                     \
+    }                                                      \
+    static std::shared_ptr<c> cast(const VMObjectPtr &o) { \
+        return std::static_pointer_cast<c>(o);             \
     }
 
 // convenience classes for combinators which take and return constants
@@ -3265,7 +3263,7 @@ public:
     virtual std::vector<icu::UnicodeString> imports() const {
         return std::vector<icu::UnicodeString>();
     }
-    virtual std::vector<VMObjectPtr> exports(VM* m) = 0;
+    virtual std::vector<VMObjectPtr> exports(VM *m) = 0;
 };
 
 };  // namespace egel

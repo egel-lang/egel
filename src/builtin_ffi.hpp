@@ -72,7 +72,7 @@ class Library : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Library, FFI, "library");
 
-DOCSTRING("FFI::library - opaque library object");
+    DOCSTRING("FFI::library - opaque library object");
     int compare(const VMObjectPtr& o) {
         return -1;  // XXX
     }
@@ -88,7 +88,7 @@ DOCSTRING("FFI::library - opaque library object");
     void load(const icu::UnicodeString& s) {
         set_path(s);
         auto pth = VM::unicode_to_utf8_chars(get_path());  // XXX: leaks?
-                                                          
+
 #ifdef _WIN32
         _handle = LoadLibrary(pth);
         if (!_handle) {
@@ -114,7 +114,7 @@ DOCSTRING("FFI::library - opaque library object");
         auto ptr = GetProcAddress(static_cast<HMODULE>(_handle), sym);
 #else
         auto ptr = dlsym(_handle, sym);
-#endif  
+#endif
         VMObjectPtrs oo;
         oo.push_back(VMObjectData::create(machine(), c_void_p));
         oo.push_back(
@@ -143,7 +143,7 @@ class FindLibrary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, FindLibrary, FFI, "find_library");
 
-DOCSTRING("FFI::find_library s - find a library");
+    DOCSTRING("FFI::find_library s - find a library");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
@@ -158,7 +158,7 @@ class LoadLibrary : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, LoadLibrary, FFI, "load_library");
 
-DOCSTRING("FFI::load_library s - load a library");
+    DOCSTRING("FFI::load_library s - load a library");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
@@ -175,11 +175,10 @@ class Function : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Function, FFI, "function");
 
-DOCSTRING("FFI::function l s - find a function");
+    DOCSTRING("FFI::function l s - find a function");
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
-        if (Library::is_type(arg0) &&
-            machine()->is_text(arg1)) {
+        if (Library::is_type(arg0) && machine()->is_text(arg1)) {
             auto l = Library::cast(arg0);
             auto s = machine()->get_text(arg1);
             return l->function(s);
@@ -193,7 +192,7 @@ class Call : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Call, FFI, "call");
 
-DOCSTRING("FFI::call f r x - call a function");
+    DOCSTRING("FFI::call f r x - call a function");
     bool is_function_ptr(const VMObjectPtr& o) const {
         return machine()->is_array(o) && (machine()->array_size(o) == 2) &&
                machine()->is_data_text(machine()->array_get(o, 0), c_void_p) &&
@@ -696,7 +695,7 @@ class Malloc : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Malloc, FFI, "malloc");
 
-DOCSTRING("FFI::malloc n - allocate a number of bytes");
+    DOCSTRING("FFI::malloc n - allocate a number of bytes");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto n = machine()->get_integer(arg0);
@@ -716,7 +715,7 @@ class Free : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Free, FFI, "free");
 
-DOCSTRING("FFI::free p - free memory");
+    DOCSTRING("FFI::free p - free memory");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
             machine()->is_data_text(machine()->array_get(arg0, 0), c_void_p) &&
@@ -734,7 +733,8 @@ class Peek : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Peek, FFI, "peek");
 
-DOCSTRING("FFI::peek p n t - peek a number of bytes beyond for value of type");
+    DOCSTRING(
+        "FFI::peek p n t - peek a number of bytes beyond for value of type");
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
@@ -855,7 +855,8 @@ class Poke : public Triadic {
 public:
     TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Poke, FFI, "poke");
 
-DOCSTRING("FFI::poke p n v - poke a value a number of bytes beyond pointer");
+    DOCSTRING(
+        "FFI::poke p n v - poke a value a number of bytes beyond pointer");
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
                       const VMObjectPtr& arg2) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
@@ -965,7 +966,7 @@ class ToUTF8 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, ToUTF8, FFI, "to_utf8");
 
-DOCSTRING("FFI::to_utf8 s - get pointer from text");
+    DOCSTRING("FFI::to_utf8 s - get pointer from text");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
@@ -985,7 +986,7 @@ class FromUTF8 : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, FromUTF8, FFI, "from_utf8");
 
-DOCSTRING("FFI::from_utf8 s - get text from pointer");
+    DOCSTRING("FFI::from_utf8 s - get text from pointer");
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_array(arg0) && (machine()->array_size(arg0) == 2) &&
             machine()->is_data_text(machine()->array_get(arg0, 0), c_void_p) &&
@@ -999,7 +1000,7 @@ DOCSTRING("FFI::from_utf8 s - get text from pointer");
     }
 };
 
-class FFIModule: public CModule {
+class FFIModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "ffi";
@@ -1009,7 +1010,7 @@ public:
         return "The 'ffi' module defines c foreign interface combinators.";
     }
 
-    std::vector<VMObjectPtr> exports(VM *vm) override {
+    std::vector<VMObjectPtr> exports(VM* vm) override {
         std::vector<VMObjectPtr> oo;
 
         oo.push_back(VMObjectData::create(vm, c_void));
@@ -1051,6 +1052,5 @@ public:
         return oo;
     }
 };
-
 
 }  // namespace egel

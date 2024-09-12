@@ -68,7 +68,7 @@ public:
     static vm_complex_t get_complex(const SerialObjectPtr &o);
 
     static SerialObjectPtr create_complex(const objectid_t id,
-                                        const vm_complex_t f);
+                                          const vm_complex_t f);
 
     static bool is_char(const SerialObjectPtr &o) {
         return o->get_tag() == VM_OBJECT_CHAR;
@@ -176,7 +176,8 @@ public:
         : SerialObject(VM_OBJECT_COMPLEX, id), _value(f) {
     }
 
-    SerialComplex(const SerialComplex &s) : SerialComplex(s.get_id(), s.get_value()) {
+    SerialComplex(const SerialComplex &s)
+        : SerialComplex(s.get_id(), s.get_value()) {
     }
 
     static SerialObjectPtr create(const objectid_t id, const vm_complex_t f) {
@@ -196,7 +197,7 @@ inline vm_complex_t SerialObject::get_complex(const SerialObjectPtr &o) {
 };
 
 inline SerialObjectPtr SerialObject::create_complex(const objectid_t id,
-                                                  const vm_complex_t n) {
+                                                    const vm_complex_t n) {
     return SerialComplex::create(id, n);
 };
 
@@ -546,7 +547,8 @@ inline void dag_serialize(VM *m, const SerialObjectPtrs &dag,
             } break;
             case VM_OBJECT_COMPLEX: {
                 auto z = SerialObject::get_complex(s);
-                os << s->get_id() << ": z " << z.real() << " " << z.imag() << std::endl;
+                os << s->get_id() << ": z " << z.real() << " " << z.imag()
+                   << std::endl;
             } break;
             case VM_OBJECT_CHAR: {
                 auto c = SerialObject::get_char(s);
@@ -738,7 +740,7 @@ inline SerialObjectPtrs dag_deserialize(VM *m, std::istream &is) {
                 double f0;
                 double f1;
                 is >> f0 >> f1;
-                auto s = SerialObject::create_complex(o, vm_complex_t(f0,f1));
+                auto s = SerialObject::create_complex(o, vm_complex_t(f0, f1));
                 ss.push_back(s);
             } break;
             case 'c': {

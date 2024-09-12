@@ -7,9 +7,9 @@
 #include <tuple>
 #include <vector>
 
-#include "runtime.hpp"
-#include "reader.hpp"
 #include "lexical.hpp"
+#include "reader.hpp"
+#include "runtime.hpp"
 
 namespace egel {
 
@@ -342,7 +342,7 @@ private:
 };
 
 // forward declaration
-inline void write_assembly(std::ostream &os, const VMObjectBytecode& o);
+inline void write_assembly(std::ostream &os, const VMObjectBytecode &o);
 
 class VMObjectBytecode : public VMObjectCombinator {
 public:
@@ -652,9 +652,16 @@ constexpr auto STRING_OP_RETURN = "return";
 
 class Disassembler {
 public:
-    Disassembler(const VMObjectBytecode &o): _name(o.text()), _code(o.code()), _data(o.data()), _vm(o.machine()), _pc(0) {}
+    Disassembler(const VMObjectBytecode &o)
+        : _name(o.text()),
+          _code(o.code()),
+          _data(o.data()),
+          _vm(o.machine()),
+          _pc(0) {
+    }
 
-    Disassembler(const VMObjectPtr &o): Disassembler(*VMObjectBytecode::cast(o)) {
+    Disassembler(const VMObjectPtr &o)
+        : Disassembler(*VMObjectBytecode::cast(o)) {
     }
 
     const char *opcode_to_text(const opcode_t op) {
@@ -816,7 +823,7 @@ public:
         os << "  " << _name << std::endl;
 
         // write code
-        //os << std::showbase << std::internal << std::setfill('0');
+        // os << std::showbase << std::internal << std::setfill('0');
         reset();
         os << "code" << std::endl;
         while (!is_end()) {
@@ -929,29 +936,31 @@ public:
         os.fill(old_fill);
     }
 
-    icu::UnicodeString disassemble() {                                                                                                  
-        std::stringstream ss;                                                                                                           
-        write(ss);                                                                                                                
-        return VM::unicode_from_utf8_chars(ss.str().c_str());                                                                           
-    } 
+    icu::UnicodeString disassemble() {
+        std::stringstream ss;
+        write(ss);
+        return VM::unicode_from_utf8_chars(ss.str().c_str());
+    }
+
 private:
     icu::UnicodeString _name;
     Code _code;
     Data _data;
-    VM* _vm;
+    VM *_vm;
     uint32_t _pc;
 };
 
-inline void write_assembly(std::ostream &os, const VMObjectBytecode& o) {
+inline void write_assembly(std::ostream &os, const VMObjectBytecode &o) {
     Disassembler d(o);
     d.write(os);
 };
 
 inline icu::UnicodeString disassemble(const VMObjectPtr &o) {
     if (o->subtag_test(VM_SUB_DATA)) {
-        std::stringstream ss;                                                                                                           
-        ss << "data 01 " << VMObjectData::cast(o)->raw_text() << " end" << std::endl;
-        return VM::unicode_from_utf8_chars(ss.str().c_str());                                                                           
+        std::stringstream ss;
+        ss << "data 01 " << VMObjectData::cast(o)->raw_text() << " end"
+           << std::endl;
+        return VM::unicode_from_utf8_chars(ss.str().c_str());
     } else if (o->subtag_test(VM_SUB_BYTECODE)) {
         Disassembler d(o);
         return d.disassemble();
@@ -1008,12 +1017,12 @@ public:
         check_token(t);
         skip();
     }
- 
+
     bool is_string(const icu::UnicodeString &s) {
         return s == look_text();
     }
 
-    void force_string(const icu::UnicodeString& s) {
+    void force_string(const icu::UnicodeString &s) {
         if (is_string(s)) {
             skip();
         } else {
@@ -1025,7 +1034,8 @@ public:
     icu::UnicodeString fetch_combinator() {
         Position p = position();
         icu::UnicodeString s;
-        if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) || (tag() == TOKEN_OPERATOR)) {
+        if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) ||
+            (tag() == TOKEN_OPERATOR)) {
             s += look_text();
             skip();
         } else {
@@ -1034,7 +1044,8 @@ public:
         while (tag() == TOKEN_DCOLON) {
             s += "::";
             skip();
-            if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) || (tag() == TOKEN_OPERATOR)) {
+            if ((tag() == TOKEN_UPPERCASE) || (tag() == TOKEN_LOWERCASE) ||
+                (tag() == TOKEN_OPERATOR)) {
                 s += look_text();
                 skip();
             } else {
@@ -1044,12 +1055,11 @@ public:
         return s;
     }
 
-
     reg_t fetch_register() {
         auto s = look_text();
         if (s.startsWith('r')) {
             skip();
-            s.removeBetween(0,1);
+            s.removeBetween(0, 1);
             return VM::unicode_to_int(s);
         } else {
             Position p = position();
@@ -1096,7 +1106,7 @@ public:
             s1 = "+" + look_text();
             skip();
         }
-        return VM::unicode_to_complex(s0+s1);
+        return VM::unicode_to_complex(s0 + s1);
     }
 
     vm_char_t fetch_char() {
@@ -1122,12 +1132,12 @@ public:
 
         force_string("bytecode");
         force_string("01");
-        
+
         auto name = fetch_combinator();
         force_string("code");
 
         Coder coder(_machine);
-        while(!is_string("data")) {
+        while (!is_string("data")) {
             skip();
             Position p = position();
             if (is_string(STRING_OP_NIL)) {
@@ -1138,54 +1148,54 @@ public:
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
-                coder.emit_op_mov(r0,r1);
+                coder.emit_op_mov(r0, r1);
             } else if (is_string(STRING_OP_DATA)) {
                 skip();
                 auto r0 = fetch_register();
                 auto i0 = fetch_i32();
-                coder.emit_op_data(r0,i0);
+                coder.emit_op_data(r0, i0);
             } else if (is_string(STRING_OP_SET)) {
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
                 auto r2 = fetch_register();
-                coder.emit_op_set(r0,r1,r2);
+                coder.emit_op_set(r0, r1, r2);
             } else if (is_string(STRING_OP_TAKEX)) {
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
                 auto r2 = fetch_register();
                 auto i0 = fetch_i16();
-                coder.emit_op_takex(r0,r1,r2,i0);
+                coder.emit_op_takex(r0, r1, r2, i0);
             } else if (is_string(STRING_OP_SPLIT)) {
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
                 auto r2 = fetch_register();
-                coder.emit_op_split(r0,r1,r2);
+                coder.emit_op_split(r0, r1, r2);
             } else if (is_string(STRING_OP_ARRAY)) {
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
                 auto r2 = fetch_register();
-                coder.emit_op_array(r0,r1,r2);
+                coder.emit_op_array(r0, r1, r2);
             } else if (is_string(STRING_OP_CONCATX)) {
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
                 auto r2 = fetch_register();
                 auto i0 = fetch_i16();
-                coder.emit_op_concatx(r0,r1,r2,i0);
+                coder.emit_op_concatx(r0, r1, r2, i0);
             } else if (is_string(STRING_OP_TEST)) {
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
-                coder.emit_op_test(r0,r1);
+                coder.emit_op_test(r0, r1);
             } else if (is_string(STRING_OP_TAG)) {
                 skip();
                 auto r0 = fetch_register();
                 auto r1 = fetch_register();
-                coder.emit_op_tag(r0,r1);
+                coder.emit_op_tag(r0, r1);
             } else if (is_string(STRING_OP_FAIL)) {
                 skip();
                 auto l0 = fetch_label();
@@ -1203,7 +1213,7 @@ public:
         force_string("data");
 
         Data data;
-        while(!is_string("end")) {
+        while (!is_string("end")) {
             if (is_string("i")) {
                 skip();
                 skip();
@@ -1267,7 +1277,6 @@ private:
     icu::UnicodeString _source;
     Tokens _tokenreader;
 };
-
 
 inline VMObjectPtr assemble(VM *vm, const icu::UnicodeString &s) {
     Assembler a(vm, s);

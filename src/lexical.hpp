@@ -1,9 +1,9 @@
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <functional>
 
 #include "constants.hpp"
 #include "error.hpp"
@@ -165,7 +165,7 @@ public:
 
     void map(std::function<Token(Token)> f) {
         std::vector<Token> tt;
-        for (Token t:_tokens) {
+        for (Token t : _tokens) {
             tt.push_back(f(t));
         }
         _tokens = tt;
@@ -174,7 +174,7 @@ public:
 
     void filter(std::function<bool(Token)> p) {
         std::vector<Token> tt;
-        for (Token t:_tokens) {
+        for (Token t : _tokens) {
             if (p(t)) {
                 tt.push_back(t);
             }
@@ -686,7 +686,6 @@ static reserved_t reserved_table[]{
     },
 };
 
-
 icu::UnicodeString unicode_escape(const icu::UnicodeString &s) {
     icu::UnicodeString s1;
     for (int i = 0; i < s.length(); i = s.moveIndex32(i, 1)) {
@@ -738,14 +737,14 @@ Tokens tokenize_from_reader(CharReader &reader) {
         UChar32 c = reader.look();
 
         if (is_whitespace(c)) {
-            icu::UnicodeString str; 
+            icu::UnicodeString str;
             while (!reader.end() && is_whitespace(reader.look())) {
                 str += reader.look();
                 reader.skip();
-            } 
+            }
             token_writer.push(Token(TOKEN_WHITESPACE, p, str));
         } else if (is_hash(c)) {
-            icu::UnicodeString str; 
+            icu::UnicodeString str;
             str += reader.look();
             reader.skip();
             while (!reader.end() && !is_eol(reader.look())) {
@@ -941,9 +940,8 @@ Tokens tokenize_from_reader(CharReader &reader) {
                     } else if (!is_exponent(c)) {
                         token_writer.push(Token(TOKEN_FLOAT, p, str));
                     } else {
-                        // any 'e' occurence signals a forced floating point with an
-                        // exponent
-                        // handle 'e'
+                        // any 'e' occurence signals a forced floating point
+                        // with an exponent handle 'e'
                         str += c;
                         reader.skip();
                         if (reader.end()) goto handle_float_error;
@@ -1048,20 +1046,20 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
     while (!reader.end()) {
         if (text) {
             Position p = reader.position();
-            icu::UnicodeString str; 
+            icu::UnicodeString str;
             if (reader.look(0) == '`' && reader.look(1) == '`' &&
                 reader.look(2) == '`') {
                 while (!reader.end() && !reader.eol()) {
                     str += reader.look();
                     reader.skip();
-                } 
+                }
                 token_writer.push(Token(TOKEN_COMMENT, p, str));
                 text = !text;
             } else {
                 while (!reader.end() && !reader.eol()) {
                     str += reader.look();
                     reader.skip();
-                } 
+                }
                 token_writer.push(Token(TOKEN_COMMENT, p, str));
                 if (reader.eol()) reader.skip();
             }
@@ -1073,14 +1071,14 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                 UChar32 c = reader.look();
 
                 if (is_whitespace(c)) {
-                    icu::UnicodeString str; 
+                    icu::UnicodeString str;
                     while (!reader.end() && is_whitespace(reader.look())) {
                         str += reader.look();
                         reader.skip();
-                    } 
+                    }
                     token_writer.push(Token(TOKEN_WHITESPACE, p, str));
                 } else if (is_hash(c)) {
-                    icu::UnicodeString str; 
+                    icu::UnicodeString str;
                     str += reader.look();
                     reader.skip();
                     while (!reader.end() && !is_eol(reader.look())) {
@@ -1272,13 +1270,13 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                                 str += c;
                                 reader.skip();
                                 c = reader.look();
-                                token_writer.push(Token(TOKEN_IMAGINARY, p, str));
+                                token_writer.push(
+                                    Token(TOKEN_IMAGINARY, p, str));
                             } else if (!is_exponent(c)) {
                                 token_writer.push(Token(TOKEN_FLOAT, p, str));
                             } else {
-                            // any 'e' occurence signals a forced floating point with an
-                            // exponent
-                                // handle 'e'
+                                // any 'e' occurence signals a forced floating
+                                // point with an exponent handle 'e'
                                 str += c;
                                 reader.skip();
                                 if (reader.end()) goto handle_float_error;
@@ -1300,9 +1298,11 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                                     str += c;
                                     reader.skip();
                                     c = reader.look();
-                                    token_writer.push(Token(TOKEN_IMAGINARY, p, str));
+                                    token_writer.push(
+                                        Token(TOKEN_IMAGINARY, p, str));
                                 } else {
-                                    token_writer.push(Token(TOKEN_FLOAT, p, str));
+                                    token_writer.push(
+                                        Token(TOKEN_FLOAT, p, str));
                                 }
                             }
                         }
@@ -1314,8 +1314,7 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         reader.skip();
                         c = reader.look();
                     };
-                    token_writer.push(
-                        (Token(TOKEN_OPERATOR, p, str)));
+                    token_writer.push((Token(TOKEN_OPERATOR, p, str)));
                 } else if (is_uppercase(c)) {
                     icu::UnicodeString str = icu::UnicodeString("");
                     while (is_letter(c)) {
@@ -1323,8 +1322,7 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         reader.skip();
                         c = reader.look();
                     };
-                    token_writer.push(
-                        (Token(TOKEN_UPPERCASE, p, str)));
+                    token_writer.push((Token(TOKEN_UPPERCASE, p, str)));
                 } else if (is_lowercase(c)) {
                     icu::UnicodeString str = icu::UnicodeString("");
                     while (is_letter(c)) {
@@ -1332,8 +1330,7 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         reader.skip();
                         c = reader.look();
                     };
-                    token_writer.push(
-                        (Token(TOKEN_LOWERCASE, p, str)));
+                    token_writer.push((Token(TOKEN_LOWERCASE, p, str)));
                 } else if (is_underscore(c)) {  // XXX: push a lowercase for an
                                                 // underscore?
                     icu::UnicodeString str = icu::UnicodeString("");
@@ -1348,11 +1345,11 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
             if (reader.look(0) == '`' && reader.look(1) == '`' &&
                 reader.look(2) == '`') {
                 Position p = reader.position();
-                icu::UnicodeString str; 
+                icu::UnicodeString str;
                 while (!reader.end() && !reader.eol()) {
                     str += reader.look();
                     reader.skip();
-                } 
+                }
                 token_writer.push(Token(TOKEN_COMMENT, p, str));
                 text = !text;
             }
@@ -1395,7 +1392,7 @@ handle_float_error: {
 
 void sanitize(Tokens &tt) {
     tt.filter([](Token t) {
-         return (t.tag() != TOKEN_WHITESPACE) && (t.tag() != TOKEN_COMMENT);
+        return (t.tag() != TOKEN_WHITESPACE) && (t.tag() != TOKEN_COMMENT);
     });
 
     tt.map([](Token t) {
@@ -1403,7 +1400,7 @@ void sanitize(Tokens &tt) {
             if (t.text() == tt.text) {
                 t.set_tag(tt.tag);
                 break;
-            } 
+            }
         }
         return t;
     });

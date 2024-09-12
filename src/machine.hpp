@@ -19,7 +19,7 @@
 namespace egel {
 
 // hardcode a larger stack
-#include <sys/resource.h> 
+#include <sys/resource.h>
 void set_stack_size(size_t size) {
     struct rlimit rl;
     int result;
@@ -194,9 +194,9 @@ class Machine final : public VM {
 public:
     Machine() {
 #ifdef __APPLE__
-        set_stack_size(8*1024*1024); 
+        set_stack_size(8 * 1024 * 1024);
 #elif __linux__
-        set_stack_size(128*1024*1024); 
+        set_stack_size(128 * 1024 * 1024);
 #else
 #endif
         populate();
@@ -971,7 +971,8 @@ public:
         auto r = p.row();
         auto c = p.column();
 
-        return create_tuple(create_text(s), create_integer(r), create_integer(c));
+        return create_tuple(create_text(s), create_integer(r),
+                            create_integer(c));
     }
 
     VMObjectPtr token_to_object(const Token &t) {
@@ -979,14 +980,16 @@ public:
         auto pos = t.position();
         auto txt = t.text();
 
-        return create_tuple(position_to_object(pos), create_text(tag), create_text(txt));
+        return create_tuple(position_to_object(pos), create_text(tag),
+                            create_text(txt));
     }
 
-    VMObjectPtr tokenize(const icu::UnicodeString &uri, const icu::UnicodeString &src) {
+    VMObjectPtr tokenize(const icu::UnicodeString &uri,
+                         const icu::UnicodeString &src) {
         StringCharReader r = StringCharReader(uri, src);
         Tokens tt = tokenize_from_reader(r);
         std::vector<VMObjectPtr> oo;
-        
+
         while (tt.look().tag() != TOKEN_EOF) {
             auto o = token_to_object(tt.look());
             oo.push_back(o);

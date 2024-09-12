@@ -99,7 +99,8 @@ public:
         }
     }
 
-    void visit_decl_data(const Position &p, const ptr<Ast> &d, const ptrs<Ast> &nn) override {
+    void visit_decl_data(const Position &p, const ptr<Ast> &d,
+                         const ptrs<Ast> &nn) override {
         if (get_declare_state() == STATE_DECLARE_GLOBAL) {
             visits(nn);
         } else {
@@ -107,18 +108,18 @@ public:
         }
     }
 
-    void visit_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> &d,
-                               const ptr<Ast> &e) override {
+    void visit_decl_definition(const Position &p, const ptr<Ast> &n,
+                               const ptr<Ast> &d, const ptr<Ast> &e) override {
         visit(n);
     }
 
-    void visit_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> &d,
-                          const ptr<Ast> &r) override {
+    void visit_decl_value(const Position &p, const ptr<Ast> &l,
+                          const ptr<Ast> &d, const ptr<Ast> &r) override {
         visit(l);
     }
 
-    void visit_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> &d,
-                             const ptr<Ast> &e) override {
+    void visit_decl_operator(const Position &p, const ptr<Ast> &c,
+                             const ptr<Ast> &d, const ptr<Ast> &e) override {
         visit(c);
     }
 
@@ -343,7 +344,7 @@ public:
         return AstDirectUsing::create(p, nn);
     }
 
-    ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> & d,
+    ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d,
                                const ptrs<Ast> &ee) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
@@ -360,7 +361,8 @@ public:
         }
     }
 
-    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n, const ptr<Ast> & d,
+    ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n,
+                                     const ptr<Ast> &d,
                                      const ptr<Ast> &e) override {
         if (get_identify_state() == STATE_IDENTIFY_FIELD) {
             set_identify_state(STATE_IDENTIFY_USE);
@@ -379,8 +381,8 @@ public:
         }
     }
 
-    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l, const ptr<Ast> & d,
-                                const ptr<Ast> &r) override {
+    ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
+                                const ptr<Ast> &d, const ptr<Ast> &r) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
@@ -389,7 +391,8 @@ public:
         return a;
     }
 
-    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c, const ptr<Ast> & d,
+    ptr<Ast> rewrite_decl_operator(const Position &p, const ptr<Ast> &c,
+                                   const ptr<Ast> &d,
                                    const ptr<Ast> &e) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto c0 = rewrite(c);

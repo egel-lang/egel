@@ -19,7 +19,7 @@ class Future : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Future, "System", "future");
 
-DOCSTRING("System::future - opaque future object");
+    DOCSTRING("System::future - opaque future object");
     int compare(const VMObjectPtr &o) override {
         return -1;  // XXX: fix this once
     }
@@ -59,7 +59,7 @@ class Async : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Async, "System", "async");
 
-DOCSTRING("System::async f - create a task");
+    DOCSTRING("System::async f - create a task");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         auto vm = machine();
         auto o = Future::create(vm);
@@ -73,7 +73,7 @@ class Await : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Await, "System", "await");
 
-DOCSTRING("System::await f - wait for async task");
+    DOCSTRING("System::await f - wait for async task");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (Future::is_type(arg0)) {
             auto f = Future::cast(arg0);
@@ -93,11 +93,12 @@ class WaitFor : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, WaitFor, "System", "wait_for");
 
-DOCSTRING("System::wait_for f n - check whether future reduced during milliseconds");
+    DOCSTRING(
+        "System::wait_for f n - check whether future reduced during "
+        "milliseconds");
     VMObjectPtr apply(const VMObjectPtr &arg0,
                       const VMObjectPtr &arg1) const override {
-        if (Future::is_type(arg0) &&
-            (machine()->is_integer(arg1))) {
+        if (Future::is_type(arg0) && (machine()->is_integer(arg1))) {
             auto f = Future::cast(arg0);
             auto n = machine()->get_integer(arg1);
             auto b = f->wait_for(n);
@@ -112,7 +113,7 @@ class IsValid : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, IsValid, "System", "is_valid");
 
-DOCSTRING("System::is_valid f - check whether future is reduced");
+    DOCSTRING("System::is_valid f - check whether future is reduced");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (Future::is_type(arg0)) {
             auto f = Future::cast(arg0);
@@ -128,7 +129,7 @@ class Sleep : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_BUILTIN, Sleep, "System", "sleep");
 
-DOCSTRING("System::sleep n - sleep for a number of milliseconds");
+    DOCSTRING("System::sleep n - sleep for a number of milliseconds");
     VMObjectPtr apply(const VMObjectPtr &arg0) const override {
         if (machine()->is_integer(arg0)) {
             auto n = machine()->get_integer(arg0);
@@ -140,7 +141,7 @@ DOCSTRING("System::sleep n - sleep for a number of milliseconds");
     }
 };
 
-class AsyncModule: public CModule {
+class AsyncModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "async";
@@ -153,7 +154,8 @@ public:
     std::vector<VMObjectPtr> exports(VM *vm) override {
         std::vector<VMObjectPtr> oo;
 
-        // oo.push_back(Future::create(vm)); // XXX: I always forget whether this
+        // oo.push_back(Future::create(vm)); // XXX: I always forget whether
+        // this
         //  is needed
         oo.push_back(VMObjectStub::create(vm, "System::future"));
         oo.push_back(Async::create(vm));

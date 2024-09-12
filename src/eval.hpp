@@ -320,7 +320,8 @@ public:
         auto vm = machine();
         auto p = a->position();
         auto n = AstExprCombinator::create(p, fv);
-        auto d = AstDeclDefinition::create(p, n, AstDocstring::create(p,""), a);
+        auto d =
+            AstDeclDefinition::create(p, n, AstDocstring::create(p, ""), a);
 
         // treat it as a definition Dummy
         handle_definition(d);

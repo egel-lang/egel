@@ -1,13 +1,12 @@
 #include <stdlib.h>
 
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <thread>
-
-#include <filesystem>
 
 #include "runtime.hpp"
 
@@ -16,8 +15,8 @@
 #include <string.h>
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <winsock2.h>
 #include <windows.h>
+#include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #else
 #include <arpa/inet.h>
@@ -122,7 +121,7 @@ public:
     virtual UnicodeString read_all() {
         UnicodeString s;  // replace with a buffer once
         s = read_line();
-        while (!eof()) { // XXX: wtf is this code?
+        while (!eof()) {  // XXX: wtf is this code?
             auto s0 = read_line();
             if (!eof()) s += "\n" + s0;
         }
@@ -410,7 +409,7 @@ protected:
 class ChannelValue : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, ChannelValue, "OS", "channel");
-DOCSTRING("OS::channel - opaque values which are input/output channels");
+    DOCSTRING("OS::channel - opaque values which are input/output channels");
 
     ChannelValue(VM* m, const ChannelPtr& chan) : ChannelValue(m) {
         _value = chan;
@@ -450,7 +449,7 @@ protected:
 class Stdin : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdin, "OS", "stdin");
-DOCSTRING("OS::cin - standard input channel");
+    DOCSTRING("OS::cin - standard input channel");
 
     VMObjectPtr apply() const override {
         auto cin = ChannelStreamIn::create();
@@ -462,7 +461,7 @@ DOCSTRING("OS::cin - standard input channel");
 class Stdout : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stdout, "OS", "stdout");
-DOCSTRING("OS::stdout - standard output channel");
+    DOCSTRING("OS::stdout - standard output channel");
 
     VMObjectPtr apply() const override {
         auto cout = ChannelStreamOut::create();
@@ -474,7 +473,7 @@ DOCSTRING("OS::stdout - standard output channel");
 class Stderr : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, Stderr, "OS", "stderr");
-DOCSTRING("OS::stderr - standard error channel");
+    DOCSTRING("OS::stderr - standard error channel");
 
     VMObjectPtr apply() const override {
         auto cerr = ChannelStreamErr::create();
@@ -488,22 +487,22 @@ DOCSTRING("OS::stderr - standard error channel");
 class OpenIn : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenIn, "OS", "open_in");
-DOCSTRING("OS::open_in fn - create a channel from filename");
+    DOCSTRING("OS::open_in fn - create a channel from filename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto fn = machine()->get_text(arg0);
 
             // throw an error when the file doesn't exist
-            auto len = fn.extract(0, 2048, nullptr, (uint32_t)0);  // XXX: I hate constants
+            auto len = fn.extract(0, 2048, nullptr,
+                                  (uint32_t)0);  // XXX: I hate constants
             auto buffer = new char[len + 1];
             fn.extract(0, 2048, buffer, len + 1);
             auto p = fs::path(buffer);
             delete[] buffer;
-            auto b = fs::exists(p); 
+            auto b = fs::exists(p);
 
             if (!b) throw machine()->create_text("file not found: " + fn);
-
 
             auto stream = ChannelFile::create(fn, std::fstream::in);
             auto channel = ChannelValue::create(machine(), stream);
@@ -517,7 +516,7 @@ DOCSTRING("OS::open_in fn - create a channel from filename");
 class OpenOut : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, OpenOut, "OS", "open_out");
-DOCSTRING("OS::open_out fn - create a channel from filename");
+    DOCSTRING("OS::open_out fn - create a channel from filename");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
@@ -534,7 +533,7 @@ DOCSTRING("OS::open_out fn - create a channel from filename");
 class Close : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Close, "OS", "close");
-DOCSTRING("OS::close c - close a channel");
+    DOCSTRING("OS::close c - close a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -550,7 +549,7 @@ DOCSTRING("OS::close c - close a channel");
 class Read : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Read, "OS", "read");
-DOCSTRING("OS::read c - read a string from a channel");
+    DOCSTRING("OS::read c - read a string from a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -566,7 +565,7 @@ DOCSTRING("OS::read c - read a string from a channel");
 class ReadByte : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadByte, "OS", "read_byte");
-DOCSTRING("OS::read_byte c - read a byte from a channel");
+    DOCSTRING("OS::read_byte c - read a byte from a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -582,7 +581,7 @@ DOCSTRING("OS::read_byte c - read a byte from a channel");
 class ReadLine : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadLine, "OS", "read_line");
-DOCSTRING("OS::read_line c - read a line from a channel");
+    DOCSTRING("OS::read_line c - read a line from a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -598,7 +597,7 @@ DOCSTRING("OS::read_line c - read a line from a channel");
 class ReadAll : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, ReadAll, "OS", "read_all");
-DOCSTRING("OS::read_all c - read entire channel content");
+    DOCSTRING("OS::read_all c - read entire channel content");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -614,7 +613,7 @@ DOCSTRING("OS::read_all c - read entire channel content");
 class Write : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, Write, "OS", "write");
-DOCSTRING("OS::write c s - write a string to a channel");
+    DOCSTRING("OS::write c s - write a string to a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -636,7 +635,7 @@ DOCSTRING("OS::write c s - write a string to a channel");
 class WriteByte : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, WriteByte, "OS", "write_byte");
-DOCSTRING("OS::write_byte c b - write a byte to a channel");
+    DOCSTRING("OS::write_byte c b - write a byte to a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -658,7 +657,7 @@ DOCSTRING("OS::write_byte c b - write a byte to a channel");
 class WriteLine : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_EGO, WriteLine, "OS", "write_line");
-DOCSTRING("OS::write_line c s - write a string s to a channel");
+    DOCSTRING("OS::write_line c s - write a string s to a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0,
                       const VMObjectPtr& arg1) const override {
@@ -680,7 +679,7 @@ DOCSTRING("OS::write_line c s - write a string s to a channel");
 class Flush : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flush, "OS", "flush");
-DOCSTRING("OS::flush c - flush a channel");
+    DOCSTRING("OS::flush c - flush a channel");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -696,7 +695,7 @@ DOCSTRING("OS::flush c - flush a channel");
 class Eof : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Eof, "OS", "eof");
-DOCSTRING("OS::eof c - tests if there is no more input");
+    DOCSTRING("OS::eof c - tests if there is no more input");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (ChannelValue::is_type(arg0)) {
@@ -711,7 +710,8 @@ DOCSTRING("OS::eof c - tests if there is no more input");
 class Flock : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Flock, "OS", "flock");
-DOCSTRING("OS::flock f n - create a filesystem lock file (not process safe)");
+    DOCSTRING(
+        "OS::flock f n - create a filesystem lock file (not process safe)");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         auto m = machine();
@@ -738,7 +738,9 @@ DOCSTRING("OS::flock f n - create a filesystem lock file (not process safe)");
 class Exit : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exit, "OS", "exit");
-DOCSTRING("OS::exit n - flush all channels and terminate process with exit code n");
+    DOCSTRING(
+        "OS::exit n - flush all channels and terminate process with exit code "
+        "n");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_integer(arg0)) {
@@ -756,26 +758,28 @@ DOCSTRING("OS::exit n - flush all channels and terminate process with exit code 
 class Exec : public Monadic {
 public:
     MONADIC_PREAMBLE(VM_SUB_EGO, Exec, "OS", "exec");
-DOCSTRING("OS::exec c - system exec command");
+    DOCSTRING("OS::exec c - system exec command");
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
         if (machine()->is_text(arg0)) {
             auto s = machine()->get_text(arg0);
             auto cmd = VM::unicode_to_utf8_chars(s);
-            
+
             std::array<char, 128> buffer;
             std::string result;
-            std::unique_ptr<FILE, void(*)(FILE*)> pipe(popen(cmd, "r"),
-                [](FILE * f) -> void
-                {
-                    // wrapper to ignore the return value from pclose() is needed with newer versions of gnu g++
+            std::unique_ptr<FILE, void (*)(FILE*)> pipe(
+                popen(cmd, "r"), [](FILE* f) -> void {
+                    // wrapper to ignore the return value from pclose() is
+                    // needed with newer versions of gnu g++
                     std::ignore = pclose(f);
                 });
-            //std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+            // std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"),
+            // pclose);
             if (!pipe) {
                 throw std::runtime_error("popen() failed!");
             }
-            while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
+            while (fgets(buffer.data(), static_cast<int>(buffer.size()),
+                         pipe.get()) != nullptr) {
                 result += buffer.data();
             }
             auto r = VM::unicode_from_utf8_chars(result.c_str());
@@ -789,15 +793,16 @@ DOCSTRING("OS::exec c - system exec command");
 char get_key() {
 #if defined(_WIN32) || defined(_WIN64)
     return _getch();  // Windows: Waits for a key press without echoing it
-#elif defined(__unix__) || defined(__unix) || defined(__APPLE__) && defined(__MACH__)
+#elif defined(__unix__) || defined(__unix) || \
+    defined(__APPLE__) && defined(__MACH__)
     struct termios oldt, newt;
-    tcgetattr(STDIN_FILENO, &oldt);           // Get current terminal settings
+    tcgetattr(STDIN_FILENO, &oldt);  // Get current terminal settings
     newt = oldt;
     newt.c_lflag &= ~(ICANON | ECHO);         // Disable canonical mode and echo
     tcsetattr(STDIN_FILENO, TCSANOW, &newt);  // Apply new settings
 
     char ch;
-    std::cin.get(ch);                         // Wait for key press
+    std::cin.get(ch);  // Wait for key press
 
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);  // Restore old settings
     return ch;
@@ -807,15 +812,15 @@ char get_key() {
 class GetKey : public Medadic {
 public:
     MEDADIC_PREAMBLE(VM_SUB_EGO, GetKey, "OS", "get_key");
-DOCSTRING("OS::get_key - key press from console");
+    DOCSTRING("OS::get_key - key press from console");
 
     VMObjectPtr apply() const override {
-        auto ch = (vm_char_t) get_key();
+        auto ch = (vm_char_t)get_key();
         return machine()->create_char(ch);
     }
 };
 
-class OSModule: public CModule {
+class OSModule : public CModule {
 public:
     icu::UnicodeString name() const override {
         return "os";
@@ -825,36 +830,34 @@ public:
         return "The 'os' module defines basic input/output combinators.";
     }
 
-    std::vector<VMObjectPtr> exports(VM *vm) override {
+    std::vector<VMObjectPtr> exports(VM* vm) override {
         std::vector<VMObjectPtr> oo;
-    //    oo.push_back::create(VMObjectData(vm, "OS", "channel"));
+        //    oo.push_back::create(VMObjectData(vm, "OS", "channel"));
 
-    // oo.push_back(ChannelValue::create(vm));
-    oo.push_back(VMObjectStub::create(vm, "<OS::channel>"));
-    oo.push_back(Stdin::create(vm));
-    oo.push_back(Stdout::create(vm));
-    oo.push_back(Stderr::create(vm));
-    oo.push_back(OpenIn::create(vm));
-    oo.push_back(OpenOut::create(vm));
-    oo.push_back(Close::create(vm));
-    oo.push_back(Read::create(vm));
-    oo.push_back(ReadByte::create(vm));
-    oo.push_back(ReadLine::create(vm));
-    oo.push_back(ReadAll::create(vm));
-    oo.push_back(Write::create(vm));
-    oo.push_back(WriteByte::create(vm));
-    oo.push_back(WriteLine::create(vm));
-    oo.push_back(Flush::create(vm));
-    oo.push_back(Eof::create(vm));
-    oo.push_back(Flock::create(vm));
-    oo.push_back(Exit::create(vm));
-    oo.push_back(Exec::create(vm));
-    oo.push_back(GetKey::create(vm));
-
+        // oo.push_back(ChannelValue::create(vm));
+        oo.push_back(VMObjectStub::create(vm, "<OS::channel>"));
+        oo.push_back(Stdin::create(vm));
+        oo.push_back(Stdout::create(vm));
+        oo.push_back(Stderr::create(vm));
+        oo.push_back(OpenIn::create(vm));
+        oo.push_back(OpenOut::create(vm));
+        oo.push_back(Close::create(vm));
+        oo.push_back(Read::create(vm));
+        oo.push_back(ReadByte::create(vm));
+        oo.push_back(ReadLine::create(vm));
+        oo.push_back(ReadAll::create(vm));
+        oo.push_back(Write::create(vm));
+        oo.push_back(WriteByte::create(vm));
+        oo.push_back(WriteLine::create(vm));
+        oo.push_back(Flush::create(vm));
+        oo.push_back(Eof::create(vm));
+        oo.push_back(Flock::create(vm));
+        oo.push_back(Exit::create(vm));
+        oo.push_back(Exec::create(vm));
+        oo.push_back(GetKey::create(vm));
 
         return oo;
     }
 };
 
-}
-
+}  // namespace egel
