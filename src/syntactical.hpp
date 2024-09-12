@@ -72,12 +72,21 @@ public:
         } else if (look(0).tag() == TOKEN_FLOAT &&
                    look(1).text().trim() == "-" &&
                    look(2).tag() == TOKEN_IMAGINARY) {
-            auto a = AstExprComplex::create(
-                position(), look(0).text() + "-" + look(2).text());
-            skip();
-            skip();
-            skip();
-            return a;
+            if (look(2).text().startsWith("-")) {
+                auto a = AstExprComplex::create(
+                    position(), look(0).text() + "+" + look(2).text().remove(0,1));
+                skip();
+                skip();
+                skip();
+                return a;
+            } else {
+                auto a = AstExprComplex::create(
+                    position(), look(0).text() + "-" + look(2).text());
+                skip();
+                skip();
+                skip();
+                return a;
+            }
         } else if (look(0).tag() == TOKEN_FLOAT &&
                    look(1).tag() == TOKEN_IMAGINARY) {
             auto a = AstExprComplex::create(position(),
