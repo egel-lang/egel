@@ -6,6 +6,11 @@ import "prelude.eg"
 
 using System
 
+# `self` is applying a function to itself, this usually fails
+# the occurs check in a functional language
+
+def self = [F -> F F]
+
 # `ones` is a coalgebraic/lazy infinite list of ones.
 #
 # In Egel, that is achieved by deferring the evaluation of a term,
