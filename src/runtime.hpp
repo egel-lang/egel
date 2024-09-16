@@ -1852,7 +1852,7 @@ public:
         std::cerr << "symbol = " << symbol() << std::endl;
         std::cerr << "string = " << machine()->get_combinator_string(symbol())
                   << std::endl;
-        PANIC("reduce on stub");
+        PANIC("reduce on stub (undeclared combinator)");
         return nullptr;
     }
 };

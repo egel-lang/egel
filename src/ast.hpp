@@ -1176,49 +1176,95 @@ private:
 
 class AstExprLambda : public Ast {
 public:
+    AstExprLambda(const Position &p, const ptrs<Ast> &mm)
+        : Ast(AST_EXPR_LAMBDA, p), _matches(mm) {
+    }
+
     AstExprLambda(const Position &p, const ptr<Ast> &m)
-        : Ast(AST_EXPR_LAMBDA, p), _match(m) {
+        : Ast(AST_EXPR_LAMBDA, p) {
+        ptrs<Ast> mm;
+        mm.push_back(m);
+        _matches = mm;
     }
 
     AstExprLambda(const AstExprLambda &c)
-        : AstExprLambda(c.position(), c.match()) {
+        : AstExprLambda(c.position(), c.matches()) {
     }
 
     static ptr<Ast> create(const Position &p, const ptr<Ast> &m) {
         return std::make_shared<AstExprLambda>(p, m);
     }
 
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &mm) {
+        return std::make_shared<AstExprLambda>(p, mm);
+    }
+
     static std::shared_ptr<AstExprLambda> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstExprLambda>(a);
     }
 
-    static std::tuple<Position, std::shared_ptr<Ast>> split(const ptr<Ast> &a) {
+    static std::tuple<Position, std::vector<std::shared_ptr<Ast>>> split(
+        const ptr<Ast> &a) {
         auto a0 = AstExprLambda::cast(a);
         auto p = a0->position();
-        auto m = a0->match();
-        return {p, m};
+        auto mm = a0->matches();
+        return {p, mm};
     }
 
-    ptr<Ast> match() const {
-        return _match;
+    ptrs<Ast> matches() const {
+        return _matches;
+    }
+
+    text_index_t arity() const {
+        if ((_matches.size() > 0) && (_matches[0]->tag() == AST_EXPR_MATCH)) {
+            auto m0 = AstExprMatch::cast(_matches[0]);
+            return m0->arity();
+        } else {
+            return 0;
+        }
     }
 
     text_index_t approximate_length(text_index_t indent) const {
         text_index_t l = indent;
         l += 1;
-        l = match()->approximate_length(l);
+        if (l >= line_length) return l;
+        for (auto m : matches()) {
+            l = m->approximate_length(l);
+            l += 2;
+            if (l >= line_length) return l;
+        }
         return l;
     }
 
     void render(std::ostream &os, text_index_t indent) const {
-        // XXX
-        os << "\\";
-        match()->render(os, indent + 1);
-        os << " ";
+        if (approximate_length(indent) <= line_length) {
+            os << "\\";
+            bool first = true;
+            for (auto &m : matches()) {
+                if (first) {
+                    first = false;
+                } else {
+                    os << " | ";
+                }
+                m->render(os, indent);
+            }
+        } else {
+            os << "\\";
+            bool first = true;
+            for (auto &m : matches()) {
+                if (first) {
+                    first = false;
+                } else {
+                    skip_line(os, indent);
+                    os << "| ";
+                }
+                m->render(os, indent + 4);
+            }
+        }
     }
 
 private:
-    ptr<Ast> _match;
+    ptrs<Ast> _matches;
 };
 
 class AstExprLet : public Ast {
@@ -2333,15 +2379,15 @@ int Ast::compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1) {
             return compare_asts(aa0, aa1);
             break;
         }
-        case AST_EXPR_LAMBDA: {
-            auto [p0, m0] = AstExprLambda::split(a0);
-            auto [p1, m1] = AstExprLambda::split(a1);
-            return Ast::compare(m0, m1);
-            break;
-        }
         case AST_EXPR_BLOCK: {
             auto [p0, mm0] = AstExprBlock::split(a0);
             auto [p1, mm1] = AstExprBlock::split(a1);
+            return compare_asts(mm0, mm1);
+            break;
+        }
+        case AST_EXPR_LAMBDA: {
+            auto [p0, mm0] = AstExprLambda::split(a0);
+            auto [p1, mm1] = AstExprLambda::split(a1);
             return compare_asts(mm0, mm1);
             break;
         }

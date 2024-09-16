@@ -465,9 +465,13 @@ public:
     ptr<Ast> parse_lambda() {
         Position p = position();
         auto mm = ptrs<Ast>();
-        force_token(TOKEN_LAMBDA);
-        auto m = parse_match();
-        return AstExprLambda::create(p, m);
+        check_token(TOKEN_LAMBDA);
+        do {
+            skip();
+            ptr<Ast> m = parse_match();
+            mm.push_back(m);
+        } while (tag() == TOKEN_BAR);
+        return AstExprLambda::create(p, mm);
     }
 
     ptr<Ast> parse_enclosed() {

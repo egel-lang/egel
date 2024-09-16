@@ -115,12 +115,6 @@ public:
         return AstExprApplication::create(p, tt0);
     }
 
-    virtual ptr<Ast> transform_expr_lambda(const ptr<Ast> &a, const Position &p,
-                                           const ptr<Ast> &m) {
-        auto m0 = transform(m);
-        return AstExprLambda::create(p, m0);
-    }
-
     virtual ptr<Ast> transform_expr_match(const ptr<Ast> &a, const Position &p,
                                           const ptrs<Ast> &mm,
                                           const ptr<Ast> &g,
@@ -135,6 +129,12 @@ public:
                                           const ptrs<Ast> &alts) {
         auto alts0 = transforms(alts);
         return AstExprBlock::create(p, alts0);
+    }
+
+    virtual ptr<Ast> transform_expr_lambda(const ptr<Ast> &a, const Position &p,
+                                          const ptrs<Ast> &alts) {
+        auto alts0 = transforms(alts);
+        return AstExprLambda::create(p, alts0);
     }
 
     virtual ptr<Ast> transform_expr_let(const ptr<Ast> &a, const Position &p,
@@ -338,14 +338,14 @@ public:
                 return transform_expr_application(a, p, ee);
                 break;
             }
-            case AST_EXPR_LAMBDA: {
-                auto [p, m] = AstExprLambda::split(a);
-                return transform_expr_lambda(a, p, m);
-                break;
-            }
             case AST_EXPR_BLOCK: {
                 auto [p, mm] = AstExprBlock::split(a);
                 return transform_expr_block(a, p, mm);
+                break;
+            }
+            case AST_EXPR_LAMBDA: {
+                auto [p, mm] = AstExprLambda::split(a);
+                return transform_expr_lambda(a, p, mm);
                 break;
             }
             case AST_EXPR_MATCH: {
@@ -537,11 +537,6 @@ public:
         return AstExprApplication::create(p, aa0);
     }
 
-    virtual ptr<Ast> rewrite_expr_lambda(const Position &p, const ptr<Ast> &m) {
-        auto m0 = rewrite(m);
-        return AstExprLambda::create(p, m0);
-    }
-
     virtual ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
                                         const ptr<Ast> &g, const ptr<Ast> &e) {
         auto mm0 = rewrites(mm);
@@ -554,6 +549,12 @@ public:
                                         const ptrs<Ast> &alts) {
         auto alts0 = rewrites(alts);
         return AstExprBlock::create(p, alts0);
+    }
+
+    virtual ptr<Ast> rewrite_expr_lambda(const Position &p,
+                                        const ptrs<Ast> &alts) {
+        auto alts0 = rewrites(alts);
+        return AstExprLambda::create(p, alts0);
     }
 
     virtual ptr<Ast> rewrite_expr_let(const Position &p, const ptrs<Ast> &lhs,
@@ -743,14 +744,14 @@ public:
                 return rewrite_expr_application(p, aa);
                 break;
             }
-            case AST_EXPR_LAMBDA: {
-                auto [p, m] = AstExprLambda::split(a);
-                return rewrite_expr_lambda(p, m);
-                break;
-            }
             case AST_EXPR_BLOCK: {
                 auto [p, mm] = AstExprBlock::split(a);
                 return rewrite_expr_block(p, mm);
+                break;
+            }
+            case AST_EXPR_LAMBDA: {
+                auto [p, mm] = AstExprLambda::split(a);
+                return rewrite_expr_lambda(p, mm);
                 break;
             }
             case AST_EXPR_MATCH: {
@@ -921,10 +922,6 @@ public:
         visits(tt);
     }
 
-    virtual void visit_expr_lambda(const Position &p, const ptr<Ast> &m) {
-        visit(m);
-    }
-
     virtual void visit_expr_match(const Position &p, const ptrs<Ast> &mm,
                                   const ptr<Ast> &g, const ptr<Ast> &e) {
         visits(mm);
@@ -933,6 +930,10 @@ public:
     }
 
     virtual void visit_expr_block(const Position &p, const ptrs<Ast> &alts) {
+        visits(alts);
+    }
+
+    virtual void visit_expr_lambda(const Position &p, const ptrs<Ast> &alts) {
         visits(alts);
     }
 
@@ -1103,14 +1104,14 @@ public:
                 return visit_expr_application(p, tt);
                 break;
             }
-            case AST_EXPR_LAMBDA: {
-                auto [p, m] = AstExprLambda::split(a);
-                return visit_expr_lambda(p, m);
-                break;
-            }
             case AST_EXPR_BLOCK: {
                 auto [p, mm] = AstExprBlock::split(a);
                 return visit_expr_block(p, mm);
+                break;
+            }
+            case AST_EXPR_LAMBDA: {
+                auto [p, mm] = AstExprLambda::split(a);
+                return visit_expr_lambda(p, mm);
                 break;
             }
             case AST_EXPR_MATCH: {
