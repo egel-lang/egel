@@ -90,6 +90,18 @@ public:
         return a;
     }
 
+    virtual ptr<Ast> transform_path(const ptr<Ast> &a,
+                                               const Position &p,
+                                               const UnicodeStrings &nn) {
+        return a;
+    }
+
+    virtual ptr<Ast> transform_alias(const ptr<Ast> &a, const Position &p, const ptr<Ast> &l, const ptr<Ast> &r) {
+        auto l0 = transform(l);
+        auto r0 = transform(r);
+        return AstAlias::create(p, l0, r0);
+    }
+
     virtual ptr<Ast> transform_expr_tuple(const ptr<Ast> &a, const Position &p,
                                           const ptrs<Ast> &tt) {
         auto tt0 = transforms(tt);
@@ -321,6 +333,16 @@ public:
                 return transform_expr_operator(a, p, tt, t);
                 break;
             }
+            case AST_PATH: {
+                auto [p, tt] = AstPath::split(a);
+                return transform_path(a, p, tt);
+                break;
+            }
+            case AST_ALIAS: {
+                auto [p, l, r] = AstAlias::split(a);
+                return transform_alias(a, p, l, r);
+                break;
+            }
             // tuple
             case AST_EXPR_TUPLE: {
                 auto [p, tt] = AstExprTuple::split(a);
@@ -510,6 +532,19 @@ public:
                                            const UnicodeStrings &nn,
                                            const icu::UnicodeString &n) {
         return AstExprOperator::create(p, nn, n);
+    }
+
+    virtual ptr<Ast> rewrite_path(const Position &p,
+                                             const UnicodeStrings &nn) {
+        return AstPath::create(p, nn);
+    }
+
+    virtual ptr<Ast> rewrite_alias(const Position &p,
+                                           const ptr<Ast> &l,
+                                           const ptr<Ast> &r) {
+        auto l0 = rewrite(l);
+        auto r0 = rewrite(r);
+        return AstAlias::create(p, l, r);
     }
 
     // tuple and list
@@ -727,6 +762,16 @@ public:
                 return rewrite_expr_operator(p, nn, n);
                 break;
             }
+            case AST_PATH: {
+                auto [p, nn] = AstPath::split(a);
+                return rewrite_path(p, nn);
+                break;
+            }
+            case AST_ALIAS: {
+                auto [p, l, r] = AstAlias::split(a);
+                return rewrite_alias(p, l, r);
+                break;
+            }
             // tuple and list
             case AST_EXPR_TUPLE: {
                 auto [p, tt] = AstExprTuple::split(a);
@@ -901,6 +946,17 @@ public:
     virtual void visit_expr_operator(const Position &p,
                                      const UnicodeStrings &nn,
                                      const icu::UnicodeString &n) {
+    }
+
+    virtual void visit_path(const Position &p,
+                                       const UnicodeStrings &nn) {
+    }
+
+    virtual void visit_path(const Position &p,
+                                     const ptr<Ast> &l,
+                                     const ptr<Ast> &r) {
+        visit(l);
+        visit(r);
     }
 
     virtual void visit_expr_tuple(const Position &p, const ptrs<Ast> &tt) {
@@ -1085,6 +1141,16 @@ public:
             case AST_EXPR_OPERATOR: {
                 auto [p, nn, n] = AstExprOperator::split(a);
                 return visit_expr_operator(p, nn, n);
+                break;
+            }
+            case AST_PATH: {
+                auto [p, nn] = AstPath::split(a);
+                return visit_path(p, nn);
+                break;
+            }
+            case AST_ALIAS: {
+                auto [p, l, r] = AstExprOperator::split(a);
+                return visit_expr_operator(p, l, r);
                 break;
             }
             // tuple

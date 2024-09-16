@@ -22,6 +22,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ lambda multiple matches
 + module rework 
 + complex numbers
 + docstrings and help

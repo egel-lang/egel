@@ -39,6 +39,9 @@ enum ast_tag_t {
     AST_EXPR_WILDCARD,  // desugared
     AST_EXPR_COMBINATOR,
     AST_EXPR_OPERATOR,  // compiled out
+    // namespace and alias
+    AST_PATH,
+    AST_ALIAS,
     // special pattern
     AST_EXPR_TAG,
     // list, tuple and object
@@ -678,6 +681,134 @@ public:
 private:
     UnicodeStrings _path;
     icu::UnicodeString _combinator;
+};
+
+// path and alias
+class AstPath : public Ast {
+public:
+    AstPath(const Position &p, const UnicodeStrings &pp)
+        : Ast(AST_PATH, p), _path(pp){};
+
+    AstPath(const AstPath &c)
+        : AstPath(c.position(), c.path()) {
+    }
+
+    static ptr<Ast> create(const Position &p, const UnicodeStrings &pp) {
+        return std::make_shared<AstPath>(p, pp);
+    }
+
+    static std::shared_ptr<AstPath> cast(const ptr<Ast> &a) {
+        return std::static_pointer_cast<AstPath>(a);
+    }
+
+    static std::tuple<Position, std::vector<icu::UnicodeString>>
+    split(const ptr<Ast> &a) {
+        auto a0 = AstPath::cast(a);
+        auto p = a0->position();
+        auto cc = a0->path();
+        return {p, cc};
+    }
+
+    UnicodeStrings path() const {
+        return _path;
+    }
+
+    /*
+    icu::UnicodeString to_text() const override {
+        icu::UnicodeString str = "";  // XXX: change to some other datatype
+        for (auto &p : _path) {
+            str += p;
+            str += STRING_DCOLON;
+        }
+        str += _combinator;
+        return str;
+    }
+    */
+
+    text_index_t approximate_length(text_index_t indent) const override {
+        text_index_t l = indent;
+        for (auto &p : _path) {
+            l += p.length() + 2;
+        }
+        l += _combinator.length();
+        return l;
+    }
+
+    void render(std::ostream &os, text_index_t) const override {
+        bool first = true;
+        for (auto &n : path()) {
+            if (!first) os << STRING_DCOLON;
+            first = false;
+            os << n;
+        }
+    }
+
+    bool is_local() const {
+        return ((_path.size() > 0) && (_path.back() == STRING_LOCAL));
+    }
+
+private:
+    UnicodeStrings _path;
+    icu::UnicodeString _combinator;
+};
+
+class AstAlias : public Ast {
+public:
+    AstAlias(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1)
+        : Ast(AST_ALIAS, p), _lhs(e0), _rhs(e1) {
+    }
+
+    AstAlias(const AstAlias &a)
+        : AstAlias(a.position(), a.left_hand_side(), a.right_hand_side()) {
+    }
+
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &e0, const ptr<Ast> &e1) {
+        return std::make_shared<AstAlias>(p, e0, e1);
+    }
+
+    static std::shared_ptr<AstAlias> cast(const ptr<Ast> &a) {
+        return std::static_pointer_cast<AstAlias>(a);
+    }
+
+    static std::tuple<Position, std::shared_ptr<Ast>, std::shared_ptr<Ast>>
+    split(const ptr<Ast> &a) {
+        auto a0 = AstAlias::cast(a);
+        auto p = a0->position();
+        auto l = a0->left_hand_side();
+        auto r = a0->right_hand_side();
+        return {p, l, r};
+    }
+
+    ptr<Ast> left_hand_side() const {
+        return _lhs;
+    }
+
+    ptr<Ast> right_hand_side() const {
+        return _rhs;
+    }
+
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
+        l = left_hand_side()->approximate_length(l);
+        l = right_hand_side()->approximate_length(l);
+        l += 3;
+        return l;
+    }
+
+    void render(std::ostream &os, text_index_t indent) const {
+        if (approximate_length(indent) <= line_length) {
+            os << left_hand_side() << " = " << right_hand_side(); 
+        } else {
+            left_hand_side()->render(os, indent + 4);
+            os << " =";
+            skip_line(os, indent + 4);
+            right_hand_side()->render(os, indent + 4);
+        }
+    }
+
+private:
+    ptr<Ast> _lhs;
+    ptr<Ast> _rhs;
 };
 
 // list and tuple
