@@ -42,6 +42,7 @@ enum ast_tag_t {
     // namespace and alias
     AST_PATH,
     AST_ALIAS,
+    AST_RENAME,
     // special pattern
     AST_EXPR_TAG,
     // list, tuple and object
@@ -809,6 +810,76 @@ public:
 private:
     ptr<Ast> _lhs;
     ptr<Ast> _rhs;
+};
+
+class AstRename : public Ast {
+public:
+    AstRename(const Position &p, const ptr<Ast> &n, const ptrs<Ast> &nn)
+        : Ast(AST_RENAME, p), _name(n), _names(nn) {
+    }
+
+    AstRename(const AstRename &a)
+        : AstRename(a.position(), a.name(), a.names()) {
+    }
+
+    static ptr<Ast> create(const Position &p, const ptr<Ast> &n, const ptrs<Ast> &nn) {
+        return std::make_shared<AstRename>(p, n, nn);
+    }
+
+    static std::shared_ptr<AstRename> cast(const ptr<Ast> &a) {
+        return std::static_pointer_cast<AstRename>(a);
+    }
+
+    static std::tuple<Position, ptr<Ast>, ptrs<Ast>>
+    split(const ptr<Ast> &a) {
+        auto a0 = AstRename::cast(a);
+        auto p = a0->position();
+        auto n = a0->name();
+        auto nn = a0->names();
+        return {p, n, nn};
+    }
+
+    ptr<Ast> name() const {
+        return _name;
+    }
+
+    ptrs<Ast> names() const {
+        return _names;
+    }
+
+    text_index_t approximate_length(text_index_t indent) const {
+        text_index_t l = indent;
+        l = name()->approximate_length(l);
+        for (auto e : names()) {
+            l = e->approximate_length(l);
+            l += 2;
+            if (l >= line_length) return l;
+        }
+        return l;
+    }
+
+    void render(std::ostream &os, text_index_t indent) const {
+        if (names().size() == 0) {
+            os << name(); 
+        } else {
+            os << name(); 
+            os << " ("; 
+            bool first = true;
+            for (auto e : names()) {
+                if (first) {
+                    first = false;
+                } else {
+                    os << ", ";
+                }
+                os << e;
+            }
+            os << ")"; 
+        }
+    }
+
+private:
+    ptr<Ast> _name;
+    ptrs<Ast> _names;
 };
 
 // list and tuple

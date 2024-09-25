@@ -102,6 +102,12 @@ public:
         return AstAlias::create(p, l0, r0);
     }
 
+    virtual ptr<Ast> transform_rename(const ptr<Ast> &a, const Position &p, const ptr<Ast> &n, const ptrs<Ast> &nn) {
+        auto n0 = transform(n);
+        auto nn0 = transforms(nn);
+        return AstRename::create(p, n0, nn0);
+    }
+
     virtual ptr<Ast> transform_expr_tuple(const ptr<Ast> &a, const Position &p,
                                           const ptrs<Ast> &tt) {
         auto tt0 = transforms(tt);
@@ -343,6 +349,11 @@ public:
                 return transform_alias(a, p, l, r);
                 break;
             }
+            case AST_RENAME: {
+                auto [p, n, nn] = AstRename::split(a);
+                return transform_rename(a, p, n, nn);
+                break;
+            }
             // tuple
             case AST_EXPR_TUPLE: {
                 auto [p, tt] = AstExprTuple::split(a);
@@ -545,6 +556,14 @@ public:
         auto l0 = rewrite(l);
         auto r0 = rewrite(r);
         return AstAlias::create(p, l, r);
+    }
+
+    virtual ptr<Ast> rewrite_rename(const Position &p,
+                                           const ptr<Ast> &n,
+                                           const ptrs<Ast> &nn) {
+        auto n0 = rewrite(n);
+        auto nn0 = rewrites(nn);
+        return AstRename::create(p, n0, nn0);
     }
 
     // tuple and list
@@ -772,6 +791,11 @@ public:
                 return rewrite_alias(p, l, r);
                 break;
             }
+            case AST_RENAME: {
+                auto [p, n, nn] = AstRename::split(a);
+                return rewrite_rename(p, n, nn);
+                break;
+            }
             // tuple and list
             case AST_EXPR_TUPLE: {
                 auto [p, tt] = AstExprTuple::split(a);
@@ -952,11 +976,18 @@ public:
                                        const UnicodeStrings &nn) {
     }
 
-    virtual void visit_path(const Position &p,
+    virtual void visit_alias(const Position &p,
                                      const ptr<Ast> &l,
                                      const ptr<Ast> &r) {
         visit(l);
         visit(r);
+    }
+
+    virtual void visit_rename(const Position &p,
+                                     const ptr<Ast> &n,
+                                     const ptrs<Ast> &nn) {
+        visit(n);
+        visits(nn);
     }
 
     virtual void visit_expr_tuple(const Position &p, const ptrs<Ast> &tt) {
@@ -1149,8 +1180,13 @@ public:
                 break;
             }
             case AST_ALIAS: {
-                auto [p, l, r] = AstExprOperator::split(a);
-                return visit_expr_operator(p, l, r);
+                auto [p, l, r] = AstAlias::split(a);
+                return visit_alias(p, l, r);
+                break;
+            }
+            case AST_RENAME: {
+                auto [p, n, nn] = AstRename::split(a);
+                return visit_rename(p, n, nn);
                 break;
             }
             // tuple

@@ -9,6 +9,10 @@ using System
 # `self` is applying a function to itself, this usually fails
 # the occurs check in a functional language
 
+# self-application is interesting since it's at the heart of
+# Turing's halting argument, i.e., self halt = [F->F F] halt 
+# = halt halt doesn't have an implementation.
+
 def self = [F -> F F]
 
 # `ones` is a coalgebraic/lazy infinite list of ones.
