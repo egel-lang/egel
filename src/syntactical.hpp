@@ -870,11 +870,85 @@ public:
         }
     }
 
+    ptr<Ast> parse_path() {
+        Position p = position();
+        std::vector<icu::UnicodeString> nn;
+        check_token(TOKEN_UPPERCASE);
+        icu::UnicodeString n = look().text();
+        nn.push_back(n);
+        skip();
+        while (tag() == TOKEN_DCOLON) {
+            skip();
+            check_token(TOKEN_UPPERCASE);
+            icu::UnicodeString n = look().text();
+            nn.push_back(n);
+            skip();
+        }
+        return AstPath::create(p, nn);
+    }
+
+    ptr<Ast> parse_rename_head() {
+        Position p = position();
+        auto p0 = parse_path();
+        if (tag() == TOKEN_EQ) {
+            skip();
+            auto p1 = parse_path();
+            p0 = AstAlias::create(p, p0, p1);
+        }
+        return p0;
+    }
+
+    ptr<Ast> parse_rename_arg() {
+        Position p = position();
+        auto c = parse_combinator();
+        if (tag() == TOKEN_EQ) {
+            skip();
+            auto c1 = parse_combinator();
+            return AstAlias::create(p, c, c1);
+        } else {
+            return c;
+        }
+    }
+
+    ptrs<Ast> parse_rename_args() {
+        ptrs<Ast> cc;
+        force_token(TOKEN_LPAREN);
+        Position p = position();
+        auto c = parse_rename_arg();
+        cc.push_back(c);
+        while (tag() == TOKEN_COMMA) {
+            skip();
+            auto c = parse_rename_arg();
+            cc.push_back(c);
+        }
+        force_token(TOKEN_RPAREN);
+        return cc;
+    }
+
+    ptr<Ast> parse_rename() {
+        Position p = position();
+        auto h = parse_rename_head();
+        if (tag() == TOKEN_LPAREN) {
+            auto hh = parse_rename_args();
+            return AstRename::create(p, h, hh);
+        } else {
+            ptrs<Ast> hh;
+            return AstRename::create(p, h, hh);
+        }
+    }
+
     ptr<Ast> parse_using() {
         Position p = position();
         force_token(TOKEN_USING);
-        UnicodeStrings n = parse_namespace();
-        return AstDirectUsing::create(p, n);
+        auto nn = ptrs<Ast>();
+        auto n = parse_rename();
+        nn.push_back(n);
+        while (tag() == TOKEN_COMMA) {
+            skip();
+            auto n = parse_rename();
+            nn.push_back(n);
+        }
+        return AstDirectUsing::create(p, nn);
     }
 
     ptr<Ast> parse_import() {

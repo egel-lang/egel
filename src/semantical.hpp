@@ -222,8 +222,8 @@ public:
         _range = egel::leave_range(_range);
     }
 
-    void add_using(const UnicodeStrings &nn) {
-        egel::add_using(_range, nn);
+    void add_namespace(const UnicodeStrings &nn) {
+        egel::add_namespace(_range, nn);
     }
 
     // namespaces
@@ -338,11 +338,45 @@ public:
         return AstExprTag::create(p, e0, t0);
     }
 
+    ptr<Ast> rewrite_rename(const Position &p,
+                                     const ptr<Ast>& n,
+                                     const ptrs<Ast> &nn) override {
+        // add an alias for the namespace when not present
+        auto n0 = n;
+        if (n0->tag() != AST_ALIAS) {
+            auto p = n0->position();
+            n0 = AstAlias::create(p, AstPath::create(p, UnicodeStrings()), n);
+        }
+        // add combinators when not present
+        auto nn0 = nn;
+        if (nn0.size() == 0) {
+            auto uu = AstPath::cast(AstAlias::cast(n0)->right_hand_side())->path();
+            auto dd = egel::get_namespace(_range, uu);
+            for (const auto &d: dd) {
+                nn0.push_back(AstExprCombinator::create(p, UnicodeStrings(), d));
+            }
+        }
+        // add aliases for combinators when not present
+        ptrs<Ast> nn1;
+        for (const auto &n:nn0) {
+            if (n->tag() != AST_ALIAS) {
+                auto p = n->position();
+                nn1.push_back(AstAlias::create(p, n, n));
+            } else {
+                nn1.push_back(n);
+            }
+        }
+        std::cerr << "XXX: " << AstRename::create(p,n0,nn1) << std::endl;
+        return AstRename::create(p, n0, nn1);
+    }
+
+    /*
     ptr<Ast> rewrite_directive_using(const Position &p,
-                                     const UnicodeStrings &nn) override {
-        add_using(nn);
+                                     const ptrs<Ast> &nn) override {
+        //add_namespace(nn);
         return AstDirectUsing::create(p, nn);
     }
+    */
 
     ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d,
                                const ptrs<Ast> &ee) override {
@@ -408,7 +442,7 @@ public:
         auto nn1 = concat(nn0, nn);
         set_namespace(nn1);
         enter_range();
-        add_using(nn1);
+        add_namespace(nn1);
         auto dd0 = rewrites(dd);
         leave_range();
         set_namespace(nn0);

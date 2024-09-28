@@ -2321,23 +2321,23 @@ private:
 
 class AstDirectUsing : public Ast {
 public:
-    AstDirectUsing(const Position &p, const UnicodeStrings &v)
-        : Ast(AST_DIRECT_USING, p), _using(v) {
+    AstDirectUsing(const Position &p, const ptrs<Ast> &nn)
+        : Ast(AST_DIRECT_USING, p), _using(nn) {
     }
 
     AstDirectUsing(const AstDirectUsing &c)
         : AstDirectUsing(c.position(), c.using0()) {
     }
 
-    static ptr<Ast> create(const Position &p, const UnicodeStrings &v) {
-        return std::make_shared<AstDirectUsing>(p, v);
+    static ptr<Ast> create(const Position &p, const ptrs<Ast> &nn) {
+        return std::make_shared<AstDirectUsing>(p, nn);
     }
 
     static std::shared_ptr<AstDirectUsing> cast(const ptr<Ast> &a) {
         return std::static_pointer_cast<AstDirectUsing>(a);
     }
 
-    static std::tuple<Position, std::vector<icu::UnicodeString>> split(
+    static std::tuple<Position, ptrs<Ast>> split(
         const ptr<Ast> &a) {
         auto a0 = AstDirectUsing::cast(a);
         auto p = a0->position();
@@ -2345,14 +2345,14 @@ public:
         return {p, uu};
     }
 
-    UnicodeStrings using0() const {
+    ptrs<Ast> using0() const {
         return _using;
     }
 
     text_index_t approximate_length(text_index_t indent) const {
         text_index_t l = indent;
         for (auto &u : using0()) {
-            l += u.length() + 1;
+            l += u->approximate_length(l + 2);
         }
         return l;
     }
@@ -2362,7 +2362,7 @@ public:
         os << "using ";
         bool first = true;
         for (auto &u : using0()) {
-            if (!first) os << STRING_DCOLON;
+            if (!first) os << ", ";
             first = false;
             os << u;
         }
@@ -2370,7 +2370,7 @@ public:
     }
 
 private:
-    UnicodeStrings _using;
+    ptrs<Ast> _using;
 };
 
 class AstWrapper : public Ast {
@@ -2653,9 +2653,9 @@ int Ast::compare_tag(ast_tag_t t, const ptr<Ast> &a0, const ptr<Ast> &a1) {
             break;
         }
         case AST_DIRECT_USING: {
-            auto [p0, pp0] = AstDirectUsing::split(a0);
-            auto [p1, pp1] = AstDirectUsing::split(a1);
-            return compare_texts(pp0, pp1);
+            auto [p0, uu0] = AstDirectUsing::split(a0);
+            auto [p1, uu1] = AstDirectUsing::split(a1);
+            return compare_asts(uu0, uu1);
             break;
         }
         // declarations

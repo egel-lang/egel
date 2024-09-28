@@ -8,28 +8,31 @@
 
 namespace egel {
 
-using Table = std::map<icu::UnicodeString, icu::UnicodeString>;
 
 class Scope;
 using ScopePtr = std::shared_ptr<Scope>;
 
 class Scope {
 public:
+    std::map<icu::UnicodeString, icu::UnicodeString> map() {
+        return _map;
+    }
+
     void declare(const icu::UnicodeString &k, const icu::UnicodeString &v) {
-        if (_symbols.count(k) > 0) {
+        if (_map.count(k) > 0) {
             throw ErrorSemantical("redeclaration of " + k);
         } else {
-            _symbols[k] = v;
+            _map[k] = v;
         }
     }
 
     void declare_implicit(const icu::UnicodeString &k,
                           const icu::UnicodeString &v) {
-        _symbols[k] = v;
+        _map[k] = v;
     }
 
     icu::UnicodeString get(const icu::UnicodeString &k) const {
-        if (_symbols.count(k) > 0) return _symbols.at(k);
+        if (_map.count(k) > 0) return _map.at(k);
         return "";
     }
 
@@ -49,12 +52,11 @@ public:
     }
 
 protected:
-    Table _symbols;
+    std::map<icu::UnicodeString, icu::UnicodeString> _map;
 };
 
 class Namespace;
 using NamespacePtr = std::shared_ptr<Namespace>;
-using NamespaceMap = std::map<icu::UnicodeString, NamespacePtr>;
 
 class Namespace : public Scope {
 public:
@@ -90,7 +92,7 @@ public:
     }
 
     void render(std::ostream &os, int indent) const override {
-        for (auto const &sym : _symbols) {
+        for (auto const &sym : _map) {
             skip(os, indent);
             os << sym.first << " -> " << sym.second << std::endl;
         }
@@ -110,7 +112,7 @@ public:
     }
 
 private:
-    NamespaceMap _embeds;
+    std::map<icu::UnicodeString, NamespacePtr> _embeds;
 };
 
 class Range;
@@ -138,7 +140,7 @@ public:
     }
 
     void render(std::ostream &os, int indent) const override {
-        for (auto const &sym : _symbols) {
+        for (auto const &sym : _map) {
             skip(os, indent);
             os << sym.first << " : " << sym.second << std::endl;
         }
@@ -253,18 +255,34 @@ inline icu::UnicodeString get(const RangePtr &r, const UnicodeStrings &nn,
     return get(r->embeds(), nn, n);
 }
 
-inline void add_using(RangePtr &r, const UnicodeStrings &nn) {
+inline void add_namespace(RangePtr &r, const UnicodeStrings &nn) {
     // find root
     auto p = r;
     if (p == nullptr) return;
     while (p->embeds() != nullptr) p = p->embeds();
     // take global namespace
-    auto globals = p->uses()[0];  // XXX: needs an assertion
+    if (p->uses().size() == 0) return;
+    auto globals = p->uses()[0];
     // find namespace
     auto n = find_namespace(globals, nn);
     if (n == nullptr) return;
     // insert namespace
     r->add_namespace(n);
+}
+
+inline std::vector<icu::UnicodeString> get_namespace(RangePtr &r, const UnicodeStrings &nn) {
+    std::vector<icu::UnicodeString> dd;
+    auto p = r;
+    if (p == nullptr) return dd;
+    while (p->embeds() != nullptr) p = p->embeds();
+    if (p->uses().size() == 0) return dd;
+    auto globals = p->uses()[0];
+    auto n = find_namespace(globals, nn);
+    if (n == nullptr) return dd;
+    for (const auto& pair : n->map()) {
+        dd.push_back(pair.first);
+    }
+    return dd;
 }
 
 }  // namespace egel

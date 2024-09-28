@@ -217,8 +217,9 @@ public:
 
     virtual ptr<Ast> transform_directive_using(const ptr<Ast> &a,
                                                const Position &p,
-                                               const UnicodeStrings &uu) {
-        return a;
+                                               const ptrs<Ast> &uu) {
+        auto uu0 = transforms(uu);
+        return AstDirectUsing::create(p, uu0);
     }
 
     virtual ptr<Ast> transform_decl_data(const ptr<Ast> &a, const Position &p,
@@ -666,8 +667,9 @@ public:
     }
 
     virtual ptr<Ast> rewrite_directive_using(const Position &p,
-                                             const UnicodeStrings &nn) {
-        return AstDirectUsing::create(p, nn);
+                                             const ptrs<Ast> &nn) {
+        auto nn0 = rewrites(nn);
+        return AstDirectUsing::create(p, nn0);
     }
 
     virtual ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d,
@@ -870,8 +872,8 @@ public:
                 break;
             }
             case AST_DIRECT_USING: {
-                auto [p, i] = AstDirectUsing::split(a);
-                return rewrite_directive_using(p, i);
+                auto [p, uu] = AstDirectUsing::split(a);
+                return rewrite_directive_using(p, uu);
                 break;
             }
             // declarations
@@ -1069,7 +1071,8 @@ public:
     }
 
     virtual void visit_directive_using(const Position &p,
-                                       const UnicodeStrings &nn) {
+                                       const ptrs<Ast> &nn) {
+        visits(nn);
     }
 
     virtual void visit_decl_data(const Position &p, const ptr<Ast> &d,
