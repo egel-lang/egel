@@ -898,12 +898,23 @@ public:
         return p0;
     }
 
+    ptr<Ast> parse_rename_combinator() {
+        if (is_combinator()) {
+            return parse_combinator();
+        } else if (is_operator()) {
+            return parse_operator();
+        } else {
+            auto p = position();
+            throw ErrorSyntactical(p, "directive expected");
+        }
+    }
+
     ptr<Ast> parse_rename_arg() {
         Position p = position();
-        auto c = parse_combinator();
+        auto c = parse_rename_combinator();
         if (tag() == TOKEN_EQ) {
             skip();
-            auto c1 = parse_combinator();
+            auto c1 = parse_rename_combinator();
             return AstAlias::create(p, c, c1);
         } else {
             return c;
