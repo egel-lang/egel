@@ -144,7 +144,7 @@ public:
     icu::UnicodeString get(const Position &p, const icu::UnicodeString &k) {
         icu::UnicodeString tmp = egel::get_local(_scope, k);
         if (tmp == "") {
-            _scope->render(std::cout, 0);
+            //_scope->render(std::cout, 0);
             throw ErrorSemantical(p, "undeclared " + k);
         } else {
             return tmp;
