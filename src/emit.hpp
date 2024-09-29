@@ -53,6 +53,10 @@ public:
     void visit_decl_operator(const Position &p, const ptr<Ast> &c,
                              const ptr<Ast> &d, const ptr<Ast> &e) override {
     }
+    
+    // cut
+    void visit_directive_using(const Position &p, const ptrs<Ast> &nn) override {
+    }
 
 private:
     VM *_machine;

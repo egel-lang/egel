@@ -10,11 +10,6 @@
 
 namespace egel {
 
-    /*
-inline void declare(ScopePtr scope, const ptr<Ast> &a);
-inline ptr<Ast> identify(ScopePtr scope, const ptr<Ast> &a);
-*/
-
 class VisitDeclare : public Visit {
 public:
     VisitDeclare() {
@@ -77,6 +72,9 @@ public:
         set_path(nn1);
         visits(dd);
         set_path(nn0);
+    }
+
+    void visit_directive_using(const Position &p, const ptrs<Ast> &nn) override {
     }
 
 private:
@@ -330,14 +328,6 @@ public:
         //egel::debug_scope(_scope);
         return AstRename::create(p, n0, nn1);
     }
-
-    /*
-    ptr<Ast> rewrite_directive_using(const Position &p,
-                                     const ptrs<Ast> &nn) override {
-        //add_namespace(nn);
-        return AstDirectUsing::create(p, nn);
-    }
-    */
 
     ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d,
                                const ptrs<Ast> &ee) override {
