@@ -320,7 +320,7 @@ public:
             auto a1 = AstAlias::cast(a)->right_hand_side()->to_text();
             auto s0 = VM::qualified(uu0, a0);
             auto s1 = VM::qualified(uu1, a1);
-            std::cerr << "declare: " << s0 << " -> " << s1 << std::endl;
+            //std::cerr << "declare: " << s0 << " -> " << s1 << std::endl;
             try {
                 egel::declare_local(_scope, s0, s1);
             } catch (ErrorSemantical &e) {
