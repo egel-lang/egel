@@ -100,16 +100,16 @@ namespace System (
     #@"System::$ - a very mysterious operator"
     #def $ = [F X -> F X]
 
-    def abs = 
-        @"System::abs x - absolute"
+    def abs0 = 
+        @"System::abs0 x - generic absolute"
         [X -> if X < 0 then 0 - X else X ]
 
-    def min = 
-        @"System::min x y - minimum"
+    def min0 = 
+        @"System::min0 x y - generic minimum"
         [X Y -> if X < Y then X else Y ]
 
-    def max = 
-        @"System::max x y - maximum"
+    def max0 = 
+        @"System::max0 x y - generic maximum"
         [X Y -> if X < Y then Y else X ]
 
     def ** = 
@@ -429,11 +429,11 @@ namespace List (
 
     def maximum = 
         @"List::maximum l - maximum of list"
-        foldl System::max min_int 
+        foldl [X Y -> if X < Y then Y else X] min_int 
 
     def minimum = 
         @"List::minimum l - minimum of list"
-        foldl System::min max_int 
+        foldl [X Y -> if X < Y then X else Y] max_int 
 
     def range =
         @"List::range l f - iterate over elements (reverse map"
@@ -450,7 +450,6 @@ namespace List (
 )
 
 namespace System (
-    using System
     using List
 
     def args = 
@@ -477,7 +476,7 @@ namespace String (
 )
 
 namespace Math (
-    using System
+    using System 
 
     def lift_unary =
         @"Math::lift_unary f - lift a unary function on floats to ints"
@@ -493,7 +492,6 @@ namespace Math (
 )
 
 namespace System (
-    using System
     using List
 
     def help_exact_matches =

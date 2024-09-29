@@ -233,16 +233,14 @@ public:
         auto w = AstWrapper::create(p, dd);
 
         // bypass standard semantical analysis and declare this def in the
-        // context. that manner, definitions may be overridded in interactive
+        // context. that manner, definitions may be overridden in interactive
         // mode.
         if (d->tag() ==
             AST_DECL_DEFINITION) {  // start off by (re-)declaring the def
             auto [p0, c0, d0, e0] = AstDeclDefinition::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
-                auto c1 = AstExprCombinator::cast(c0);
-                egel::declare_implicit(mm->get_environment(), nn0, n0,
-                                       c1->to_text());
+                egel::redeclare_global(mm->get_environment(), VM::qualified(nn0, n0));
             }
         }
         if (d->tag() ==
@@ -251,9 +249,7 @@ public:
             auto [p0, c0, d0, e0] = AstDeclOperator::split(d);
             if (c0->tag() == AST_EXPR_COMBINATOR) {
                 auto [p, nn0, n0] = AstExprCombinator::split(c0);
-                auto c1 = AstExprCombinator::cast(c0);
-                egel::declare_implicit(mm->get_environment(), nn0, n0,
-                                       c1->to_text());
+                egel::redeclare_global(mm->get_environment(), VM::qualified(nn0, n0));
             }
         }
         w = egel::identify(mm->get_environment(), w);
@@ -283,9 +279,7 @@ public:
             for (auto &e : nn) {
                 if (e->tag() == AST_EXPR_COMBINATOR) {
                     auto [p, nn0, n0] = AstExprCombinator::split(e);
-                    auto e1 = AstExprCombinator::cast(e);
-                    egel::declare_implicit(mm->get_environment(), nn0, n0,
-                                           e1->to_text());
+                    egel::redeclare_global(mm->get_environment(), VM::qualified(nn0, n0));
                 }
             }
         }

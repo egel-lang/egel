@@ -146,9 +146,9 @@ public:
     // pretend every module is equivalent to an Egel source file.
     virtual void syntactical() {};
 
-    virtual void declarations(NamespacePtr &env) {};
+    virtual void declarations(ScopePtr &env) {};
 
-    virtual void semantical(NamespacePtr &env) {};
+    virtual void semantical(ScopePtr &env) {};
 
     virtual void desugar() {};
 
@@ -307,7 +307,7 @@ public:
         return _exports;
     }
 
-    void declarations(NamespacePtr &env) override {
+    void declarations(ScopePtr &env) override {
         for (auto &o : _exports) {
             if (machine()->is_combinator(o)) {
                 auto sym = VMObjectCombinator::symbol(o);
@@ -316,7 +316,7 @@ public:
                 UnicodeStrings nn;
                 nn.push_back(first(s));
                 auto n = second(s);
-                egel::declare(env, nn, n, s);
+                egel::declare_global(env, VM::qualified(nn, n));
             }
         }
     }
@@ -426,7 +426,7 @@ public:
         return _exports;
     }
 
-    void declarations(NamespacePtr &env) override {
+    void declarations(ScopePtr &env) override {
         for (auto &o : _exports) {
             if (machine()->is_combinator(o)) {
                 auto sym = VMObjectCombinator::symbol(o);
@@ -435,7 +435,7 @@ public:
                 UnicodeStrings nn;
                 nn.push_back(first(s));
                 auto n = second(s);
-                egel::declare(env, nn, n, s);
+                egel::declare_global(env, VM::qualified(nn, n));
             }
         }
     }
@@ -548,11 +548,11 @@ public:
         _ast = a;
     }
 
-    void declarations(NamespacePtr &env) override {
+    void declarations(ScopePtr &env) override {
         declare(env, _ast);
     }
 
-    void semantical(NamespacePtr &env) override {
+    void semantical(ScopePtr &env) override {
         _ast = egel::identify(env, _ast);
 
         if (get_options()->only_semantical()) {
@@ -703,11 +703,11 @@ public:
         _ast = a;
     }
 
-    void declarations(NamespacePtr &env) override {
+    void declarations(ScopePtr &env) override {
         declare(env, _ast);
     }
 
-    void semantical(NamespacePtr &env) override {
+    void semantical(ScopePtr &env) override {
         _ast = egel::identify(env, _ast);
 
         if (get_options()->only_semantical()) {
@@ -800,10 +800,9 @@ public:
     }
 
     void init(const OptionsPtr &oo, VM *vm) {
-        NamespacePtr env = Namespace::create();
         set_options(oo);
         set_machine(vm);
-        set_environment(env);
+        set_environment(scope_global());
         load_cmodule(std::make_shared<TimeModule>());
         load_cmodule(std::make_shared<SystemModule>());
         load_cmodule(std::make_shared<MathModule>());
@@ -835,11 +834,11 @@ public:
         return _machine;
     }
 
-    void set_environment(const NamespacePtr &env) {
+    void set_environment(const ScopePtr &env) {
         _environment = env;
     }
 
-    NamespacePtr get_environment() const {
+    ScopePtr get_environment() const {
         return _environment;
     }
 
@@ -998,7 +997,7 @@ protected:
 private:
     OptionsPtr _options;
     VM *_machine;
-    NamespacePtr _environment;
+    ScopePtr _environment;
     ModulePtrs _modules;
     ModulePtrs _loading;
 };

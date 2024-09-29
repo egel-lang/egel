@@ -165,7 +165,8 @@ public:
     //  F( (\v0, .., vn -> e) ) -> ( [ v0, .., vn ->  F(e) ] )
     ptr<Ast> rewrite_expr_lambda(const Position &p,
                                  const ptrs<Ast> &mm) override {
-        return AstExprBlock::create(p, mm);
+        auto mm0 = rewrites(mm);
+        return AstExprBlock::create(p, mm0);
     }
 };
 

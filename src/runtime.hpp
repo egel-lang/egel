@@ -958,6 +958,41 @@ public:
         delete[] buffer;
         ;
     }
+
+    static UnicodeStrings concat(const UnicodeStrings &qq0, const UnicodeStrings &qq1) {
+        UnicodeStrings qq;
+        for (auto &q : qq0) {
+            qq.push_back(q);
+        }
+        for (auto &q : qq1) {
+            qq.push_back(q);
+        }
+        return qq;
+    }
+
+    static icu::UnicodeString path(const UnicodeStrings &nn) {
+        icu::UnicodeString s;
+        bool first = true;
+        for (auto &n : nn) {
+            if (first) {
+                first = false;
+                s = n;
+            } else {
+                s += "::" + n;
+            }
+        }
+        return s;
+    }
+
+    static icu::UnicodeString qualified(const UnicodeStrings &nn,
+                                 const icu::UnicodeString n) {
+        auto s = path(nn);
+        if (s == "") {
+            return n;
+        } else {
+            return s + "::" + n;
+        }
+    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

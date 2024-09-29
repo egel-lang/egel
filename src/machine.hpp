@@ -274,7 +274,7 @@ public:
 
     // initialize
     void initialize(OptionsPtr oo) override {
-        NamespacePtr env = Namespace::create();
+        ScopePtr env = scope_global();
 
         _options = oo;
         _manager = ModuleManager::create();

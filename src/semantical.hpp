@@ -10,102 +10,49 @@
 
 namespace egel {
 
-inline void declare(NamespacePtr env, const ptr<Ast> &a);
-inline ptr<Ast> identify(NamespacePtr env, const ptr<Ast> &a);
-
-// XXX this is a concat we use pretty often and should be moved to a template?
-UnicodeStrings concat(const UnicodeStrings &qq0, const UnicodeStrings &qq1) {
-    UnicodeStrings qq;
-    for (auto &q : qq0) {
-        qq.push_back(q);
-    }
-    for (auto &q : qq1) {
-        qq.push_back(q);
-    }
-    return qq;
-}
-
-enum declare_state_t {
-    STATE_DECLARE_GLOBAL,
-    STATE_DECLARE_FIELD,
-};
+    /*
+inline void declare(ScopePtr scope, const ptr<Ast> &a);
+inline ptr<Ast> identify(ScopePtr scope, const ptr<Ast> &a);
+*/
 
 class VisitDeclare : public Visit {
 public:
     VisitDeclare() {
     }
 
-    void declare(NamespacePtr &env, const ptr<Ast> &a) {
+    void declare(ScopePtr env, const ptr<Ast> &a) {
         _spaces = env;
-        set_declare_state(STATE_DECLARE_GLOBAL);
         visit(a);
     }
 
     // state manipulation
-    void set_declare_state(declare_state_t s) {
-        _declare_state = s;
+    void clear_path() {
+        _path.clear();
     }
 
-    declare_state_t get_declare_state() {
-        return _declare_state;
+    UnicodeStrings get_path() {
+        return _path;
     }
 
-    void clear_qualifications() {
-        _qualifications.clear();
-    }
-
-    UnicodeStrings get_qualifications() {
-        return _qualifications;
-    }
-
-    void set_qualifications(UnicodeStrings qq) {
-        _qualifications = qq;
-    }
-
-    // helper functions
-    icu::UnicodeString qualified(const UnicodeStrings &nn,
-                                 const icu::UnicodeString n) {
-        icu::UnicodeString s;
-        for (auto &n : nn) {
-            s += n + STRING_DCOLON;
-        }
-        s += n;
-        return s;
+    void set_path(UnicodeStrings qq) {
+        _path = qq;
     }
 
     // visits
     void visit_expr_combinator(const Position &p, const UnicodeStrings &nn,
                                const icu::UnicodeString &n) override {
-        switch (get_declare_state()) {
-            case STATE_DECLARE_GLOBAL:
-                try {
-                    auto nn0 = concat(_qualifications, nn);
-                    auto q = qualified(nn0, n);
-                    egel::declare(_spaces, nn0, n, q);
-                } catch (ErrorSemantical &e) {
-                    throw ErrorSemantical(p, "redeclaration of " + n);
-                }
-                break;
-            case STATE_DECLARE_FIELD:
-                try {
-                    const UnicodeStrings oo = {"OO"};
-                    auto nn0 = concat(oo, nn);
-                    auto q = qualified(nn0, n);
-                    egel::declare_implicit(_spaces, nn0, n, q);
-                } catch (ErrorSemantical &e) {
-                    throw ErrorSemantical(p, "redeclaration of " + n);
-                }
-                break;
+        try {
+            auto nn0 = VM::concat(_path, nn);
+            auto q = VM::qualified(nn0, n);
+            egel::declare_global(_spaces, q);
+        } catch (ErrorSemantical &e) {
+            throw ErrorSemantical(p, "redeclaration of " + n);
         }
     }
 
     void visit_decl_data(const Position &p, const ptr<Ast> &d,
                          const ptrs<Ast> &nn) override {
-        if (get_declare_state() == STATE_DECLARE_GLOBAL) {
-            visits(nn);
-        } else {
-            visit(nn[0]);
-        }
+        visits(nn);
     }
 
     void visit_decl_definition(const Position &p, const ptr<Ast> &n,
@@ -125,28 +72,26 @@ public:
 
     void visit_decl_namespace(const Position &p, const UnicodeStrings &nn,
                               const ptrs<Ast> &dd) override {
-        auto nn0 = get_qualifications();
-        auto nn1 = concat(nn0, nn);
-        set_qualifications(nn1);
+        auto nn0 = get_path();
+        auto nn1 = VM::concat(nn0, nn);
+        set_path(nn1);
         visits(dd);
-        set_qualifications(nn0);
+        set_path(nn0);
     }
 
 private:
-    NamespacePtr _spaces;
-    UnicodeStrings _qualifications;
-    declare_state_t _declare_state;
+    ScopePtr _spaces;
+    UnicodeStrings _path;
 };
 
-void declare(NamespacePtr env, const ptr<Ast> &a) {
+inline void declare(ScopePtr env, const ptr<Ast> &a) {
     VisitDeclare declare;
     declare.declare(env, a);
 }
 
 enum identify_state_t {
     STATE_IDENTIFY_USE,
-    STATE_IDENTIFY_PATTERN,
-    STATE_IDENTIFY_FIELD,
+    STATE_IDENTIFY_DECLARE,
 };
 
 /*
@@ -157,11 +102,14 @@ enum identify_state_t {
  */
 class RewriteIdentify : public Rewrite {
 public:
-    ptr<Ast> identify(NamespacePtr env, ptr<Ast> a) {
+    ptr<Ast> identify(ScopePtr env, ptr<Ast> a) {
+        Position p = a->position();
         _identify_state = STATE_IDENTIFY_USE;
-        _range = range_nil(env);
+        _scope = egel::enter_scope(env);
         _counter = 0;
-        return rewrite(a);
+        rewrite(a);
+        auto aa = pop_declarations();
+        return AstWrapper::create(p, aa);
     }
 
     // variable
@@ -184,20 +132,21 @@ public:
     void declare(const Position &p, const icu::UnicodeString &k,
                  const icu::UnicodeString &v) {
         try {
-            egel::declare(_range, k, v);
+            egel::declare_local(_scope, k, v);
         } catch (ErrorSemantical &e) {
             throw ErrorSemantical(p, "redeclaration of " + k);
         }
     }
 
     bool has(const icu::UnicodeString &k) {
-        icu::UnicodeString tmp = egel::get(_range, k);
+        icu::UnicodeString tmp = egel::get_local(_scope, k);
         return (tmp != "");
     }
 
     icu::UnicodeString get(const Position &p, const icu::UnicodeString &k) {
-        icu::UnicodeString tmp = egel::get(_range, k);
+        icu::UnicodeString tmp = egel::get_local(_scope, k);
         if (tmp == "") {
+            _scope->render(std::cout, 0);
             throw ErrorSemantical(p, "undeclared " + k);
         } else {
             return tmp;
@@ -206,36 +155,30 @@ public:
 
     icu::UnicodeString get(const Position &p, const UnicodeStrings &kk,
                            const icu::UnicodeString &k) {
-        icu::UnicodeString tmp = egel::get(_range, kk, k);
-        if (tmp == "") {
-            throw ErrorSemantical(p, "undeclared " + k);
-        } else {
-            return tmp;
-        }
+        return get(p, VM::qualified(kk,k));
     }
 
-    void enter_range() {
-        _range = egel::enter_range(_range);
+    void enter_scope() {
+        _scope = egel::enter_scope(_scope);
     }
 
-    void leave_range() {
-        _range = egel::leave_range(_range);
+    void leave_scope() {
+        _scope = egel::leave_scope(_scope);
     }
 
-    void add_namespace(const UnicodeStrings &nn) {
-        egel::add_namespace(_range, nn);
+    void enter_namespace(const icu::UnicodeString &s) {
+        _scope = egel::enter_namespace(_scope, s);
+    }
+
+    void leave_namespace() {
+        _scope = egel::leave_namespace(_scope);
     }
 
     // namespaces
-    UnicodeStrings get_namespace() {
-        return _namespace;
+    UnicodeString get_namespace() {
+        return _scope->get_namespace();
     }
 
-    void set_namespace(UnicodeStrings n) {
-        _namespace = n;
-    }
-
-    // push/pop declarations
     void push_declaration(const ptr<Ast> &d) {
         _declarations.push_back(d);
     }
@@ -252,7 +195,7 @@ public:
                 auto v1 = get(p, v);
                 return AstExprVariable::create(p, v1);
             } break;
-            case STATE_IDENTIFY_PATTERN: {
+            case STATE_IDENTIFY_DECLARE: {
                 auto fv = fresh_variable();
                 declare(p, v, fv);
                 return AstExprVariable::create(p, fv);
@@ -269,7 +212,7 @@ public:
                                      const icu::UnicodeString &t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
-            case STATE_IDENTIFY_PATTERN:
+            case STATE_IDENTIFY_DECLARE:
             case STATE_IDENTIFY_USE: {
                 auto v = get(p, nn, t);
                 auto c = AstExprCombinator::create(p, ee, v);
@@ -287,7 +230,7 @@ public:
                                    const icu::UnicodeString &t) override {
         UnicodeStrings ee;
         switch (get_identify_state()) {
-            case STATE_IDENTIFY_PATTERN:
+            case STATE_IDENTIFY_DECLARE:
             case STATE_IDENTIFY_USE: {
                 auto v = get(p, nn, t);
                 auto c = AstExprOperator::create(p, ee, v);
@@ -303,14 +246,14 @@ public:
 
     ptr<Ast> rewrite_expr_match(const Position &p, const ptrs<Ast> &mm,
                                 const ptr<Ast> &g, const ptr<Ast> &e) override {
-        enter_range();
-        set_identify_state(STATE_IDENTIFY_PATTERN);
+        enter_scope();
+        set_identify_state(STATE_IDENTIFY_DECLARE);
         auto mm0 = rewrites(mm);
         set_identify_state(STATE_IDENTIFY_USE);
         auto g0 = rewrite(g);
         set_identify_state(STATE_IDENTIFY_USE);
         auto e0 = rewrite(e);
-        leave_range();
+        leave_scope();
         return AstExprMatch::create(p, mm0, g0, e0);
     }
 
@@ -319,22 +262,22 @@ public:
                               const ptr<Ast> &body) override {
         set_identify_state(STATE_IDENTIFY_USE);
         auto rhs0 = rewrite(rhs);
-        enter_range();
-        set_identify_state(STATE_IDENTIFY_PATTERN);
+        enter_scope();
+        set_identify_state(STATE_IDENTIFY_DECLARE);
         auto lhs0 = rewrites(lhs);
         set_identify_state(STATE_IDENTIFY_USE);
         auto body0 = rewrite(body);
-        leave_range();
+        leave_scope();
         return AstExprLet::create(p, lhs0, rhs0, body0);
     }
 
     ptr<Ast> rewrite_expr_tag(const Position &p, const ptr<Ast> &e,
                               const ptr<Ast> &t) override {
-        set_identify_state(STATE_IDENTIFY_PATTERN);
+        set_identify_state(STATE_IDENTIFY_DECLARE);
         auto e0 = rewrite(e);
         set_identify_state(STATE_IDENTIFY_USE);
         auto t0 = rewrite(t);
-        set_identify_state(STATE_IDENTIFY_PATTERN);
+        set_identify_state(STATE_IDENTIFY_DECLARE);
         return AstExprTag::create(p, e0, t0);
     }
 
@@ -351,22 +294,36 @@ public:
         auto nn0 = nn;
         if (nn0.size() == 0) {
             auto uu = AstPath::cast(AstAlias::cast(n0)->right_hand_side())->path();
-            auto dd = egel::get_namespace(_range, uu);
-            for (const auto &d: dd) {
-                nn0.push_back(AstExprCombinator::create(p, UnicodeStrings(), d));
+            auto dd = egel::get_namespace(_scope, VM::path(uu));
+            auto len = VM::path(uu).countChar32() + 2;
+            for (auto &d: dd) {
+                nn0.push_back(AstExprCombinator::create(p, UnicodeStrings(), d.removeBetween(0, len)));
             }
         }
         // add aliases for combinators when not present
         ptrs<Ast> nn1;
         for (const auto &n:nn0) {
             if (n->tag() != AST_ALIAS) {
-                auto p = n->position();
                 nn1.push_back(AstAlias::create(p, n, n));
             } else {
                 nn1.push_back(n);
             }
         }
-        std::cerr << "XXX: " << AstRename::create(p,n0,nn1) << std::endl;
+        //std::cout << "YYY REWRITTEN" << AstRename::create(p, n0, nn1) << std::endl;
+        // declare everything
+        auto p0 = AstAlias::cast(n0)->left_hand_side();
+        auto p1 = AstAlias::cast(n0)->right_hand_side();
+        auto uu0 = AstPath::cast(p0)->path();
+        auto uu1 = AstPath::cast(p1)->path();
+        for (const auto &a:nn1) {
+            auto a0 = AstAlias::cast(a)->left_hand_side()->to_text();
+            auto a1 = AstAlias::cast(a)->right_hand_side()->to_text();
+            auto s0 = VM::qualified(uu0, a0);
+            auto s1 = VM::qualified(uu1, a1);
+            //std::cerr << "declare: " << s0 << " -> " << s1 << std::endl;
+            egel::declare_local(_scope, s0, s1);
+        }
+        //egel::debug_scope(_scope);
         return AstRename::create(p, n0, nn1);
     }
 
@@ -380,39 +337,22 @@ public:
 
     ptr<Ast> rewrite_decl_data(const Position &p, const ptr<Ast> &d,
                                const ptrs<Ast> &ee) override {
-        if (get_identify_state() == STATE_IDENTIFY_FIELD) {
-            set_identify_state(STATE_IDENTIFY_USE);
-            auto ee0 = rewrites(ee);
-            auto a = AstDeclData::create(p, d, ee0);
-            set_identify_state(STATE_IDENTIFY_FIELD);
-            return a;
-        } else {
-            set_identify_state(STATE_IDENTIFY_USE);
-            auto ee0 = rewrites(ee);
-            auto a = AstDeclData::create(p, d, ee0);
-            push_declaration(a);
-            return a;
-        }
+        set_identify_state(STATE_IDENTIFY_USE);
+        auto ee0 = rewrites(ee);
+        auto a = AstDeclData::create(p, d, ee0);
+        push_declaration(a);
+        return a;
     }
 
     ptr<Ast> rewrite_decl_definition(const Position &p, const ptr<Ast> &n,
                                      const ptr<Ast> &d,
                                      const ptr<Ast> &e) override {
-        if (get_identify_state() == STATE_IDENTIFY_FIELD) {
-            set_identify_state(STATE_IDENTIFY_USE);
-            auto n0 = rewrite(n);
-            auto e0 = rewrite(e);
-            auto a = AstDeclDefinition::create(p, n0, d, e0);
-            set_identify_state(STATE_IDENTIFY_FIELD);
-            return a;
-        } else {
-            auto n0 = rewrite(n);
-            auto e0 = rewrite(e);
-            auto a = AstDeclDefinition::create(p, n0, d, e0);
-            push_declaration(a);
-            set_identify_state(STATE_IDENTIFY_USE);
-            return a;
-        }
+        set_identify_state(STATE_IDENTIFY_USE);
+        auto n0 = rewrite(n);
+        auto e0 = rewrite(e);
+        auto a = AstDeclDefinition::create(p, n0, d, e0);
+        push_declaration(a);
+        return a;
     }
 
     ptr<Ast> rewrite_decl_value(const Position &p, const ptr<Ast> &l,
@@ -438,32 +378,21 @@ public:
 
     ptr<Ast> rewrite_decl_namespace(const Position &p, const UnicodeStrings &nn,
                                     const ptrs<Ast> &dd) override {
-        auto nn0 = get_namespace();
-        auto nn1 = concat(nn0, nn);
-        set_namespace(nn1);
-        enter_range();
-        add_namespace(nn1);
+        enter_namespace(VM::path(nn));
         auto dd0 = rewrites(dd);
-        leave_range();
-        set_namespace(nn0);
+        leave_namespace();
         return AstDeclNamespace::create(p, nn, dd0);
-    }
-
-    ptr<Ast> rewrite_wrapper(const Position &p, const ptrs<Ast> &dd) override {
-        auto dd0 = rewrites(dd);
-        auto aa = pop_declarations();
-        return AstWrapper::create(p, aa);
     }
 
 private:
     identify_state_t _identify_state;
-    RangePtr _range;
+    ScopePtr _scope;
     ptrs<Ast> _declarations;
     UnicodeStrings _namespace;
     int _counter;
 };
 
-ptr<Ast> identify(NamespacePtr env, const ptr<Ast> &a) {
+ptr<Ast> identify(ScopePtr env, const ptr<Ast> &a) {
     RewriteIdentify identify;
     return identify.identify(env, a);
 }

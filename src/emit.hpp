@@ -435,6 +435,7 @@ public:
                 return t;
             } break;
             default: {
+                std::cerr << e << std::endl;
                 PANIC("tree expected");
                 return 0;
             };
