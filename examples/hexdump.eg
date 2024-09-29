@@ -5,7 +5,7 @@ import "prelude.eg"
 using System
 using OS
 using String
-using List
+using List (map)
 
 def fix = [ F -> F [ X -> (fix F) X ] ]
 

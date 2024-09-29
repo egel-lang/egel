@@ -381,8 +381,8 @@ public:
 
 class Insert : public Triadic {
 public:
-    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Insert, "String", "insert");
-    DOCSTRING("String::insert s0 n s1 - insert at given position");
+    TRIADIC_PREAMBLE(VM_SUB_BUILTIN, Insert, "String", "insert_at");
+    DOCSTRING("String::insert_at s0 n s1 - insert at given position");
 
     VMObjectPtr apply(const VMObjectPtr &arg0, const VMObjectPtr &arg1,
                       const VMObjectPtr &arg2) const override {

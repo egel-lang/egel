@@ -237,8 +237,8 @@ namespace List (
         [ 0 (cons X XX) -> X
         | N (cons X XX) -> nth (N - 1) XX ]
 
-    def index_of = 
-        @"List::index_of x xx - index of a member in list"
+    def index = 
+        @"List::index x xx - index of a member in list"
          let F = fix 
              [ F N X {} -> -1
              | F N X {Y|YY} -> if X == Y then N else F (N+1) X YY ] in
