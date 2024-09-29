@@ -4,7 +4,6 @@ import "prelude.eg"
 import "generator.eg"
 
 namespace Dict ( 
-
     using System
     using List
  
@@ -20,8 +19,8 @@ namespace Dict (
         @"Dict::values d - create a list of values a dictionary"
         [ D -> List::map snd (to_list D) ]
 
-    def nth =
-        @"Dict::nth v d k - get a value from a dictionary with a default element"
+    def nth_with_default =
+        @"Dict::nth_with_default v d k - get a value from a dictionary with a default element"
         [ V D K -> if Dict::has D K then Dict::get D K else V ]
 
     def copy =
@@ -39,12 +38,12 @@ namespace Dict (
     def lazy_update =
         [ D K VF -> if Dict::has D K then Dict::set D K (VF none) else D ]
 
-    def map =
-        @"Dict::map f d - map a function to all values of a dictionary"
+    def dmap =
+        @"Dict::dmap f d - map a function to all values of a dictionary"
         [ F D -> foldl [D K -> Dict::set D K (F (Dict::get D K))] D (Dict::keys D) ]
 
-    def union =
-        @"Dict::union d0 d1 - produce the merger of two dictionaries"
+    def merge_dicts =
+        @"Dict::merge_dicts d0 d1 - produce the merger of two dictionaries"
         [ D0 D1 -> Dict::from_list ((Dict::to_list D0) ++ (Dict::to_list D1)) ]
 
     def inverse0 =
