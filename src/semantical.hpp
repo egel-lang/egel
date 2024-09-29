@@ -319,6 +319,10 @@ public:
             auto s0 = VM::qualified(uu0, a0);
             auto s1 = VM::qualified(uu1, a1);
             //std::cerr << "declare: " << s0 << " -> " << s1 << std::endl;
+            // make sure s1 (target) is declared
+            if (egel::get_global(_scope, s1) == "") {
+                throw ErrorSemantical(p, "target not declared " + s1);
+            }
             try {
                 egel::declare_local(_scope, s0, s1);
             } catch (ErrorSemantical &e) {
