@@ -61,8 +61,7 @@ with `to_float` and `to_int` combinators.
 ## Overlapping usings
 
 When two namespaces `A` and `B` both define `foo` and both namespaces 
-are opened, `foo` will be bound to either of them and the interpreter 
-will not complain. But one might get a runtime error.
+are opened, `foo` will be redeclared and give a runtime error.
 Handle with care.
 
 ```
