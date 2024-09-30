@@ -17,8 +17,15 @@ runs:
     run: |
       tarname=${{ steps.tarname.outputs.TARNAME }}
       echo "creating: $tarname"
-      libs=$(find /vendor/local/lib -not -type l -print0 | xargs -0 echo)
-      contrib/scripts/tarpackage.sh $tarname . $libs
+      lib0=`find vendor/local/lib -name "liblightning.?.dylib" -print -quit`
+      lib1=`find vendor/local/lib -name "libfmt.??.dylib" -print -quit`
+      lib2=`find vendor/local/lib -name "libffi.?.dylib" -print -quit`
+      lib3=`find vendor/local/lib -name "libicui18n.??.dylib" -print -quit`
+      lib4=`find vendor/local/lib -name "libicuio.??.dylib" -print -quit`
+      lib5=`find vendor/local/lib -name "libicutu.??.dylib" -print -quit`
+      lib6=`find vendor/local/lib -name "libicudata.??.dylib" -print -quit`
+      lib7=`find vendor/local/lib -name "libicuuc.??.dylib" -print -quit`
+      contrib/scripts/tarpackage.sh $tarname . $lib0 $lib1 $lib2 $lib3 $lib4 $lib5 $lib6 $lib7
     shell: bash
 
   - name: List tar package
