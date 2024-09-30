@@ -19,14 +19,14 @@ runs:
 
   - name: Install FMT
     run: |
-      mkdir -p {{github.workspace}}/vendor/local
-      mkdir -p {{github.workspace}}/vendor/local/include
-      mkdir -p {{github.workspace}}/vendor/local/lib
+      mkdir -p ${{github.workspace}}/vendor/local
+      mkdir -p ${{github.workspace}}/vendor/local/include
+      mkdir -p ${{github.workspace}}/vendor/local/lib
       echo "copying into vendor/local"
-      cp -r /opt/homebrew/opt/fmt/include/* {{github.workspace}}/vendor/local/include
-      cp -r /opt/homebrew/opt/fmt/lib/* {{github.workspace}}/vendor/local/lib
+      cp -r /opt/homebrew/opt/fmt/include/* ${{github.workspace}}/vendor/local/include
+      cp -r /opt/homebrew/opt/fmt/lib/* ${{github.workspace}}/vendor/local/lib
       echo "vendor/local/include"
-      ls -la {{github.workspace}}/vendor/local/include
+      ls -la ${{github.workspace}}/vendor/local/include
       echo "vendor/local/lib"
-      ls -la {{github.workspace}}/vendor/local/lib
+      ls -la ${{github.workspace}}/vendor/local/lib
     shell: bash
