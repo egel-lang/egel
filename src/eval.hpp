@@ -218,6 +218,20 @@ public:
 
     void handle_using(const ptr<Ast> &a) {
         _usings.push_back(a);
+        // generate an error on using
+        try {
+            auto mm = get_manager();
+            auto p = a->position();
+            auto dd = ptrs<Ast>();
+            for (auto &u : get_usings()) {
+                dd.push_back(u);
+            }
+            auto w = AstWrapper::create(p, dd);
+            w = egel::identify(mm->get_environment(), w);
+        } catch (const ErrorSemantical &e) {
+            _usings.pop_back();
+            throw e;
+        }
     }
 
     void handle_definition(const ptr<Ast> &d) {
