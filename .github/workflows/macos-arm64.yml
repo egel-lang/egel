@@ -2,6 +2,7 @@ name: Build MacOS
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 env:
   BUILD_TYPE: Release
