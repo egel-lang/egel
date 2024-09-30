@@ -183,7 +183,7 @@ public:
     ~VMModule() {
     }
 
-    icu::UnicodeString docstring() const {
+    icu::UnicodeString docstring() const override {
         return _value->docstring();
     }
 

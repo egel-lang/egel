@@ -73,7 +73,7 @@ public:
     OPAQUE_PREAMBLE(VM_SUB_BUILTIN, Library, FFI, "library");
 
     DOCSTRING("FFI::library - opaque library object");
-    int compare(const VMObjectPtr& o) {
+    int compare(const VMObjectPtr& o) override {
         return -1;  // XXX
     }
 

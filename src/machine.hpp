@@ -985,7 +985,7 @@ public:
     }
 
     VMObjectPtr tokenize(const icu::UnicodeString &uri,
-                         const icu::UnicodeString &src) {
+                         const icu::UnicodeString &src) override {
         StringCharReader r = StringCharReader(uri, src);
         Tokens tt = tokenize_from_reader(r);
         std::vector<VMObjectPtr> oo;
