@@ -1,6 +1,10 @@
 # minimal cmake version
 cmake_minimum_required(VERSION 3.20)
 
+# this shouldn't be necessary
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_SOURCE_DIR}/vendor/local")
+link_directories(${CMAKE_SOURCE_DIR}/vendor/local/lib)
+
 # fallback for other versions 
 if(${CMAKE_VERSION} VERSION_LESS 3.20)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
