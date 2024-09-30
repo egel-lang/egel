@@ -12,13 +12,11 @@ import "prelude.eg"
 namespace Test (
     using System
 
-    def swap = [ (X Y) -> Y X ]
-
-    def swap2 = swap . swap
+    def swap0 = [X Y -> Y X]
+    def swap2 = swap0 . swap0
 )
 
 using System
-using List
 using Test
 
 def main = (swap2 (1 2), swap2 (1 [X -> X]), swap2 [X -> X])

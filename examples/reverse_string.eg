@@ -3,7 +3,7 @@
 import "prelude.eg"
 
 using System
-using String
+using String (to_chars, from_chars)
 using List
 
-def main = (to_chars . reverse . from_chars) "asdf"
+def main = (from_chars . reverse . to_chars) "asdf"

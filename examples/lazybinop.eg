@@ -2,6 +2,8 @@
 #
 # `expr0 && expr1` is just shorthand for `expr0 && \_ -> expr1`.
 
+import "prelude.eg"
+
 using System
 
 def main =

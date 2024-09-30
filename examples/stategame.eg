@@ -17,7 +17,7 @@ import "prelude.eg"
 import "calculate.eg"
 
 using System
-using String
+using String (to_chars)
 using List
 using Calculate
 

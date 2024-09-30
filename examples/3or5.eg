@@ -10,8 +10,6 @@ namespace ThreeOrFive (
     using System
     using List
 
-    def sum = foldr (+) 0
-
     def three_or_five = [X -> or ((X%3) == 0) ((X%5) == 0) ]
 
     def euler1 =

@@ -5,8 +5,8 @@ import "calculate.eg"
 namespace Search (
 
     using System
-    using Calculate
-    using List
+    using Calculate (return, <*)
+    using List (++)
 
 
     data top, bot, cut

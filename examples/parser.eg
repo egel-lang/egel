@@ -6,12 +6,11 @@
 
 import "prelude.eg"
 import "search.eg"
-import "regex.ego"
 
 using System
 using List
 using Search
-using Regex
+using Regex (compile, look_at, look_match, replace)
 
 data number, plus, mul
 data lparen, rparen, white
@@ -38,7 +37,7 @@ def lexify_front =
     | (cons (PAT, A) AA) S ->
         if look_at PAT S then
             let L = look_match PAT S in
-            let S = replace PAT S "" in (A L, S)
+            let S = replace PAT "" S in (A L, S)
         else lexify_front AA S ]
 
 def lexify = 
@@ -81,10 +80,11 @@ def parse_expression =
     )
 
 def parse =
-    [ P -> search P 
+    [ P -> search P
            [ T LL -> T ]
            [ F LL -> throw (format "parse failed with {} at {}" F LL) ]
-           [ E LL -> throw (format "parse error {} at {}" E LL) ] ]
+           [ E LL -> throw (format "parse error {} at {}" E LL) ]
+           ]
 
 # evaluate
 
