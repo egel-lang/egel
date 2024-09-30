@@ -42,6 +42,13 @@ message("Current source directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 execute_process(COMMAND pwd OUTPUT_VARIABLE current_dir OUTPUT_STRIP_TRAILING_WHITESPACE)
 message("Current working directory: ${current_dir}")
 
+# contents of vendor/local/lib
+message("Files in vendor/local/lib")
+file(GLOB FILES_IN_DIR "vendor/local/lib/*")
+foreach(FILE ${FILES_IN_DIR})
+    message("${FILE}")
+endforeach()
+
 # the Egel project
 project(Egel DESCRIPTION "The Egel interpreter"
         VERSION ${PVERSION} LANGUAGES CXX)
