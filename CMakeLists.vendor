@@ -36,6 +36,12 @@ set(PVERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 # report findings
 message("egel version: ${PVERSION}")
 
+# current dirs
+message("Current binary directory: ${CMAKE_CURRENT_BINARY_DIR}")
+message("Current source directory: ${CMAKE_CURRENT_SOURCE_DIR}")
+execute_process(COMMAND pwd OUTPUT_VARIABLE current_dir OUTPUT_STRIP_TRAILING_WHITESPACE)
+message("Current working directory: ${current_dir}")
+
 # the Egel project
 project(Egel DESCRIPTION "The Egel interpreter"
         VERSION ${PVERSION} LANGUAGES CXX)
