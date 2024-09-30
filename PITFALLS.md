@@ -1,5 +1,7 @@
-# Common Pifalls when Programming in Egel Egel is a minimalist language,
-reading the man page should suffice to start programming in Egel.
+# Common Pifalls when Programming in Egel 
+
+Egel is a minimalist language, reading the man page should suffice to
+start programming in Egel.
 
 However, I expect people to encounter the following common pitfalls.
 
