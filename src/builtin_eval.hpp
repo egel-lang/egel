@@ -47,6 +47,9 @@ public:
 
 class EvalModule : public CModule {
 public:
+    virtual ~EvalModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "eval";
     }

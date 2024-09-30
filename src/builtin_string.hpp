@@ -631,6 +631,9 @@ public:
 
 class StringModule : public CModule {
 public:
+    virtual ~StringModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "string";
     }

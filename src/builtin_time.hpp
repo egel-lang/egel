@@ -1068,6 +1068,9 @@ public:
 
 class TimeModule : public CModule {
 public:
+    virtual ~TimeModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "time";
     }

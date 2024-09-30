@@ -408,6 +408,9 @@ override { if (machine()->is_text(arg0)) { auto s = machine()->get_text(arg0);
 
 class RuntimeModule : public CModule {
 public:
+    virtual ~RuntimeModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "runtime";
     }

@@ -1200,6 +1200,9 @@ vm->array_get(xx,2);
 
 class SystemModule : public CModule {
 public:
+    virtual ~SystemModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "system";
     }

@@ -389,6 +389,9 @@ public:
 
 class RegexModule : public CModule {
 public:
+    virtual ~RegexModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "regex";
     }

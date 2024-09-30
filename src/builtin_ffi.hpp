@@ -1002,6 +1002,9 @@ public:
 
 class FFIModule : public CModule {
 public:
+    virtual ~FFIModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "ffi";
     }

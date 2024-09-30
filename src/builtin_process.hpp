@@ -244,6 +244,9 @@ public:
 
 class ProcessModule : public CModule {
 public:
+    virtual ~ProcessModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "process";
     }

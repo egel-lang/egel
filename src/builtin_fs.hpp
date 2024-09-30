@@ -1497,6 +1497,9 @@ public:
 // DOCSTRING("OS::status_known - checks whether file status is known XXX");
 class FSModule : public CModule {
 public:
+    virtual ~FSModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "fs";
     }

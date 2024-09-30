@@ -143,6 +143,9 @@ public:
 
 class AsyncModule : public CModule {
 public:
+    virtual ~AsyncModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "async";
     }

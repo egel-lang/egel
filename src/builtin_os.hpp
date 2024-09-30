@@ -822,6 +822,9 @@ public:
 
 class OSModule : public CModule {
 public:
+    virtual ~OSModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "os";
     }

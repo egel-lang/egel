@@ -744,6 +744,9 @@ public:
 
 class MathModule : public CModule {
 public:
+    virtual ~MathModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "math";
     }

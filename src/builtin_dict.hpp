@@ -183,6 +183,9 @@ public:
 
 class DictModule : public CModule {
 public:
+    virtual ~DictModule() {
+    }
+
     icu::UnicodeString name() const override {
         return "dict";
     }
