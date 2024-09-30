@@ -22,8 +22,9 @@ runs:
       mkdir -p {{github.workspace}}/vendor/local
       mkdir -p {{github.workspace}}/vendor/local/include
       mkdir -p {{github.workspace}}/vendor/local/lib
-      cp /opt/homebrew/opt/libffi/include/* {{github.workspace}}/vendor/local/include
-      cp /opt/homebrew/opt/libffi/lib/* {{github.workspace}}/vendor/local/lib
+      echo "copying into vendor/local"
+      cp -r /opt/homebrew/opt/libffi/include/* {{github.workspace}}/vendor/local/include
+      cp -r /opt/homebrew/opt/libffi/lib/* {{github.workspace}}/vendor/local/lib
       echo "vendor/local/include"
       ls -la {{github.workspace}}/vendor/local/include
       echo "vendor/local/lib"
