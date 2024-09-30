@@ -6,7 +6,6 @@ A list of all major changes between versions of the interpreter.
 ## Pending goals
 
 + replace all class preamble macros with templates
-+ add import/export lists to using/namespace
 + vararg function definitions
 + move to C++20 (modules, modern syntax)
   when libfmt makes it into llvm and gcc?
@@ -22,8 +21,11 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
+## v0.1.14 - the devil fetch ye ragamuffin rapscallions; ye are all asleep
+
++ namespace rework
 + lambda multiple matches
-+ module rework 
++ module rework
 + complex numbers
 + docstrings and help
 + exposed the tokenizer
