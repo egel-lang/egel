@@ -16,5 +16,12 @@ Prebuilt releases from Github are supplied for your convenience.
 * MacOS and Windows releases come with the four dependencies as
   dynamic libraries.
 
+  MacOS runs with some elaborate security mechanism for trusted
+  apps these days and the application and dynamic libraries are
+  _not_ signed with a developer certificate.
+
+  I was able to run the interpreter on MacOS by signing the
+  the binaries and removing the quarantine attribute.
+
 * A BSD release is planned for the future.
 
