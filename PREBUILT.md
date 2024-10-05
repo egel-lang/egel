@@ -23,5 +23,18 @@ Prebuilt releases from Github are supplied for your convenience.
   I was able to run the interpreter on MacOS by signing the
   the binaries and removing the quarantine attribute.
 
+  For signing, make a local certificate and use codesign
+
+```
+    codesign --force --deep --sign "Local Development" <library.dylib>
+
+```
+
+  To remove the quarantine attribute use xattr.
+
+```
+    xattr -d com.apple.quarantine egel lib*
+```
+
 * A BSD release is planned for the future.
 
