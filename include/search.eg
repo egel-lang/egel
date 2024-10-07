@@ -71,12 +71,12 @@ namespace Search (
         @"Search::<+> p q - try both alternatives  "
         parallel
 
-    def <-> = 
+    def <*> = 
         @"Search::<-> p q - try composition of alternatives"
         sequential
 
-    def <*> = 
-        @"Search::<*> p q - try alternative then force"
+    def <**> = 
+        @"Search::<**> p q - try alternative then force"
         serial
 
     def </> = 
@@ -109,7 +109,7 @@ namespace Search (
         @"Search::plus_sep p s - one or more with separator"
         [ P Q ->
             one P </> \L0 -> 
-            Q <-> \U ->
+            Q <*> \U ->
             plus_sep P Q <@> \L1 -> 
             L0 ++ L1 
         ]
