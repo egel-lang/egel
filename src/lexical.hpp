@@ -780,7 +780,7 @@ Tokens tokenize_from_reader(CharReader &reader) {
                 reader.skip();
                 token_writer.push(Token(TOKEN_DCOLON, p, STRING_DCOLON));
             } else {
-                token_writer.push(Token(TOKEN_COLON, p, c));
+                token_writer.push(Token(TOKEN_COLON, p, STRING_COLON));
             }
         } else if (is_semicolon(c)) {
             reader.skip();
@@ -790,7 +790,7 @@ Tokens tokenize_from_reader(CharReader &reader) {
                 token_writer.push(
                     Token(TOKEN_DSEMICOLON, p, STRING_DSEMICOLON));
             } else {
-                token_writer.push(Token(TOKEN_SEMICOLON, p, c));
+                token_writer.push(Token(TOKEN_SEMICOLON, p, STRING_SEMICOLON));
             }
         } else if (is_math(c)) {
             token_writer.push(Token(TOKEN_LOWERCASE, p, c));
