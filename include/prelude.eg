@@ -89,6 +89,10 @@ namespace System (
         @"System::proj n (x, .., y) - projection on tuple"
         [ N T -> tuple_to_list T |> List::nth N ]
 
+    def proj_update =
+        @"System::proj_update n f (x, .., y) - update on tuple"
+        [ N F T -> tuple_to_list T |> List::nth_update N F |> list_to_tuple ]
+
     def fst = 
         @"System::fst (x, y) - proj1 on tuple"
         [ (X,Y) -> X ]
@@ -236,6 +240,11 @@ namespace List (
         @"List::nth n l - nth element of a list"
         [ 0 (cons X XX) -> X
         | N (cons X XX) -> nth (N - 1) XX ]
+
+    def nth_update =
+        @"List::nth_update n f l - update nth element of a list"
+        [ 0 F (cons X XX) -> cons (F X) XX
+        | N F (cons X XX) -> nth_update F (N - 1) XX ]
 
     def index = 
         @"List::index x xx - index of a member in list"
