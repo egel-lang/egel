@@ -244,7 +244,7 @@ namespace List (
     def nth_update =
         @"List::nth_update n f l - update nth element of a list"
         [ 0 F (cons X XX) -> cons (F X) XX
-        | N F (cons X XX) -> nth_update F (N - 1) XX ]
+        | N F (cons X XX) -> cons X (nth_update (N - 1) F XX) ]
 
     def index = 
         @"List::index x xx - index of a member in list"
