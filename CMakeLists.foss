@@ -43,6 +43,8 @@ project(Egel DESCRIPTION "The Egel interpreter"
         VERSION ${PVERSION} LANGUAGES CXX)
 
 # set the cxx compiler flags
+add_compile_options(-Wno-stringop-overflow) # libfmt headers are broken at the moment
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
