@@ -467,9 +467,6 @@ namespace System (
 )
 
 namespace System (
-    def memo =
-        @"String::memo d f x - memoize with a dictionary"
-        [D F X -> if Dict::has D X then Dict::get D X else [Y -> Dict::set D X Y; Y] (F D X) ]
 )
 
 namespace String (
@@ -504,6 +501,10 @@ namespace Dict (
     using System
     using List
  
+    def memo =
+        @"String::memo d f x - memoize with a dictionary"
+        [D F X -> if Dict::has D X then Dict::get D X else [Y -> Dict::set D X Y; Y] (F D X) ]
+
     def from_list =
         @"Dict::from_list l - create a dictionary from key/value pairs"
         foldl [D (K,V) -> Dict::set D K V] dict
@@ -557,6 +558,13 @@ namespace Dict (
     def inverse = 
         @"Dict::inverse d - produce the inverse of a dictionary, values map to multiple keys"
         Dict::from_list . inverse0 . sort . List::map swap . Dict::to_list
+
+    def inner_join =
+        @"Dict::inner_join d0 d1 - inner join on keys"
+        [D0 D1 -> foldl 
+            [D K -> if and (Dict::has D0 K) (Dict::has D1 K) then Dict::set D K (Dict::get D0 K, Dict::get D1 K) else D] 
+            Dict::dict 
+            (Dict::keys D0)]
 )
 
 namespace System (
