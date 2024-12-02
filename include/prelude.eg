@@ -101,6 +101,9 @@ namespace System (
         @"System::snd (x, y) - proj2 on tuple"
         [ (X,Y) -> Y ]
 
+    def dup =
+        @"System::dup x - duplicate"
+        [ X -> (X, X) ]
     #@"System::$ - a very mysterious operator"
     #def $ = [F X -> F X]
 
@@ -548,6 +551,10 @@ namespace Dict (
         @"Dict::merge_dicts d0 d1 - produce the merger of two dictionaries"
         [ D0 D1 -> Dict::from_list ((Dict::to_list D0) ++ (Dict::to_list D1)) ]
 
+    def count =
+        @"Dict::count ll - count the values in a list"
+        foldl [D N -> Dict::set D N (if Dict::has D N then 1 + Dict::get D N else 1)] Dict::dict
+
     def inverse0 =
         @"Dict::invert d0 d1 - produce the merger of two dictionaries"
         [ {} -> {} | {(K0,V)|XX} -> 
@@ -565,6 +572,7 @@ namespace Dict (
             [D K -> if and (Dict::has D0 K) (Dict::has D1 K) then Dict::set D K (Dict::get D0 K, Dict::get D1 K) else D] 
             Dict::dict 
             (Dict::keys D0)]
+
 )
 
 namespace System (
