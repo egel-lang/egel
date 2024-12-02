@@ -1,0 +1,18 @@
+# The standard Fibonacci function defined in Egel.
+#
+# see: https://en.wikipedia.org/wiki/Fibonacci_number
+
+import "prelude.eg"
+
+namespace Fibonacci (
+  using System, Dict
+
+  def fib =
+    [ D 0 -> 1
+    | D 1 -> 1
+    | D N -> memo D fib (N- 2) + memo D fib (N- 1) ]
+)
+
+using Fibonacci
+
+def main = fib Dict::dict 40
