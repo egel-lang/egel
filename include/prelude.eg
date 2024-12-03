@@ -161,6 +161,14 @@ namespace List (
         @"List::reduce f l - reduce on non-empty list"
         [ F {X|XX} -> foldl F X XX ]
 
+    def foldl_state =
+        @"List::foldl_state f s z l - left fold on a list with a state"
+        [F S Z XX -> foldl (uncurry F) (S,Z) XX |> snd ] 
+
+    def foldr_state =
+        @"List::foldr_state f s z l - right fold on a list with a state"
+        [F S Z XX -> foldr [X (S,N) -> F X S N] (S,Z) XX |> snd ] 
+
     def head =
         @"List::head l - head of a list"
         [ (cons X XX) -> X
