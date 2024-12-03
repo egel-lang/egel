@@ -561,7 +561,7 @@ namespace Dict (
 
     def count =
         @"Dict::count ll - count the values in a list"
-        foldl [D N -> Dict::set D N (if Dict::has D N then 1 + Dict::get D N else 1)] Dict::dict
+        [D -> foldl [D N -> Dict::set D N (if Dict::has D N then 1 + Dict::get D N else 1)] Dict::dict D]
 
     def inverse0 =
         @"Dict::invert d0 d1 - produce the merger of two dictionaries"
@@ -577,7 +577,7 @@ namespace Dict (
     def inner_join =
         @"Dict::inner_join d0 d1 - inner join on keys"
         [D0 D1 -> foldl 
-            [D K -> if and (Dict::has D0 K) (Dict::has D1 K) then Dict::set D K (Dict::get D0 K, Dict::get D1 K) else D] 
+            [D K -> if Dict::has D1 K then Dict::set D K (Dict::get D0 K, Dict::get D1 K) else D] 
             Dict::dict 
             (Dict::keys D0)]
 
