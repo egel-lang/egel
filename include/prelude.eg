@@ -500,10 +500,11 @@ namespace System (
         |X:int {Y|YY} -> List::map (add X) {Y|YY}
         |X:int (X0,Y0) -> (add X X0,add X Y0)
         |X:int (X0,Y0,Z0) -> (add X X0,add X Y0,add X Z0)
-        |(X0,Y0) (X1,Y1) -> (add X0 X1,add Y0 Y1)
-        |(X0,Y0,Z0) (X1,Y1,Z1) -> (add X0 X1,add Y0 Y1,add Z0 Z1)
+        |X:int XX -> list_to_tuple (add X (tuple_to_list XX)) 
         |{} _ -> {}
         |{X|XX} YY -> List::zip_with add {X|XX} YY
+        |(X0,Y0) (X1,Y1) -> (add X0 X1,add Y0 Y1)
+        |(X0,Y0,Z0) (X1,Y1,Z1) -> (add X0 X1,add Y0 Y1,add Z0 Z1)
         |XX YY -> list_to_tuple (add (tuple_to_list XX) (tuple_to_list YY))]
 
     def mul =
@@ -515,7 +516,10 @@ namespace System (
         |X:int (X0,Y0) -> (mul X X0,mul X Y0)
         |X:int (X0,Y0,Z0) -> (mul X X0,mul X Y0,mul X Z0)
         |X:int XX -> list_to_tuple (mul X (tuple_to_list XX)) 
+        |{} _ -> {}
         |{X|XX} YY -> List::zip_with mul {X|XX} YY
+        |(X0,Y0) (X1,Y1) -> (mul X0 X1,mul Y0 Y1)
+        |(X0,Y0,Z0) (X1,Y1,Z1) -> (mul X0 X1,mul Y0 Y1,mul Z0 Z1)
         |XX YY -> list_to_tuple (mul (tuple_to_list XX) (tuple_to_list YY))]
 
 )
