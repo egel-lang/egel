@@ -19,17 +19,17 @@ namespace System (
         [ true  -> false
         | X     -> true ]
 
-    def || = 
+    def || =
         @"System::|| p q - 'lazy' or"
         [ false F -> F none
         | true  F -> true ]
 
-    def && = 
+    def && =
         @"System::&& p q - 'lazy' and"
         [ true F -> F none
         | false F -> false ]
 
-    def fix = 
+    def fix =
         @"System::fix f - fixed point of f"
         [ F -> F [ X -> (fix F) X ] ]
 
@@ -49,39 +49,39 @@ namespace System (
         @"System::@ f x - low binding application"
         [ X F -> F X ]
 
-    def flip = 
+    def flip =
         @"System::flip f x y - flip two arguments"
         [ F X Y -> F Y X ]
 
-    def join = 
+    def join =
         @"System::join f x - f x x"
         [ F X -> F X X ]
 
-    def uncurry = 
+    def uncurry =
         @"System::uncurry f (x, y) - uncurry arguments"
         [ F (X,Y) -> F X Y ]
 
-    def iter = 
+    def iter =
         @"System::iter n f x - iterate a function"
         [ 0 F X -> X | N F X -> iter (N - 1) F (F X) ]
 
-    def trace = 
+    def trace =
         @"System::trace n f x - trace iteration of a function"
         [ 0 F X -> {X} | N F X -> {X|trace (N - 1) F (F X)} ]
 
-    def trace_until = 
+    def trace_until =
         @"System::trace_until f g x - trace until a guard holds"
         [F G X -> if G X then {X} else {X|trace_until F G (F X)}]
 
-    def trace_while = 
+    def trace_while =
         @"System::trace_while f g x - trace while a guard holds"
         [F G X -> if G X then {X|trace_while F G (F X)} else {}]
 
-    def while = 
+    def while =
         @"System::while f x - apply f as long as it reduces"
         [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
-    def swap = 
+    def swap =
         @"System::swap (x,y) - swap a tuple"
         [ (X,Y) -> (Y,X) ]
 
@@ -93,11 +93,11 @@ namespace System (
         @"System::proj_update n f (x, .., y) - update on tuple"
         [ N F T -> tuple_to_list T |> List::nth_update N F |> list_to_tuple ]
 
-    def fst = 
+    def fst =
         @"System::fst (x, y) - proj1 on tuple"
         [ (X,Y) -> X ]
 
-    def snd = 
+    def snd =
         @"System::snd (x, y) - proj2 on tuple"
         [ (X,Y) -> Y ]
 
@@ -107,19 +107,19 @@ namespace System (
     #@"System::$ - a very mysterious operator"
     #def $ = [F X -> F X]
 
-    def abs0 = 
+    def abs0 =
         @"System::abs0 x - generic absolute"
         [X -> if X < 0 then 0 - X else X ]
 
-    def min0 = 
+    def min0 =
         @"System::min0 x y - generic minimum"
         [X Y -> if X < Y then X else Y ]
 
-    def max0 = 
+    def max0 =
         @"System::max0 x y - generic maximum"
         [X Y -> if X < Y then Y else X ]
 
-    def ** = 
+    def ** =
         @"System::** x y - power (temporary)"
         [ N 0 -> 1 | N M -> N * (N ** (M - 1)) ]
 
@@ -163,11 +163,11 @@ namespace List (
 
     def foldl_state =
         @"List::foldl_state f s z l - left fold on a list with a state"
-        [F S Z XX -> foldl (uncurry F) (S,Z) XX |> snd ] 
+        [F S Z XX -> foldl (uncurry F) (S,Z) XX |> snd ]
 
     def foldr_state =
         @"List::foldr_state f s z l - right fold on a list with a state"
-        [F S Z XX -> foldr [X (S,N) -> F X S N] (S,Z) XX |> snd ] 
+        [F S Z XX -> foldr [X (S,N) -> F X S N] (S,Z) XX |> snd ]
 
     def head =
         @"List::head l - head of a list"
@@ -181,7 +181,7 @@ namespace List (
 
     def last =
         @"List::last l - last of a list"
-        [ (cons X nil) -> X 
+        [ (cons X nil) -> X
         | (cons X XX) -> last XX ]
 
     def init =
@@ -189,12 +189,12 @@ namespace List (
         [ (cons X nil) -> nil
         | (cons X XX)  -> cons X (init XX) ]
 
-    def inits = 
+    def inits =
         @"List::inits l - inits of a list"
-        [ nil -> cons nil nil 
+        [ nil -> cons nil nil
         | (cons X XX) -> cons nil (map (cons X) (inits XX)) ]
 
-    def tails = 
+    def tails =
         @"List::tails l - tails of a list"
         [ nil -> cons nil nil
         | (cons X XX) -> let YY = tails XX in cons (cons X (head YY)) YY ]
@@ -218,7 +218,7 @@ namespace List (
         @"List::flatmap f l - map a function producing lists over a list"
         [ F -> foldr ((++) . F) nil ]
 
-    def reverse = 
+    def reverse =
         @"List::reverse l - reverse a list"
        foldl (flip cons) nil
 
@@ -257,9 +257,9 @@ namespace List (
         [ 0 F (cons X XX) -> cons (F X) XX
         | N F (cons X XX) -> cons X (nth_update (N - 1) F XX) ]
 
-    def index = 
+    def index =
         @"List::index x xx - index of a member in list"
-         let F = fix 
+         let F = fix
              [ F N X {} -> -1
              | F N X {Y|YY} -> if X == Y then N else F (N+1) X YY ] in
         [ X YY -> F 0 X YY ]
@@ -295,7 +295,7 @@ namespace List (
 
     def from_to =
         @"List::from_to l u - list of numbers for lower to upper (inclusive)"
-        [ X Y -> 
+        [ X Y ->
             if X < Y then cons X (from_to (X+1) Y)
             else if Y < X then cons X (from_to (X - 1) Y)
             else cons X nil ]
@@ -303,13 +303,13 @@ namespace List (
     def filter =
         @"List::filter p l - filter all members from a list which satisfy a predicate"
         [ P nil -> nil
-        | P (cons X XX) -> if P X then cons X (filter P XX) 
+        | P (cons X XX) -> if P X then cons X (filter P XX)
                                  else filter P XX ]
 
     def split =
         @"List::split p l - split a list into members and non-members of a predicate"
         [ P nil -> (nil, nil)
-        | P (cons X XX) -> 
+        | P (cons X XX) ->
             [(XX0, XX1) -> if P X then (cons X XX0, XX1) else (XX0, cons X XX1) ]
                 (split P XX) ]
 
@@ -322,13 +322,13 @@ namespace List (
     def break =
         @"List::break p l - split a list in two parts"
         [ P nil -> (nil, nil)
-        | P (cons X XX) -> if P X then (nil, cons X XX) else 
+        | P (cons X XX) -> if P X then (nil, cons X XX) else
             let (YY, ZZ) = break P XX in (cons X YY, ZZ) ]
 
     def split_on =
         @"List::split_on x ll - split a list on a member"
         [ X nil -> cons nil nil
-        | X XX  -> [(YY, nil) -> {YY} | (YY,ZZ) -> {YY | split_on X (tail ZZ)}] 
+        | X XX  -> [(YY, nil) -> {YY} | (YY,ZZ) -> {YY | split_on X (tail ZZ)}]
                     (break ((==) X) XX) ]
 
     def flatten =
@@ -431,7 +431,7 @@ namespace List (
         [ XX -> map [X -> cons X nil] XX |>
             fix
             [ F nil -> nil | F (cons XX nil) -> (cons XX nil)
-            | F (cons XX (cons YY ZZ)) -> 
+            | F (cons XX (cons YY ZZ)) ->
                 if head XX == head YY then F (cons (XX ++ YY) ZZ)
                 else cons XX (F (cons YY ZZ)) ] ]
 
@@ -439,21 +439,21 @@ namespace List (
         @"List::unique l - make all members unique"
         nub . sort
 
-    def sum = 
+    def sum =
         @"List::sum l - summation of list"
         foldl (+) 0
 
-    def product = 
+    def product =
         @"List::product l - product of list"
         foldl (*) 1
 
-    def maximum = 
+    def maximum =
         @"List::maximum l - maximum of list"
-        foldl [X Y -> if X < Y then Y else X] min_int 
+        foldl [X Y -> if X < Y then Y else X] min_int
 
-    def minimum = 
+    def minimum =
         @"List::minimum l - minimum of list"
-        foldl [X Y -> if X < Y then X else Y] max_int 
+        foldl [X Y -> if X < Y then X else Y] max_int
 
     def range =
         @"List::range l f - iterate over elements (reverse map"
@@ -472,7 +472,7 @@ namespace List (
 namespace System (
     using List
 
-    def args = 
+    def args =
         @"System::args - arguments of the application"
         trace_while ((+) 1) [N -> ((/=) none) (System::arg N)] 0 |> map System::arg
 )
@@ -483,17 +483,17 @@ namespace System (
 namespace String (
     using System
 
-    def split = 
+    def split =
         @"String::split n s - split a string"
         [ N S -> (String::extract 0 N S, String::extract N (String::count S - N) S) ]
 
-    def split_pattern = 
+    def split_pattern =
         @"String::split_pattern p s - split a string"
         [ P S -> Regex::split (Regex::compile P) S ]
 )
 
 namespace Math (
-    using System 
+    using System
 
     def lift_unary =
         @"Math::lift_unary f - lift a unary function on floats to ints"
@@ -503,15 +503,15 @@ namespace Math (
         @"Math::lift_binary f - lift a binary function on floats to ints"
         [ F X:int Y:int -> to_int (F (to_float X) (to_float Y)) | F X Y -> F X Y ]
 
-    def pow_int = 
+    def pow_int =
         @"Math::pow_int n0 n1 - power of two integer values"
         lift_binary pow
 )
 
-namespace Dict ( 
+namespace Dict (
     using System
     using List
- 
+
     def memo =
         @"String::memo d f x - memoize with a dictionary"
         [D F X -> if Dict::has D X then Dict::get D X else [Y -> Dict::set D X Y; Y] (F D X) ]
@@ -538,7 +538,7 @@ namespace Dict (
 
     def copy =
         @"Dict::copy d - create a copy of a dictionary"
-        Dict::from_list . Dict::to_list 
+        Dict::from_list . Dict::to_list
 
     def update =
         @"Dict::copy d k v - change an entry when key is present"
@@ -565,22 +565,39 @@ namespace Dict (
 
     def inverse0 =
         @"Dict::invert d0 d1 - produce the merger of two dictionaries"
-        [ {} -> {} | {(K0,V)|XX} -> 
-            [ {}           -> {(K0,{V})} 
+        [ {} -> {} | {(K0,V)|XX} ->
+            [ {}           -> {(K0,{V})}
             | {(K1,VV)|XX} -> if K0 == K1 then {(K0,{V|VV})|XX} else {(K0,{V}),(K1,VV)|XX} ]
                 (inverse0 XX) ]
 
-    def inverse = 
+    def inverse =
         @"Dict::inverse d - produce the inverse of a dictionary, values map to multiple keys"
         Dict::from_list . inverse0 . sort . List::map swap . Dict::to_list
 
     def inner_join =
         @"Dict::inner_join d0 d1 - inner join on keys"
-        [D0 D1 -> foldl 
-            [D K -> if Dict::has D1 K then Dict::set D K (Dict::get D0 K, Dict::get D1 K) else D] 
-            Dict::dict 
+        [D0 D1 -> foldl
+            [D K -> if Dict::has D1 K then Dict::set D K (Dict::get D0 K, Dict::get D1 K) else D]
+            Dict::dict
             (Dict::keys D0)]
 
+    def dim0 =
+        [NN XX ->
+            if [{} -> true |{_|_} -> true|_ -> false] XX then
+                zip_with dim0 (map [N -> NN ++ {N}] (from_to 0 (length XX - 1))) XX
+            else 
+                [{} -> XX |{N} -> (N,XX)|NN -> (list_to_tuple NN, XX)] NN]
+
+    def dim1 =
+        [XX {} -> XX
+        |XX {{}|YY} -> dim1 XX YY
+        |XX {{Y|YY}|ZZ} -> dim1 (dim1 XX {Y|YY}) ZZ
+        |XX {Y|YY} -> dim1 {Y|XX} YY
+        |XX Y -> {Y|XX}]
+
+    def from_lists = 
+        @"Dict::from_lists lll - create dictionary from arbitrarily nested lists"
+        do dim0 {} |> dim1 {} |> from_list
 )
 
 namespace System (
@@ -588,7 +605,7 @@ namespace System (
 
     def help_exact_matches =
         @"System::help_exact_matches s - return a list of exact docstring matches"
-        [S -> filter [M -> query_module_name M == S] query_modules |> 
+        [S -> filter [M -> query_module_name M == S] query_modules |>
             [{} -> filter [C -> to_text C == S] (flatmap query_module_exports query_modules)
                    |> map docstring
             |XX -> head XX |> [M -> {docstring M,map to_text (query_module_exports M) |> reduce [X Y -> X + ", " + Y]}]] ]
@@ -609,7 +626,7 @@ help "text"     - print exact or else inexact matches againt a query
 
     def help =
         @"System::help - search for information"
-        napp [{"modules"} -> map query_module_name query_modules 
+        napp [{"modules"} -> map query_module_name query_modules
              |{S:text} -> help_exact_matches S |> [{} -> help_inexact_matches S|M -> M]
              | _ -> print help_msg] [X -> app_to_list X]
 )
