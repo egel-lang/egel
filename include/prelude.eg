@@ -492,6 +492,17 @@ namespace String (
         [ P S -> Regex::split (Regex::compile P) S ]
 )
 
+namespace System (
+    def add =
+        @"System::add xx yy - generic multidimensional add"
+        [X:int Y:int -> X+Y
+        |(X0,Y0) (X1,Y1) -> (X0+X1,Y0+Y1)
+        |(X0,Y0,Z0) (X1,Y1,Z1) -> (X0+X1,Y0+Y1,Z0+Z1)
+        |{} _ -> {}
+        |{X|XX} YY -> zip_with add {X|XX} YY
+        |XX YY -> list_to_tuple (zip_with add (tuple_to_list XX) (tuple_to_list YY))]
+)
+
 namespace Math (
     using System
 
@@ -598,6 +609,12 @@ namespace Dict (
     def from_lists = 
         @"Dict::from_lists lll - create dictionary from arbitrarily nested lists"
         do dim0 {} |> dim1 {} |> from_list
+)
+
+namespace OS (
+    def read_lines =
+        @"OS::read_lines c - read all lines from a channel"
+        [C -> let L = read_line C in if eof C then {} else {L | read_lines C}]
 )
 
 namespace System (
