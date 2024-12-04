@@ -496,6 +496,7 @@ namespace System (
     def add =
         @"System::add xx yy - generic multidimensional add"
         [X:int Y:int -> X+Y
+        |X Y:int -> add Y X
         |X:int {} -> {}
         |X:int {Y|YY} -> List::map (add X) {Y|YY}
         |X:int (X0,Y0) -> (add X X0,add X Y0)
