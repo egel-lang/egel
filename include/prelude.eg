@@ -499,8 +499,8 @@ namespace System (
         |(X0,Y0) (X1,Y1) -> (X0+X1,Y0+Y1)
         |(X0,Y0,Z0) (X1,Y1,Z1) -> (X0+X1,Y0+Y1,Z0+Z1)
         |{} _ -> {}
-        |{X|XX} YY -> zip_with add {X|XX} YY
-        |XX YY -> list_to_tuple (zip_with add (tuple_to_list XX) (tuple_to_list YY))]
+        |{X|XX} YY -> List::zip_with add {X|XX} YY
+        |XX YY -> list_to_tuple (add (tuple_to_list XX) (tuple_to_list YY))]
 )
 
 namespace Math (
