@@ -496,11 +496,22 @@ namespace System (
     def add =
         @"System::add xx yy - generic multidimensional add"
         [X:int Y:int -> X+Y
-        |(X0,Y0) (X1,Y1) -> (X0+X1,Y0+Y1)
-        |(X0,Y0,Z0) (X1,Y1,Z1) -> (X0+X1,Y0+Y1,Z0+Z1)
+        |(X0,Y0) (X1,Y1) -> (add X0 X1,add Y0 Y1)
+        |(X0,Y0,Z0) (X1,Y1,Z1) -> (add X0 X1,add Y0 Y1,add Z0 Z1)
         |{} _ -> {}
         |{X|XX} YY -> List::zip_with add {X|XX} YY
         |XX YY -> list_to_tuple (add (tuple_to_list XX) (tuple_to_list YY))]
+
+    def mul =
+        @"System::mul xx yy - generic multidimensional mul"
+        [X:int Y:int -> X*Y
+        |X Y:int -> mul Y X
+        |X:int {} -> {}
+        |X:int {Y|YY} -> List::map (mul X) {Y|YY}
+        |X:int (X0,Y0) -> (mul X X0,mul X Y0)
+        |X:int (X0,Y0,Z0) -> (mul X X0,mul X Y0,mul X Z0)
+        |X:int XX -> list_to_tuple (mul X (tuple_to_list XX)) ]
+
 )
 
 namespace Math (
