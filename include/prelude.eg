@@ -214,8 +214,8 @@ namespace List (
         [ F nil -> nil
         | F (cons X XX) -> let Y = F X in cons Y (map F XX) ]
 
-    def concat_map =
-        @"List::concat_map f l - map a function producing lists over a list"
+    def flatmap =
+        @"List::flatmap f l - map a function producing lists over a list"
         [ F -> foldr ((++) . F) nil ]
 
     def reverse = 
@@ -239,12 +239,12 @@ namespace List (
 
     def pairs =
         @"List::pairs ll0 ll1 - product of two lists"
-        [XX YY -> concat_map [X -> map [Y -> (X,Y)] YY] XX]
+        [XX YY -> flatmap [X -> map [Y -> (X,Y)] YY] XX]
 
     def combine =
         @"List::combine ll - all lists that are the product of the members of a list of lists"
         [ {} -> {{}}
-        | {XX|XXX} -> let YY = combine XXX in concat_map [X -> map [XX -> {X|XX}] YY] XX ]
+        | {XX|XXX} -> let YY = combine XXX in flatmap [X -> map [XX -> {X|XX}] YY] XX ]
 
 
     def nth =
@@ -392,7 +392,7 @@ namespace List (
 
     def permutations =
         @"List::permutations l - all permutations of a list"
-        foldr (concat_map . insert_everywhere) {{}}
+        foldr (flatmap . insert_everywhere) {{}}
 
     def merge =
         [ XX nil -> XX
@@ -589,7 +589,7 @@ namespace System (
     def help_exact_matches =
         @"System::help_exact_matches s - return a list of exact docstring matches"
         [S -> filter [M -> query_module_name M == S] query_modules |> 
-            [{} -> filter [C -> to_text C == S] (concat_map query_module_exports query_modules)
+            [{} -> filter [C -> to_text C == S] (flatmap query_module_exports query_modules)
                    |> map docstring
             |XX -> head XX |> [M -> {docstring M,map to_text (query_module_exports M) |> reduce [X Y -> X + ", " + Y]}]] ]
 
@@ -602,7 +602,7 @@ help "text"     - print exact or else inexact matches againt a query
     def help_inexact_matches =
         @"System::help_inexact_matches s - return a list of inexact docstring matches"
         [ S ->
-            let DD = map docstring query_modules ++ map docstring (concat_map query_module_exports query_modules) in
+            let DD = map docstring query_modules ++ map docstring (flatmap query_module_exports query_modules) in
             let DD = filter ["" -> false| T:text -> true|_ -> false] DD in
             let R = Regex::compile S in
                 filter [D -> Regex::matches R D /= {}] DD ]
