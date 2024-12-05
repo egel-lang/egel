@@ -53,6 +53,10 @@ namespace System (
         @"System::flip f x y - flip two arguments"
         [ F X Y -> F Y X ]
 
+    def ap =
+        @"System::ap f g x - f x (g x)"
+        [ F G X -> F X (G X) ]
+
     def join =
         @"System::join f x - f x x"
         [ F X -> F X X ]
