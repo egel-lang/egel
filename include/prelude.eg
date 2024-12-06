@@ -78,16 +78,16 @@ namespace System (
         [F G X -> if G X then {X} else {X|trace_until F G (F X)}]
 
     def trace_while =
-        @"System::trace_while f g x - trace while a guard holds"
-        [F G X -> if G X then {X|trace_while F G (F X)} else {}]
+        @"System::trace_while p f x - trace while a guard holds"
+        [P F X -> if P X then {X|trace_while P F (F X)} else {}]
 
     def while =
         @"System::while f x - apply f as long as it reduces"
         [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
     def iter_while =
-        @"System::iter_while f g x - apply f while a guard holds"
-        [ F G X -> if G X then iter_while F G (F X) else X ]
+        @"System::iter_while p f x - apply f while a guard holds"
+        [ P F X -> if P X then iter_while P F (F X) else X ]
 
     def swap =
         @"System::swap (x,y) - swap a tuple"
