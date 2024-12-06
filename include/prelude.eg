@@ -85,6 +85,10 @@ namespace System (
         @"System::while f x - apply f as long as it reduces"
         [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
+    def iter_while =
+        @"System::iter_while f g x - apply f while a guard holds"
+        [ F G X -> if G X then iter_while F G (F X) else X ]
+
     def swap =
         @"System::swap (x,y) - swap a tuple"
         [ (X,Y) -> (Y,X) ]
