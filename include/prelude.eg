@@ -573,8 +573,8 @@ namespace Dict (
         @"Dict::set_with d f k v - set a value with a function"
         [ D F K V -> Dict::set D K (if Dict::has D K then F (Dict::get D K) V else V) ]
 
-    def nth_with_default =
-        @"Dict::nth_with_default v d k - get a value from a dictionary with a default element"
+    def get_with_default =
+        @"Dict::get_with_default v d k - get a value from a dictionary with a default element"
         [ V D K -> if Dict::has D K then Dict::get D K else V ]
 
     def copy =
