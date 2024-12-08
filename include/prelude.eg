@@ -531,6 +531,20 @@ namespace System (
         |(X0,Y0,Z0) (X1,Y1,Z1) -> (mul X0 X1,mul Y0 Y1,mul Z0 Z1)
         |XX YY -> list_to_tuple (mul (tuple_to_list XX) (tuple_to_list YY))]
 
+    def sub =
+        @"System::sub xx yy - generic multidimensional sub"
+        [X:int Y:int -> X-Y
+        |X Y:int -> sub Y X
+        |X:int {} -> {}
+        |X:int {Y|YY} -> List::map (sub X) {Y|YY}
+        |X:int (X0,Y0) -> (sub X X0,sub X Y0)
+        |X:int (X0,Y0,Z0) -> (sub X X0,sub X Y0,sub X Z0)
+        |X:int XX -> list_to_tuple (sub X (tuple_to_list XX)) 
+        |{} _ -> {}
+        |{X|XX} YY -> List::zip_with sub {X|XX} YY
+        |(X0,Y0) (X1,Y1) -> (sub X0 X1,sub Y0 Y1)
+        |(X0,Y0,Z0) (X1,Y1,Z1) -> (sub X0 X1,sub Y0 Y1,sub Z0 Z1)
+        |XX YY -> list_to_tuple (sub (tuple_to_list XX) (tuple_to_list YY))]
 )
 
 namespace Math (
