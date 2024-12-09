@@ -53,6 +53,10 @@ namespace System (
         @"System::flip f x y - flip two arguments"
         [ F X Y -> F Y X ]
 
+    def const =
+        @"System::const x - function that returns a constant"
+        [ X _ -> X ]
+
     def ap =
         @"System::ap f g x - f x (g x)"
         [ F G X -> F X (G X) ]
