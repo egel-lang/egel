@@ -482,7 +482,7 @@ namespace System (
 
     def args =
         @"System::args - arguments of the application"
-        trace_while ((+) 1) [N -> ((/=) none) (System::arg N)] 0 |> map System::arg
+        trace_while [N -> ((/=) none) (System::arg N)] ((+) 1) 0 |> map System::arg
 )
 
 namespace System (
