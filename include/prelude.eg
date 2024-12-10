@@ -89,6 +89,10 @@ namespace System (
         @"System::while f x - apply f as long as it reduces"
         [ F X -> let Y = F X in if Y == none then X else while F Y ]
 
+    def iter_fix =
+        @"System::iter_fix f x - apply f until a fixed point is reached"
+        [ F X -> let Y = F X in if Y == X then X else iter_fix F Y ]
+
     def iter_while =
         @"System::iter_while p f x - apply f while a guard holds"
         [ P F X -> if P X then iter_while P F (F X) else X ]
