@@ -115,9 +115,9 @@ public:
     }
 };
 
-class DictSet : public Ternary {
+class DictSet : public Triadic {
 public:
-    TERNARY_PREAMBLE(VM_SUB_EGO, DictSet, STRING_DICT, "set");
+    TRIADIC_PREAMBLE(VM_SUB_EGO, DictSet, STRING_DICT, "set");
 
     DOCSTRING("Dict::set d k v - set a value by key");
     VMObjectPtr apply(const VMObjectPtr& arg0, const VMObjectPtr& arg1,
