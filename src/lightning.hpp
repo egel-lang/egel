@@ -824,7 +824,7 @@ public:
         // reserve space in the stack for registers and flag
         //_regs_offset   = jit_allocai(_reg_n * sizeof(VMObjectPtr));
         _regs_offset = jit_allocai(
-            (_reg_n + 128) *
+            (_reg_n + 256) *
             sizeof(VMObjectPtr));  // XXX MAJOR WARNING BELLS! THIS FIXES A BUG
                                    // WITH LARGE FUNCTIONS AND I DON"T KNOW WHY
         _flag_offset =

@@ -149,6 +149,10 @@ namespace List (
 
     using System
 
+    def singleton =
+        @"List::singleton x - list with one value"
+        flip cons nil
+
     def length =
         @"List::length l - length of a list"
         [ nil -> 0
@@ -505,6 +509,16 @@ namespace String (
 )
 
 namespace System (
+    def succ =
+        @"System::succ xx - generic multidimensional succ"
+        [X:int -> X+1
+        |X:char -> String::chr (String::ord X + 1)
+        |{} -> {}
+        |{X|XX} -> List::map succ {X|XX}
+        |(X0,Y0) -> (succ X0,succ Y0)
+        |(X0,Y0,Z0) -> (succ X0,succ Y0,succ Z0)
+        |XX -> list_to_tuple (succ (tuple_to_list XX))]
+
     def add =
         @"System::add xx yy - generic multidimensional add"
         [X:int Y:int -> X+Y
