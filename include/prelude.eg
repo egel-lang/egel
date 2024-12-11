@@ -613,6 +613,10 @@ namespace Dict (
         @"Dict::get_with_default v d k - get a value from a dictionary with a default element"
         [ V D K -> if Dict::has D K then Dict::get D K else V ]
 
+    def get_safe =
+        @"Dict::get_safe d k - get a value from a dictionary with default none"
+        get_with_default none
+
     def copy =
         @"Dict::copy d - create a copy of a dictionary"
         Dict::from_list . Dict::to_list
