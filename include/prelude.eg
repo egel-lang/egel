@@ -609,6 +609,10 @@ namespace Dict (
         @"Dict::set_with d f k v - set a value with a function"
         [ D F K V -> Dict::set D K (if Dict::has D K then F (Dict::get D K) V else V) ]
 
+    def from_list_with =
+        @"Dict::from_list_with f xx - dictionary from key/value pairs with a combining function"
+        [ F XX -> foldl [D (K,V) -> Dict::set_with D [V1 _ -> F V V1] K V] Dict::dict XX ]
+
     def get_with_default =
         @"Dict::get_with_default v d k - get a value from a dictionary with a default element"
         [ V D K -> if Dict::has D K then Dict::get D K else V ]
