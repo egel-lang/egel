@@ -448,12 +448,8 @@ namespace List (
 
     def group =
         @"List::group - group duplicates"
-        [ XX -> map [X -> cons X nil] XX |>
-            fix
-            [ F nil -> nil | F (cons XX nil) -> (cons XX nil)
-            | F (cons XX (cons YY ZZ)) ->
-                if head XX == head YY then F (cons (XX ++ YY) ZZ)
-                else cons XX (F (cons YY ZZ)) ] ]
+        [{} -> {{}} |{X} -> {{X}}
+        |{X|XX} -> [{{Y|YY}|ZZ} -> if Y == X then {{X,Y|YY}|ZZ} else {{X},{Y|YY}|ZZ}] (group XX)]
 
     def unique =
         @"List::unique l - make all members unique"
@@ -531,7 +527,7 @@ namespace System (
         |X:int {Y|YY} -> List::map (add X) {Y|YY}
         |X:int (X0,Y0) -> (add X X0,add X Y0)
         |X:int (X0,Y0,Z0) -> (add X X0,add X Y0,add X Z0)
-        |X:int XX -> list_to_tuple (add X (tuple_to_list XX)) 
+        |X:int XX -> list_to_tuple (add X (tuple_to_list XX))
         |{} _ -> {}
         |{X|XX} YY -> List::zip_with add {X|XX} YY
         |(X0,Y0) (X1,Y1) -> (add X0 X1,add Y0 Y1)
@@ -546,7 +542,7 @@ namespace System (
         |X:int {Y|YY} -> List::map (mul X) {Y|YY}
         |X:int (X0,Y0) -> (mul X X0,mul X Y0)
         |X:int (X0,Y0,Z0) -> (mul X X0,mul X Y0,mul X Z0)
-        |X:int XX -> list_to_tuple (mul X (tuple_to_list XX)) 
+        |X:int XX -> list_to_tuple (mul X (tuple_to_list XX))
         |{} _ -> {}
         |{X|XX} YY -> List::zip_with mul {X|XX} YY
         |(X0,Y0) (X1,Y1) -> (mul X0 X1,mul Y0 Y1)
@@ -561,7 +557,7 @@ namespace System (
         |X:int {Y|YY} -> List::map (sub X) {Y|YY}
         |X:int (X0,Y0) -> (sub X X0,sub X Y0)
         |X:int (X0,Y0,Z0) -> (sub X X0,sub X Y0,sub X Z0)
-        |X:int XX -> list_to_tuple (sub X (tuple_to_list XX)) 
+        |X:int XX -> list_to_tuple (sub X (tuple_to_list XX))
         |{} _ -> {}
         |{X|XX} YY -> List::zip_with sub {X|XX} YY
         |(X0,Y0) (X1,Y1) -> (sub X0 X1,sub Y0 Y1)
@@ -670,7 +666,7 @@ namespace Dict (
         [NN XX ->
             if [{} -> true |{_|_} -> true|_ -> false] XX then
                 zip_with dim0 (map [N -> NN ++ {N}] (from_to 0 (length XX - 1))) XX
-            else 
+            else
                 [{} -> XX |{N} -> (N,XX)|NN -> (list_to_tuple NN, XX)] NN]
 
     def dim1 =
@@ -680,7 +676,7 @@ namespace Dict (
         |XX {Y|YY} -> dim1 {Y|XX} YY
         |XX Y -> {Y|XX}]
 
-    def from_lists = 
+    def from_lists =
         @"Dict::from_lists lll - create dictionary from arbitrarily nested lists"
         do dim0 {} |> dim1 {} |> from_list
 )
