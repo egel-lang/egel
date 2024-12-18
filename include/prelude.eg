@@ -622,15 +622,8 @@ namespace Dict (
         Dict::from_list . Dict::to_list
 
     def update =
-        @"Dict::copy d k v - change an entry when key is present"
-        [ D K V -> if Dict::has D K then Dict::set D K V else D ]
-
-    def adjust =
-        @"Dict::adjust d k f - apply a function to a value in the dictionary"
-        [ D K F -> if Dict::has D K then Dict::set D K (F (Dict::get D K)) else D ]
-
-    def lazy_update =
-        [ D K VF -> if Dict::has D K then Dict::set D K (VF none) else D ]
+        @"Dict::update d f k - change an entry when key is present"
+        [ D F K -> Dict::set D K (F Dict::get K)]
 
     def dmap =
         @"Dict::dmap f d - map a function to all values of a dictionary"
