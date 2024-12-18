@@ -623,7 +623,7 @@ namespace Dict (
 
     def update =
         @"Dict::update d f k - change an entry when key is present"
-        [ D F K -> Dict::set D K (F Dict::get K)]
+        [ D F K -> Dict::set D K (F (Dict::get D K))]
 
     def dmap =
         @"Dict::dmap f d - map a function to all values of a dictionary"
