@@ -617,9 +617,9 @@ namespace Dict (
         @"Dict::get_safe d k - get a value from a dictionary with default none"
         get_with_default none
 
-    def copy =
-        @"Dict::copy d - create a copy of a dictionary"
-        Dict::from_list . Dict::to_list
+    #def copy =
+    #    @"Dict::copy d - create a copy of a dictionary"
+    #    Dict::from_list . Dict::to_list
 
     def update =
         @"Dict::update d f k - change an entry when key is present"

@@ -24,9 +24,11 @@ public:
         _value = d;
     }
 
+    /*
     Dictionary(const Dictionary& d) : Dictionary(d.machine(), d.value()) {
-        std::cerr << "Dictionary copy" << std::endl;
+        return std::make_shared<Dictionary>(d.machine(), copy(d.value()));
     }
+    */
 
     static VMObjectPtr create(VM* m, const dict_t& d) {
         return std::make_shared<Dictionary>(m, d);
@@ -42,6 +44,12 @@ public:
 
     size_t size() const {
         return _value.size();
+    }
+
+    VMObjectPtr copy(const VMObjectPtr& d) {
+        auto d1 = Dictionary::cast(d);
+        dict_t cp(d1->value());
+        return Dictionary::create(d1->machine(), cp);
     }
 
     bool has(const VMObjectPtr key) {
@@ -79,6 +87,22 @@ public:
     DOCSTRING("Dict::dict - create a dict object");
     VMObjectPtr apply() const override {
         return Dictionary::create(machine(), dict_t());
+    }
+};
+
+class DictCopy : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_EGO, DictCopy, STRING_DICT, "copy");
+
+    DOCSTRING("Dict::copy d - copy a dict object ");
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+        //auto m = machine();
+        if (Dictionary::is_type(arg0)) {
+            auto d = Dictionary::cast(arg0);
+            return d->copy(arg0);
+        } else {
+            throw machine()->bad_args(this, arg0);
+        }
     }
 };
 
@@ -198,6 +222,7 @@ public:
         std::vector<VMObjectPtr> oo;
 
         oo.push_back(Dict::create(vm));
+        oo.push_back(DictCopy::create(vm));
         oo.push_back(DictHas::create(vm));
         oo.push_back(DictGet::create(vm));
         oo.push_back(DictSet::create(vm));
