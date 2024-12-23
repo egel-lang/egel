@@ -14,6 +14,7 @@ EGEL(1) Version 0.1 | The Egel interpreter
 `egel` [-h|--help|-v|--version]
 
 ## DESCRIPTION
+
 Egel is an untyped concurrent functional scripting language based on
 eager combinator rewriting with a concise but remarkably powerful 
 syntax.
@@ -118,7 +119,7 @@ Declarations define combinators.
 
  * A `def` declaration introduces a combinator.
 
-    `def fac = [0 -> 1 | N -> N * fac (N - 1)`
+    `def fac = [0 -> 1 | N -> N * fac (N - 1)]`
 
  * A `val` declaration introduces a combinator who's body is
    evaluated prior to it's definition.
@@ -146,7 +147,7 @@ namespace Fibonacci (
   def fib =
     [ 0 -> 0
     | 1 -> 1
-    | N -> fib (N- 2) + fib (N- 1) ]
+    | N -> fib (N- 2) + fib (N - 1) ]
 
 )
 

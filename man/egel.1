@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1
-.TH "EGEL" "1" "September 2024" ""
+.TH "EGEL" "1" "December 2024" ""
 .SH "NAME"
 \fBegel\fR \- an untyped functional scripting language
 .SH "SYNOPSIS"
@@ -102,7 +102,7 @@ A \fBdata\fR declaration introduces constants\.
 .IP "\(bu" 4
 A \fBdef\fR declaration introduces a combinator\.
 .IP
-\fBdef fac = [0 \-> 1 | N \-> N * fac (N \- 1)\fR
+\fBdef fac = [0 \-> 1 | N \-> N * fac (N \- 1)]\fR
 .IP "\(bu" 4
 A \fBval\fR declaration introduces a combinator who's body is evaluated prior to it's definition\.
 .IP
@@ -124,7 +124,7 @@ namespace Fibonacci (
   def fib =
     [ 0 \-> 0
     | 1 \-> 1
-    | N \-> fib (N\- 2) + fib (N\- 1) ]
+    | N \-> fib (N\- 2) + fib (N \- 1) ]
 
 )
 
