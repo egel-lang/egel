@@ -49,7 +49,7 @@ namespace Tiny (
     ## Tiny::db_list_tables db - list all tables in database
     def db_list_tables =
         [ DB ->
-            let N  = String::count_char (db_location DB) in
+            let N  = String::length (db_location DB) in
             let FF = OS::directory (db_location DB) in
                 map (String::remove 0 (N+1)) FF ]
 
@@ -68,7 +68,7 @@ namespace Tiny (
     ## Tiny::db_list_records db table - list all records from a table 
     def db_list_records =
         [ DB TABLE ->
-            let N  = String::count_char (db_table_location DB TABLE) in
+            let N  = String::length (db_table_location DB TABLE) in
             let FF = OS::directory (db_table_location DB TABLE) in
                 map OS::stem FF ]
 
@@ -140,7 +140,7 @@ namespace Tiny (
                 OS::close CHAN ]
 
     def remove_object =
-        [ FN:text -> OS::remove FN ]
+        [ FN:text -> OS::remove_file FN ]
 
     def db_lock_location =
         [ DB -> 

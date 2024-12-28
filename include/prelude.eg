@@ -326,12 +326,12 @@ namespace List (
         | P (cons X XX) -> if P X then cons X (filter P XX)
                                  else filter P XX ]
 
-    def split =
-        @"List::split p l - split a list into members and non-members of a predicate"
+    def filter_split =
+        @"List::filter_split p l - filter_split a list into members and non-members of a predicate"
         [ P nil -> (nil, nil)
         | P (cons X XX) ->
             [(XX0, XX1) -> if P X then (cons X XX0, XX1) else (XX0, cons X XX1) ]
-                (split P XX) ]
+                (filter_split P XX) ]
 
     def span =
         @"List::span p l - split a list where the first segment satisfies a predicate"
@@ -499,12 +499,12 @@ namespace System (
 namespace String (
     using System
 
-    def split =
-        @"String::split n s - split a string"
-        [ N S -> (String::extract 0 N S, String::extract N (String::count S - N) S) ]
+    def split_at =
+        @"String::split_at n s - split a string from a given position"
+        [ N S -> (String::extract 0 N S, String::extract N (String::length S - N) S) ]
 
     def split_pattern =
-        @"String::split_pattern p s - split a string"
+        @"String::split_pattern p s - split a string on a regular expression"
         [ P S -> Regex::split (Regex::compile P) S ]
 )
 
