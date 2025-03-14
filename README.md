@@ -104,3 +104,28 @@ a bit of extra speed, it might pay off to switch the allocator.
 
 I use `jemalloc` on Linux by setting
 ``LD_PRELOAD=`jemalloc-config --libdir`/libjemalloc.so.`jemalloc-config --revision``.
+
+MacOS additional remarks
+------------------------
+
+Newer MacOS versions have a more stringent security model, and also 
+you might not have HomeBrew installed for the prebuilt.
+
+In that case, run any of the following commands to fit your needs.
+
+To bypass the quarantine:
+
+    sudo xattr -rd com.apple.quarantine ./egel
+    sudo xattr -rd com.apple.quarantine *.ego
+    sudo xattr -rd com.apple.quarantine *.dylib
+
+To relabel dynlibs to the local supplied files:
+
+    xcode-select --install
+    install_name_tool -change /opt/homebrew/opt/lightning/lib/liblightning.2.dylib liblightning.2.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/fmt/lib/libfmt.11.dylib libfmt.11.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicuuc.76.dylib libicuuc.76.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicudata.76.dylib libicudata.76.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicuio.76.dylib libicuio.76.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicui18n.76.dylib libicui18n.76.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicutu.76.dylib libicutu.76.dylib ./egel
