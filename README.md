@@ -122,6 +122,7 @@ To bypass the quarantine:
 To relabel dynlibs to the local supplied files:
 
     xcode-select --install
+    install_name_tool -change /opt/homebrew/opt/ffi/lib/libffi.8.dylib @executable_path/libffi.8.dylib ./egel
     install_name_tool -change /opt/homebrew/opt/lightning/lib/liblightning.2.dylib @executable_path/liblightning.2.dylib ./egel
     install_name_tool -change /opt/homebrew/opt/fmt/lib/libfmt.11.dylib @executable_path/libfmt.11.dylib ./egel
     install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicuuc.76.dylib @executable_path/libicuuc.76.dylib ./egel
