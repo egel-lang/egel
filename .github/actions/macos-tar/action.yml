@@ -15,7 +15,7 @@ runs:
 
   - name: Set library paths
     run: |
-      install_name_tool -change /opt/homebrew/opt/ffi/lib/libffi.8.dylib @executable_path/libffi.8.dylib ${{github.workspace}}/build/egel
+      install_name_tool -change /opt/homebrew/opt/libffi/lib/libffi.8.dylib @executable_path/libffi.8.dylib ${{github.workspace}}/build/egel
       install_name_tool -change /opt/homebrew/opt/lightning/lib/liblightning.2.dylib @executable_path/liblightning.2.dylib ${{github.workspace}}/build/egel
       install_name_tool -change /opt/homebrew/opt/fmt/lib/libfmt.11.dylib @executable_path/libfmt.11.dylib ${{github.workspace}}/build/egel
       install_name_tool -change /opt/homebrew/opt/icu4c/lib/libicuuc.74.dylib @executable_path/libicuuc.74.dylib ${{github.workspace}}/build/egel
