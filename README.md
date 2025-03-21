@@ -125,8 +125,8 @@ To relabel dynlibs to the local supplied files:
     install_name_tool -change /opt/homebrew/opt/ffi/lib/libffi.8.dylib @executable_path/libffi.8.dylib ./egel
     install_name_tool -change /opt/homebrew/opt/lightning/lib/liblightning.2.dylib @executable_path/liblightning.2.dylib ./egel
     install_name_tool -change /opt/homebrew/opt/fmt/lib/libfmt.11.dylib @executable_path/libfmt.11.dylib ./egel
-    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicuuc.76.dylib @executable_path/libicuuc.76.dylib ./egel
-    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicudata.76.dylib @executable_path/libicudata.76.dylib ./egel
-    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicuio.76.dylib @executable_path/libicuio.76.dylib ./egel
-    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicui18n.76.dylib @executable_path/libicui18n.76.dylib ./egel
-    install_name_tool -change /opt/homebrew/opt/icu4c@76/lib/libicutu.76.dylib @executable_path/libicutu.76.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c/lib/libicuuc.74.dylib @executable_path/libicuuc.74.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c/lib/libicudata.74.dylib @executable_path/libicudata.74.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c/lib/libicuio.74.dylib @executable_path/libicuio.74.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c/lib/libicui18n.74.dylib @executable_path/libicui18n.74.dylib ./egel
+    install_name_tool -change /opt/homebrew/opt/icu4c/lib/libicutu.74.dylib @executable_path/libicutu.74.dylib ./egel
