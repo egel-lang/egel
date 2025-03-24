@@ -45,22 +45,22 @@ public:
         return rewrite(a);
     }
 
-    //  F(if i then t else e) -> ([ true -> F(t) | _ -> F(e) ] F(i))
+    //  F(if i then t else e) -> ([ false -> F(e) | _ -> F(t) ] F(i))
     ptr<Ast> rewrite_expr_if(const Position &p, const ptr<Ast> &i,
                              const ptr<Ast> &t, const ptr<Ast> &e) override {
         auto i0 = rewrite(i);
         auto t0 = rewrite(t);
         auto e0 = rewrite(e);
 
-        auto a0 = AstExprCombinator::create(p, STRING_SYSTEM, STRING_TRUE);
+        auto a0 = AstExprCombinator::create(p, STRING_SYSTEM, STRING_FALSE);
         ptrs<Ast> aa0;
         aa0.push_back(a0);
-        auto a1 = AstExprMatch::create(p, aa0, AstEmpty::create(), t0);
+        auto a1 = AstExprMatch::create(p, aa0, AstEmpty::create(), e0);
 
         auto b0 = AstExprWildcard::create(p, "_");
         ptrs<Ast> bb0;
         bb0.push_back(b0);
-        auto b1 = AstExprMatch::create(p, bb0, AstEmpty::create(), e0);
+        auto b1 = AstExprMatch::create(p, bb0, AstEmpty::create(), t0);
 
         ptrs<Ast> cc0;
         cc0.push_back(a1);
