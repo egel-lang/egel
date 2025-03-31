@@ -763,7 +763,7 @@ public:
     }
 
     static bool filetype(const icu::UnicodeString &fn) {
-        return fn.endsWith(".egg");
+        return (fn.endsWith(".egg") || fn.endsWith(".md"));
     }
 
 private:

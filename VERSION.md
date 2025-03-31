@@ -21,6 +21,7 @@ A list of all major changes between versions of the interpreter.
 
 ## The bleeding, cutting edge
 
++ '.md' files added as extension to appease github
 + conditions are now 'rewrite on false' instead of 'rewrite on true'
 
 ## v0.1.14 - the devil fetch ye ragamuffin rapscallions; ye are all asleep
