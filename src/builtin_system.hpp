@@ -504,6 +504,16 @@ public:
     }
 };
 
+class UseCount : public Monadic {
+public:
+    MONADIC_PREAMBLE(VM_SUB_BUILTIN, UseCount, "System", "use_count");
+
+    DOCSTRING("System::use_count o - the number of references to this term");
+    VMObjectPtr apply(const VMObjectPtr &arg0) const override {
+        return machine()->create_integer(arg0.use_count());
+    }
+};
+
 // deprecated! System::get field obj - retrieve an object field
 /*
 class GetField : public Binary {
@@ -1255,6 +1265,7 @@ public:
         oo.push_back(GreaterEq::create(vm));
         oo.push_back(Eq::create(vm));
         oo.push_back(NegEq::create(vm));
+        oo.push_back(UseCount::create(vm));
 
         oo.push_back(BinAnd::create(vm));
         oo.push_back(BinOr::create(vm));

@@ -266,6 +266,10 @@ namespace List (
         [ {} -> {{}}
         | {XX|XXX} -> let YY = combine XXX in flatmap [X -> map [XX -> {X|XX}] YY] XX ]
 
+    def assoc =
+        @"List::assoc x xx - the first pair in the list where the first element matches"
+        [ X {} -> none
+        | X {(A,B)|XX} -> if X == A then (A,B) else assoc X XX]
 
     def nth =
         @"List::nth n l - nth element of a list"
