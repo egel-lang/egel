@@ -24,7 +24,7 @@ public:
         return -1;  // XXX: fix this once
     }
 
-    static VMReduceResult reduce(VM *vm, const VMObjectPtr &o) {
+    static VMReduceResult reduce0(VM *vm, const VMObjectPtr &o) {
         return vm->reduce(o);
     }
 
@@ -34,7 +34,7 @@ public:
         thunk.push_back(machine()->create_none());
         auto app = machine()->create_array(thunk);
 
-        _future = std::async(std::launch::async, reduce, machine(), app);
+        _future = std::async(std::launch::async, reduce0, machine(), app);
     }
 
     VMReduceResult await() {
