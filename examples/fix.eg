@@ -7,16 +7,16 @@ using System
 # recursive eager fix
 def fix = [ F -> F [ X -> (fix F) X ] ]
 
-def fac0 = fix [FAC 0 -> 1 | FAC N -> N * (FAC (N- 1)) ] 5
+def fac0 = fix [FAC 0 -> 1 | FAC N -> N * (FAC (N- 1)) ]
 
 # non-recursive eager fix
 def fix2 = [F -> [X -> F [V -> (X X) V]] [X -> F [V -> (X X) V]]]
 
-def fac1 = fix2 [FAC 0 -> 1 | FAC N -> N * (FAC (N- 1)) ] 5
+def fac1 = fix2 [FAC 0 -> 1 | FAC N -> N * (FAC (N- 1)) ]
 
 # alternative to fix points
-def fac2 = [ F X -> F F X ] [ F 0 -> 1 | F N -> N * F F (N - 1) ] 5
+def fac2 = [ F X -> F F X ] [ F 0 -> 1 | F N -> N * F F (N - 1) ]
 
 # test it
-def main = (fac0, fac1, fac2)
+def main = (fac0 5, fac1 5, fac2 5)
 
