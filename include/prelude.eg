@@ -317,6 +317,11 @@ namespace List (
         | N L   -> if 0 < N then cons (take N L) (chunks N (drop N L))
                    else nil ]
 
+    def windows =
+        @"List::windows n l - list to list of windows of given size"
+        let F = fix [F 0 _ -> true |F N {} -> false|F N {X|XX} -> F (N - 1) XX] in
+        [N XX -> if F N XX then {take N XX|windows N (tail XX)} else {}]
+
     def from_to =
         @"List::from_to l u - list of numbers for lower to upper (inclusive)"
         [ X Y ->
