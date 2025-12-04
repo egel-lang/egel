@@ -15,6 +15,34 @@ typedef std::map<VMObjectPtr, VMObjectPtr, LessVMObjectPtr> dict_t;
 
 const icu::UnicodeString STRING_DICT = "Dict";
 
+int dict_compare(const dict_t& a, const dict_t& b) {
+    LessVMObjectPtr cmp;
+
+    auto itA = a.begin();
+    auto itB = b.begin();
+
+    while (itA != a.end() && itB != b.end()) {
+        const auto& [keyA, valA] = *itA;
+        const auto& [keyB, valB] = *itB;
+
+        // Compare keys
+        if (cmp(keyA, keyB)) return -1;
+        if (cmp(keyB, keyA)) return 1;
+
+        // Keys equal → compare values
+        if (cmp(valA, valB)) return -1;
+        if (cmp(valB, valA)) return 1;
+
+        ++itA;
+        ++itB;
+    }
+
+    // One map ended first
+    if (itA == a.end() && itB == b.end()) return 0;
+    if (itA == a.end()) return -1;
+    return 1;
+}
+
 class Dictionary : public Opaque {
 public:
     OPAQUE_PREAMBLE(VM_SUB_EGO, Dictionary, STRING_DICT, "dictionary");
@@ -35,7 +63,12 @@ public:
     }
 
     int compare(const VMObjectPtr& o) override {
-        return -1;  // XXX: for later
+        if (Dictionary::is_type(o)) {
+            auto d = Dictionary::cast(o);
+            return dict_compare(_value, d->value());
+        } else {
+            return -1;
+        }
     }
 
     dict_t value() const {

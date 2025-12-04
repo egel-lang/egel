@@ -19,7 +19,7 @@
 #include <egel/runtime.hpp> // compile against an installed egel
 
 #define DEBUG(s)    { std::cerr << "debug: " << s << std::endl; };
-#define DEBUG(s)
+//#define DEBUG(s)
 
 using namespace egel;
 
