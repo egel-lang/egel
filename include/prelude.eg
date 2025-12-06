@@ -360,6 +360,12 @@ namespace List (
         | X XX  -> [(YY, nil) -> {YY} | (YY,ZZ) -> {YY | split_on X (tail ZZ)}]
                     (break ((==) X) XX) ]
 
+    def split_when =
+        @"List::split_when p ll - split a list on a predicate"
+        [ P nil -> cons nil nil
+        | P XX  -> [(YY, nil) -> {YY} | (YY,ZZ) -> {YY | split_when P (tail ZZ)}]
+                    (break P XX) ]
+
     def flatten =
         @"List::flatten ll - flatten a list of lists to a list"
         [ nil                   -> nil
