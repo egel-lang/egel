@@ -19,6 +19,12 @@ namespace System (
         [ true  -> false
         | X     -> true ]
 
+    def xor =
+        @"System::xor p q - boolean xor"
+        [ false true -> true
+        | true false -> true
+        | X Y        -> false ]
+
     def || =
         @"System::|| p q - 'lazy' or"
         [ false F -> F none
