@@ -280,7 +280,7 @@ namespace List (
     def nth =
         @"List::nth n l - nth element of a list"
         [ 0 (cons X XX) -> X
-        | N (cons X XX) -> nth (N - 1) XX ]
+        | N (cons X XX) -> if N > 0 then nth (N - 1) XX else none ]
 
     def nth_update =
         @"List::nth_update n f l - update nth element of a list"
@@ -612,7 +612,7 @@ namespace Dict (
 
     def from_list =
         @"Dict::from_list l - create a dictionary from key/value pairs"
-        foldl [D (K,V) -> Dict::set D K V] dict
+        [XX -> foldl [D (K,V) -> Dict::set D K V] dict XX]
 
     def to_list =
         @"Dict::to_list d - create a list of key/value pairs from a dictionary"
