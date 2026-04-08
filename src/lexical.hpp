@@ -743,7 +743,10 @@ Tokens tokenize_from_reader(CharReader &reader) {
                 reader.skip();
             }
             token_writer.push(Token(TOKEN_WHITESPACE, p, str));
-        } else if (is_hash(c)) {
+            continue;
+        } 
+        
+        if (is_hash(c)) {
             icu::UnicodeString str;
             str += reader.look();
             reader.skip();
@@ -1003,6 +1006,19 @@ Tokens tokenize_from_reader(CharReader &reader) {
         } else {
             goto handle_error;
         }
+
+        // no whitespace
+        p = reader.position();
+        c = reader.look();
+        if (is_operator(c)) {
+            icu::UnicodeString str = icu::UnicodeString("");
+            while (is_operator(c)) {
+                str += c;
+                reader.skip();
+                c = reader.look();
+            };
+            token_writer.push((Token(TOKEN_OPERATOR, p, str)));
+        }
     }
 
     {
@@ -1077,7 +1093,10 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                         reader.skip();
                     }
                     token_writer.push(Token(TOKEN_WHITESPACE, p, str));
-                } else if (is_hash(c)) {
+                    continue;
+                } 
+                
+                if (is_hash(c)) {
                     icu::UnicodeString str;
                     str += reader.look();
                     reader.skip();
@@ -1340,6 +1359,19 @@ Tokens tokenize_from_egg_reader(CharReader &reader) {
                 } else {
                     goto handle_error;
                 }
+            }
+
+            // no whitespace
+            Position p = reader.position();
+            UChar32 c = reader.look();
+            if (is_operator(c)) {
+                icu::UnicodeString str = icu::UnicodeString("");
+                while (is_operator(c)) {
+                    str += c;
+                    reader.skip();
+                    c = reader.look();
+                };
+                token_writer.push((Token(TOKEN_OPERATOR, p, str)));
             }
 
             if (reader.look(0) == '`' && reader.look(1) == '`' &&
