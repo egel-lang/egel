@@ -408,6 +408,23 @@ public:
     }
 };
 
+class DropRightShift : public Dyadic {
+public:
+    DYADIC_PREAMBLE(VM_SUB_BUILTIN, DropRightShift, "System", ">>>");
+
+    DOCSTRING("System::>>> x y - drop bitwise right shift");
+    VMObjectPtr apply(const VMObjectPtr &arg0,
+                      const VMObjectPtr &arg1) const override {
+        if ((machine()->is_integer(arg0)) && (machine()->is_integer(arg1))) {
+            std::uint64_t i0 = machine()->get_integer(arg0);
+            auto i1 = machine()->get_integer(arg1);
+            return machine()->create_integer(i0 >> i1);
+        } else {
+            throw machine()->bad_args(this, arg0, arg1);
+        }
+    }
+};
+
 class Less : public Dyadic {
 public:
     DYADIC_PREAMBLE(VM_SUB_BUILTIN, Less, "System", "<");
@@ -1273,6 +1290,7 @@ public:
         oo.push_back(BinComplement::create(vm));
         oo.push_back(BinLeftShift::create(vm));
         oo.push_back(BinRightShift::create(vm));
+        oo.push_back(DropRightShift::create(vm));
 
         oo.push_back(Toint::create(vm));
         oo.push_back(Tofloat::create(vm));
